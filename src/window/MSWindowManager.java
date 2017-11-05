@@ -48,6 +48,7 @@ public class MSWindowManager implements WindowManager {
 
     /**
      * Return the executable path for the given PID. Return null if not found.
+     * It uses the WMIC command line utility.
      * @param pid process PID.
      * @return the executable path for the given PID. null if not found.
      */
@@ -56,11 +57,18 @@ public class MSWindowManager implements WindowManager {
         Runtime runtime = Runtime.getRuntime();
 
         try {
+            // Execute the process
             Process proc = runtime.exec(cmd);
+
+            // Get the output
             BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             String line = null;
+
+            // Read each line
             while((line = br.readLine()) != null) {
                 String[] subPieces = line.split(",");
+
+                // Make sure the line is not empty and ends with a number ( process PID )
                 if (!line.trim().isEmpty() && isNumeric(subPieces[subPieces.length-1])) {
                     StringTokenizer st = new StringTokenizer(line.trim(), ",");
                     st.nextToken(); // Discard the Node name
