@@ -7,6 +7,14 @@ import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WinDef.RECT;
 import com.sun.jna.ptr.IntByReference;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+
 public class MSWindowManager implements WindowManager {
     private static final int MAX_TITLE_LENGTH = 1024;
 
@@ -15,17 +23,58 @@ public class MSWindowManager implements WindowManager {
      */
     @Override
     public Window getActiveWindow() {
+        // Get the window title
         char[] buffer = new char[MAX_TITLE_LENGTH * 2];
         HWND hwnd = User32.INSTANCE.GetForegroundWindow();
         User32.INSTANCE.GetWindowText(hwnd, buffer, MAX_TITLE_LENGTH);
-
-        IntByReference PID = new IntByReference();
-        User32.INSTANCE.GetWindowThreadProcessId(hwnd,PID);
         String titleText = Native.toString(buffer);
 
-        Window window = new Window(PID.getValue(), titleText);
+        // Get the PID
+        IntByReference PID = new IntByReference();
+        User32.INSTANCE.GetWindowThreadProcessId(hwnd,PID);
+
+        // Get the executable path
+        String executablePath = getExecutablePathFromPID(PID.getValue());
+
+        // Get the icon
+        Icon icon = null;
+        if (executablePath != null) {
+            icon = FileSystemView.getFileSystemView().getSystemIcon(new File(executablePath));
+        }
+
+        Window window = new Window(PID.getValue(), titleText, icon, executablePath);
         return window;
+    }
 
+    private String getExecutablePathFromPID(int pid) {
+        String cmd = "wmic process where ProcessID="+pid+" get ProcessID,ExecutablePath /FORMAT:csv";
+        Runtime runtime = Runtime.getRuntime();
 
+        try {
+            Process proc = runtime.exec(cmd);
+            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            String line = null;
+            while((line = br.readLine()) != null) {
+                String[] subPieces = line.split(",");
+                if (!line.trim().isEmpty() && isNumeric(subPieces[subPieces.length-1])) {
+                    StringTokenizer st = new StringTokenizer(line.trim(), ",");
+                    st.nextToken(); // Discard the Node name
+                    String executablePath = st.nextToken();
+                    return executablePath;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private boolean isNumeric(String number) {
+        try {
+            Integer.parseInt(number);
+            return true;
+        }catch (NumberFormatException e) {
+            return false;
+        }
     }
 }
