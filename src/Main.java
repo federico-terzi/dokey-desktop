@@ -11,5 +11,6 @@ public class Main {
     public static void main(String[] args) {
         WindowManager wm = WindowManagerFactory.getInstance();
         Window window = wm.getActiveWindow();
+        System.out.println(wm.getActivePID());
     }
 }

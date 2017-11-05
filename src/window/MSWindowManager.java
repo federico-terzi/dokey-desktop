@@ -47,6 +47,20 @@ public class MSWindowManager implements WindowManager {
     }
 
     /**
+     * @return PID of the current active window.
+     */
+    @Override
+    public int getActivePID() {
+        HWND hwnd = User32.INSTANCE.GetForegroundWindow();
+
+        // Get the PID
+        IntByReference PID = new IntByReference();
+        User32.INSTANCE.GetWindowThreadProcessId(hwnd,PID);
+
+        return PID.getValue();
+    }
+
+    /**
      * Return the executable path for the given PID. Return null if not found.
      * It uses the WMIC command line utility.
      * @param pid process PID.
