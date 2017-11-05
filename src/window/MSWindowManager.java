@@ -46,6 +46,11 @@ public class MSWindowManager implements WindowManager {
         return window;
     }
 
+    /**
+     * Return the executable path for the given PID. Return null if not found.
+     * @param pid process PID.
+     * @return the executable path for the given PID. null if not found.
+     */
     private String getExecutablePathFromPID(int pid) {
         String cmd = "wmic process where ProcessID="+pid+" get ProcessID,ExecutablePath /FORMAT:csv";
         Runtime runtime = Runtime.getRuntime();
@@ -69,6 +74,9 @@ public class MSWindowManager implements WindowManager {
         return null;
     }
 
+    /**
+     * @return true if given string is numeric.
+     */
     private boolean isNumeric(String number) {
         try {
             Integer.parseInt(number);
