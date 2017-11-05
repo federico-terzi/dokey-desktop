@@ -178,6 +178,12 @@ public class MSWindowManager implements WindowManager {
                     return true;
                 }
 
+                // Make sure the window is visible, skip if not
+                boolean isWindowVisible = User32.INSTANCE.IsWindowVisible(hwnd);
+                if (!isWindowVisible) {
+                    return true;
+                }
+
                 // Get the PID
                 IntByReference PID = new IntByReference();
                 User32.INSTANCE.GetWindowThreadProcessId(hwnd,PID);
