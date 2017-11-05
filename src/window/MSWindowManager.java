@@ -46,7 +46,7 @@ public class MSWindowManager implements WindowManager {
             icon = FileSystemView.getFileSystemView().getSystemIcon(new File(executablePath));
         }
 
-        Window window = new Window(PID.getValue(), titleText, icon, executablePath);
+        Window window = new MSWindow(PID.getValue(), titleText, icon, executablePath, hwnd);
         return window;
     }
 
@@ -197,7 +197,7 @@ public class MSWindowManager implements WindowManager {
                     icon = FileSystemView.getFileSystemView().getSystemIcon(new File(executablePath));
                 }
 
-                Window window = new Window(PID.getValue(), titleText, icon, executablePath);
+                Window window = new MSWindow(PID.getValue(), titleText, icon, executablePath, hwnd);
                 windowList.add(window);
 
                 return true;
