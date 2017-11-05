@@ -1,5 +1,7 @@
 package window;
 
+import utils.OSValidator;
+
 public class WindowManagerFactory {
     private static WindowManager instance = null;
 
@@ -7,9 +9,11 @@ public class WindowManagerFactory {
      * @return the correct WindowManager based on the OS.
      */
     public static WindowManager getInstance() {
-        // TODO: check which window manager should use based on the OS.
         if (instance == null) {
-            instance = new MSWindowManager();
+            // Decide the manager based on the OS
+            if (OSValidator.isWindows()) {  // WINDOWS
+                instance = new MSWindowManager();
+            }
         }
         return instance;
     }
