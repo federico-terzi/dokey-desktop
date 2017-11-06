@@ -205,6 +205,9 @@ develop-eggs/
 .idea/
 /.idea/
 /.idea
+.gradle/
+/.gradle
+/.gradle/
 
 # Installer logs
 pip-log.txt
