@@ -27,8 +27,7 @@ public class ServerTestMain {
                 Socket socket = serverSocket.accept();
 
                 DEManager deManager = new DEManager(socket);
-                DEDaemon daemon = new DEDaemon(deManager);
-                daemon.start();
+                deManager.startDaemon();
 
                 BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
                 String line = null;

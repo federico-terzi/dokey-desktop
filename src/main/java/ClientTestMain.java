@@ -1,6 +1,7 @@
 import net.DEDaemon;
 import net.DEManager;
 import net.DEPacket;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,8 +34,14 @@ public class ClientTestMain {
 
         try {
             DEManager deManager = new DEManager(socket);
-            DEDaemon daemon = new DEDaemon(deManager);
-            daemon.start();
+            deManager.startDaemon();
+
+            deManager.setOnPacketReceivedListener(new DEManager.OnPacketReceivedListener() {
+                @Override
+                public void onPacketReceived(@NotNull DEPacket packet) {
+                    //System.out.println(packet);
+                }
+            });
 
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             String line = null;

@@ -16,23 +16,29 @@ class DEManager @Throws(IOException::class)
     private val outputStream: OutputStream
     private val dataOutputStream: DataOutputStream
 
-    init {
+    private var daemon : DEDaemon? = null
 
+    var onPacketReceivedListener : OnPacketReceivedListener? = null
+
+    init {
         inputStream = socket.getInputStream()
         outputStream = socket.getOutputStream()
         dataInputStream = DataInputStream(inputStream)
         dataOutputStream = DataOutputStream(outputStream)
+
+        daemon = DEDaemon(this)
     }
 
     /**
      * Send a DEPacket through the socket. If generateID is true, the PacketID will
      * be automatically generated.
      * @param packet the DEPacket to send.
+     * @return the Packet ID
      * @throws IOException
      */
     @Synchronized
     @Throws(IOException::class)
-    fun sendPacket(packet: DEPacket, generateID: Boolean = true) {
+    fun sendPacket(packet: DEPacket, generateID: Boolean = true) : Long {
         val packetID: Long = if (generateID) {  // Generate the ID automatically
             RandomUtils.getNextID()
         } else {  // Use the one specified in the Packet
@@ -45,6 +51,8 @@ class DEManager @Throws(IOException::class)
         dataOutputStream.write(packet.responseFlag.toInt())
         dataOutputStream.writeInt(packet.payloadLength)
         dataOutputStream.write(packet.payload, 0, packet.payloadLength)
+
+        return packetID
     }
 
     /**
@@ -81,5 +89,28 @@ class DEManager @Throws(IOException::class)
             e.printStackTrace()
             false
         }
+    }
+
+    /**
+     * Start the receiving daemon
+     */
+    fun startDaemon() {
+        // If the daemon is not alive, create a new one
+        if (!daemon?.isAlive!!) {
+            daemon = DEDaemon(this)
+        }
+
+        daemon?.start()
+    }
+
+    /**
+     * Stop the receiving daemon
+     */
+    fun stopDaemon() {
+        daemon?.shouldStop = true
+    }
+
+    interface OnPacketReceivedListener {
+        fun onPacketReceived(packet : DEPacket)
     }
 }

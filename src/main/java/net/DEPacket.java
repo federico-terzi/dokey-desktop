@@ -20,6 +20,9 @@ public class DEPacket {
     private int payloadLength;
     private byte[] payload;
 
+    public DEPacket() {
+    }
+
     public DEPacket(int opType, long packetID, byte responseFlag, int payloadLength, byte[] payload) {
         this.opType = opType;
         this.packetID = packetID;
@@ -66,6 +69,10 @@ public class DEPacket {
 
     public void setPayload(byte[] payload) {
         this.payload = payload;
+    }
+
+    public boolean isResponsePacket() {
+        return this.responseFlag == RESPONSE_FLAG_RESPONSE;
     }
 
     @Override
