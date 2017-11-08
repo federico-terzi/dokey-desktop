@@ -42,7 +42,7 @@ public class ClientTestMain {
                 byte[] b = line.getBytes();
                 DEPacket packet = new DEPacket(1, 1234, DEPacket.RESPONSE_FLAG_REQUEST,
                                                 b.length, b);
-                deManager.sendPacket(packet);
+                deManager.sendPacket(packet, true);
             }
         } catch (IOException e) {
             e.printStackTrace();
