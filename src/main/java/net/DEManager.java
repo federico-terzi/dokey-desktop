@@ -3,6 +3,9 @@ package net;
 import java.io.*;
 import java.net.Socket;
 
+/**
+ * The DEManager manages the socket connection and receives/sends DEPackets.
+ */
 public class DEManager {
 
     private Socket socket;
@@ -21,7 +24,13 @@ public class DEManager {
         dataOutputStream = new DataOutputStream(outputStream);
     }
 
+    /**
+     * Send a DEPacket through the socket.
+     * @param packet the DEPacket to send.
+     * @throws IOException
+     */
     public synchronized void sendPacket(DEPacket packet) throws IOException {
+        // Write the packet to the stream
         dataOutputStream.writeInt(packet.getOpType());
         dataOutputStream.writeLong(packet.getPacketID());
         dataOutputStream.write(packet.getResponseFlag());
@@ -29,6 +38,11 @@ public class DEManager {
         dataOutputStream.write(packet.getPayload(), 0, packet.getPayloadLength());
     }
 
+    /**
+     * Receive a DEPacket from the socket input stream.
+     * @return the DEPacket
+     * @throws IOException
+     */
     public DEPacket receivePacket() throws IOException {
         // Read the packet info
         int opType = dataInputStream.readInt();

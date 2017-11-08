@@ -1,5 +1,10 @@
 package net;
 
+import java.io.UnsupportedEncodingException;
+
+/**
+ * Represents the fundamental unit to transfer data.
+ */
 public class DEPacket {
     // OP TYPEs
     public static final int OP_TYPE_NORMAL_PACKET = 1;
@@ -61,5 +66,16 @@ public class DEPacket {
 
     public void setPayload(byte[] payload) {
         this.payload = payload;
+    }
+
+    @Override
+    public String toString() {
+        return "DEPacket{" +
+                "OT=" + opType +
+                ", ID=" + packetID +
+                ", RF=" + responseFlag +
+                ", PL=" + payloadLength +
+                ", P=" + new String(payload) +
+                '}';
     }
 }

@@ -1,5 +1,10 @@
 package net;
 
+import java.io.IOException;
+
+/**
+ * The Daemon that continuously checks for new packets.
+ */
 public class DEDaemon extends Thread {
     private DEManager manager;
 
@@ -13,7 +18,12 @@ public class DEDaemon extends Thread {
             // Check if there are new packets available
             if (manager.hasNewPackets()) {
                 // Read the packet
-                DEPacket packet = manager.receivePacket();
+                try {
+                    DEPacket packet = manager.receivePacket();
+                    System.out.println(packet);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
