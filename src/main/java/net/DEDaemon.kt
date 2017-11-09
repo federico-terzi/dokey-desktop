@@ -12,7 +12,7 @@ class DEDaemon(private val manager: DEManager) : Thread() {
     /**
      * Receive a packet and trigger the corresponding actions.
      */
-    fun receivePacket() {
+    fun receivePacket() : DEPacket? {
         // Read the packet
         try {
             // Receive the packet
@@ -31,10 +31,11 @@ class DEDaemon(private val manager: DEManager) : Thread() {
                 manager.sendPacket(responsePacket)
             }
 
-            println(packet)
+            return packet
         } catch (e: IOException) {
             e.printStackTrace()
         }
+        return null
     }
 
     override fun run() {
@@ -42,7 +43,11 @@ class DEDaemon(private val manager: DEManager) : Thread() {
             // Check if there are new packets available
             if (manager.hasNewPackets()) {
                 // Receive a packet and trigger the corresponding action.
-                receivePacket()
+                val packet = receivePacket()
+
+                if (packet != null) {
+                    println(packet)
+                }
             }
         }
     }

@@ -101,6 +101,13 @@ class DEManager @Throws(IOException::class)
         daemon?.shouldStop = true
     }
 
+    /**
+     * Artificially simulate a receiving cycle of the DEDaemon
+     */
+    fun forceDaemonReceivePacket() {
+        daemon?.receivePacket()
+    }
+
     interface OnPacketEventListener {
         /**
          * Triggered when a packet has been read and processed by the

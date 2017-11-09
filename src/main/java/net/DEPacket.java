@@ -82,12 +82,16 @@ public class DEPacket {
 
     @Override
     public String toString() {
+        String payloadString = "<EMPTY>";
+        if (payloadLength > 0) {
+            payloadString = new String(payload);
+        }
         return "DEPacket{" +
                 "OT=" + opType +
                 ", ID=" + packetID +
                 ", RF=" + responseFlag +
                 ", PL=" + payloadLength +
-                ", P=" + new String(payload) +
+                ", P=" + payloadString +
                 '}';
     }
 
@@ -102,6 +106,16 @@ public class DEPacket {
         if (packetID != packet.packetID) return false;
         if (responseFlag != packet.responseFlag) return false;
         if (payloadLength != packet.payloadLength) return false;
-        return Arrays.equals(payload, packet.payload);
+        return payloadLength == 0 || Arrays.equals(payload, packet.payload);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = opType;
+        result = 31 * result + (int) (packetID ^ (packetID >>> 32));
+        result = 31 * result + (int) responseFlag;
+        result = 31 * result + payloadLength;
+        result = 31 * result + Arrays.hashCode(payload);
+        return result;
     }
 }
