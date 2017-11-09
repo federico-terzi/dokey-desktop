@@ -1,13 +1,15 @@
-package net;
+package net.packets;
 
-import java.io.UnsupportedEncodingException;
+import utils.RandomUtils;
+
 import java.util.Arrays;
 
 /**
  * Represents the fundamental unit to transfer data.
  */
 public class DEPacket {
-    // OP TYPEs
+    // Fundamental OP TYPEs
+    // Codes between 0 and 1000 are reserved
     public static final int OP_TYPE_NORMAL_PACKET = 1;
 
     // RESPONSE FLAGS
@@ -15,15 +17,42 @@ public class DEPacket {
     public static final byte RESPONSE_FLAG_RESPONSE = 1;
 
     // Fields
-    private int opType;
+    private int opType = OP_TYPE_NORMAL_PACKET;
     private long packetID;
     private byte responseFlag;
     private int payloadLength;
     private byte[] payload;
 
+    /**
+     * Constructor for building an empty packet with random ID.
+     */
     public DEPacket() {
+        this.packetID = RandomUtils.getNextID();
     }
 
+    /**
+     * Constructor for building a request packet with a string payload and random ID.
+     */
+    public DEPacket(String stringPayload) {
+        this.packetID = RandomUtils.getNextID();
+        this.responseFlag = DEPacket.RESPONSE_FLAG_REQUEST;
+        this.payloadLength = stringPayload.length();
+        this.payload = stringPayload.getBytes();
+    }
+
+    /**
+     * Constructor for building a packet with a string payload and random ID.
+     */
+    public DEPacket(String stringPayload, byte responseFlag) {
+        this.packetID = RandomUtils.getNextID();
+        this.responseFlag = responseFlag;
+        this.payloadLength = stringPayload.length();
+        this.payload = stringPayload.getBytes();
+    }
+
+    /**
+     * Constructor for building a packet.
+     */
     public DEPacket(int opType, long packetID, byte responseFlag, int payloadLength, byte[] payload) {
         this.opType = opType;
         this.packetID = packetID;
@@ -117,5 +146,31 @@ public class DEPacket {
         result = 31 * result + payloadLength;
         result = 31 * result + Arrays.hashCode(payload);
         return result;
+    }
+
+    /**
+     * Generate and return an empty DEPacket with an unique ID.
+     */
+    public static DEPacket empty() {
+        return new DEPacket();
+    }
+
+    /**
+     * Generate the response packet for the given request packet.
+     */
+    public static DEPacket responsePacket(DEPacket requestPacket) {
+        DEPacket packet = new DEPacket();
+        packet.setPacketID(requestPacket.getPacketID());
+        packet.setOpType(requestPacket.getOpType());
+        packet.setResponseFlag(DEPacket.RESPONSE_FLAG_RESPONSE);
+        return packet;
+    }
+
+    /**
+     * Generate and return a DEPacket with the given string.
+     * An ID is also automatically generated.
+     */
+    public static DEPacket stringPacket(String string) {
+        return new DEPacket(string);
     }
 }

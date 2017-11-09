@@ -1,7 +1,7 @@
 package net;
 
+import net.packets.DEPacket;
 import org.junit.*;
-import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 
 import java.io.DataInputStream;
@@ -70,7 +70,7 @@ public class DEManagerTest {
         assertFalse(clientManager.hasNewPackets());
 
         // Send a packet
-        DEPacket packet = DEPacketFactory.Companion.generateStringPacket(1, "TEST");
+        DEPacket packet = DEPacket.stringPacket("TEST");
         serverManager.sendPacket(packet);
 
         // Should have the packet
@@ -83,7 +83,7 @@ public class DEManagerTest {
         assertFalse(clientManager.hasNewPackets());
 
         // Send a packet
-        DEPacket packet = DEPacketFactory.Companion.generateStringPacket(1, "TEST");
+        DEPacket packet = DEPacket.stringPacket("TEST");
         serverManager.sendPacket(packet);
 
         // Should have the packet
@@ -108,14 +108,14 @@ public class DEManagerTest {
         serverManager.setOnPacketEventListener(listener);
 
         // Send a packet
-        DEPacket packet = DEPacketFactory.Companion.generateStringPacket(1, "TEST");
+        DEPacket packet = DEPacket.stringPacket("TEST");
         serverManager.sendPacket(packet);
 
         // Trigger artificially the DEDaemon receive packet cycles
         clientManager.forceDaemonReceivePacket();
         serverManager.forceDaemonReceivePacket();
 
-        DEPacket expectedPacket = DEPacketFactory.Companion.generateResponsePacket(packet);
+        DEPacket expectedPacket = DEPacket.responsePacket(packet);
 
         // Make sure the ack callback has been fired and the packet is correct
         verify(listener).onPacketAcknowledged(ArgumentMatchers.eq(expectedPacket));
@@ -133,7 +133,7 @@ public class DEManagerTest {
         clientManager.setOnPacketEventListener(listener);
 
         // Send a packet
-        DEPacket packet = DEPacketFactory.Companion.generateStringPacket(1, "TEST");
+        DEPacket packet = DEPacket.stringPacket("TEST");
         serverManager.sendPacket(packet);
 
         // Trigger artificially the DEDaemon receive packet cycles

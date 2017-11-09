@@ -1,5 +1,5 @@
 import net.DEManager;
-import net.DEPacket;
+import net.packets.DEPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;

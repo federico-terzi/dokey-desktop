@@ -1,3 +1,4 @@
+import net.packets.KeyboardShortcutPacket;
 import window.Window;
 import window.WindowManager;
 import window.WindowManagerFactory;
@@ -14,6 +15,8 @@ public class Main {
         Window window = wm.getActiveWindow();
         System.out.println(wm.getActivePID());
         List<Window> list = wm.getWindowList();
+
+        System.out.println(new KeyboardShortcutPacket("ctrl+c"));
 
         System.exit(0);
     }

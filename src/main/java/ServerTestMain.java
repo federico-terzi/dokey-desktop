@@ -1,6 +1,5 @@
-import net.DEDaemon;
 import net.DEManager;
-import net.DEPacket;
+import net.packets.DEPacket;
 
 import java.io.BufferedReader;
 import java.io.IOException;

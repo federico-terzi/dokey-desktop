@@ -1,12 +1,13 @@
 package net
 
+import net.packets.DEPacket
 import java.io.*
 import java.net.Socket
 
 /**
  * The DEManager manages the socket connection and receives/sends DEPackets.
  */
-class DEManager @Throws(IOException::class)
+open class DEManager @Throws(IOException::class)
     constructor(private val socket: Socket) {
 
     private val inputStream: InputStream

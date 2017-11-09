@@ -1,5 +1,6 @@
 package net
 
+import net.packets.DEPacket
 import java.io.IOException
 
 /**
@@ -27,7 +28,7 @@ class DEDaemon(private val manager: DEManager) : Thread() {
                 manager.onPacketEventListener?.onPacketReceived(packet)
 
                 // and send the response packet ( ACK ).
-                val responsePacket = DEPacketFactory.generateResponsePacket(packet)
+                val responsePacket = DEPacket.responsePacket(packet)
                 manager.sendPacket(responsePacket)
             }
 
