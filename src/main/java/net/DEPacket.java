@@ -1,6 +1,7 @@
 package net;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 
 /**
  * Represents the fundamental unit to transfer data.
@@ -67,6 +68,10 @@ public class DEPacket {
         return payload;
     }
 
+    public String getPayloadAsString() {
+        return new String(payload);
+    }
+
     public void setPayload(byte[] payload) {
         this.payload = payload;
     }
@@ -84,5 +89,19 @@ public class DEPacket {
                 ", PL=" + payloadLength +
                 ", P=" + new String(payload) +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DEPacket packet = (DEPacket) o;
+
+        if (opType != packet.opType) return false;
+        if (packetID != packet.packetID) return false;
+        if (responseFlag != packet.responseFlag) return false;
+        if (payloadLength != packet.payloadLength) return false;
+        return Arrays.equals(payload, packet.payload);
     }
 }

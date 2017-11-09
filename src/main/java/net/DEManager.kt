@@ -1,7 +1,5 @@
 package net
 
-import utils.RandomUtils
-
 import java.io.*
 import java.net.Socket
 
@@ -18,7 +16,7 @@ class DEManager @Throws(IOException::class)
 
     private var daemon : DEDaemon? = null
 
-    var onPacketReceivedListener : OnPacketReceivedListener? = null
+    var onPacketEventListener: OnPacketEventListener? = null
 
     init {
         inputStream = socket.getInputStream()
@@ -30,29 +28,22 @@ class DEManager @Throws(IOException::class)
     }
 
     /**
-     * Send a DEPacket through the socket. If generateID is true, the PacketID will
-     * be automatically generated.
+     * Send a DEPacket through the socket.
      * @param packet the DEPacket to send.
      * @return the Packet ID
      * @throws IOException
      */
     @Synchronized
     @Throws(IOException::class)
-    fun sendPacket(packet: DEPacket, generateID: Boolean = true) : Long {
-        val packetID: Long = if (generateID) {  // Generate the ID automatically
-            RandomUtils.getNextID()
-        } else {  // Use the one specified in the Packet
-            packet.packetID
-        }
-
+    fun sendPacket(packet: DEPacket) : Long {
         // Write the packet to the stream
         dataOutputStream.writeInt(packet.opType)
-        dataOutputStream.writeLong(packetID)
+        dataOutputStream.writeLong(packet.packetID)
         dataOutputStream.write(packet.responseFlag.toInt())
         dataOutputStream.writeInt(packet.payloadLength)
         dataOutputStream.write(packet.payload, 0, packet.payloadLength)
 
-        return packetID
+        return packet.packetID
     }
 
     /**
@@ -110,7 +101,16 @@ class DEManager @Throws(IOException::class)
         daemon?.shouldStop = true
     }
 
-    interface OnPacketReceivedListener {
+    interface OnPacketEventListener {
+        /**
+         * Triggered when a packet has been read and processed by the
+         * receiver.
+         */
+        fun onPacketAcknowledged(packet : DEPacket)
+
+        /**
+         * Triggered when receiving a request packet.
+         */
         fun onPacketReceived(packet : DEPacket)
     }
 }

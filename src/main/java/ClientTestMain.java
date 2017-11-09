@@ -1,4 +1,3 @@
-import net.DEDaemon;
 import net.DEManager;
 import net.DEPacket;
 import org.jetbrains.annotations.NotNull;
@@ -36,9 +35,14 @@ public class ClientTestMain {
             DEManager deManager = new DEManager(socket);
             deManager.startDaemon();
 
-            deManager.setOnPacketReceivedListener(new DEManager.OnPacketReceivedListener() {
+            deManager.setOnPacketEventListener(new DEManager.OnPacketEventListener() {
                 @Override
                 public void onPacketReceived(@NotNull DEPacket packet) {
+
+                }
+
+                @Override
+                public void onPacketAcknowledged(@NotNull DEPacket packet) {
                     //System.out.println(packet);
                 }
             });
@@ -49,7 +53,7 @@ public class ClientTestMain {
                 byte[] b = line.getBytes();
                 DEPacket packet = new DEPacket(1, 1234, DEPacket.RESPONSE_FLAG_REQUEST,
                                                 b.length, b);
-                deManager.sendPacket(packet, true);
+                deManager.sendPacket(packet);
             }
         } catch (IOException e) {
             e.printStackTrace();

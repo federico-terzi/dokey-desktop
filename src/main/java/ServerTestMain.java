@@ -35,7 +35,7 @@ public class ServerTestMain {
                     byte[] b = line.getBytes();
                     DEPacket packet = new DEPacket(1, 1234, DEPacket.RESPONSE_FLAG_REQUEST,
                             b.length, b);
-                    deManager.sendPacket(packet, true);
+                    deManager.sendPacket(packet);
                 }
             } catch (IOException e) {
                 e.printStackTrace();

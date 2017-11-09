@@ -9,28 +9,40 @@ class DEDaemon(private val manager: DEManager) : Thread() {
 
     var shouldStop : Boolean = false
 
+    /**
+     * Receive a packet and trigger the corresponding actions.
+     */
+    fun receivePacket() {
+        // Read the packet
+        try {
+            // Receive the packet
+            val packet = manager.receivePacket()
+
+            // If the packet is a response packet, trigger the callback
+            if (packet.isResponsePacket) {
+                manager.onPacketEventListener?.onPacketAcknowledged(packet)
+            }else{  // Request packet
+                // If the packet is a request packet,
+                // trigger the callback
+                manager.onPacketEventListener?.onPacketReceived(packet)
+
+                // and send the response packet ( ACK ).
+                val responsePacket = DEPacketFactory.generateResponsePacket(packet)
+                manager.sendPacket(responsePacket)
+            }
+
+            println(packet)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
     override fun run() {
         while (!shouldStop) {
             // Check if there are new packets available
             if (manager.hasNewPackets()) {
-                // Read the packet
-                try {
-                    val packet = manager.receivePacket()
-
-                    // If the packet is a response packet, trigger the callback
-                    if (packet.isResponsePacket) {
-                        manager.onPacketReceivedListener?.onPacketReceived(packet)
-                    }else{  // Request packet
-                        // Send the acknowledgement
-                        val responsePacket = DEPacketFactory.generateResponsePacket(packet)
-                        manager.sendPacket(responsePacket, false)
-                    }
-
-                    println(packet)
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-
+                // Receive a packet and trigger the corresponding action.
+                receivePacket()
             }
         }
     }
