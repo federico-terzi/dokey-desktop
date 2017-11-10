@@ -10,8 +10,33 @@ public class KeyboardShortcutPacket extends DEPacket {
     public static final int OP_TYPE = 1001;
 
     public KeyboardShortcutPacket(String keyCombination) throws KeyboardShortcutParseException {
-        super(parseKeyCombination(keyCombination));
+        super(cleanKeyCombination(keyCombination));
         this.setOpType(OP_TYPE);
+    }
+
+    /**
+     * Clean the given keyboard combination to format it in the correct way
+     * @param keyCombination the keyboard combination to parse
+     * @return a list of KeyboardKeys that must be pressed
+     */
+    public static String cleanKeyCombination(String keyCombination){
+        // Remove spaces and trim
+        keyCombination = keyCombination.trim().replace(" ", "");
+
+        // Analyze the string with a tokenizer
+        StringTokenizer st = new StringTokenizer(keyCombination, "+");
+
+        StringBuilder sb = new StringBuilder();
+
+        while(st.hasMoreTokens()) {
+            String currentToken = st.nextToken();
+            sb.append(currentToken.toUpperCase());
+            if (st.hasMoreTokens()) {  // Not the last element
+                sb.append("+");
+            }
+        }
+
+        return sb.toString();
     }
 
     /**
