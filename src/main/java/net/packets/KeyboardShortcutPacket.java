@@ -1,5 +1,7 @@
 package net.packets;
 
+import net.model.KeyboardKeys;
+
 import java.util.StringTokenizer;
 
 /**
@@ -15,11 +17,12 @@ public class KeyboardShortcutPacket extends DEPacket {
     }
 
     /**
-     * Clean the given keyboard combination to format it in the correct way
+     * Format the given keyboard combination and make sure the passed keys are valid.
      * @param keyCombination the keyboard combination to parse
      * @return a list of KeyboardKeys that must be pressed
+     * @throws KeyboardShortcutParseException if a passed key is not valid.
      */
-    public static String cleanKeyCombination(String keyCombination){
+    public static String cleanKeyCombination(String keyCombination) throws KeyboardShortcutParseException{
         // Remove spaces and trim
         keyCombination = keyCombination.trim().replace(" ", "");
 
@@ -28,9 +31,18 @@ public class KeyboardShortcutPacket extends DEPacket {
 
         StringBuilder sb = new StringBuilder();
 
+        // Cycle through all tokens
         while(st.hasMoreTokens()) {
-            String currentToken = st.nextToken();
-            sb.append(currentToken.toUpperCase());
+            // Get the next token, all upper case
+            String currentToken = st.nextToken().toUpperCase();
+
+            // If the key doesn't exist, raise an exception
+            if (!KeyboardKeys.isKeyValid(currentToken)) {
+                throw new KeyboardShortcutParseException(currentToken+" is not a valid key!");
+            }
+
+            // If not, append it to the string builder
+            sb.append(currentToken);
             if (st.hasMoreTokens()) {  // Not the last element
                 sb.append("+");
             }
@@ -44,7 +56,7 @@ public class KeyboardShortcutPacket extends DEPacket {
      * @param keyCombination the keyboard combination to parse
      * @return the validated keyboard combination string
      */
-    private static String parseKeyCombination(String keyCombination) throws KeyboardShortcutParseException{
+    private static String parseKeyCombination(String keyCombination){
         // Remove spaces and trim
         keyCombination = keyCombination.trim().replace(" ", "");
 
@@ -59,7 +71,7 @@ public class KeyboardShortcutPacket extends DEPacket {
     /**
      * Thrown when parsing a wrong keyboard shortcut.
      */
-    class KeyboardShortcutParseException extends Exception {
+    static class KeyboardShortcutParseException extends Exception {
         public KeyboardShortcutParseException(String message) {
             super(message);
         }

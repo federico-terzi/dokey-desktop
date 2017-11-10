@@ -4,14 +4,14 @@ public enum KeyboardKeys {
     VK_ENTER ("ENTER", "VK_ENTER", 10),
     VK_BACK_SPACE ("BACK_SPACE", "VK_BACK_SPACE", 8),
     VK_TAB ("TAB", "VK_TAB", 9),
-    VK_CANCEL ("CANCEL", "VK_CANCEL", 3),
+    VK_CANCEL ("CANC", "VK_CANCEL", 3),
     VK_CLEAR ("CLEAR", "VK_CLEAR", 12),
     VK_SHIFT ("SHIFT", "VK_SHIFT", 16),
-    VK_CONTROL ("CONTROL", "VK_CONTROL", 17),
+    VK_CONTROL ("CTRL", "VK_CONTROL", 17),
     VK_ALT ("ALT", "VK_ALT", 18),
     VK_PAUSE ("PAUSE", "VK_PAUSE", 19),
     VK_CAPS_LOCK ("CAPS_LOCK", "VK_CAPS_LOCK", 20),
-    VK_ESCAPE ("ESCAPE", "VK_ESCAPE", 27),
+    VK_ESCAPE ("ESC", "VK_ESCAPE", 27),
     VK_SPACE ("SPACE", "VK_SPACE", 32),
     VK_PAGE_UP ("PAGE_UP", "VK_PAGE_UP", 33),
     VK_PAGE_DOWN ("PAGE_DOWN", "VK_PAGE_DOWN", 34),
@@ -170,5 +170,14 @@ public enum KeyboardKeys {
         this.keyName = keyName;
         this.keyEventName = keyEventName;
         this.keyCode = keyCode;
+    }
+
+    public static boolean isKeyValid(String keyName) {
+        for (KeyboardKeys key : KeyboardKeys.values()) {
+            if (key.keyName.equals(keyName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

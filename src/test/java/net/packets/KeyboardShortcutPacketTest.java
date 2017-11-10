@@ -20,9 +20,19 @@ import static org.mockito.Mockito.verify;
 public class KeyboardShortcutPacketTest {
 
     @Test
-    public void testCleanKeyCombination() {
+    public void testCleanKeyCombination() throws KeyboardShortcutPacket.KeyboardShortcutParseException {
         assertEquals(KeyboardShortcutPacket.cleanKeyCombination("ctrl + c"), "CTRL+C");
         assertEquals(KeyboardShortcutPacket.cleanKeyCombination("  ctrl +   +shift+ c"), "CTRL+SHIFT+C");
         assertEquals(KeyboardShortcutPacket.cleanKeyCombination("ctrl +alt+ c"), "CTRL+ALT+C");
+    }
+
+    @Test(expected = KeyboardShortcutPacket.KeyboardShortcutParseException.class)
+    public void testCleanKeyCombinationShouldRaiseError() throws KeyboardShortcutPacket.KeyboardShortcutParseException {
+        KeyboardShortcutPacket.cleanKeyCombination(" not_valid + c");
+    }
+
+    @Test(expected = KeyboardShortcutPacket.KeyboardShortcutParseException.class)
+    public void testCleanKeyCombinationShouldRaiseError2() throws KeyboardShortcutPacket.KeyboardShortcutParseException {
+        KeyboardShortcutPacket.cleanKeyCombination(" ctrl + shift + wat");
     }
 }
