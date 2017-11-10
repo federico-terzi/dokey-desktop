@@ -180,4 +180,13 @@ public enum KeyboardKeys {
         }
         return false;
     }
+
+    public static KeyboardKeys findFromName(String keyName) {
+        for (KeyboardKeys key : KeyboardKeys.values()) {
+            if (key.keyName.equals(keyName)) {
+                return key;
+            }
+        }
+        return null;
+    }
 }

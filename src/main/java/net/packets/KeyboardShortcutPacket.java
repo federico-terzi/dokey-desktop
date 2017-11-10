@@ -2,6 +2,8 @@ package net.packets;
 
 import net.model.KeyboardKeys;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 /**
@@ -36,6 +38,11 @@ public class KeyboardShortcutPacket extends DEPacket {
             // Get the next token, all upper case
             String currentToken = st.nextToken().toUpperCase();
 
+            // Make sure the tokens are not empty.
+            if (currentToken.trim().isEmpty()) {
+                throw new KeyboardShortcutParseException("Syntax error in the keyboard shortcut.");
+            }
+
             // If the key doesn't exist, raise an exception
             if (!KeyboardKeys.isKeyValid(currentToken)) {
                 throw new KeyboardShortcutParseException(currentToken+" is not a valid key!");
@@ -52,20 +59,30 @@ public class KeyboardShortcutPacket extends DEPacket {
     }
 
     /**
-     * Parse the given keyboard combination to format it in the correct way
-     * @param keyCombination the keyboard combination to parse
-     * @return the validated keyboard combination string
+     * Return the list of KeyboardKeys used in the shortcut.
+     * @return the list of KeyboardKeys used in the shortcut.
      */
-    private static String parseKeyCombination(String keyCombination){
-        // Remove spaces and trim
-        keyCombination = keyCombination.trim().replace(" ", "");
+    public List<KeyboardKeys> getKeys() {
+        List<KeyboardKeys> output = new ArrayList<>();
 
-        // Analyze the string with a tokenizer
-        StringTokenizer st = new StringTokenizer(keyCombination, "+");
+        // Analyze the string payload with a tokenizer
+        StringTokenizer st = new StringTokenizer(getPayloadAsString(), "+");
 
-        // TODO
+        // Cycle through all tokens
+        while(st.hasMoreTokens()) {
+            // Get the next token, all upper case
+            String currentToken = st.nextToken().toUpperCase();
 
-        return null;
+            // Get the current key
+            KeyboardKeys current = KeyboardKeys.findFromName(currentToken);
+
+            // Add it to the list ( if found )
+            if (current != null) {
+                output.add(current);
+            }
+        }
+
+        return output;
     }
 
     /**
