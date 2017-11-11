@@ -21,8 +21,20 @@ public interface ApplicationManager {
     List<Window> getWindowList();
 
     /**
-     * Get the list of Application(s) installed in the system.
+     * Load the Application(s) installed in the system.
+     */
+    void loadApplications(OnLoadApplicationsListener listener);
+
+    /**
+     * Return the list of Application(s) installed in the system.
      */
     List<Application> getApplicationList();
 
+    /**
+     * Interface used to update the status of the "loadApplications" operation.
+     */
+    interface OnLoadApplicationsListener {
+        void onProgressUpdate(String applicationName, int current, int total);
+        void onApplicationsLoaded();
+    }
 }

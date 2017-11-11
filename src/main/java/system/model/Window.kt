@@ -1,18 +1,16 @@
 package system.model
 
-import javax.swing.Icon
-
 abstract class Window {
     val PID: Int
     val titleText: String
-    val icon: Icon?
     val executablePath: String?
+    val application : Application?
 
-    constructor(PID: Int, titleText: String, icon: Icon?, executablePath: String?) {
+    constructor(PID: Int, titleText: String, executablePath: String?, application: Application?) {
         this.PID = PID
         this.titleText = titleText
-        this.icon = icon
         this.executablePath = executablePath
+        this.application = application
     }
 
     /**

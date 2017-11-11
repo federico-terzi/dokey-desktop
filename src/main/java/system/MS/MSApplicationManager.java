@@ -8,6 +8,8 @@ import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WinReg;
 import com.sun.jna.platform.win32.WinUser;
 import com.sun.jna.ptr.IntByReference;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.model.Window;
@@ -25,6 +27,9 @@ import java.util.*;
 public class MSApplicationManager implements ApplicationManager {
     private static final int MAX_TITLE_LENGTH = 1024;
 
+    // This map will hold the applications, associated with their executable path
+    private Map<String, Application> applicationMap = new HashMap<>();
+
     /**
      * @return the Window object of the active system.window.
      */
@@ -38,18 +43,18 @@ public class MSApplicationManager implements ApplicationManager {
 
         // Get the PID
         IntByReference PID = new IntByReference();
-        User32.INSTANCE.GetWindowThreadProcessId(hwnd,PID);
+        User32.INSTANCE.GetWindowThreadProcessId(hwnd, PID);
 
         // Get the executable path
         String executablePath = getExecutablePathFromPID(PID.getValue());
 
         // Get the icon
-        Icon icon = null;
-        if (executablePath != null) {
-            icon = FileSystemView.getFileSystemView().getSystemIcon(new File(executablePath));
-        }
+//        Icon icon = null;
+//        if (executablePath != null) {
+//            icon = FileSystemView.getFileSystemView().getSystemIcon(new File(executablePath));
+//        }
 
-        Window window = new MSWindow(PID.getValue(), titleText, icon, executablePath, hwnd);
+        Window window = new MSWindow(PID.getValue(), titleText, executablePath, null, hwnd);
         return window;
     }
 
@@ -62,7 +67,7 @@ public class MSApplicationManager implements ApplicationManager {
 
         // Get the PID
         IntByReference PID = new IntByReference();
-        User32.INSTANCE.GetWindowThreadProcessId(hwnd,PID);
+        User32.INSTANCE.GetWindowThreadProcessId(hwnd, PID);
 
         return PID.getValue();
     }
@@ -70,11 +75,12 @@ public class MSApplicationManager implements ApplicationManager {
     /**
      * Return the executable path for the given PID. Return null if not found.
      * It uses the WMIC command line utility.
+     *
      * @param pid process PID.
      * @return the executable path for the given PID. null if not found.
      */
     private String getExecutablePathFromPID(int pid) {
-        String cmd = "wmic process where ProcessID="+pid+" get ProcessID,ExecutablePath /FORMAT:csv";
+        String cmd = "wmic process where ProcessID=" + pid + " get ProcessID,ExecutablePath /FORMAT:csv";
         Runtime runtime = Runtime.getRuntime();
 
         try {
@@ -86,11 +92,11 @@ public class MSApplicationManager implements ApplicationManager {
             String line = null;
 
             // Read each line
-            while((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null) {
                 String[] subPieces = line.split(",");
 
                 // Make sure the line is not empty and ends with a number ( process PID )
-                if (!line.trim().isEmpty() && isNumeric(subPieces[subPieces.length-1])) {
+                if (!line.trim().isEmpty() && isNumeric(subPieces[subPieces.length - 1])) {
                     StringTokenizer st = new StringTokenizer(line.trim(), ",");
                     st.nextToken(); // Discard the Node name
                     String executablePath = st.nextToken();
@@ -107,8 +113,9 @@ public class MSApplicationManager implements ApplicationManager {
      * Return the executable path map for the processes currently running.
      * The map has this configuration:
      * Map<PID, ExecutablePath>
-     *
+     * <p>
      * It uses the WMIC command line utility.
+     *
      * @return the executable path map for the processes currently running.
      */
     private Map<Integer, String> getExecutablePathsMap() {
@@ -126,13 +133,13 @@ public class MSApplicationManager implements ApplicationManager {
             String line = null;
 
             // Read each line
-            while((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null) {
                 String[] tokens = line.trim().split(",");
 
                 // Make sure the line is not empty and ends with a number ( process PID ).
                 // And also the path is not empty.
-                if (!line.trim().isEmpty() && isNumeric(tokens[tokens.length-1]) &&
-                                                !tokens[1].isEmpty()) {
+                if (!line.trim().isEmpty() && isNumeric(tokens[tokens.length - 1]) &&
+                        !tokens[1].isEmpty()) {
                     String executablePath = tokens[1];
                     int processPID = Integer.parseInt(tokens[2]);
 
@@ -153,7 +160,7 @@ public class MSApplicationManager implements ApplicationManager {
         try {
             Integer.parseInt(number);
             return true;
-        }catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return false;
         }
     }
@@ -189,18 +196,18 @@ public class MSApplicationManager implements ApplicationManager {
 
                 // Get the PID
                 IntByReference PID = new IntByReference();
-                User32.INSTANCE.GetWindowThreadProcessId(hwnd,PID);
+                User32.INSTANCE.GetWindowThreadProcessId(hwnd, PID);
 
                 // Get the executable path
                 String executablePath = executablesMap.get(PID.getValue());
 
                 // Get the icon
-                Icon icon = null;
-                if (executablePath != null) {
-                    icon = FileSystemView.getFileSystemView().getSystemIcon(new File(executablePath));
-                }
+//                Icon icon = null;
+//                if (executablePath != null) {
+//                    icon = FileSystemView.getFileSystemView().getSystemIcon(new File(executablePath));
+//                }
 
-                Window window = new MSWindow(PID.getValue(), titleText, icon, executablePath, hwnd);
+                Window window = new MSWindow(PID.getValue(), titleText, executablePath, null, hwnd);
                 windowList.add(window);
 
                 return true;
@@ -211,12 +218,13 @@ public class MSApplicationManager implements ApplicationManager {
     }
 
     /**
-     * Return a list of Application(s) installed in the system.
+     * Load the Application(s) installed in the system.
+     * Each time it is called, the list is refreshed.
+     * A listener can be specified to monitor the status of the process.
      * This function checks in the Windows Start Menu and analyzes the entries.
-     * @return the list of Application installed in the system.
      */
     @Override
-    public List<Application> getApplicationList() {
+    public void loadApplications(OnLoadApplicationsListener listener) {
         // Get the user start menu folder from the registry
         String userStartDir = Advapi32Util.registryGetStringValue(
                 WinReg.HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", "Start Menu");
@@ -225,6 +233,100 @@ public class MSApplicationManager implements ApplicationManager {
         String systemStartDir = Advapi32Util.registryGetStringValue(
                 WinReg.HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", "Common Start Menu");
 
+        // Define the search parameters
+        String[] pathsToScan = new String[]{userStartDir, systemStartDir};
+        String[] extensionsToMatch = new String[]{"lnk"};
+
+        // Initialize the application maps
+        applicationMap = new HashMap<>();
+
+        // Create a list that will hold all the files
+        List<File> fileList = new ArrayList<>();
+
+        // Cycle through all start menus
+        for (String startPath : pathsToScan) {
+            // Get the files contained in the folder recoursively
+            Collection<File> files = FileUtils.listFiles(new File(startPath), extensionsToMatch, true);
+            // Add all the files to the collection
+            fileList.addAll(files);
+        }
+
+        // Current application in the list
+        int current = 0;
+
+        // Cycle through all entries
+        for (File file : fileList) {
+            String executablePath = getLnkExecutablePath(file.getAbsolutePath());
+            String applicationName = file.getName().replace(".lnk", "");
+
+            // Make sure the target is an exe file
+            if (executablePath != null) {
+                // If already present, to mitigate ambiguities of the program name,
+                // the executable filename becomes the new Application name ( without .exe )
+                if (applicationMap.containsKey(executablePath)) {
+                    File appExe = new File(executablePath);
+                    // Create the new app name extracting the filename, removing the extension
+                    // and capitalizing the first letter
+                    applicationName = StringUtils.capitalize(appExe.getName().replace(".exe", ""));
+                }
+
+                // Create the application
+                Application application = new MSApplication(applicationName, executablePath, null);
+
+                applicationMap.put(executablePath, application);
+            }
+
+            // Update the listener and increase the counter
+            if (listener != null) {
+                listener.onProgressUpdate(applicationName, current, fileList.size());
+            }
+            current++;
+        }
+
+        // Signal the end of the process
+        if (listener != null) {
+            listener.onApplicationsLoaded();
+        }
+    }
+
+    /**
+     * Return a list of Application(s) installed in the system.
+     * Must be called after "loadApplications()".
+     *
+     * @return the list of Application installed in the system.
+     */
+    @Override
+    public List<Application> getApplicationList() {
+        return new ArrayList<>(this.applicationMap.values());
+    }
+
+    public String getLnkExecutablePath(String lnkFilePath) {
+        Runtime runtime = Runtime.getRuntime();
+        String scriptPath = getClass().getResource("/vbscripts/readLnk.vbs").getPath();
+
+        // Remove the starting trailing slash
+        if (scriptPath.startsWith("/")) {
+            scriptPath = scriptPath.substring(1);
+        }
+
+        try {
+            // Execute the process
+            Process proc = runtime.exec(new String[]{"cscript", "/nologo", scriptPath, lnkFilePath});
+
+            // Get the output
+            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            String line = null;
+
+            // Read the first line
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (!line.isEmpty() && line.endsWith(".exe")) {
+                    return line;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 }

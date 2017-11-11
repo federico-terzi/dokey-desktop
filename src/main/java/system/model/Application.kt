@@ -19,5 +19,5 @@ abstract class Application {
     /**
      * Return the Icon image file, must be implemented.
      */
-    abstract fun getIconFile() : File
+    abstract fun getIconFile() : File?
 }
