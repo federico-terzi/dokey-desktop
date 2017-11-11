@@ -1,5 +1,5 @@
-import system.ApplicationManager;
-import system.Window;
+import system.model.ApplicationManager;
+import system.model.Window;
 import system.ApplicationManagerFactory;
 
 import java.lang.reflect.Field;

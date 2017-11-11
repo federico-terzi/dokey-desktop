@@ -1,7 +1,8 @@
-package system
+package system.MS
 
 import com.sun.jna.platform.win32.User32
 import com.sun.jna.platform.win32.WinDef.HWND
+import system.model.Window
 import javax.swing.Icon
 
 class MSWindow(PID: Int, titleText: String, icon: Icon?,

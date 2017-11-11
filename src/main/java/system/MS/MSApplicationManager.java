@@ -1,4 +1,4 @@
-package system;
+package system.MS;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
@@ -6,6 +6,9 @@ import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WinUser;
 import com.sun.jna.ptr.IntByReference;
+import system.model.Application;
+import system.model.ApplicationManager;
+import system.model.Window;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
@@ -201,5 +204,15 @@ public class MSApplicationManager implements ApplicationManager {
         }, null);
 
         return windowList;
+    }
+
+    /**
+     * Return a list of Application(s) installed in the system.
+     * This function checks in the Windows Start Menu and analyzes the entries.
+     * @return the list of Application installed in the system.
+     */
+    @Override
+    public List<Application> getApplicationList() {
+        return null;
     }
 }

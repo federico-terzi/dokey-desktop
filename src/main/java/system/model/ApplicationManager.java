@@ -1,4 +1,6 @@
-package system;
+package system.model;
+
+import system.model.Window;
 
 import java.util.List;
 
@@ -14,7 +16,13 @@ public interface ApplicationManager {
     int getActivePID();
 
     /**
-     * Get a list of Windows currently active.
+     * Get a list of Window currently active.
      */
     List<Window> getWindowList();
+
+    /**
+     * Get the list of Application(s) installed in the system.
+     */
+    List<Application> getApplicationList();
+
 }
