@@ -1,20 +1,14 @@
-import net.model.KeyboardKeys;
-import net.packets.KeyboardShortcutPacket;
-import window.Window;
-import window.WindowManager;
-import window.WindowManagerFactory;
+import system.ApplicationManager;
+import system.Window;
+import system.ApplicationManagerFactory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        WindowManager wm = WindowManagerFactory.getInstance();
+        ApplicationManager wm = ApplicationManagerFactory.getInstance();
         Window window = wm.getActiveWindow();
         System.out.println(wm.getActivePID());
         List<Window> list = wm.getWindowList();

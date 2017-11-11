@@ -1,4 +1,4 @@
-package window
+package system
 
 import javax.swing.Icon
 
@@ -16,8 +16,8 @@ abstract class Window {
     }
 
     /**
-     * Should implement the logic behind focusing on a window.
+     * Should implement the logic behind focusing on a system.window.
      */
-    abstract fun focusWindow();
+    abstract fun focusWindow()
 
 }

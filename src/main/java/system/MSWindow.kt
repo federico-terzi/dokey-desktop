@@ -1,4 +1,4 @@
-package window
+package system
 
 import com.sun.jna.platform.win32.User32
 import com.sun.jna.platform.win32.WinDef.HWND
@@ -9,7 +9,7 @@ class MSWindow(PID: Int, titleText: String, icon: Icon?,
     : Window(PID, titleText, icon, executablePath) {
 
     /**
-     * Focus on a window
+     * Focus on a system.window
      */
     override fun focusWindow() {
         User32.INSTANCE.SetForegroundWindow(hwnd)

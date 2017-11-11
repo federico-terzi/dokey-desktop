@@ -1,15 +1,11 @@
-package window;
+package system;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
-import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinDef.HWND;
-import com.sun.jna.platform.win32.WinDef.RECT;
 import com.sun.jna.platform.win32.WinUser;
 import com.sun.jna.ptr.IntByReference;
-import com.sun.jna.win32.StdCallLibrary;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
@@ -19,15 +15,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-public class MSWindowManager implements WindowManager {
+public class MSApplicationManager implements ApplicationManager {
     private static final int MAX_TITLE_LENGTH = 1024;
 
     /**
-     * @return the Window object of the active window.
+     * @return the Window object of the active system.window.
      */
     @Override
     public Window getActiveWindow() {
-        // Get the window title
+        // Get the system.window title
         char[] buffer = new char[MAX_TITLE_LENGTH * 2];
         HWND hwnd = User32.INSTANCE.GetForegroundWindow();
         User32.INSTANCE.GetWindowText(hwnd, buffer, MAX_TITLE_LENGTH);
@@ -51,7 +47,7 @@ public class MSWindowManager implements WindowManager {
     }
 
     /**
-     * @return PID of the current active window.
+     * @return PID of the current active system.window.
      */
     @Override
     public int getActivePID() {
@@ -178,7 +174,7 @@ public class MSWindowManager implements WindowManager {
                     return true;
                 }
 
-                // Make sure the window is visible, skip if not
+                // Make sure the system.window is visible, skip if not
                 boolean isWindowVisible = User32.INSTANCE.IsWindowVisible(hwnd);
                 if (!isWindowVisible) {
                     return true;
