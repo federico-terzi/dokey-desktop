@@ -2,8 +2,10 @@ package system.MS;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.Advapi32Util;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
+import com.sun.jna.platform.win32.WinReg;
 import com.sun.jna.platform.win32.WinUser;
 import com.sun.jna.ptr.IntByReference;
 import system.model.Application;
@@ -16,6 +18,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class MSApplicationManager implements ApplicationManager {
@@ -213,6 +217,14 @@ public class MSApplicationManager implements ApplicationManager {
      */
     @Override
     public List<Application> getApplicationList() {
+        // Get the user start menu folder from the registry
+        String userStartDir = Advapi32Util.registryGetStringValue(
+                WinReg.HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", "Start Menu");
+
+        // Get the system start menu folder from the registry
+        String systemStartDir = Advapi32Util.registryGetStringValue(
+                WinReg.HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", "Common Start Menu");
+
         return null;
     }
 }
