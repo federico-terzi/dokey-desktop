@@ -17,16 +17,26 @@ abstract class Application {
         this.iconPath = iconPath
     }
 
+    companion object {
+        /**
+         * Return the String ID for the given executablePath
+         * @return the MD5 hash of the executablePath
+         */
+        fun getIDForExecutablePath(executablePath: String) : String {
+            return DigestUtils.md5Hex(executablePath)
+        }
+    }
+
     /**
-     * Return the Icon image file, must be implemented.
+     * @return the Icon image file, must be implemented.
      */
     abstract fun getIconFile() : File?
 
     /**
      * Return the String ID of the application.
-     * It returns the MD5 hash of the executablePath
+     * @return the MD5 hash of the executablePath
      */
     fun getID() : String {
-        return DigestUtils.md5Hex(executablePath)
+        return getIDForExecutablePath(executablePath)
     }
 }

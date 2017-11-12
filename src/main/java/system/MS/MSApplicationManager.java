@@ -14,14 +14,10 @@ import system.model.Application;
 import system.model.ApplicationManager;
 import system.model.Window;
 
-import javax.swing.*;
-import javax.swing.filechooser.FileSystemView;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class MSApplicationManager implements ApplicationManager {
@@ -30,11 +26,11 @@ public class MSApplicationManager implements ApplicationManager {
     // This map will hold the applications, associated with their executable path
     private Map<String, Application> applicationMap = new HashMap<>();
 
-    private boolean isPowerShellActive;
+    private boolean isPowerShellEnabled;
 
     public MSApplicationManager() {
         // Check if powershell is enabled in this machine
-        isPowerShellActive = isPowerShellEnabled();
+        isPowerShellEnabled = checkPowerShellEnabled();
     }
 
     /**
@@ -276,9 +272,11 @@ public class MSApplicationManager implements ApplicationManager {
                     // and capitalizing the first letter
                     applicationName = StringUtils.capitalize(appExe.getName().replace(".exe", ""));
                 }
+                // Get the app icon
+                String iconPath = getIconPath(executablePath);
 
                 // Create the application
-                Application application = new MSApplication(applicationName, executablePath, null);
+                Application application = new MSApplication(applicationName, executablePath, iconPath);
 
                 applicationMap.put(executablePath, application);
             }
@@ -341,7 +339,7 @@ public class MSApplicationManager implements ApplicationManager {
      * Check if powershell is enabled in this machine.
      * @return true if powershell is enabled, else otherwise.
      */
-    private static boolean isPowerShellEnabled() {
+    private static boolean checkPowerShellEnabled() {
         Runtime runtime = Runtime.getRuntime();
 
         try {
@@ -363,5 +361,135 @@ public class MSApplicationManager implements ApplicationManager {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * Generate the icon file for the given executable
+     * @param executablePath the executable with the icon
+     * @return the icon File
+     */
+    private File generateIconFile(String executablePath) {
+        // Obtain the application ID
+        String appID = Application.Companion.getIDForExecutablePath(executablePath);
+
+        // Get the icon file
+        return new File(getIconCacheDir(), appID + ".png");
+    }
+
+    /**
+     * Obtain the icon associated with the given executable.
+     * @param executablePath path to the executable.
+     * @return the icon associated with the given executable.
+     */
+    private String getIconPath(String executablePath) {
+        // Get the icon file
+        File iconFile = generateIconFile(executablePath);
+
+        // If the file doesn't exist, it must be generated
+        if (!iconFile.isFile()) {
+            iconFile = extractIcon(executablePath);
+        }
+
+        // Return the icon file path
+        return iconFile.getAbsolutePath();
+    }
+
+    /**
+     * Extract the icon from the given executable.
+     * @param executablePath the executable with the icon.
+     * @return the icon image file. Return null if an error occurred.
+     */
+    private File extractIcon(String executablePath) {
+        // Get the icon file
+        File iconFile = generateIconFile(executablePath);
+
+        // The icon can be obtained in two ways, but using powershell the
+        // resulting image is better ( higher resolution ).
+        if (isPowerShellEnabled) {  // Best method
+            // Extract the icon
+            boolean ris = extractIconUsingPowershellScript(executablePath, iconFile.getAbsolutePath());
+
+            // An error occurred, return null
+            if (!ris) {
+                return null;
+            }else{
+                // Return the icon file ( generate again the file to avoid problems )
+                return generateIconFile(executablePath);
+            }
+        }else{  // Not so good, but should do the trick
+            // TODO: other method
+        }
+
+        return iconFile;
+    }
+
+    /**
+     * Extract the icon from the executable using the powershell method
+     * @param executablePath path of the executable
+     * @param destinationFile path of the destination image file
+     * @return true if succeeded, false otherwise.
+     */
+    private boolean extractIconUsingPowershellScript(String executablePath, String destinationFile) {
+        Runtime runtime = Runtime.getRuntime();
+
+        try {
+            // Execute powershell
+            Process proc = runtime.exec(new String[]{"powershell",
+                    "[System.Reflection.Assembly]::LoadWithPartialName('System.Drawing')  | Out-Null ; [System.Drawing.Icon]::ExtractAssociatedIcon('"+executablePath+"').ToBitmap().Save('"+destinationFile+"'); echo 'ok'"});
+
+            // If there was an error, return false
+            if (proc.getErrorStream().available()>0) {
+                return false;
+            }
+
+            // Make sure everything was ok
+            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            String line = br.readLine();
+            if (line != null && line.equals("ok")) {
+                return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Create and retrieve the cache directory.
+     * @return the Cache directory used to save files.
+     */
+    @Override
+    public File getCacheDir() {
+        // Get the user home directory
+        File homeDir = new File(System.getProperty("user.home"));
+
+        // Get the cache directory
+        File cacheDir = new File(homeDir, ApplicationManager.CACHE_DIRECTORY_NAME);
+
+        // If it doesn't exists, create it
+        if (!cacheDir.isDirectory()) {
+            cacheDir.mkdir();
+        }
+
+        return cacheDir;
+    }
+
+    /**
+     * Create and retrieve the image cache directory.
+     * @return the Image Cache directory used to save images.
+     */
+    @Override
+    public File getIconCacheDir() {
+        File cacheDir = getCacheDir();
+
+        // Get the icon cache directory
+        File iconCacheDir = new File(cacheDir, ApplicationManager.ICON_CACHE_DIRECTORY_NAME);
+
+        // If it doesn't exists, create it
+        if (!iconCacheDir.isDirectory()) {
+            iconCacheDir.mkdir();
+        }
+
+        return iconCacheDir;
     }
 }

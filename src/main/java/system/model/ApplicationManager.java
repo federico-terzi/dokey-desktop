@@ -2,9 +2,14 @@ package system.model;
 
 import system.model.Window;
 
+import java.io.File;
 import java.util.List;
 
 public interface ApplicationManager {
+    // Name of the cache directory created in the home of the user
+    String CACHE_DIRECTORY_NAME = ".remotekey";
+    String ICON_CACHE_DIRECTORY_NAME = "icons";
+
     /**
      * @return the Window object of the active system.window.
      */
@@ -26,9 +31,19 @@ public interface ApplicationManager {
     void loadApplications(OnLoadApplicationsListener listener);
 
     /**
-     * Return the list of Application(s) installed in the system.
+     * @return the list of Application(s) installed in the system.
      */
     List<Application> getApplicationList();
+
+    /**
+     * @return the Cache directory used to save images and files, must be implemented for each OS.
+     */
+    File getCacheDir();
+
+    /**
+     * @return the icon Cache directory used to save images, must be implemented for each OS.
+     */
+    File getIconCacheDir();
 
     /**
      * Interface used to update the status of the "loadApplications" operation.
