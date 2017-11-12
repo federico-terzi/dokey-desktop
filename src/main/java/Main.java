@@ -11,6 +11,8 @@ public class Main {
     public static void main(String[] args) {
         ApplicationManager wm = ApplicationManagerFactory.getInstance();
         System.out.println("Loading applications...");
+        // powershell "[System.Reflection.Assembly]::LoadWithPartialName('System.Drawing')  | Out-Null ; [System.Drawing.Icon]::ExtractAssociatedIcon('C:\Users\Federico\Documents\Skype.exe').ToBitmap().Save('C:\Users\Federico\s.png')"
+
         wm.loadApplications(new ApplicationManager.OnLoadApplicationsListener() {
             @Override
             public void onProgressUpdate(String applicationName, int current, int total) {
