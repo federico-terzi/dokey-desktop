@@ -14,11 +14,17 @@ import system.model.Application;
 import system.model.ApplicationManager;
 import system.model.Window;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.List;
 
 public class MSApplicationManager implements ApplicationManager {
     private static final int MAX_TITLE_LENGTH = 1024;
@@ -51,13 +57,10 @@ public class MSApplicationManager implements ApplicationManager {
         // Get the executable path
         String executablePath = getExecutablePathFromPID(PID.getValue());
 
-        // Get the icon
-//        Icon icon = null;
-//        if (executablePath != null) {
-//            icon = FileSystemView.getFileSystemView().getSystemIcon(new File(executablePath));
-//        }
+        // Get the application
+        Application application = applicationMap.get(executablePath);
 
-        Window window = new MSWindow(PID.getValue(), titleText, executablePath, null, hwnd);
+        Window window = new MSWindow(PID.getValue(), titleText, executablePath, application, hwnd);
         return window;
     }
 
@@ -204,13 +207,15 @@ public class MSApplicationManager implements ApplicationManager {
                 // Get the executable path
                 String executablePath = executablesMap.get(PID.getValue());
 
-                // Get the icon
-//                Icon icon = null;
-//                if (executablePath != null) {
-//                    icon = FileSystemView.getFileSystemView().getSystemIcon(new File(executablePath));
-//                }
+                // Get the application
+                Application application = applicationMap.get(executablePath);
 
-                Window window = new MSWindow(PID.getValue(), titleText, executablePath, null, hwnd);
+                // If application is not present in the list, load it dynamically
+                if (application == null) {
+                    application = addApplicationFromExecutablePath(executablePath, null);
+                }
+
+                Window window = new MSWindow(PID.getValue(), titleText, executablePath, application, hwnd);
                 windowList.add(window);
 
                 return true;
@@ -264,21 +269,8 @@ public class MSApplicationManager implements ApplicationManager {
 
             // Make sure the target is an exe file
             if (executablePath != null) {
-                // If already present, to mitigate ambiguities of the program name,
-                // the executable filename becomes the new Application name ( without .exe )
-                if (applicationMap.containsKey(executablePath)) {
-                    File appExe = new File(executablePath);
-                    // Create the new app name extracting the filename, removing the extension
-                    // and capitalizing the first letter
-                    applicationName = StringUtils.capitalize(appExe.getName().replace(".exe", ""));
-                }
-                // Get the app icon
-                String iconPath = getIconPath(executablePath);
-
-                // Create the application
-                Application application = new MSApplication(applicationName, executablePath, iconPath);
-
-                applicationMap.put(executablePath, application);
+                // Add the application
+                addApplicationFromExecutablePath(executablePath, applicationName);
             }
 
             // Update the listener and increase the counter
@@ -325,12 +317,39 @@ public class MSApplicationManager implements ApplicationManager {
             // Read the first line
             while ((line = br.readLine()) != null) {
                 line = line.trim();
-                if (!line.isEmpty() && line.endsWith(".exe")) {
+                if (!line.isEmpty() && line.toLowerCase().endsWith(".exe")) {
                     return line;
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        return null;
+    }
+
+    private Application addApplicationFromExecutablePath(String executablePath, String applicationName) {
+        // Make sure the target is an exe file
+        if (executablePath.toLowerCase().endsWith(".exe")) {
+            // Generate the application name if null or if
+            // executablePath is already present, to mitigate ambiguities of the program name,
+            if (applicationMap.containsKey(executablePath) || applicationName == null) {
+                // the executable filename becomes the Application name ( without .exe )
+                File appExe = new File(executablePath);
+                // Create the new app name extracting the filename, removing the extension
+                // and capitalizing the first letter
+                applicationName = StringUtils.capitalize(appExe.getName().toLowerCase().replace(".exe", ""));
+            }
+
+            // Get the app icon
+            String iconPath = getIconPath(executablePath);
+
+            // Create the application
+            Application application = new MSApplication(applicationName, executablePath, iconPath);
+
+            // Add it to the map
+            applicationMap.put(executablePath, application);
+
+            return application;
         }
         return null;
     }
@@ -417,7 +436,14 @@ public class MSApplicationManager implements ApplicationManager {
                 return generateIconFile(executablePath);
             }
         }else{  // Not so good, but should do the trick
-            // TODO: other method
+            Icon icon = null;
+            icon = FileSystemView.getFileSystemView().getSystemIcon(new File(executablePath));
+            BufferedImage iconImage = (BufferedImage) iconToImage(icon);
+            try {
+                ImageIO.write(iconImage, "png", iconFile);
+            } catch (IOException e) {  // ERROR
+                return null;
+            }
         }
 
         return iconFile;
@@ -491,5 +517,29 @@ public class MSApplicationManager implements ApplicationManager {
         }
 
         return iconCacheDir;
+    }
+
+    /**
+     * Converts an icon to a buffered image
+     * @param icon the icon to convert
+     * @return the BufferedImage with the icon
+     */
+    private static Image iconToImage(Icon icon) {
+        if (icon instanceof ImageIcon) {
+            return ((ImageIcon)icon).getImage();
+        }
+        else {
+            int w = icon.getIconWidth();
+            int h = icon.getIconHeight();
+            GraphicsEnvironment ge =
+                    GraphicsEnvironment.getLocalGraphicsEnvironment();
+            GraphicsDevice gd = ge.getDefaultScreenDevice();
+            GraphicsConfiguration gc = gd.getDefaultConfiguration();
+            BufferedImage image = gc.createCompatibleImage(w, h);
+            Graphics2D g = image.createGraphics();
+            icon.paintIcon(null, g, 0, 0);
+            g.dispose();
+            return image;
+        }
     }
 }

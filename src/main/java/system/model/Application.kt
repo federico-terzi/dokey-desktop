@@ -39,4 +39,8 @@ abstract class Application {
     fun getID() : String {
         return getIDForExecutablePath(executablePath)
     }
+
+    override fun toString(): String {
+        return "Application(name='$name', executablePath='$executablePath', iconPath=$iconPath)"
+    }
 }

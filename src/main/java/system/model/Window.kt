@@ -18,4 +18,7 @@ abstract class Window {
      */
     abstract fun focusWindow()
 
+    override fun toString(): String {
+        return "Window(PID=$PID, titleText='$titleText', executablePath=$executablePath, application=$application)"
+    }
 }
