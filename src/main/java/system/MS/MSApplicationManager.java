@@ -30,6 +30,13 @@ public class MSApplicationManager implements ApplicationManager {
     // This map will hold the applications, associated with their executable path
     private Map<String, Application> applicationMap = new HashMap<>();
 
+    private boolean isPowerShellActive;
+
+    public MSApplicationManager() {
+        // Check if powershell is enabled in this machine
+        isPowerShellActive = isPowerShellEnabled();
+    }
+
     /**
      * @return the Window object of the active system.window.
      */
@@ -328,5 +335,33 @@ public class MSApplicationManager implements ApplicationManager {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Check if powershell is enabled in this machine.
+     * @return true if powershell is enabled, else otherwise.
+     */
+    private static boolean isPowerShellEnabled() {
+        Runtime runtime = Runtime.getRuntime();
+
+        try {
+            // Execute powershell
+            Process proc = runtime.exec(new String[]{"powershell", "echo yes"});
+
+            // If there was an error, return false
+            if (proc.getErrorStream().available()>0) {
+                return false;
+            }
+
+            // Make sure the line is correct
+            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            String line = br.readLine();
+            if (line != null && line.equals("yes")) {
+                return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
