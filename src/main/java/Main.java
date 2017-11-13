@@ -10,25 +10,27 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
         ApplicationManager wm = ApplicationManagerFactory.getInstance();
-        System.out.println("Loading applications...");
-        // powershell "[System.Reflection.Assembly]::LoadWithPartialName('System.Drawing')  | Out-Null ; [System.Drawing.Icon]::ExtractAssociatedIcon('C:\Users\Federico\Documents\Skype.exe').ToBitmap().Save('C:\Users\Federico\s.png')"
-        wm.loadApplications(new ApplicationManager.OnLoadApplicationsListener() {
-            @Override
-            public void onProgressUpdate(String applicationName, int current, int total) {
-                System.out.println("Loading: "+applicationName+" "+current+"/"+total);
-            }
 
-            @Override
-            public void onApplicationsLoaded() {
-                System.out.println("loaded!");
-            }
-        });
+        Window window = wm.getActiveWindow();
+//        System.out.println("Loading applications...");
+//        // powershell "[System.Reflection.Assembly]::LoadWithPartialName('System.Drawing')  | Out-Null ; [System.Drawing.Icon]::ExtractAssociatedIcon('C:\Users\Federico\Documents\Skype.exe').ToBitmap().Save('C:\Users\Federico\s.png')"
+//        wm.loadApplications(new ApplicationManager.OnLoadApplicationsListener() {
+//            @Override
+//            public void onProgressUpdate(String applicationName, int current, int total) {
+//                System.out.println("Loading: "+applicationName+" "+current+"/"+total);
+//            }
+//
+//            @Override
+//            public void onApplicationsLoaded() {
+//                System.out.println("loaded!");
+//            }
+//        });
+//
+//        List<Application> apps = wm.getApplicationList();
 
-        List<Application> apps = wm.getApplicationList();
-
-//        Window window = wm.getActiveWindow();
+//
 //        System.out.println(wm.getActivePID());
-        List<Window> list = wm.getWindowList();
+//        List<Window> list = wm.getWindowList();
 //
 //        Field[] fields = java.awt.event.KeyEvent.class.getDeclaredFields();
 //        for (Field f : fields) {
