@@ -11,8 +11,8 @@ public class Main {
     public static void main(String[] args) {
         ApplicationManager wm = ApplicationManagerFactory.getInstance();
 
-        Window window = wm.getActiveWindow();
         int pid = wm.getActivePID();
+        Window window = wm.getActiveWindow();
 //        System.out.println("Loading applications...");
 //        // powershell "[System.Reflection.Assembly]::LoadWithPartialName('System.Drawing')  | Out-Null ; [System.Drawing.Icon]::ExtractAssociatedIcon('C:\Users\Federico\Documents\Skype.exe').ToBitmap().Save('C:\Users\Federico\s.png')"
 //        wm.loadApplications(new ApplicationManager.OnLoadApplicationsListener() {

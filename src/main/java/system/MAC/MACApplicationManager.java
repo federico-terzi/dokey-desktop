@@ -23,14 +23,12 @@ public class MACApplicationManager implements ApplicationManager {
         String scriptPath = getClass().getResource("/applescripts/getActiveWindow.scpt").getPath();
         Runtime runtime = Runtime.getRuntime();
 
-        Map<Integer, String> outputMap = new HashMap<>();
-
         try {
             // Execute the process
             Process proc = runtime.exec(new String[] {"osascript", scriptPath});
 
             // Get the output
-            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
 
             // Read the fields
             String appName = br.readLine();
@@ -42,7 +40,7 @@ public class MACApplicationManager implements ApplicationManager {
 
             // TODO: Application
             Window window = new MACWindow(pid, windowTitle, executablePath, null);
-
+            return window;
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -92,8 +90,8 @@ public class MACApplicationManager implements ApplicationManager {
             }
 
             // Remove the final space and get the path
-            String executablePath = sb.toString().substring(0, sb.toString().length()-2);
-
+            String executablePath = sb.toString().substring(0, sb.toString().length()-1);
+            return executablePath;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -113,7 +111,7 @@ public class MACApplicationManager implements ApplicationManager {
             Process proc = runtime.exec(new String[]{"osascript", scriptPath});
 
             // Get the output
-            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
 
             // Get the PID
             try {
