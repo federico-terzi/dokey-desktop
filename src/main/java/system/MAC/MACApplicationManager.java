@@ -100,9 +100,33 @@ public class MACApplicationManager implements ApplicationManager {
         return null;
     }
 
+    /**
+     * @return PID of the current active system.window. -1 is returned in case of errors.
+     */
     @Override
     public int getActivePID() {
-        return 0;
+        String scriptPath = getClass().getResource("/applescripts/getActivePID.scpt").getPath();
+        Runtime runtime = Runtime.getRuntime();
+
+        try {
+            // Execute the process
+            Process proc = runtime.exec(new String[]{"osascript", scriptPath});
+
+            // Get the output
+            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+            // Get the PID
+            try {
+                int pid = Integer.parseInt(br.readLine());
+                return pid;
+            }catch(Exception e) {
+                e.printStackTrace();
+                return -1;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
     @Override

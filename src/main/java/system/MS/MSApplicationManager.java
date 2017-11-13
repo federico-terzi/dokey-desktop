@@ -65,7 +65,7 @@ public class MSApplicationManager implements ApplicationManager {
     }
 
     /**
-     * @return PID of the current active system.window.
+     * @return PID of the current active system.window. -1 is returned in case of errors.
      */
     @Override
     public int getActivePID() {
