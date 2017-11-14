@@ -14,19 +14,19 @@ public class Main {
         int pid = wm.getActivePID();
         Window window = wm.getActiveWindow();
         window.focusWindow();
-//        System.out.println("Loading applications...");
-//        // powershell "[System.Reflection.Assembly]::LoadWithPartialName('System.Drawing')  | Out-Null ; [System.Drawing.Icon]::ExtractAssociatedIcon('C:\Users\Federico\Documents\Skype.exe').ToBitmap().Save('C:\Users\Federico\s.png')"
-//        wm.loadApplications(new ApplicationManager.OnLoadApplicationsListener() {
-//            @Override
-//            public void onProgressUpdate(String applicationName, int current, int total) {
-//                System.out.println("Loading: "+applicationName+" "+current+"/"+total);
-//            }
-//
-//            @Override
-//            public void onApplicationsLoaded() {
-//                System.out.println("loaded!");
-//            }
-//        });
+        System.out.println("Loading applications...");
+        // powershell "[System.Reflection.Assembly]::LoadWithPartialName('System.Drawing')  | Out-Null ; [System.Drawing.Icon]::ExtractAssociatedIcon('C:\Users\Federico\Documents\Skype.exe').ToBitmap().Save('C:\Users\Federico\s.png')"
+        wm.loadApplications(new ApplicationManager.OnLoadApplicationsListener() {
+            @Override
+            public void onProgressUpdate(String applicationName, int current, int total) {
+                System.out.println("Loading: "+applicationName+" "+current+"/"+total);
+            }
+
+            @Override
+            public void onApplicationsLoaded() {
+                System.out.println("loaded!");
+            }
+        });
 //
 //        List<Application> apps = wm.getApplicationList();
 

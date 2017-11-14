@@ -8,12 +8,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class MACApplicationManager implements ApplicationManager {
+
+    // This map will hold the applications, associated with their executable path
+    private Map<String, Application> applicationMap = new HashMap<>();
 
     /**
      * @return the Window object of the active system.window.
@@ -132,9 +132,66 @@ public class MACApplicationManager implements ApplicationManager {
         return null;
     }
 
+    /**
+     * Load the Application(s) installed in the system.
+     * Each time it is called, the list is refreshed.
+     * A listener can be specified to monitor the status of the process.
+     * This function checks in the Windows Start Menu and analyzes the entries.
+     */
     @Override
     public void loadApplications(OnLoadApplicationsListener listener) {
+        // Initialize the application maps
+        applicationMap = new HashMap<>();
 
+        // Create a list that will hold all the files
+        List<File> fileList = new ArrayList<>();
+
+        Runtime runtime = Runtime.getRuntime();
+
+        try {
+            // Get the list of apps
+            Process proc = runtime.exec(new String[]{"find", "/Applications", "-name", "*.app", "-maxdepth", "4"});
+
+            // Get the output
+            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+            // Get the applications
+            String line = null;
+            while((line = br.readLine()) != null) {
+                File currentAppDir = new File(line);
+                fileList.add(currentAppDir);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        // Current application in the list
+        int current = 0;
+
+        // Cycle through all entries
+        for (File app : fileList) {
+            String appPath = app.getAbsolutePath();
+            String applicationName = app.getName().replace(".lnk", "");
+
+//            // Make sure the target is an exe file
+//            if (appPath != null) {
+//                // Add the application
+//                addApplicationFromExecutablePath(appPath, applicationName);
+//            }
+
+            // Update the listener and increase the counter
+            if (listener != null) {
+                listener.onProgressUpdate(applicationName, current, fileList.size());
+            }
+            current++;
+        }
+
+        // Signal the end of the process
+        if (listener != null) {
+            listener.onApplicationsLoaded();
+        }
     }
 
     @Override
