@@ -11,8 +11,6 @@ class MACWindow(PID: Int, titleText: String,
      * Focus on a system.window
      */
     override fun focusWindow() {
-//        tell application "Terminal" to activate
-//        tell application "Terminal" to set index of window 1 where name contains "federico" to 1
 
     }
 }
