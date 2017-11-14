@@ -136,7 +136,7 @@ public class MACApplicationManager implements ApplicationManager {
      * Load the Application(s) installed in the system.
      * Each time it is called, the list is refreshed.
      * A listener can be specified to monitor the status of the process.
-     * This function checks in the Windows Start Menu and analyzes the entries.
+     * This function checks in the Applications folder.
      */
     @Override
     public void loadApplications(OnLoadApplicationsListener listener) {
@@ -173,7 +173,8 @@ public class MACApplicationManager implements ApplicationManager {
         // Cycle through all entries
         for (File app : fileList) {
             String appPath = app.getAbsolutePath();
-            String applicationName = app.getName().replace(".lnk", "");
+            // Get the application name by removing the ".app" suffix
+            String applicationName = app.getName().substring(0, app.getName().length()-4);
 
 //            // Make sure the target is an exe file
 //            if (appPath != null) {
