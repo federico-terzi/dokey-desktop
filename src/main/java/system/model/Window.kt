@@ -15,8 +15,9 @@ abstract class Window {
 
     /**
      * Should implement the logic behind focusing on a system.window.
+     * Return true if succeeded.
      */
-    abstract fun focusWindow()
+    abstract fun focusWindow() : Boolean
 
     override fun toString(): String {
         return "Window(PID=$PID, titleText='$titleText', executablePath=$executablePath, application=$application)"
