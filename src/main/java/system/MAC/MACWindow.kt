@@ -27,6 +27,8 @@ class MACWindow(PID: Int, titleText: String,
             // Get the response
             val res : String = br.readLine()
 
+            br.close()
+
             // Return the result
             return res == "OK" || res == "FALLBACK"
 

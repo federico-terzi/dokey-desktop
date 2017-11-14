@@ -13,6 +13,7 @@ public class Main {
 
         int pid = wm.getActivePID();
         Window window = wm.getActiveWindow();
+        window.focusWindow();
 //        System.out.println("Loading applications...");
 //        // powershell "[System.Reflection.Assembly]::LoadWithPartialName('System.Drawing')  | Out-Null ; [System.Drawing.Icon]::ExtractAssociatedIcon('C:\Users\Federico\Documents\Skype.exe').ToBitmap().Save('C:\Users\Federico\s.png')"
 //        wm.loadApplications(new ApplicationManager.OnLoadApplicationsListener() {
