@@ -33,7 +33,7 @@ public class Main {
 
 //
 //        System.out.println(wm.getActivePID());
-//        List<Window> list = wm.getWindowList();
+        List<Window> list = wm.getWindowList();
 //
 //        Field[] fields = java.awt.event.KeyEvent.class.getDeclaredFields();
 //        for (Field f : fields) {

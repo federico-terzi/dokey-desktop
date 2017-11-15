@@ -160,7 +160,45 @@ public class MACApplicationManager implements ApplicationManager {
 
     @Override
     public List<Window> getWindowList() {
-        return null;
+        String scriptPath = getClass().getResource("/applescripts/getWindowList.scpt").getPath();
+        Runtime runtime = Runtime.getRuntime();
+
+        List<Window> windowList = new ArrayList<>();
+
+        try {
+            // Execute the process
+            Process proc = runtime.exec(new String[] {"osascript", scriptPath});
+
+            // Get the output
+            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+
+            // Read the fields
+            String appName = br.readLine();
+            int pid = Integer.parseInt(br.readLine());
+
+            // Get the executable path
+            String executablePath = getExecutablePathFromPID(pid);
+
+            // Get the app folder path
+            String appPath = getAppPathFromExecutablePath(executablePath);
+
+            // Get the application
+            Application application = null;
+            if (appPath != null) {
+                application = addApplicationFromAppPath(appPath);
+            }
+
+            String windowTitle;
+            while ((windowTitle = br.readLine()) != null && !windowTitle.trim().isEmpty()) {
+                Window window = new MACWindow(pid, windowTitle, executablePath, application);
+                windowList.add(window);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return windowList;
     }
 
     /**
