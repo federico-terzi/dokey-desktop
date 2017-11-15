@@ -179,11 +179,8 @@ public class MACApplicationManager implements ApplicationManager {
             // Get the application name by removing the ".app" suffix
             String applicationName = app.getName().substring(0, app.getName().length()-4);
 
-//            // Make sure the target is an exe file
-//            if (appPath != null) {
-//                // Add the application
-//                addApplicationFromExecutablePath(appPath, applicationName);
-//            }
+            // Add the application
+            addApplicationFromExecutablePath(appPath, applicationName);
 
             // Update the listener and increase the counter
             if (listener != null) {
