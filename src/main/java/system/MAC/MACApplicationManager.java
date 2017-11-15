@@ -173,27 +173,28 @@ public class MACApplicationManager implements ApplicationManager {
             BufferedReader br = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
 
             // Read the fields
-            String appName = br.readLine();
-            int pid = Integer.parseInt(br.readLine());
+            String appName;
+            while ((appName = br.readLine()) != null) {
+                int pid = Integer.parseInt(br.readLine());
 
-            // Get the executable path
-            String executablePath = getExecutablePathFromPID(pid);
+                // Get the executable path
+                String executablePath = getExecutablePathFromPID(pid);
 
-            // Get the app folder path
-            String appPath = getAppPathFromExecutablePath(executablePath);
+                // Get the app folder path
+                String appPath = getAppPathFromExecutablePath(executablePath);
 
-            // Get the application
-            Application application = null;
-            if (appPath != null) {
-                application = addApplicationFromAppPath(appPath);
+                // Get the application
+                Application application = null;
+                if (appPath != null) {
+                    application = addApplicationFromAppPath(appPath);
+                }
+
+                String windowTitle;
+                while ((windowTitle = br.readLine()) != null && !windowTitle.trim().isEmpty()) {
+                    Window window = new MACWindow(pid, windowTitle, executablePath, application);
+                    windowList.add(window);
+                }
             }
-
-            String windowTitle;
-            while ((windowTitle = br.readLine()) != null && !windowTitle.trim().isEmpty()) {
-                Window window = new MACWindow(pid, windowTitle, executablePath, application);
-                windowList.add(window);
-            }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
