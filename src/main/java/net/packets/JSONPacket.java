@@ -19,6 +19,14 @@ public class JSONPacket extends DEPacket {
         super(opType, payload);
     }
 
+    public JSONPacket(int opType, byte[] payload){
+        super(opType, payload);
+    }
+
+    public JSONPacket(int opType, long packetID, byte responseFlag, int payloadLength, byte[] payload) {
+        super(opType, packetID, responseFlag, payloadLength, payload);
+    }
+
     /**
      * Parse the JSON payload fields. Must be overridden in each subclass.
      */

@@ -52,6 +52,17 @@ public class DEPacket {
     }
 
     /**
+     * Constructor for building a request packet with a string payload and random ID.
+     */
+    public DEPacket(int opType, byte[] payload) {
+        this.opType = opType;
+        this.packetID = RandomUtils.getNextID();
+        this.responseFlag = DEPacket.RESPONSE_FLAG_REQUEST;
+        this.payloadLength = payload.length;
+        this.payload = payload;
+    }
+
+    /**
      * Constructor for building a packet with a string payload and random ID.
      */
     public DEPacket(String stringPayload, byte responseFlag) {
@@ -114,6 +125,11 @@ public class DEPacket {
 
     public void setPayload(byte[] payload) {
         this.payload = payload;
+    }
+
+    public void setPayload(String stringPayload) {
+        this.payload = stringPayload.getBytes();
+        this.payloadLength = stringPayload.length();
     }
 
     public boolean isResponsePacket() {

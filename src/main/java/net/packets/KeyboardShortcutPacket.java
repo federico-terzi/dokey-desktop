@@ -22,6 +22,14 @@ public class KeyboardShortcutPacket extends JSONPacket {
         super(OP_TYPE, payload);
     }
 
+    public KeyboardShortcutPacket(byte[] payload){
+        super(OP_TYPE, payload);
+    }
+
+    public KeyboardShortcutPacket(long packetID, byte responseFlag, int payloadLength, byte[] payload) {
+        super(OP_TYPE, packetID, responseFlag, payloadLength, payload);
+    }
+
     /**
      * Create a KeyboardShortcutPacket.
      * @param application String application identifier
