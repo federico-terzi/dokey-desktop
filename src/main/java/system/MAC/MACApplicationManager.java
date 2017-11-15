@@ -43,6 +43,7 @@ public class MACApplicationManager implements ApplicationManager {
                 application = addApplicationFromAppPath(executablePath);
             }
 
+            // Make sure the app is valid before opening it
             if (application != null) {
                 application.open();
             }else{
