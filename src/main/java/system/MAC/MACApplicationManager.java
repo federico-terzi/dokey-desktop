@@ -310,6 +310,11 @@ public class MACApplicationManager implements ApplicationManager {
         return iconFile;
     }
 
+    // Return the icon filename from the app info.plist file
+    private String getIconFilenameFromPlistFile(File appDir) {
+
+    }
+
     @Override
     public List<Application> getApplicationList() {
         return null;
