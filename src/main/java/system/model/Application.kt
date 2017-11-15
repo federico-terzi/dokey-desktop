@@ -19,10 +19,10 @@ abstract class Application {
 
     companion object {
         /**
-         * Return the String ID for the given executablePath
+         * Return the String Hash ID for the given executablePath
          * @return the MD5 hash of the executablePath
          */
-        fun getIDForExecutablePath(executablePath: String) : String {
+        fun getHashIDForExecutablePath(executablePath: String) : String {
             return DigestUtils.md5Hex(executablePath)
         }
     }
@@ -33,11 +33,11 @@ abstract class Application {
     abstract fun getIconFile() : File?
 
     /**
-     * Return the String ID of the application.
+     * Return the String Hash ID of the application.
      * @return the MD5 hash of the executablePath
      */
-    fun getID() : String {
-        return getIDForExecutablePath(executablePath)
+    fun getHashID() : String {
+        return getHashIDForExecutablePath(executablePath)
     }
 
     override fun toString(): String {

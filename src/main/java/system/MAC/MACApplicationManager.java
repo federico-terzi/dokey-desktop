@@ -13,6 +13,17 @@ public class MACApplicationManager implements ApplicationManager {
     private Map<String, Application> applicationMap = new HashMap<>();
 
     /**
+     * Focus an application if already open or start it if not.
+     *
+     * @param executablePath path to the application.
+     * @return true if succeeded, false otherwise.
+     */
+    @Override
+    public boolean openApplication(String executablePath) {
+        return false;
+    }
+
+    /**
      * @return the Window object of the active system.window.
      */
     @Override
@@ -22,7 +33,7 @@ public class MACApplicationManager implements ApplicationManager {
 
         try {
             // Execute the process
-            Process proc = runtime.exec(new String[] {"osascript", scriptPath});
+            Process proc = runtime.exec(new String[]{"osascript", scriptPath});
 
             // Get the output
             BufferedReader br = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
@@ -88,14 +99,14 @@ public class MACApplicationManager implements ApplicationManager {
                 String token = st.nextToken();
                 if (token.startsWith("-")) {  // Argument, exit the cycle
                     break;
-                }else{ // Part of the executable name
+                } else { // Part of the executable name
                     sb.append(token);
                     sb.append(" ");
                 }
             }
 
             // Remove the final space and get the path
-            String executablePath = sb.toString().substring(0, sb.toString().length()-1);
+            String executablePath = sb.toString().substring(0, sb.toString().length() - 1);
             return executablePath;
         } catch (IOException e) {
             e.printStackTrace();
@@ -105,6 +116,7 @@ public class MACApplicationManager implements ApplicationManager {
 
     /**
      * Parse the app application folder from an executable path
+     *
      * @param executablePath the executable path
      * @return
      */
@@ -115,7 +127,7 @@ public class MACApplicationManager implements ApplicationManager {
 
         boolean forceFinish = false;
 
-        for (int i = (tokens.length - 1); i>= 0; i--) {
+        for (int i = (tokens.length - 1); i >= 0; i--) {
             if (tokens[i].endsWith(".app") || forceFinish) {
                 pathTokens.add(0, tokens[i]);
                 forceFinish = true;
@@ -124,7 +136,7 @@ public class MACApplicationManager implements ApplicationManager {
 
         if (pathTokens.size() == 0) {
             return null;
-        }else{
+        } else {
             return String.join("/", pathTokens);
         }
     }
@@ -148,7 +160,7 @@ public class MACApplicationManager implements ApplicationManager {
             try {
                 int pid = Integer.parseInt(br.readLine());
                 return pid;
-            }catch(Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return -1;
             }
@@ -167,7 +179,7 @@ public class MACApplicationManager implements ApplicationManager {
 
         try {
             // Execute the process
-            Process proc = runtime.exec(new String[] {"osascript", scriptPath});
+            Process proc = runtime.exec(new String[]{"osascript", scriptPath});
 
             // Get the output
             BufferedReader br = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
@@ -183,10 +195,16 @@ public class MACApplicationManager implements ApplicationManager {
                 // Get the app folder path
                 String appPath = getAppPathFromExecutablePath(executablePath);
 
-                // Get the application
                 Application application = null;
+
                 if (appPath != null) {
-                    application = addApplicationFromAppPath(appPath);
+                    // Get the application
+                    application = applicationMap.get(appPath);
+
+                    // If not already present, load it
+                    if (application == null) {
+                        application = addApplicationFromAppPath(appPath);
+                    }
                 }
 
                 String windowTitle;
@@ -227,7 +245,7 @@ public class MACApplicationManager implements ApplicationManager {
 
             // Get the applications
             String line = null;
-            while((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null) {
                 File currentAppDir = new File(line);
                 fileList.add(currentAppDir);
             }
@@ -262,6 +280,7 @@ public class MACApplicationManager implements ApplicationManager {
 
     /**
      * Parse and analyze the application from the app folder. Then add it to the applicationMap.
+     *
      * @param appPath path to the app folder
      * @return the Application object.
      */
@@ -272,7 +291,7 @@ public class MACApplicationManager implements ApplicationManager {
             File app = new File(appPath);
 
             // Get the application name by removing the ".app" suffix
-            String applicationName = app.getName().substring(0, app.getName().length()-4);
+            String applicationName = app.getName().substring(0, app.getName().length() - 4);
 
             // Get the app icon
             String iconPath = getIconPath(appPath);
@@ -290,12 +309,13 @@ public class MACApplicationManager implements ApplicationManager {
 
     /**
      * Generate the icon file for the given app
+     *
      * @param appPath the app folder
      * @return the icon File
      */
     private File generateIconFile(String appPath) {
         // Obtain the application ID
-        String appID = Application.Companion.getIDForExecutablePath(appPath);
+        String appID = Application.Companion.getHashIDForExecutablePath(appPath);
 
         // Get the icon file
         return new File(getIconCacheDir(), appID + ".png");
@@ -303,6 +323,7 @@ public class MACApplicationManager implements ApplicationManager {
 
     /**
      * Obtain the icon associated with the given application.
+     *
      * @param appPath path to the app folder.
      * @return the icon associated with the given app.
      */
@@ -326,6 +347,7 @@ public class MACApplicationManager implements ApplicationManager {
 
     /**
      * Extract the icon from the given app.
+     *
      * @param appPath the app folder.
      * @return the icon image file. Return null if an error occurred.
      */
@@ -358,7 +380,7 @@ public class MACApplicationManager implements ApplicationManager {
                         internalIconFile.getAbsolutePath(), "--out", iconFile.getAbsolutePath()});
 
                 // If an error occurred, return null
-                if (proc.getErrorStream().available()>0) {
+                if (proc.getErrorStream().available() > 0) {
                     return null;
                 }
 
@@ -366,7 +388,7 @@ public class MACApplicationManager implements ApplicationManager {
                 e.printStackTrace();
                 return null;
             }
-        }else{
+        } else {
             return null;
         }
 
@@ -375,6 +397,7 @@ public class MACApplicationManager implements ApplicationManager {
 
     /**
      * Return the icon filename from the app info.plist file
+     *
      * @param appDir the application folder
      * @return the icon file
      */
@@ -392,7 +415,7 @@ public class MACApplicationManager implements ApplicationManager {
                 if (line.contains("CFBundleIconFile") || line.contains("CFBundleIconName") ||
                         line.contains("CFBundleIconFiles") || line.contains("CFBundleIcons")) {
                     String keyLine = null;
-                    while((keyLine = br.readLine()) != null) {
+                    while ((keyLine = br.readLine()) != null) {
                         keyLine = keyLine.trim();
                         if (!keyLine.isEmpty()) {
                             // Get the appicon name
@@ -404,12 +427,12 @@ public class MACApplicationManager implements ApplicationManager {
                             }
 
                             // Get the icon file
-                            File iconFile = new File(appDir, "/Contents/Resources/"+appIconName);
+                            File iconFile = new File(appDir, "/Contents/Resources/" + appIconName);
 
                             // Make sure it is a valid path
                             if (iconFile.isFile()) {
                                 return iconFile;
-                            }else{
+                            } else {
                                 return null;
                             }
                         }
@@ -439,6 +462,7 @@ public class MACApplicationManager implements ApplicationManager {
 
     /**
      * Create and retrieve the cache directory.
+     *
      * @return the Cache directory used to save files.
      */
     @Override
@@ -459,6 +483,7 @@ public class MACApplicationManager implements ApplicationManager {
 
     /**
      * Create and retrieve the image cache directory.
+     *
      * @return the Image Cache directory used to save images.
      */
     @Override

@@ -40,6 +40,16 @@ public class MSApplicationManager implements ApplicationManager {
     }
 
     /**
+     * Focus an application if already open or start it if not.
+     * @param executablePath path to the application.
+     * @return true if succeeded, false otherwise.
+     */
+    @Override
+    public boolean openApplication(String executablePath) {
+        return false;
+    }
+
+    /**
      * @return the Window object of the active system.window.
      */
     @Override
@@ -389,7 +399,7 @@ public class MSApplicationManager implements ApplicationManager {
      */
     private File generateIconFile(String executablePath) {
         // Obtain the application ID
-        String appID = Application.Companion.getIDForExecutablePath(executablePath);
+        String appID = Application.Companion.getHashIDForExecutablePath(executablePath);
 
         // Get the icon file
         return new File(getIconCacheDir(), appID + ".png");

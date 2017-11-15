@@ -36,6 +36,13 @@ public interface ApplicationManager {
     List<Application> getApplicationList();
 
     /**
+     * Focus an application if already open or start it if not.
+     * @param executablePath path to the application.
+     * @return true if succeeded, false otherwise.
+     */
+    boolean openApplication(String executablePath);
+
+    /**
      * @return the Cache directory used to save images and files, must be implemented for each OS.
      */
     File getCacheDir();
