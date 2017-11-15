@@ -42,7 +42,10 @@ public class MACApplicationManager implements ApplicationManager {
             if (application == null) {
                 application = addApplicationFromAppPath(executablePath);
             }
-            application.open();
+
+            if (application != null) {
+                application.open();
+            }
         }
 
         return true;

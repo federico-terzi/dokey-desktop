@@ -68,7 +68,9 @@ public class MSApplicationManager implements ApplicationManager {
             if (application == null) {
                 application = addApplicationFromExecutablePath(executablePath, null);
             }
-            application.open();
+            if (application != null) {
+                application.open();
+            }
         }
 
         return true;
