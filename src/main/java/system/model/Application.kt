@@ -28,9 +28,9 @@ abstract class Application {
     }
 
     /**
-     * @return the Icon image file, must be implemented.
+     * Open an application.
      */
-    abstract fun getIconFile() : File?
+    abstract fun open()
 
     /**
      * Return the String Hash ID of the application.

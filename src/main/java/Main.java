@@ -12,6 +12,8 @@ public class Main {
     public static void main(String[] args) {
         ApplicationManager wm = ApplicationManagerFactory.getInstance();
 
+        wm.openApplication("C:\\Program Files (x86)\\Dia\\bin\\diaw.exe");
+
         int pid = wm.getActivePID();
         Window window = wm.getActiveWindow();
         //window.focusWindow();
@@ -47,6 +49,8 @@ public class Main {
 //
 //            }
 //        }
+
+
 
         System.exit(0);
     }

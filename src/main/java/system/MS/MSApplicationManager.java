@@ -46,7 +46,32 @@ public class MSApplicationManager implements ApplicationManager {
      */
     @Override
     public boolean openApplication(String executablePath) {
-        return false;
+        // Get windows to find out if application is already open
+        List<Window> openWindows = getWindowList();
+
+        // Cycle through windows to find if the app is already open
+        boolean isApplicationOpen = false;
+        Window firstOpenWindow = null;
+
+        for (Window window : openWindows) {
+            if (window.getApplication().getExecutablePath().equals(executablePath)) {
+                isApplicationOpen = true;
+                firstOpenWindow = window;
+                break;
+            }
+        }
+
+        if (isApplicationOpen) {  // App is open, focus the first window
+            firstOpenWindow.focusWindow();
+        }else{     // App is not open, start it.
+            Application application = applicationMap.get(executablePath);
+            if (application == null) {
+                application = addApplicationFromExecutablePath(executablePath, null);
+            }
+            application.open();
+        }
+
+        return true;
     }
 
     /**
@@ -337,6 +362,16 @@ public class MSApplicationManager implements ApplicationManager {
         return null;
     }
 
+    /**
+     * Obtain the application of the given executablePath and returns it.
+     * Also add it to the applicationMap.
+     * If applicationName is not specified, it calculates dynamically from the executablePath.
+     * If executablePath is already present in the applicationMap,
+     * to mitigate ambiguities, the application name is forced to the one calculated dynamically.
+     * @param executablePath path of the app exe
+     * @param applicationName application name
+     * @return an Application object.
+     */
     private Application addApplicationFromExecutablePath(String executablePath, String applicationName) {
         // Make sure the target is an exe file
         if (executablePath.toLowerCase().endsWith(".exe")) {

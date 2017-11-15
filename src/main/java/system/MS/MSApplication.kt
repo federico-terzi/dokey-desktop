@@ -10,9 +10,12 @@ class MSApplication(name: String, executablePath: String, iconPath: String?) :
         Application(name, executablePath, iconPath) {
 
     /**
-     * Return the image File of the Icon associated with the Application.
+     * Open an application.
      */
-    override fun getIconFile(): File? {
-        return null
+    override fun open() {
+        val runtime = Runtime.getRuntime()
+
+        // Execute the process
+        val proc = runtime.exec(executablePath)
     }
 }

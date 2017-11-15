@@ -20,7 +20,32 @@ public class MACApplicationManager implements ApplicationManager {
      */
     @Override
     public boolean openApplication(String executablePath) {
-        return false;
+        // Get windows to find out if application is already open
+        List<Window> openWindows = getWindowList();
+
+        // Cycle through windows to find if the app is already open
+        boolean isApplicationOpen = false;
+        Window firstOpenWindow = null;
+
+        for (Window window : openWindows) {
+            if (window.getApplication().getExecutablePath().equals(executablePath)) {
+                isApplicationOpen = true;
+                firstOpenWindow = window;
+                break;
+            }
+        }
+
+        if (isApplicationOpen) {  // App is open, focus the first window
+            firstOpenWindow.focusWindow();
+        }else{     // App is not open, start it.
+            Application application = applicationMap.get(executablePath);
+            if (application == null) {
+                application = addApplicationFromAppPath(executablePath);
+            }
+            application.open();
+        }
+
+        return true;
     }
 
     /**
