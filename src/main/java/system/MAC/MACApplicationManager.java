@@ -1,13 +1,16 @@
 package system.MAC;
 
+import org.apache.commons.lang3.StringUtils;
+import system.MS.MSApplication;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.model.Window;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.*;
 
 public class MACApplicationManager implements ApplicationManager {
@@ -195,18 +198,145 @@ public class MACApplicationManager implements ApplicationManager {
         }
     }
 
+    /**
+     * Parse and analyze the application from the app folder. Then add it to the applicationMap.
+     * @param appPath path to the app folder
+     * @param applicationName name of the app
+     * @return the Application object.
+     */
+    private Application addApplicationFromExecutablePath(String appPath, String applicationName) {
+        // Make sure the target is an app
+        if (appPath.toLowerCase().endsWith(".app")) {
+            // Get the app icon
+            String iconPath = getIconPath(appPath);
+
+            // Create the application
+            Application application = new MACApplication(applicationName, appPath, iconPath);
+
+            // Add it to the map
+            applicationMap.put(appPath, application);
+
+            return application;
+        }
+        return null;
+    }
+
+    /**
+     * Generate the icon file for the given app
+     * @param appPath the app folder
+     * @return the icon File
+     */
+    private File generateIconFile(String appPath) {
+        // Obtain the application ID
+        String appID = Application.Companion.getIDForExecutablePath(appPath);
+
+        // Get the icon file
+        return new File(getIconCacheDir(), appID + ".png");
+    }
+
+    /**
+     * Obtain the icon associated with the given application.
+     * @param appPath path to the app folder.
+     * @return the icon associated with the given app.
+     */
+    private String getIconPath(String appPath) {
+        // Get the icon file
+        File iconFile = generateIconFile(appPath);
+
+        // If the file doesn't exist, it must be generated
+        if (!iconFile.isFile()) {
+            iconFile = extractIcon(appPath);
+
+            // App doesn't have an image, return null
+            if (iconFile == null) {
+                return null;
+            }
+        }
+
+        // Return the icon file path
+        return iconFile.getAbsolutePath();
+    }
+
+    /**
+     * Extract the icon from the given app.
+     * @param appPath the app folder.
+     * @return the icon image file. Return null if an error occurred.
+     */
+    private File extractIcon(String appPath) {
+        // Get the icon file
+        File iconFile = generateIconFile(appPath);
+
+        // Open the app directory
+        File appDir = new File(appPath);
+
+        // Open the app resources directory
+        File resourcesDir = new File(appDir, "/Contents/Resources");
+        // Make sure the resource dir is valid
+        if (!resourcesDir.isDirectory()) {
+            return null;
+        }
+
+        // Get the first .icns file in the resources directory
+        File internalIconFile = null;
+        File[] includedFiles = resourcesDir.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".icns");
+            }
+        });
+        // No icons found
+        if (includedFiles.length == 0) {
+            return null;
+        }
+        // First icon found
+        internalIconFile = includedFiles[0];
+
+        System.out.println(internalIconFile.getAbsolutePath());
+
+        return iconFile;
+    }
+
     @Override
     public List<Application> getApplicationList() {
         return null;
     }
 
+    /**
+     * Create and retrieve the cache directory.
+     * @return the Cache directory used to save files.
+     */
     @Override
     public File getCacheDir() {
-        return null;
+        // Get the user home directory
+        File homeDir = new File(System.getProperty("user.home"));
+
+        // Get the cache directory
+        File cacheDir = new File(homeDir, ApplicationManager.CACHE_DIRECTORY_NAME);
+
+        // If it doesn't exists, create it
+        if (!cacheDir.isDirectory()) {
+            cacheDir.mkdir();
+        }
+
+        return cacheDir;
     }
 
+    /**
+     * Create and retrieve the image cache directory.
+     * @return the Image Cache directory used to save images.
+     */
     @Override
     public File getIconCacheDir() {
-        return null;
+        File cacheDir = getCacheDir();
+
+        // Get the icon cache directory
+        File iconCacheDir = new File(cacheDir, ApplicationManager.ICON_CACHE_DIRECTORY_NAME);
+
+        // If it doesn't exists, create it
+        if (!iconCacheDir.isDirectory()) {
+            iconCacheDir.mkdir();
+        }
+
+        return iconCacheDir;
     }
 }
