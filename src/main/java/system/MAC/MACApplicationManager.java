@@ -48,6 +48,11 @@ public class MACApplicationManager implements ApplicationManager {
             // Get the executable path
             String executablePath = getExecutablePathFromPID(pid);
 
+            // Get the app folder path
+            String appPath = getAppPathFromExecutablePath(executablePath);
+
+            System.out.println(appPath);
+
             // TODO: Application
             Window window = new MACWindow(pid, windowTitle, executablePath, null);
             return window;
@@ -106,6 +111,32 @@ public class MACApplicationManager implements ApplicationManager {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Parse the app application folder from an executable path
+     * @param executablePath the executable path
+     * @return
+     */
+    private String getAppPathFromExecutablePath(String executablePath) {
+        String[] tokens = executablePath.split("/");
+
+        List<String> pathTokens = new ArrayList<>();
+
+        boolean forceFinish = false;
+
+        for (int i = (tokens.length - 1); i>= 0; i--) {
+            if (tokens[i].endsWith(".app") || forceFinish) {
+                pathTokens.add(0, tokens[i]);
+                forceFinish = true;
+            }
+        }
+
+        if (pathTokens.size() == 0) {
+            return null;
+        }else{
+            return String.join("/", pathTokens);
+        }
     }
 
     /**
