@@ -5,14 +5,10 @@ tell application "System Events"
         log (get name of processName)
         log (get unix id of processName)
         repeat with windowObj in listOfWindows
-            log (get name of windowObj)
-            if name of windowObj is equal to windowName then
-                set the frontmost of processName to true
-                perform action "AXRaise" of windowObj
-                set windowFound to true
-                log "OK"
-                return
-            end if
+            try
+                log (get name of windowObj)
+            on error
+            end try
         end repeat
         log ""
     end repeat
