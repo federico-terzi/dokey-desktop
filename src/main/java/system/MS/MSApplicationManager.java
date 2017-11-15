@@ -60,12 +60,12 @@ public class MSApplicationManager implements ApplicationManager {
         // Get the application
         Application application = applicationMap.get(executablePath);
 
-        Window window = new MSWindow(PID.getValue(), titleText, executablePath, application, hwnd);
+        Window window = new MSWindow(titleText, application, hwnd);
         return window;
     }
 
     /**
-     * @return PID of the current active system.window.
+     * @return PID of the current active system.window. -1 is returned in case of errors.
      */
     @Override
     public int getActivePID() {
@@ -215,7 +215,7 @@ public class MSApplicationManager implements ApplicationManager {
                     application = addApplicationFromExecutablePath(executablePath, null);
                 }
 
-                Window window = new MSWindow(PID.getValue(), titleText, executablePath, application, hwnd);
+                Window window = new MSWindow(titleText, application, hwnd);
                 windowList.add(window);
 
                 return true;
