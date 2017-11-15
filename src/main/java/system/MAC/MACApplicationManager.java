@@ -259,7 +259,7 @@ public class MACApplicationManager implements ApplicationManager {
      * @param appPath the app folder.
      * @return the icon image file. Return null if an error occurred.
      */
-    private File extractIcon(String appPath) {
+    private File extractIcon(String appPath) {  // TODO: improve extracting icon logic by looking at the info.plist file
         // Get the icon file
         File iconFile = generateIconFile(appPath);
 
@@ -285,10 +285,27 @@ public class MACApplicationManager implements ApplicationManager {
         if (includedFiles.length == 0) {
             return null;
         }
-        // First icon found
+        // Set the internal icon file
         internalIconFile = includedFiles[0];
 
-        System.out.println(internalIconFile.getAbsolutePath());
+        // CONVERSION PROCESS
+
+        Runtime runtime = Runtime.getRuntime();
+
+        try {
+            // Convert the icon to png and move to the image cache folder
+            Process proc = runtime.exec(new String[]{"sips", "-s", "format", "png", "-Z", "256",
+                    internalIconFile.getAbsolutePath(), "--out", iconFile.getAbsolutePath()});
+
+            // If an error occurred, return null
+            if (proc.getErrorStream().available()>0) {
+                return null;
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
 
         return iconFile;
     }
