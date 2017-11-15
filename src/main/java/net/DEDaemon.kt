@@ -6,7 +6,7 @@ import java.io.IOException
 /**
  * The Daemon that continuously checks for new packets.
  */
-class DEDaemon(private val manager: DEManager) : Thread() {
+class DEDaemon(private val manager: DEManager, val verbose : Boolean = false) : Thread() {
 
     var shouldStop : Boolean = false
 
@@ -51,7 +51,7 @@ class DEDaemon(private val manager: DEManager) : Thread() {
                 // Receive a packet and trigger the corresponding action.
                 val packet = receivePacket()
 
-                if (packet != null) {
+                if (packet != null && verbose) {
                     println(packet)
                 }
             }

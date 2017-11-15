@@ -1,4 +1,5 @@
 import net.DEManager;
+import net.LinkManager;
 import net.packets.DEPacket;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,6 +9,7 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.StringTokenizer;
 
 public class ClientTestMain {
     public static void main(String[] args) {
@@ -32,28 +34,26 @@ public class ClientTestMain {
         }
 
         try {
-            DEManager deManager = new DEManager(socket);
-            deManager.startDaemon();
+            LinkManager manager = new LinkManager(socket);
+            manager.startDaemon();
 
-            deManager.setOnPacketEventListener(new DEManager.OnPacketEventListener() {
-                @Override
-                public String onPacketReceived(@NotNull DEPacket packet) {
-                    return null;
-                }
-
-                @Override
-                public void onPacketAcknowledged(@NotNull DEPacket packet) {
-                    //System.out.println(packet);
-                }
-            });
+            System.out.println("Client started!");
 
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             String line = null;
             while((line = br.readLine()) != null) {
-                byte[] b = line.getBytes();
-                DEPacket packet = new DEPacket(1, 1234, DEPacket.RESPONSE_FLAG_REQUEST,
-                                                b.length, b);
-                deManager.sendPacket(packet);
+                if (line.startsWith("keys")) {  // KEYBOARD SHORTCUT
+                    StringTokenizer st = new StringTokenizer(line);
+                    st.nextToken();
+                    String app = st.nextToken();
+                    String keys = st.nextToken();
+                    manager.sendKeyboardShortcut(app, keys, new LinkManager.OnKeyboardShortcutAcknowledgedListener() {
+                        @Override
+                        public void onKeyboardShortcutAcknowledged(@NotNull String response) {
+                            System.out.println("Response: "+response);
+                        }
+                    });
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
