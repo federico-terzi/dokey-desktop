@@ -37,8 +37,8 @@ public class ClientTestMain {
 
             deManager.setOnPacketEventListener(new DEManager.OnPacketEventListener() {
                 @Override
-                public void onPacketReceived(@NotNull DEPacket packet) {
-
+                public String onPacketReceived(@NotNull DEPacket packet) {
+                    return null;
                 }
 
                 @Override

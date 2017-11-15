@@ -119,6 +119,6 @@ open class DEManager @Throws(IOException::class)
         /**
          * Triggered when receiving a request packet.
          */
-        fun onPacketReceived(packet : DEPacket)
+        fun onPacketReceived(packet : DEPacket) : String?
     }
 }

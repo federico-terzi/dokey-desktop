@@ -24,11 +24,16 @@ class DEDaemon(private val manager: DEManager) : Thread() {
                 manager.onPacketEventListener?.onPacketAcknowledged(packet)
             }else{  // Request packet
                 // If the packet is a request packet,
-                // trigger the callback
-                manager.onPacketEventListener?.onPacketReceived(packet)
+                // trigger the callback and get the response from it.
+                val response = manager.onPacketEventListener?.onPacketReceived(packet)
 
                 // and send the response packet ( ACK ).
-                val responsePacket = DEPacket.responsePacket(packet)
+                // ( with a response if available ).
+                val responsePacket = if (response == null) {
+                    DEPacket.responsePacket(packet)
+                }else{
+                    DEPacket.responsePacket(packet, response)
+                }
                 manager.sendPacket(responsePacket)
             }
 

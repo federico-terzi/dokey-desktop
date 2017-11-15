@@ -1,5 +1,6 @@
 package net;
 
+import net.model.KeyboardKeys;
 import net.packets.DEPacket;
 import net.packets.KeyboardShortcutPacket;
 import org.junit.After;
@@ -14,6 +15,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.Key;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -69,5 +72,55 @@ public class LinkManagerTest {
 
         KeyboardShortcutPacket keyboardShortcutPacket = (KeyboardShortcutPacket) packet;
         assertEquals(keyboardShortcutPacket.getPayloadAsString(), "test");
+    }
+
+    @Test
+    public void sendPacketTest() throws IOException {
+        // Should not have new packets
+        assertFalse(clientManager.hasNewPackets());
+
+        // Create a mock listener
+        LinkManager.OnPacketAcknowledgedListener listener = mock(LinkManager.OnPacketAcknowledgedListener.class);
+
+        // Send a packet
+        DEPacket packet = DEPacket.stringPacket("TEST");
+        serverManager.sendPacket(packet, listener);
+
+        // Trigger artificially the DEDaemon receive packet cycles
+        clientManager.forceDaemonReceivePacket();
+        serverManager.forceDaemonReceivePacket();
+
+        DEPacket expectedPacket = DEPacket.responsePacket(packet);
+
+        // Make sure the ack callback has been fired and the packet is correct
+        verify(listener).onPacketAcknowledged(ArgumentMatchers.eq(expectedPacket));
+    }
+
+    @Test
+    public void keyboardShortcutTest() throws IOException {
+        // Should not have new packets
+        assertFalse(clientManager.hasNewPackets());
+        assertFalse(serverManager.hasNewPackets());
+
+        // Create mock listeners
+        LinkManager.OnKeyboardShortcutAcknowledgedListener clientAckListener = mock(LinkManager.OnKeyboardShortcutAcknowledgedListener.class);
+        LinkManager.OnKeyboardShortcutReceivedListener serverReceivedListener = mock(LinkManager.OnKeyboardShortcutReceivedListener.class);
+
+        // Register the server listener
+        serverManager.setKeyboardShortcutListener(serverReceivedListener);
+
+        // Send a keyboard combination
+        clientManager.sendKeyboardShortcut("testApp", "ctrl+shift + k", clientAckListener);
+
+        // Trigger artificially the DEDaemon receive packet cycles
+        serverManager.forceDaemonReceivePacket();
+        clientManager.forceDaemonReceivePacket();
+
+        // Make sure the keyboard shortcut ack callback has fired correctly
+        verify(clientAckListener).onKeyboardShortcutAcknowledged(ArgumentMatchers.eq(KeyboardShortcutPacket.RESPONSE_OK));
+
+        List<KeyboardKeys> expected = Arrays.asList(KeyboardKeys.VK_CONTROL, KeyboardKeys.VK_SHIFT,  KeyboardKeys.VK_K);
+        // Make sure the keyboard shortcut ack callback has fired correctly
+        verify(serverReceivedListener).onKeyboardShortcutReceived("testApp", expected);
     }
 }

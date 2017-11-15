@@ -194,6 +194,19 @@ public class DEPacket {
     }
 
     /**
+     * Generate the response packet for the given request packet and the given response.
+     */
+    public static DEPacket responsePacket(DEPacket requestPacket, String response) {
+        DEPacket packet = new DEPacket();
+        packet.setPacketID(requestPacket.getPacketID());
+        packet.setOpType(requestPacket.getOpType());
+        packet.setResponseFlag(DEPacket.RESPONSE_FLAG_RESPONSE);
+        packet.setPayloadLength(response.length());
+        packet.setPayload(response.getBytes());
+        return packet;
+    }
+
+    /**
      * Generate and return a DEPacket with the given string.
      * An ID is also automatically generated.
      */
