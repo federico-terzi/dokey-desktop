@@ -1,23 +1,10 @@
 package system.MAC;
 
-import org.apache.commons.lang3.StringUtils;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import system.MS.MSApplication;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.model.Window;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.filechooser.FileSystemView;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.Buffer;
 import java.util.*;
 
 public class MACApplicationManager implements ApplicationManager {
@@ -51,10 +38,13 @@ public class MACApplicationManager implements ApplicationManager {
             // Get the app folder path
             String appPath = getAppPathFromExecutablePath(executablePath);
 
-            System.out.println(appPath);
+            // Get the application
+            Application application = null;
+            if (appPath != null) {
+                application = addApplicationFromAppPath(appPath, appName);
+            }
 
-            // TODO: Application
-            Window window = new MACWindow(pid, windowTitle, executablePath, null);
+            Window window = new MACWindow(pid, windowTitle, executablePath, application);
             return window;
 
         } catch (IOException e) {
@@ -218,7 +208,7 @@ public class MACApplicationManager implements ApplicationManager {
             String applicationName = app.getName().substring(0, app.getName().length()-4);
 
             // Add the application
-            addApplicationFromExecutablePath(appPath, applicationName);
+            addApplicationFromAppPath(appPath, applicationName);
 
             // Update the listener and increase the counter
             if (listener != null) {
@@ -239,7 +229,7 @@ public class MACApplicationManager implements ApplicationManager {
      * @param applicationName name of the app
      * @return the Application object.
      */
-    private Application addApplicationFromExecutablePath(String appPath, String applicationName) {
+    private Application addApplicationFromAppPath(String appPath, String applicationName) {
         // Make sure the target is an app
         if (appPath.toLowerCase().endsWith(".app")) {
             // Get the app icon
