@@ -1,6 +1,7 @@
 package net.packets;
 
 import net.model.KeyboardKeys;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,13 +10,30 @@ import java.util.StringTokenizer;
 /**
  * Represent a keyboard shortcut event.
  */
-public class KeyboardShortcutPacket extends DEPacket {
+public class KeyboardShortcutPacket extends JSONPacket {
 
     public static final int OP_TYPE = 1001;
 
-    public KeyboardShortcutPacket(String keyCombination) throws KeyboardShortcutParseException {
-        super(cleanKeyCombination(keyCombination));
-        this.setOpType(OP_TYPE);
+    // Payload values, must be populated with the parse() method.
+    private String application = null;
+    private String keys = null;
+
+    public KeyboardShortcutPacket(String payload){
+        super(OP_TYPE, payload);
+    }
+
+    /**
+     * Create a KeyboardShortcutPacket.
+     * @param application String application identifier
+     * @param keyCombination keyboard combination as String
+     * @throws KeyboardShortcutParseException
+     */
+    public static KeyboardShortcutPacket create(String application, String keyCombination) throws KeyboardShortcutParseException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("app", application);
+        jsonObject.put("keys", cleanKeyCombination(keyCombination));
+        String json = jsonObject.toString();
+        return new KeyboardShortcutPacket(json);
     }
 
     /**
@@ -63,10 +81,12 @@ public class KeyboardShortcutPacket extends DEPacket {
      * @return the list of KeyboardKeys used in the shortcut.
      */
     public List<KeyboardKeys> getKeys() {
+        checkJsonHasBeenParsed();
+
         List<KeyboardKeys> output = new ArrayList<>();
 
         // Analyze the string payload with a tokenizer
-        StringTokenizer st = new StringTokenizer(getPayloadAsString(), "+");
+        StringTokenizer st = new StringTokenizer(keys, "+");
 
         // Cycle through all tokens
         while(st.hasMoreTokens()) {
@@ -83,6 +103,25 @@ public class KeyboardShortcutPacket extends DEPacket {
         }
 
         return output;
+    }
+
+    /**
+     * Parse the payload json values
+     */
+    @Override
+    public void parse() {
+        JSONObject jsonObject = new JSONObject(getPayloadAsString());
+        application = jsonObject.getString("app");
+        keys = jsonObject.getString("keys");
+        super.parse();
+    }
+
+    public String getApplication() {
+        return application;
+    }
+
+    public String getKeysString() {
+        return keys;
     }
 
     /**

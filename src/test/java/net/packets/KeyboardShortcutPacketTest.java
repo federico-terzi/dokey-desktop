@@ -42,9 +42,27 @@ public class KeyboardShortcutPacketTest {
 
     @Test
     public void testGetKeys() throws KeyboardShortcutPacket.KeyboardShortcutParseException {
-        KeyboardShortcutPacket packet = new KeyboardShortcutPacket("ctrl +  c");
+        KeyboardShortcutPacket packet = KeyboardShortcutPacket.create("testApp", "ctrl +  c");
+        packet.parse();
         List<KeyboardKeys> expected = Arrays.asList(KeyboardKeys.VK_CONTROL, KeyboardKeys.VK_C);
 
         assertTrue(packet.getKeys().equals(expected));
+    }
+
+    @Test(expected = JSONPacket.NotParsedException.class)
+    public void testGetKeysBeforeParseShouldRaiseException() throws KeyboardShortcutPacket.KeyboardShortcutParseException {
+        KeyboardShortcutPacket packet = KeyboardShortcutPacket.create("testApp", "ctrl +  c");
+        List<KeyboardKeys> expected = Arrays.asList(KeyboardKeys.VK_CONTROL, KeyboardKeys.VK_C);
+
+        assertTrue(packet.getKeys().equals(expected));
+    }
+
+    @Test
+    public void testParse() throws KeyboardShortcutPacket.KeyboardShortcutParseException {
+        KeyboardShortcutPacket packet = KeyboardShortcutPacket.create("testApp", "ctrl +  c");
+        KeyboardShortcutPacket newPacket = new KeyboardShortcutPacket(packet.getPayloadAsString());
+        newPacket.parse();
+        assertEquals(newPacket.getKeysString(), "CTRL+C");
+        assertEquals(newPacket.getApplication(), "testApp");
     }
 }

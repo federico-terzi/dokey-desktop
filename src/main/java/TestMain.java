@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
-public class Main {
+public class TestMain {
     public static void main(String[] args) {
         ApplicationManager wm = ApplicationManagerFactory.getInstance();
 
