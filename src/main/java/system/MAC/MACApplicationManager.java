@@ -41,7 +41,7 @@ public class MACApplicationManager implements ApplicationManager {
             // Get the application
             Application application = null;
             if (appPath != null) {
-                application = addApplicationFromAppPath(appPath, appName);
+                application = addApplicationFromAppPath(appPath);
             }
 
             Window window = new MACWindow(pid, windowTitle, executablePath, application);
@@ -204,15 +204,13 @@ public class MACApplicationManager implements ApplicationManager {
         // Cycle through all entries
         for (File app : fileList) {
             String appPath = app.getAbsolutePath();
-            // Get the application name by removing the ".app" suffix
-            String applicationName = app.getName().substring(0, app.getName().length()-4);
 
             // Add the application
-            addApplicationFromAppPath(appPath, applicationName);
+            Application application = addApplicationFromAppPath(appPath);
 
             // Update the listener and increase the counter
             if (listener != null) {
-                listener.onProgressUpdate(applicationName, current, fileList.size());
+                listener.onProgressUpdate(application.getName(), current, fileList.size());
             }
             current++;
         }
@@ -226,12 +224,17 @@ public class MACApplicationManager implements ApplicationManager {
     /**
      * Parse and analyze the application from the app folder. Then add it to the applicationMap.
      * @param appPath path to the app folder
-     * @param applicationName name of the app
      * @return the Application object.
      */
-    private Application addApplicationFromAppPath(String appPath, String applicationName) {
+    private Application addApplicationFromAppPath(String appPath) {
         // Make sure the target is an app
         if (appPath.toLowerCase().endsWith(".app")) {
+            // Get the app folder
+            File app = new File(appPath);
+
+            // Get the application name by removing the ".app" suffix
+            String applicationName = app.getName().substring(0, app.getName().length()-4);
+
             // Get the app icon
             String iconPath = getIconPath(appPath);
 
