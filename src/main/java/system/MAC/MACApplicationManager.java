@@ -387,9 +387,15 @@ public class MACApplicationManager implements ApplicationManager {
         return null;
     }
 
+    /**
+     * Return a list of Application(s) installed in the system.
+     * Must be called after "loadApplications()".
+     *
+     * @return the list of Application installed in the system.
+     */
     @Override
     public List<Application> getApplicationList() {
-        return null;
+        return new ArrayList<>(this.applicationMap.values());
     }
 
     /**
