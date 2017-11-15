@@ -44,7 +44,7 @@ public class MACApplicationManager implements ApplicationManager {
                 application = addApplicationFromAppPath(appPath);
             }
 
-            Window window = new MACWindow(pid, windowTitle, executablePath, application);
+            Window window = new MACWindow(windowTitle, application, appName);
             return window;
 
         } catch (IOException e) {
@@ -191,7 +191,7 @@ public class MACApplicationManager implements ApplicationManager {
 
                 String windowTitle;
                 while ((windowTitle = br.readLine()) != null && !windowTitle.trim().isEmpty()) {
-                    Window window = new MACWindow(pid, windowTitle, executablePath, application);
+                    Window window = new MACWindow(windowTitle, application, appName);
                     windowList.add(window);
                 }
             }

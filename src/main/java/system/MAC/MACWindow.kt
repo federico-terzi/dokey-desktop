@@ -6,9 +6,10 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 
-class MACWindow(PID: Int, titleText: String,
-                executablePath: String?, application: Application?)
-    : Window(PID, titleText, executablePath, application) {
+class MACWindow(titleText: String,
+                application: Application?,
+                val appIdentifier : String)
+    : Window(titleText, application) {
 
     /**
      * Focus on a system.window
@@ -19,7 +20,7 @@ class MACWindow(PID: Int, titleText: String,
 
         try {
             // Execute the process
-            val proc = runtime.exec(arrayOf("osascript", scriptPath, application?.name, titleText))
+            val proc = runtime.exec(arrayOf("osascript", scriptPath, appIdentifier, titleText))
 
             // Get the output
             val br = BufferedReader(InputStreamReader(proc.errorStream))

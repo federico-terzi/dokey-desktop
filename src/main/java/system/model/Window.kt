@@ -1,15 +1,11 @@
 package system.model
 
 abstract class Window {
-    val PID: Int
     val titleText: String
-    val executablePath: String?
     val application : Application?
 
-    constructor(PID: Int, titleText: String, executablePath: String?, application: Application?) {
-        this.PID = PID
+    constructor(titleText: String, application: Application?) {
         this.titleText = titleText
-        this.executablePath = executablePath
         this.application = application
     }
 
@@ -20,6 +16,6 @@ abstract class Window {
     abstract fun focusWindow() : Boolean
 
     override fun toString(): String {
-        return "Window(PID=$PID, titleText='$titleText', executablePath=$executablePath, application=$application)"
+        return "Window(titleText='$titleText', application=$application)"
     }
 }
