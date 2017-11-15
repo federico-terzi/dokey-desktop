@@ -45,6 +45,8 @@ public class MACApplicationManager implements ApplicationManager {
 
             if (application != null) {
                 application.open();
+            }else{
+                return false;
             }
         }
 

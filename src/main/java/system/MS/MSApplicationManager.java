@@ -70,6 +70,8 @@ public class MSApplicationManager implements ApplicationManager {
             }
             if (application != null) {
                 application.open();
+            }else{
+                return false;
             }
         }
 
