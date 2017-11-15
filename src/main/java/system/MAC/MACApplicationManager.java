@@ -266,7 +266,7 @@ public class MACApplicationManager implements ApplicationManager {
      * @param appPath the app folder.
      * @return the icon image file. Return null if an error occurred.
      */
-    private File extractIcon(String appPath) {  // TODO: improve extracting icon logic by looking at the info.plist file
+    private File extractIcon(String appPath) {
         // Get the icon file
         File iconFile = generateIconFile(appPath);
 

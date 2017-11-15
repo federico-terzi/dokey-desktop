@@ -12,8 +12,6 @@ public class Main {
     public static void main(String[] args) {
         ApplicationManager wm = ApplicationManagerFactory.getInstance();
 
-        (new MACApplicationManager()).getIconFilenameFromPlistFile(null);
-
         int pid = wm.getActivePID();
         Window window = wm.getActiveWindow();
         //window.focusWindow();
