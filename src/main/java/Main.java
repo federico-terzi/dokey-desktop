@@ -1,3 +1,4 @@
+import system.MAC.MACApplicationManager;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.model.Window;
@@ -10,6 +11,8 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
         ApplicationManager wm = ApplicationManagerFactory.getInstance();
+
+        (new MACApplicationManager()).getIconFilenameFromPlistFile(null);
 
         int pid = wm.getActivePID();
         Window window = wm.getActiveWindow();

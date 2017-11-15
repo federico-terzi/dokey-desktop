@@ -1,6 +1,9 @@
 package system.MAC;
 
 import org.apache.commons.lang3.StringUtils;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import system.MS.MSApplication;
 import system.model.Application;
 import system.model.ApplicationManager;
@@ -9,8 +12,12 @@ import system.model.Window;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.Buffer;
 import java.util.*;
 
 public class MACApplicationManager implements ApplicationManager {
@@ -273,46 +280,87 @@ public class MACApplicationManager implements ApplicationManager {
             return null;
         }
 
-        // Get the first .icns file in the resources directory
-        File internalIconFile = null;
-        File[] includedFiles = resourcesDir.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".icns");
-            }
-        });
-        // No icons found
-        if (includedFiles.length == 0) {
-            return null;
-        }
-        // Set the internal icon file
-        internalIconFile = includedFiles[0];
+        // Get the icon file
+        File internalIconFile = getInternalIconFileFromPlistFile(appDir);
 
-        // CONVERSION PROCESS
+        // If the internal icon is valid, convert it to png
+        if (internalIconFile != null && internalIconFile.isFile()) {
+            // CONVERSION PROCESS
 
-        Runtime runtime = Runtime.getRuntime();
+            Runtime runtime = Runtime.getRuntime();
 
-        try {
-            // Convert the icon to png and move to the image cache folder
-            Process proc = runtime.exec(new String[]{"sips", "-s", "format", "png", "-Z", "256",
-                    internalIconFile.getAbsolutePath(), "--out", iconFile.getAbsolutePath()});
+            try {
+                // Convert the icon to png and move to the image cache folder
+                Process proc = runtime.exec(new String[]{"sips", "-s", "format", "png", "-Z", "256",
+                        internalIconFile.getAbsolutePath(), "--out", iconFile.getAbsolutePath()});
 
-            // If an error occurred, return null
-            if (proc.getErrorStream().available()>0) {
+                // If an error occurred, return null
+                if (proc.getErrorStream().available()>0) {
+                    return null;
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
                 return null;
             }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        }else{
             return null;
         }
 
         return iconFile;
     }
 
-    // Return the icon filename from the app info.plist file
-    private String getIconFilenameFromPlistFile(File appDir) {
+    /**
+     * Return the icon filename from the app info.plist file
+     * @param appDir the application folder
+     * @return the icon file
+     */
+    public File getInternalIconFileFromPlistFile(File appDir) {
+        File infoPlistFile = new File(appDir, "/Contents/info.plist");
 
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(infoPlistFile)));
+
+            String line = null;
+
+            while ((line = br.readLine()) != null) {
+                String trimmedLine = line.trim();
+                // Check if line contains one of the icon attributes
+                if (line.contains("CFBundleIconFile") || line.contains("CFBundleIconName") ||
+                        line.contains("CFBundleIconFiles") || line.contains("CFBundleIcons")) {
+                    String keyLine = null;
+                    while((keyLine = br.readLine()) != null) {
+                        keyLine = keyLine.trim();
+                        if (!keyLine.isEmpty()) {
+                            // Get the appicon name
+                            String appIconName = keyLine.split(">")[1].split("</")[0];
+
+                            // Append the .icns if not present
+                            if (!appIconName.endsWith(".icns")) {
+                                appIconName += ".icns";
+                            }
+
+                            // Get the icon file
+                            File iconFile = new File(appDir, "/Contents/Resources/"+appIconName);
+
+                            // Make sure it is a valid path
+                            if (iconFile.isFile()) {
+                                return iconFile;
+                            }else{
+                                return null;
+                            }
+                        }
+                    }
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     @Override
