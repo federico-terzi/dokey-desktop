@@ -73,7 +73,7 @@ class LinkManager(val socket: Socket) : DEManager(socket), DEManager.OnPacketEve
     /**
      * Implemented from the DEManager, used to keep track of all the packets.
      */
-    override fun onPacketReceived(packet: DEPacket) : String? {
+    override fun onPacketReceived(packet: DEPacket): String? {
         // Get the specialized packet.
         val specializedPacket = getSpecializedPacket(packet)
 
@@ -91,7 +91,7 @@ class LinkManager(val socket: Socket) : DEManager(socket), DEManager.OnPacketEve
     /**
      * Send a packet and specify an acknowledgment callback
      */
-    fun sendPacket(packet : DEPacket, listener : OnPacketAcknowledgedListener) {
+    fun sendPacket(packet: DEPacket, listener: OnPacketAcknowledgedListener) {
         // Send the packet
         this.sendPacket(packet)
 
@@ -102,14 +102,14 @@ class LinkManager(val socket: Socket) : DEManager(socket), DEManager.OnPacketEve
     /**
      * Register the callback for a specific opType incoming packet
      */
-    fun setEventListener(opType : Int, listener : OnPacketReceivedListener) {
+    fun setEventListener(opType: Int, listener: OnPacketReceivedListener) {
         eventCallbackMap[opType] = listener
     }
 
     /**
      * Remove the event listener.
      */
-    fun removeEventListener(opType : Int) {
+    fun removeEventListener(opType: Int) {
         if (eventCallbackMap.containsKey(opType)) {
             eventCallbackMap.remove(opType)
         }
@@ -133,7 +133,7 @@ class LinkManager(val socket: Socket) : DEManager(socket), DEManager.OnPacketEve
         /**
          * Triggered when receiving a request packet.
          */
-        fun onPacketReceived(packet: DEPacket) : String?
+        fun onPacketReceived(packet: DEPacket): String?
     }
 
     /**
@@ -147,7 +147,7 @@ class LinkManager(val socket: Socket) : DEManager(socket), DEManager.OnPacketEve
     /**
      * Used to send a keyboard shortcut to the remote server
      */
-    fun sendKeyboardShortcut(application : String, keys : String, listener: OnKeyboardShortcutAcknowledgedListener) {
+    fun sendKeyboardShortcut(application: String, keys: String, listener: OnKeyboardShortcutAcknowledgedListener) {
         val packet = KeyboardShortcutPacket.create(application, keys)
         sendPacket(packet, object : OnPacketAcknowledgedListener {
             override fun onPacketAcknowledged(packet: DEPacket) {
@@ -170,16 +170,20 @@ class LinkManager(val socket: Socket) : DEManager(socket), DEManager.OnPacketEve
      */
     fun setKeyboardShortcutListener(listener: OnKeyboardShortcutReceivedListener) {
         setEventListener(KeyboardShortcutPacket.OP_TYPE, object : OnPacketReceivedListener {
-            override fun onPacketReceived(packet: DEPacket) : String? {
+            override fun onPacketReceived(packet: DEPacket): String? {
                 val keyPacket = packet as KeyboardShortcutPacket  // Cast the packet
                 keyPacket.parse()  // Parse the values
-                listener.onKeyboardShortcutReceived(keyPacket.application, keyPacket.keys)
-                return KeyboardShortcutPacket.RESPONSE_OK  // TODO: the response should reflect the real status
+                val res = listener.onKeyboardShortcutReceived(keyPacket.application, keyPacket.keys)
+                if (res) {
+                    return KeyboardShortcutPacket.RESPONSE_OK
+                } else {
+                    return KeyboardShortcutPacket.RESPONSE_ERROR
+                }
             }
         })
     }
 
     interface OnKeyboardShortcutReceivedListener {
-        fun onKeyboardShortcutReceived(application : String, keys : List<KeyboardKeys>)
+        fun onKeyboardShortcutReceived(application: String, keys: List<KeyboardKeys>): Boolean
     }
 }

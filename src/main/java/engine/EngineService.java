@@ -63,13 +63,16 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
      * @param keys a list of keys to be pressed
      */
     @Override
-    public void onKeyboardShortcutReceived(@NotNull String application, @NotNull List<? extends KeyboardKeys> keys) {
+    public boolean onKeyboardShortcutReceived(@NotNull String application, @NotNull List<? extends KeyboardKeys> keys) {
         // Focus the application
         boolean res = appManager.openApplication(application);
 
         // If the app has been focused correctly, send the keystrokes
         if (res) {
             keyboardManager.sendKeystroke(keys);
+            return true;
         }
+
+        return false;
     }
 }

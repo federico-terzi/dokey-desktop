@@ -45,7 +45,7 @@ public class MACApplicationManager implements ApplicationManager {
 
             // Make sure the app is valid before opening it
             if (application != null) {
-                application.open();
+                return application.open();
             }else{
                 return false;
             }

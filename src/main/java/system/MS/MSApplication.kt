@@ -12,10 +12,16 @@ class MSApplication(name: String, executablePath: String, iconPath: String?) :
     /**
      * Open an application.
      */
-    override fun open() {
+    override fun open() : Boolean {
         val runtime = Runtime.getRuntime()
 
         // Execute the process
-        val proc = runtime.exec(executablePath)
+        try {
+            val proc = runtime.exec(executablePath)
+            return true
+        }catch (e : Exception) {
+            e.printStackTrace()
+            return false
+        }
     }
 }

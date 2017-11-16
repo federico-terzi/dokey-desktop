@@ -29,8 +29,9 @@ abstract class Application {
 
     /**
      * Open an application.
+     * @return true if opened correctly
      */
-    abstract fun open()
+    abstract fun open() : Boolean
 
     /**
      * Return the String Hash ID of the application.
