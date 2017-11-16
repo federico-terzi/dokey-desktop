@@ -21,6 +21,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class LinkManagerTest {
 
@@ -102,25 +103,33 @@ public class LinkManagerTest {
         assertFalse(clientManager.hasNewPackets());
         assertFalse(serverManager.hasNewPackets());
 
+        List<KeyboardKeys> expected = Arrays.asList(KeyboardKeys.VK_CONTROL, KeyboardKeys.VK_SHIFT,  KeyboardKeys.VK_K);
+
         // Create mock listeners
         LinkManager.OnKeyboardShortcutAcknowledgedListener clientAckListener = mock(LinkManager.OnKeyboardShortcutAcknowledgedListener.class);
         LinkManager.OnKeyboardShortcutReceivedListener serverReceivedListener = mock(LinkManager.OnKeyboardShortcutReceivedListener.class);
+        when(serverReceivedListener.onKeyboardShortcutReceived("testApp", expected)).thenReturn(true);
+        when(serverReceivedListener.onKeyboardShortcutReceived("wrongApp", expected)).thenReturn(false);
 
         // Register the server listener
         serverManager.setKeyboardShortcutListener(serverReceivedListener);
 
         // Send a keyboard combination
         clientManager.sendKeyboardShortcut("testApp", "ctrl+shift + k", clientAckListener);
+        clientManager.sendKeyboardShortcut("wrongApp", "ctrl+shift + k", clientAckListener);
 
         // Trigger artificially the DEDaemon receive packet cycles
+        serverManager.forceDaemonReceivePacket();
+        clientManager.forceDaemonReceivePacket();
         serverManager.forceDaemonReceivePacket();
         clientManager.forceDaemonReceivePacket();
 
         // Make sure the keyboard shortcut ack callback has fired correctly
         verify(clientAckListener).onKeyboardShortcutAcknowledged(ArgumentMatchers.eq(KeyboardShortcutPacket.RESPONSE_OK));
+        verify(clientAckListener).onKeyboardShortcutAcknowledged(ArgumentMatchers.eq(KeyboardShortcutPacket.RESPONSE_ERROR));
 
-        List<KeyboardKeys> expected = Arrays.asList(KeyboardKeys.VK_CONTROL, KeyboardKeys.VK_SHIFT,  KeyboardKeys.VK_K);
         // Make sure the keyboard shortcut ack callback has fired correctly
         verify(serverReceivedListener).onKeyboardShortcutReceived("testApp", expected);
+        verify(serverReceivedListener).onKeyboardShortcutReceived("wrongApp", expected);
     }
 }
