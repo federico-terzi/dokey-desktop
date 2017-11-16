@@ -189,4 +189,16 @@ public enum KeyboardKeys {
         }
         return null;
     }
+
+    public String getKeyName() {
+        return keyName;
+    }
+
+    public String getKeyEventName() {
+        return keyEventName;
+    }
+
+    public int getKeyCode() {
+        return keyCode;
+    }
 }
