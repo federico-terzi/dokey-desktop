@@ -19,15 +19,16 @@ import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 
 public class MSApplicationManager implements ApplicationManager {
     private static final int MAX_TITLE_LENGTH = 1024;
+
+    private static String START_MENU_CACHE_FILENAME = "startmenucache.txt";
 
     // This map will hold the applications, associated with their executable path
     private Map<String, Application> applicationMap = new HashMap<>();
@@ -41,6 +42,7 @@ public class MSApplicationManager implements ApplicationManager {
 
     /**
      * Focus an application if already open or start it if not.
+     *
      * @param executablePath path to the application.
      * @return true if succeeded, false otherwise.
      */
@@ -63,15 +65,15 @@ public class MSApplicationManager implements ApplicationManager {
 
         if (isApplicationOpen) {  // App is open, focus the first window
             firstOpenWindow.focusWindow();
-        }else{     // App is not open, start it.
+        } else {     // App is not open, start it.
             Application application = applicationMap.get(executablePath);
             if (application == null) {
-                application = addApplicationFromExecutablePath(executablePath, null);
+                application = addApplicationFromExecutablePath(executablePath, null, null);
             }
             // Make sure the app is valid before opening it
             if (application != null) {
                 application.open();
-            }else{
+            } else {
                 return false;
             }
         }
@@ -252,7 +254,7 @@ public class MSApplicationManager implements ApplicationManager {
 
                 // If application is not present in the list, load it dynamically
                 if (application == null) {
-                    application = addApplicationFromExecutablePath(executablePath, null);
+                    application = addApplicationFromExecutablePath(executablePath, null, null);
                 }
 
                 Window window = new MSWindow(titleText, application, hwnd);
@@ -299,18 +301,41 @@ public class MSApplicationManager implements ApplicationManager {
             fileList.addAll(files);
         }
 
+        // Get the start menu lnk destination cache
+        Map<String, MSCachedApplication> lnkCacheMap = loadLnkDestinationCacheMap();
+
         // Current application in the list
         int current = 0;
 
         // Cycle through all entries
         for (File file : fileList) {
-            String executablePath = getLnkExecutablePath(file.getAbsolutePath());
             String applicationName = file.getName().replace(".lnk", "");
+            String executablePath = null;
+            String iconPath = null;
+
+            // Try to load the application info from the cache
+            if (lnkCacheMap.containsKey(file.getAbsolutePath())) {  // APP in cache
+                MSCachedApplication cachedApp = lnkCacheMap.get(file.getAbsolutePath());
+                executablePath = cachedApp.getExecutablePath();
+                iconPath = cachedApp.getIconPath();
+            } else {  // APP not in cache
+                // Calculate the correct values
+                executablePath = getLnkExecutablePath(file.getAbsolutePath());
+
+                // Make sure the executable exists
+                if (executablePath != null) {
+                    // Get the app icon
+                    iconPath = getIconPath(executablePath);
+
+                    // Save the info to the cache
+                    writeLnkDestinationToCache(file.getAbsolutePath(), executablePath, iconPath);
+                }
+            }
 
             // Make sure the target is an exe file
             if (executablePath != null) {
                 // Add the application
-                addApplicationFromExecutablePath(executablePath, applicationName);
+                addApplicationFromExecutablePath(executablePath, applicationName, iconPath);
             }
 
             // Update the listener and increase the counter
@@ -373,11 +398,13 @@ public class MSApplicationManager implements ApplicationManager {
      * If applicationName is not specified, it calculates dynamically from the executablePath.
      * If executablePath is already present in the applicationMap,
      * to mitigate ambiguities, the application name is forced to the one calculated dynamically.
-     * @param executablePath path of the app exe
+     *
+     * @param executablePath  path of the app exe
      * @param applicationName application name
+     * @param iconPath        the path to the icon. If null is dynamically generated
      * @return an Application object.
      */
-    private Application addApplicationFromExecutablePath(String executablePath, String applicationName) {
+    private Application addApplicationFromExecutablePath(String executablePath, String applicationName, String iconPath) {
         // Make sure the target is an exe file
         if (executablePath.toLowerCase().endsWith(".exe")) {
             // Generate the application name if null or if
@@ -390,8 +417,10 @@ public class MSApplicationManager implements ApplicationManager {
                 applicationName = StringUtils.capitalize(appExe.getName().toLowerCase().replace(".exe", ""));
             }
 
-            // Get the app icon
-            String iconPath = getIconPath(executablePath);
+            // If the application icon is null, find it
+            if (iconPath == null) {
+                iconPath = getIconPath(executablePath);
+            }
 
             // Create the application
             Application application = new MSApplication(applicationName, executablePath, iconPath);
@@ -406,6 +435,7 @@ public class MSApplicationManager implements ApplicationManager {
 
     /**
      * Check if powershell is enabled in this machine.
+     *
      * @return true if powershell is enabled, else otherwise.
      */
     private static boolean checkPowerShellEnabled() {
@@ -416,7 +446,7 @@ public class MSApplicationManager implements ApplicationManager {
             Process proc = runtime.exec(new String[]{"powershell", "echo yes"});
 
             // If there was an error, return false
-            if (proc.getErrorStream().available()>0) {
+            if (proc.getErrorStream().available() > 0) {
                 return false;
             }
 
@@ -434,6 +464,7 @@ public class MSApplicationManager implements ApplicationManager {
 
     /**
      * Generate the icon file for the given executable
+     *
      * @param executablePath the executable with the icon
      * @return the icon File
      */
@@ -447,6 +478,7 @@ public class MSApplicationManager implements ApplicationManager {
 
     /**
      * Obtain the icon associated with the given executable.
+     *
      * @param executablePath path to the executable.
      * @return the icon associated with the given executable.
      */
@@ -465,6 +497,7 @@ public class MSApplicationManager implements ApplicationManager {
 
     /**
      * Extract the icon from the given executable.
+     *
      * @param executablePath the executable with the icon.
      * @return the icon image file. Return null if an error occurred.
      */
@@ -481,11 +514,11 @@ public class MSApplicationManager implements ApplicationManager {
             // An error occurred, return null
             if (!ris) {
                 return null;
-            }else{
+            } else {
                 // Return the icon file ( generate again the file to avoid problems )
                 return generateIconFile(executablePath);
             }
-        }else{  // Not so good, but should do the trick
+        } else {  // Not so good, but should do the trick
             Icon icon = null;
             icon = FileSystemView.getFileSystemView().getSystemIcon(new File(executablePath));
             BufferedImage iconImage = (BufferedImage) iconToImage(icon);
@@ -501,7 +534,8 @@ public class MSApplicationManager implements ApplicationManager {
 
     /**
      * Extract the icon from the executable using the powershell method
-     * @param executablePath path of the executable
+     *
+     * @param executablePath  path of the executable
      * @param destinationFile path of the destination image file
      * @return true if succeeded, false otherwise.
      */
@@ -511,10 +545,10 @@ public class MSApplicationManager implements ApplicationManager {
         try {
             // Execute powershell
             Process proc = runtime.exec(new String[]{"powershell",
-                    "[System.Reflection.Assembly]::LoadWithPartialName('System.Drawing')  | Out-Null ; [System.Drawing.Icon]::ExtractAssociatedIcon('"+executablePath+"').ToBitmap().Save('"+destinationFile+"'); echo 'ok'"});
+                    "[System.Reflection.Assembly]::LoadWithPartialName('System.Drawing')  | Out-Null ; [System.Drawing.Icon]::ExtractAssociatedIcon('" + executablePath + "').ToBitmap().Save('" + destinationFile + "'); echo 'ok'"});
 
             // If there was an error, return false
-            if (proc.getErrorStream().available()>0) {
+            if (proc.getErrorStream().available() > 0) {
                 return false;
             }
 
@@ -532,6 +566,7 @@ public class MSApplicationManager implements ApplicationManager {
 
     /**
      * Create and retrieve the cache directory.
+     *
      * @return the Cache directory used to save files.
      */
     @Override
@@ -552,6 +587,7 @@ public class MSApplicationManager implements ApplicationManager {
 
     /**
      * Create and retrieve the image cache directory.
+     *
      * @return the Image Cache directory used to save images.
      */
     @Override
@@ -571,14 +607,14 @@ public class MSApplicationManager implements ApplicationManager {
 
     /**
      * Converts an icon to a buffered image
+     *
      * @param icon the icon to convert
      * @return the BufferedImage with the icon
      */
     private static Image iconToImage(Icon icon) {
         if (icon instanceof ImageIcon) {
-            return ((ImageIcon)icon).getImage();
-        }
-        else {
+            return ((ImageIcon) icon).getImage();
+        } else {
             int w = icon.getIconWidth();
             int h = icon.getIconHeight();
             GraphicsEnvironment ge =
@@ -591,5 +627,74 @@ public class MSApplicationManager implements ApplicationManager {
             g.dispose();
             return image;
         }
+    }
+
+    /**
+     * Write the specified lnk file path / destination to the cache file.
+     *
+     * @param lnkFilePath  the lnk file path
+     * @param destFilePath the destination file the lnk file points to
+     */
+    private void writeLnkDestinationToCache(String lnkFilePath, String destFilePath, String iconPath) {
+        // Get the cache destination file
+        File cacheFile = new File(getCacheDir(), START_MENU_CACHE_FILENAME);
+
+        // Open the file
+        try (FileWriter fw = new FileWriter(cacheFile, true)) {
+
+            // Append the info
+            fw.write(lnkFilePath);
+            fw.write('\n');
+            fw.write(destFilePath);
+            fw.write('\n');
+
+            // Write the appropriate value
+            if (iconPath != null) {
+                fw.write(iconPath);
+                fw.write('\n');
+            } else {
+                fw.write("NULL\n");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Read the start menu cache and return a map that associates the
+     * lnk file path to the cached application info.
+     *
+     * @return a map containing the association < LnkPath, CachedApp >
+     */
+    private Map<String, MSCachedApplication> loadLnkDestinationCacheMap() {
+        // Get the cache destination file
+        File cacheFile = new File(getCacheDir(), START_MENU_CACHE_FILENAME);
+
+        Map<String, MSCachedApplication> output = new HashMap<>();
+
+        // Make sure the file exists
+        if (cacheFile.isFile()) {
+            // Read all the info
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(cacheFile)))) {
+                String lnkPath;
+                while ((lnkPath = reader.readLine()) != null) {
+                    String executablePath = reader.readLine();
+                    String iconPath = reader.readLine();
+
+                    // Convert the null iconpath
+                    if (iconPath.equals("NULL")) {
+                        iconPath = null;
+                    }
+
+                    // Add the tuple to the map
+                    output.put(lnkPath, new MSCachedApplication(lnkPath, executablePath, iconPath));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return output;
     }
 }
