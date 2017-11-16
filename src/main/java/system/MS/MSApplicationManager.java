@@ -102,7 +102,7 @@ public class MSApplicationManager implements ApplicationManager {
         // Get the application
         Application application = applicationMap.get(executablePath);
 
-        Window window = new MSWindow(titleText, application, hwnd);
+        Window window = new MSWindow(titleText, application, PID.getValue(), hwnd);
         return window;
     }
 
@@ -257,7 +257,7 @@ public class MSApplicationManager implements ApplicationManager {
                     application = addApplicationFromExecutablePath(executablePath, null, null);
                 }
 
-                Window window = new MSWindow(titleText, application, hwnd);
+                Window window = new MSWindow(titleText, application, PID.getValue(), hwnd);
                 windowList.add(window);
 
                 return true;

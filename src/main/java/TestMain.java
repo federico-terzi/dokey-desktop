@@ -12,7 +12,7 @@ public class TestMain {
     public static void main(String[] args) {
         ApplicationManager wm = ApplicationManagerFactory.getInstance();
 
-        wm.openApplication("C:\\Program Files (x86)\\Dia\\bin\\diaw.exe");
+        //wm.openApplication("C:\\Program Files (x86)\\Dia\\bin\\diaw.exe");
 
         int pid = wm.getActivePID();
         Window window = wm.getActiveWindow();
