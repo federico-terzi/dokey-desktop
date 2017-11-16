@@ -43,7 +43,7 @@ public class ClientTestMain {
             String line = null;
             while((line = br.readLine()) != null) {
                 if (line.startsWith("keys")) {  // KEYBOARD SHORTCUT
-                    StringTokenizer st = new StringTokenizer(line);
+                    StringTokenizer st = new StringTokenizer(line, ";");
                     st.nextToken();
                     String app = st.nextToken();
                     String keys = st.nextToken();
