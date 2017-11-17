@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.model.Window;
+import utils.IconManager;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -32,6 +33,8 @@ public class MSApplicationManager implements ApplicationManager {
 
     // This map will hold the applications, associated with their executable path
     private Map<String, Application> applicationMap = new HashMap<>();
+
+    private IconManager iconManager = new IconManager();
 
     private boolean isPowerShellEnabled;
 
@@ -309,6 +312,12 @@ public class MSApplicationManager implements ApplicationManager {
 
         // Cycle through all entries
         for (File file : fileList) {
+            // Skip uninstallers
+            if (file.getName().toLowerCase().contains("uninstall")) {
+                System.out.println("Skipping :"+file.getAbsolutePath());
+                continue;
+            }
+
             String applicationName = file.getName().replace(".lnk", "");
             String executablePath = null;
             String iconPath = null;
@@ -409,8 +418,8 @@ public class MSApplicationManager implements ApplicationManager {
         if (executablePath.toLowerCase().endsWith(".exe")) {
             // Generate the application name if null or if
             // executablePath is already present, to mitigate ambiguities of the program name,
+            // the executable filename becomes the Application name ( without .exe )
             if (applicationMap.containsKey(executablePath) || applicationName == null) {
-                // the executable filename becomes the Application name ( without .exe )
                 File appExe = new File(executablePath);
                 // Create the new app name extracting the filename, removing the extension
                 // and capitalizing the first letter
@@ -484,11 +493,24 @@ public class MSApplicationManager implements ApplicationManager {
      */
     private String getIconPath(String executablePath) {
         // Get the icon file
-        File iconFile = generateIconFile(executablePath);
+        File iconFile = null;
+
+        // Get the executable file
+        File executableFile = new File(executablePath);
+
+        // Check if an high res version is available
+        if (iconManager.highResIconMap.containsKey(executableFile.getName())) {
+            iconFile = iconManager.highResIconMap.get(executableFile.getName());
+            System.out.println("ICON FROM HIGH RES CACHE: "+executablePath);
+        }else{
+            // Generate the icon file
+            iconFile = generateIconFile(executablePath);
+        }
 
         // If the file doesn't exist, it must be generated
         if (!iconFile.isFile()) {
             iconFile = extractIcon(executablePath);
+            System.out.println("ICON EXTRACTED: "+executablePath);
         }
 
         // Return the icon file path
