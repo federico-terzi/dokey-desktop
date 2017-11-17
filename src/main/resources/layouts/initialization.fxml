@@ -9,7 +9,8 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="CENTER" prefHeight="261.0" prefWidth="353.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+<VBox alignment="CENTER" prefHeight="261.0" prefWidth="353.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
+    fx:controller="app.UIControllers.InitializationController">
   <children>
     <Label fx:id="titleLabel" alignment="CENTER" contentDisplay="CENTER" text="Remote Key is initializing...">
       <font>
@@ -27,7 +28,7 @@
         <Insets bottom="15.0" />
       </VBox.margin>
     </ImageView>
-    <ProgressBar fx:id="progressBar" prefWidth="200.0" progress="0.32">
+    <ProgressBar fx:id="appProgressBar" prefWidth="200.0" progress="0.32">
       <VBox.margin>
         <Insets bottom="10.0" />
       </VBox.margin>

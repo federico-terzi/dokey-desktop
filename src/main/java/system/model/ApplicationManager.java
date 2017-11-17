@@ -56,7 +56,7 @@ public interface ApplicationManager {
      * Interface used to update the status of the "loadApplications" operation.
      */
     interface OnLoadApplicationsListener {
-        void onProgressUpdate(String applicationName, int current, int total);
+        void onProgressUpdate(String applicationName, String iconPath, int current, int total);
         void onApplicationsLoaded();
     }
 }

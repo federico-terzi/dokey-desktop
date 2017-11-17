@@ -345,12 +345,12 @@ public class MSApplicationManager implements ApplicationManager {
             if (executablePath != null) {
                 // Add the application
                 addApplicationFromExecutablePath(executablePath, applicationName, iconPath);
+                // Update the listener
+                if (listener != null) {
+                    listener.onProgressUpdate(applicationName, iconPath, current, fileList.size());
+                }
             }
 
-            // Update the listener and increase the counter
-            if (listener != null) {
-                listener.onProgressUpdate(applicationName, current, fileList.size());
-            }
             current++;
         }
 

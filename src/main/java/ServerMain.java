@@ -23,7 +23,7 @@ public class ServerMain {
         // Load the applications
         wm.loadApplications(new ApplicationManager.OnLoadApplicationsListener() {
             @Override
-            public void onProgressUpdate(String applicationName, int current, int total) {
+            public void onProgressUpdate(String applicationName,String iconPath, int current, int total) {
                 System.out.println("Loading: "+applicationName+" "+current+"/"+total);
             }
 
