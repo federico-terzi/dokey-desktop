@@ -1,5 +1,6 @@
 package system.MAC;
 
+import system.CacheManager;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.model.Window;
@@ -349,7 +350,7 @@ public class MACApplicationManager implements ApplicationManager {
         String appID = Application.Companion.getHashIDForExecutablePath(appPath);
 
         // Get the icon file
-        return new File(getIconCacheDir(), appID + ".png");
+        return new File(CacheManager.getInstance().getIconCacheDir(), appID + ".png");
     }
 
     /**
@@ -489,46 +490,5 @@ public class MACApplicationManager implements ApplicationManager {
     @Override
     public List<Application> getApplicationList() {
         return new ArrayList<>(this.applicationMap.values());
-    }
-
-    /**
-     * Create and retrieve the cache directory.
-     *
-     * @return the Cache directory used to save files.
-     */
-    @Override
-    public File getCacheDir() {
-        // Get the user home directory
-        File homeDir = new File(System.getProperty("user.home"));
-
-        // Get the cache directory
-        File cacheDir = new File(homeDir, ApplicationManager.CACHE_DIRECTORY_NAME);
-
-        // If it doesn't exists, create it
-        if (!cacheDir.isDirectory()) {
-            cacheDir.mkdir();
-        }
-
-        return cacheDir;
-    }
-
-    /**
-     * Create and retrieve the image cache directory.
-     *
-     * @return the Image Cache directory used to save images.
-     */
-    @Override
-    public File getIconCacheDir() {
-        File cacheDir = getCacheDir();
-
-        // Get the icon cache directory
-        File iconCacheDir = new File(cacheDir, ApplicationManager.ICON_CACHE_DIRECTORY_NAME);
-
-        // If it doesn't exists, create it
-        if (!iconCacheDir.isDirectory()) {
-            iconCacheDir.mkdir();
-        }
-
-        return iconCacheDir;
     }
 }

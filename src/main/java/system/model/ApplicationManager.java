@@ -43,16 +43,6 @@ public interface ApplicationManager {
     boolean openApplication(String executablePath);
 
     /**
-     * @return the Cache directory used to save images and files, must be implemented for each OS.
-     */
-    File getCacheDir();
-
-    /**
-     * @return the icon Cache directory used to save images, must be implemented for each OS.
-     */
-    File getIconCacheDir();
-
-    /**
      * Interface used to update the status of the "loadApplications" operation.
      */
     interface OnLoadApplicationsListener {

@@ -15,6 +15,8 @@ import system.model.ApplicationManager;
 import system.model.Window;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -110,9 +112,12 @@ public class MainApp extends Application {
             // set up a system tray icon.
             java.awt.SystemTray tray = java.awt.SystemTray.getSystemTray();
 
-            java.awt.Image image = ImageIO.read(iconFile);
-            java.awt.TrayIcon trayIcon = new java.awt.TrayIcon(image);
-            trayIcon.setImageAutoSize(true);
+            // Set the tray image and scale it with antialiasing
+            BufferedImage image = ImageIO.read(iconFile);
+            int trayIconWidth = new java.awt.TrayIcon(image).getSize().width;
+            java.awt.TrayIcon trayIcon = new java.awt.TrayIcon(image.getScaledInstance(trayIconWidth, -1, Image.SCALE_SMOOTH));
+
+            trayIcon.setToolTip("Yolo");
 
             // if the user double-clicks on the tray icon, show the main app stage.
             trayIcon.addActionListener(event -> Platform.runLater( () -> System.out.println("double click!")));
@@ -144,24 +149,6 @@ public class MainApp extends Application {
             popup.addSeparator();
             popup.add(exitItem);
             trayIcon.setPopupMenu(popup);
-
-            // create a timer which periodically displays a notification message.
-            notificationTimer.schedule(
-                    new TimerTask() {
-                        @Override
-                        public void run() {
-                            javax.swing.SwingUtilities.invokeLater(() ->
-                                    trayIcon.displayMessage(
-                                            "hello",
-                                            "The time is now ",
-                                            java.awt.TrayIcon.MessageType.INFO
-                                    )
-                            );
-                        }
-                    },
-                    5_000,
-                    60_000
-            );
 
             // add the application tray icon to the system tray.
             tray.add(trayIcon);

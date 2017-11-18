@@ -10,6 +10,7 @@ import com.sun.jna.platform.win32.WinUser;
 import com.sun.jna.ptr.IntByReference;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import system.CacheManager;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.model.Window;
@@ -482,7 +483,7 @@ public class MSApplicationManager implements ApplicationManager {
         String appID = Application.Companion.getHashIDForExecutablePath(executablePath);
 
         // Get the icon file
-        return new File(getIconCacheDir(), appID + ".png");
+        return new File(CacheManager.getInstance().getIconCacheDir(), appID + ".png");
     }
 
     /**
@@ -587,47 +588,6 @@ public class MSApplicationManager implements ApplicationManager {
     }
 
     /**
-     * Create and retrieve the cache directory.
-     *
-     * @return the Cache directory used to save files.
-     */
-    @Override
-    public File getCacheDir() {
-        // Get the user home directory
-        File homeDir = new File(System.getProperty("user.home"));
-
-        // Get the cache directory
-        File cacheDir = new File(homeDir, ApplicationManager.CACHE_DIRECTORY_NAME);
-
-        // If it doesn't exists, create it
-        if (!cacheDir.isDirectory()) {
-            cacheDir.mkdir();
-        }
-
-        return cacheDir;
-    }
-
-    /**
-     * Create and retrieve the image cache directory.
-     *
-     * @return the Image Cache directory used to save images.
-     */
-    @Override
-    public File getIconCacheDir() {
-        File cacheDir = getCacheDir();
-
-        // Get the icon cache directory
-        File iconCacheDir = new File(cacheDir, ApplicationManager.ICON_CACHE_DIRECTORY_NAME);
-
-        // If it doesn't exists, create it
-        if (!iconCacheDir.isDirectory()) {
-            iconCacheDir.mkdir();
-        }
-
-        return iconCacheDir;
-    }
-
-    /**
      * Converts an icon to a buffered image
      *
      * @param icon the icon to convert
@@ -658,8 +618,11 @@ public class MSApplicationManager implements ApplicationManager {
      * @param destFilePath the destination file the lnk file points to
      */
     private void writeLnkDestinationToCache(String lnkFilePath, String destFilePath, String iconPath) {
+        // Get the cache manager
+        CacheManager cacheManager = CacheManager.getInstance();
+
         // Get the cache destination file
-        File cacheFile = new File(getCacheDir(), START_MENU_CACHE_FILENAME);
+        File cacheFile = new File(cacheManager.getCacheDir(), START_MENU_CACHE_FILENAME);
 
         // Open the file
         try (FileWriter fw = new FileWriter(cacheFile, true)) {
@@ -690,8 +653,10 @@ public class MSApplicationManager implements ApplicationManager {
      * @return a map containing the association < LnkPath, CachedApp >
      */
     private Map<String, MSCachedApplication> loadLnkDestinationCacheMap() {
+        CacheManager cacheManager = CacheManager.getInstance();
+
         // Get the cache destination file
-        File cacheFile = new File(getCacheDir(), START_MENU_CACHE_FILENAME);
+        File cacheFile = new File(cacheManager.getCacheDir(), START_MENU_CACHE_FILENAME);
 
         Map<String, MSCachedApplication> output = new HashMap<>();
 
