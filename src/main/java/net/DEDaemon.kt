@@ -6,9 +6,15 @@ import java.io.IOException
 /**
  * The Daemon that continuously checks for new packets.
  */
-class DEDaemon(private val manager: DEManager, val verbose : Boolean = false) : Thread() {
+class DEDaemon(private val manager: DEManager, val connectionListener : OnConnectionClosedListener?,
+               val verbose : Boolean = false) : Thread() {
+
+    companion object {
+        val DEFAULT_CHECK_INTERVAL : Long = 100  // How often check for new packets ( in milliseconds )
+    }
 
     var shouldStop : Boolean = false
+    var checkInterval = DEFAULT_CHECK_INTERVAL  // How often check for new packets ( in milliseconds )
 
     /**
      * Receive a packet and trigger the corresponding actions.
@@ -40,6 +46,8 @@ class DEDaemon(private val manager: DEManager, val verbose : Boolean = false) : 
             return packet
         } catch (e: IOException) {
             e.printStackTrace()
+            // Send the connection closed signal
+            connectionListener?.onConnectionClosed()
         }
         return null
     }
@@ -54,7 +62,16 @@ class DEDaemon(private val manager: DEManager, val verbose : Boolean = false) : 
                 if (packet != null && verbose) {
                     println(packet)
                 }
+            }else{
+                Thread.sleep(checkInterval)
             }
         }
+    }
+
+    /**
+     * Used to notify when the connection closes
+     */
+    interface OnConnectionClosedListener {
+        fun onConnectionClosed()
     }
 }
