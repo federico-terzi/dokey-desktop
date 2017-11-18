@@ -131,6 +131,8 @@ public class MainApp extends Application {
         EngineServer engineServer = new EngineServer(appManager);
         engineServer.start();
 
+        // Update the tray icon status
+        trayIconManager.setTrayIconStatus("Running");
         trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_RUNNING);
     }
 }

@@ -53,7 +53,7 @@ public class TrayIconManager {
 
             // if the user selects the default menu item (which includes the app name),
             // show the main app stage.
-            java.awt.MenuItem openItem = new java.awt.MenuItem("hello, world");
+            java.awt.MenuItem openItem = new java.awt.MenuItem("Settings");
             openItem.addActionListener(event -> Platform.runLater(() -> System.out.println("menu click!")));
 
             // the convention for tray icons seems to be to set the default icon for opening
@@ -68,8 +68,8 @@ public class TrayIconManager {
             java.awt.MenuItem exitItem = new java.awt.MenuItem("Exit");
             exitItem.addActionListener(event -> {
                 //notificationTimer.cancel();
-                Platform.exit();
                 tray.remove(trayIcon);
+                System.exit(0);
             });
 
             // setup the popup menu for the application.

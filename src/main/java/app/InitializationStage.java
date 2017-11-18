@@ -1,9 +1,11 @@
 package app;
 
 import app.UIControllers.InitializationController;
+import com.sun.org.apache.xml.internal.security.Init;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -18,9 +20,10 @@ public class InitializationStage extends Stage {
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root, 400, 275);
         scene.getStylesheets().add(MainApp.class.getResource("/css/initialization.css").toExternalForm());
-        this.setTitle("Hello World");
+        this.setTitle("Remote Key Initialization");
         this.setScene(scene);
         this.initStyle(StageStyle.UNDECORATED);
+        this.getIcons().add(new Image(InitializationStage.class.getResourceAsStream("/assets/icon.png")));
 
         controller = (InitializationController) fxmlLoader.getController();
     }
