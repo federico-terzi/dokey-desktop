@@ -2,12 +2,10 @@ package system.MS;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
-import com.sun.jna.platform.win32.Advapi32Util;
-import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.*;
 import com.sun.jna.platform.win32.WinDef.HWND;
-import com.sun.jna.platform.win32.WinReg;
-import com.sun.jna.platform.win32.WinUser;
 import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.win32.StdCallLibrary;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import system.CacheManager;
@@ -225,7 +223,8 @@ public class MSApplicationManager implements ApplicationManager {
         final List<Window> windowList = new ArrayList<>();
 
         // Get all the current processes
-        Map<Integer, String> executablesMap = getExecutablePathsMap();
+        // Deprecated in favour of a native kernel call
+        // Map<Integer, String> executablesMap = getExecutablePathsMap();
 
         User32.INSTANCE.EnumWindows(new WinUser.WNDENUMPROC() {
             int count = 0;
@@ -250,8 +249,19 @@ public class MSApplicationManager implements ApplicationManager {
                 IntByReference PID = new IntByReference();
                 User32.INSTANCE.GetWindowThreadProcessId(hwnd, PID);
 
+
                 // Get the executable path
-                String executablePath = executablesMap.get(PID.getValue());
+                //String executablePath = executablesMap.get(PID.getValue());
+                PsApi psapi = (PsApi) Native.loadLibrary("psapi", PsApi.class);
+                byte[] pathText = new byte[1024];
+                WinNT.HANDLE process = Kernel32.INSTANCE.OpenProcess(0x0400 | 0x0010, false, PID.getValue());
+                psapi.GetModuleFileNameExA(process, null, pathText, 1024);
+                String executablePath= Native.toString(pathText);
+
+                // If the executablePath is empty, skip the process
+                if (executablePath.length() == 0) {
+                    return true;
+                }
 
                 // Get the application
                 Application application = applicationMap.get(executablePath);
@@ -269,6 +279,13 @@ public class MSApplicationManager implements ApplicationManager {
         }, null);
 
         return windowList;
+    }
+
+    public interface PsApi extends StdCallLibrary {
+
+        int GetModuleFileNameExA(WinNT.HANDLE process, WinNT.HANDLE module ,
+                                 byte[] name, int i);
+
     }
 
     /**
