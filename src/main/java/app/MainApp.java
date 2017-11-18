@@ -26,12 +26,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainApp extends Application {
-
-    // Tray icon filename in the assets folder
-    private static final String TRAY_ICON_FILENAME = "icon.png";
-
     // a timer allowing the tray icon to provide a periodic notification event.
     private Timer notificationTimer = new Timer();
+
+    private TrayIconManager trayIconManager = new TrayIconManager();
+
+    private Stage primaryStage;
 
     public static void main(String[] args) {
         launch(args);
@@ -39,25 +39,27 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+        this.primaryStage = primaryStage;
+
         // Set the MODENA theme
         setUserAgentStylesheet(STYLESHEET_MODENA);
 
         // instructs the javafx system not to exit implicitly when the last application window is shut.
         Platform.setImplicitExit(false);
 
-        // sets up the tray icon (using awt code run on the swing thread).
-        javax.swing.SwingUtilities.invokeLater(this::addAppToTray);
+        // sets up the tray icon
+        javax.swing.SwingUtilities.invokeLater(trayIconManager::initialize);
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layouts/initialization.fxml"));
         Parent root = fxmlLoader.load();
+        Scene scene = new Scene(root, 400, 275);
+        scene.getStylesheets().add(MainApp.class.getResource("/css/initialization.css").toExternalForm());
         primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 400, 275));
+        primaryStage.setScene(scene);
         primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.show();
 
         InitializationController controller = (InitializationController) fxmlLoader.getController();
-
-        controller.setAppNameLabel("yolo");
 
         ApplicationManager wm = ApplicationManagerFactory.getInstance();
 
@@ -84,6 +86,12 @@ public class MainApp extends Application {
                     @Override
                     public void onApplicationsLoaded() {
                         System.out.println("loaded!");
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                primaryStage.hide();
+                            }
+                        });
                     }
                 });
                 return null;
@@ -91,70 +99,5 @@ public class MainApp extends Application {
         };
 
         new Thread(task).start();
-    }
-
-    /**
-     * Sets up a system tray icon for the application.
-     */
-    private void addAppToTray() {
-        try {
-            // ensure awt toolkit is initialized.
-            java.awt.Toolkit.getDefaultToolkit();
-
-            // app requires system tray support, just exit if there is no support.
-            if (!java.awt.SystemTray.isSupported()) {
-                System.out.println("No system tray support, application exiting.");
-                Platform.exit();
-            }
-
-            File iconFile = new File(MainApp.class.getResource("/assets/"+TRAY_ICON_FILENAME).getFile());
-
-            // set up a system tray icon.
-            java.awt.SystemTray tray = java.awt.SystemTray.getSystemTray();
-
-            // Set the tray image and scale it with antialiasing
-            BufferedImage image = ImageIO.read(iconFile);
-            int trayIconWidth = new java.awt.TrayIcon(image).getSize().width;
-            java.awt.TrayIcon trayIcon = new java.awt.TrayIcon(image.getScaledInstance(trayIconWidth, -1, Image.SCALE_SMOOTH));
-
-            trayIcon.setToolTip("Yolo");
-
-            // if the user double-clicks on the tray icon, show the main app stage.
-            trayIcon.addActionListener(event -> Platform.runLater( () -> System.out.println("double click!")));
-
-            // if the user selects the default menu item (which includes the app name),
-            // show the main app stage.
-            java.awt.MenuItem openItem = new java.awt.MenuItem("hello, world");
-            openItem.addActionListener(event -> Platform.runLater(() -> System.out.println("menu click!")));
-
-            // the convention for tray icons seems to be to set the default icon for opening
-            // the application stage in a bold font.
-            java.awt.Font defaultFont = java.awt.Font.decode(null);
-            java.awt.Font boldFont = defaultFont.deriveFont(java.awt.Font.BOLD);
-            openItem.setFont(boldFont);
-
-            // to really exit the application, the user must go to the system tray icon
-            // and select the exit option, this will shutdown JavaFX and remove the
-            // tray icon (removing the tray icon will also shut down AWT).
-            java.awt.MenuItem exitItem = new java.awt.MenuItem("Exit");
-            exitItem.addActionListener(event -> {
-                //notificationTimer.cancel();
-                Platform.exit();
-                tray.remove(trayIcon);
-            });
-
-            // setup the popup menu for the application.
-            final java.awt.PopupMenu popup = new java.awt.PopupMenu();
-            popup.add(openItem);
-            popup.addSeparator();
-            popup.add(exitItem);
-            trayIcon.setPopupMenu(popup);
-
-            // add the application tray icon to the system tray.
-            tray.add(trayIcon);
-        } catch (java.awt.AWTException | IOException e) {
-            System.out.println("Unable to init system tray");
-            e.printStackTrace();
-        }
     }
 }

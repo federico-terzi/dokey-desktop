@@ -9,30 +9,28 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="CENTER" prefHeight="261.0" prefWidth="353.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
-    fx:controller="app.UIControllers.InitializationController">
+<VBox alignment="CENTER" prefHeight="277.0" prefWidth="388.999977929685" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="app.UIControllers.InitializationController">
   <children>
     <Label fx:id="titleLabel" alignment="CENTER" contentDisplay="CENTER" text="Remote Key is initializing...">
       <font>
         <Font size="20.0" />
       </font>
       <VBox.margin>
-        <Insets bottom="20.0" />
+        <Insets fx:id="x1" />
       </VBox.margin>
     </Label>
-    <ImageView id="imageView" fx:id="appImageView" fitHeight="32" fitWidth="32">
-      <image>
-        <Image url="file:/C:/Users/fredd/Documents/GitHub/remotekey-desktop/src/main/resources/icons/python.exe.png" />
-      </image>
-      <VBox.margin>
-        <Insets bottom="15.0" />
-      </VBox.margin>
-    </ImageView>
-    <ProgressBar fx:id="appProgressBar" prefWidth="200.0" progress="0.32">
+    <StackPane padding="$x1" prefHeight="150.0" prefWidth="200.0">
+      <children>
+        <ProgressIndicator fx:id="progressIndicator" maxHeight="100.0" maxWidth="100.0" minHeight="-1.0" minWidth="-1.0" progress="-1.0" StackPane.alignment="CENTER" />
+        <ImageView id="imageView" fx:id="appImageView" disable="false" fitHeight="32.0" fitWidth="32.0" focusTraversable="false" visible="true">
+        </ImageView>
+      </children>
+    </StackPane>
+    <ProgressBar fx:id="appProgressBar" prefWidth="200.0" progress="-1">
       <VBox.margin>
         <Insets bottom="10.0" />
       </VBox.margin>
     </ProgressBar>
-    <Label fx:id="appNameLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="-1.0" prefWidth="277.0" text="Pythonmhhjhgjh" textAlignment="CENTER" textOverrun="ELLIPSIS" wrapText="false" />
+    <Label fx:id="appNameLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="-1.0" prefWidth="277.0" text="Loading..." textAlignment="CENTER" textOverrun="ELLIPSIS" wrapText="false" />
   </children>
 </VBox>
