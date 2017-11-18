@@ -20,7 +20,7 @@
         <Insets bottom="20.0" />
       </VBox.margin>
     </Label>
-    <ImageView id="imageView" fx:id="appImageView" fitHeight="89.5" fitWidth="89.5" pickOnBounds="true" preserveRatio="true">
+    <ImageView id="imageView" fx:id="appImageView" fitHeight="32" fitWidth="32">
       <image>
         <Image url="file:/C:/Users/fredd/Documents/GitHub/remotekey-desktop/src/main/resources/icons/python.exe.png" />
       </image>
