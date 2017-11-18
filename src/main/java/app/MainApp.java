@@ -30,8 +30,10 @@ public class MainApp extends Application {
     private Timer notificationTimer = new Timer();
 
     private TrayIconManager trayIconManager = new TrayIconManager();
+    private ApplicationManager appManager;
 
     private Stage primaryStage;
+    private InitializationStage initializationStage;
 
     public static void main(String[] args) {
         launch(args);
@@ -50,35 +52,39 @@ public class MainApp extends Application {
         // sets up the tray icon
         javax.swing.SwingUtilities.invokeLater(trayIconManager::initialize);
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layouts/initialization.fxml"));
-        Parent root = fxmlLoader.load();
-        Scene scene = new Scene(root, 400, 275);
-        scene.getStylesheets().add(MainApp.class.getResource("/css/initialization.css").toExternalForm());
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(scene);
-        primaryStage.initStyle(StageStyle.UNDECORATED);
-        primaryStage.show();
+        // Initialize the application manager
+        appManager = ApplicationManagerFactory.getInstance();
 
-        InitializationController controller = (InitializationController) fxmlLoader.getController();
+        // load the applications
+        loadApplications();
+    }
 
-        ApplicationManager wm = ApplicationManagerFactory.getInstance();
+    /**
+     * Start the application loading process
+     */
+    private void loadApplications() throws IOException {
+        // Create and show the initialization stage
+        initializationStage = new InitializationStage();
+        initializationStage.show();
 
-        //Task for computing the Panels:
+        // Task for loading the applications
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                wm.loadApplications(new ApplicationManager.OnLoadApplicationsListener() {
+                appManager.loadApplications(new ApplicationManager.OnLoadApplicationsListener() {
                     @Override
                     public void onProgressUpdate(String applicationName, String iconPath, int current, int total) {
                         System.out.println("Loading: "+applicationName+" "+current+"/"+total);
+                        // Calculate the percentage
                         double percentage = (current / (double) total);
+                        // Get the icon file
                         File iconImage = new File(iconPath);
+
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
-                                controller.setAppNameLabel(applicationName);
-                                controller.setAppProgressBar(percentage);
-                                controller.setAppImageFile(iconImage);
+                                // Update the initialization stage
+                                initializationStage.updateAppStatus(applicationName, percentage, iconImage);
                             }
                         });
                     }
@@ -89,7 +95,7 @@ public class MainApp extends Application {
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
-                                primaryStage.hide();
+                                MainApp.this.onApplicationsLoaded();
                             }
                         });
                     }
@@ -99,5 +105,26 @@ public class MainApp extends Application {
         };
 
         new Thread(task).start();
+    }
+
+    /**
+     * Called when all applications are loaded.
+     */
+    private void onApplicationsLoaded() {
+        // Hide the initialization
+        if (initializationStage != null) {
+            initializationStage.hide();
+        }
+
+        // Update the tray icon status
+        trayIconManager.setTrayIconStatus("Starting service...");
+        trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_RUNNING);
+    }
+
+    /**
+     * Start the engine server in another thread
+     */
+    private void startEngineServer() {
+
     }
 }

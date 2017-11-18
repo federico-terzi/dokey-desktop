@@ -12,8 +12,9 @@ import java.io.IOException;
  * Used to manage the system tray icon
  */
 public class TrayIconManager {
-    // Tray icon filename in the assets folder
-    private static final String TRAY_ICON_FILENAME = "icon.png";
+    // Tray icon filename IMAGE CODES
+    public static final String TRAY_ICON_FILENAME_RUNNING = "icon.png";
+    public static final String TRAY_ICON_FILENAME_LOADING = "icon-gray.png";
 
     // Tray icon tooltip app name
     private static final String TRAY_ICON_APPNAME = "Remote Key";
@@ -35,15 +36,15 @@ public class TrayIconManager {
                 System.exit(0);
             }
 
-            File iconFile = new File(TrayIconManager.class.getResource("/assets/"+TRAY_ICON_FILENAME).getFile());
+            File iconFile = new File(TrayIconManager.class.getResource("/assets/"+ TRAY_ICON_FILENAME_RUNNING).getFile());
 
             // set up a system tray icon.
             java.awt.SystemTray tray = java.awt.SystemTray.getSystemTray();
 
-            // Set the tray image and scale it with antialiasing
+            // Set the tray image
             BufferedImage image = ImageIO.read(iconFile);
-            int trayIconWidth = new java.awt.TrayIcon(image).getSize().width;
-            trayIcon = new java.awt.TrayIcon(image.getScaledInstance(trayIconWidth, -1, Image.SCALE_SMOOTH));
+            trayIcon = new java.awt.TrayIcon(image);
+            setTrayIcon(TRAY_ICON_FILENAME_LOADING);
 
             setTrayIconStatus("Initializing...");
 
@@ -92,5 +93,24 @@ public class TrayIconManager {
      */
     public void setTrayIconStatus(String status) {
         trayIcon.setToolTip(TRAY_ICON_APPNAME +"\n" +status);
+    }
+
+    /**
+     * Set a new image in the tray icon.
+     * @param imageCode one of the IMAGE CODEs defined by this class.
+     */
+    public void setTrayIcon(String imageCode) {
+        // Get the icon file
+        File iconFile = new File(TrayIconManager.class.getResource("/assets/"+ imageCode).getFile());
+
+        // Set the tray image and scale it with antialiasing
+        BufferedImage image = null;
+        try {
+            image = ImageIO.read(iconFile);
+            int trayIconWidth = new java.awt.TrayIcon(image).getSize().width;
+            trayIcon.setImage(image.getScaledInstance(trayIconWidth, -1, Image.SCALE_SMOOTH));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
