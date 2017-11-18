@@ -20,7 +20,7 @@ public class MACApplicationManager implements ApplicationManager {
      * @return true if succeeded, false otherwise.
      */
     @Override
-    public boolean openApplication(String executablePath) {
+    public synchronized boolean openApplication(String executablePath) {
         // Get windows to find out if application is already open
         List<Window> openWindows = getWindowList();
 
@@ -59,7 +59,7 @@ public class MACApplicationManager implements ApplicationManager {
      * @return the Window object of the active system.window.
      */
     @Override
-    public Window getActiveWindow() {
+    public synchronized  Window getActiveWindow() {
         String scriptPath = getClass().getResource("/applescripts/getActiveWindow.scpt").getPath();
         Runtime runtime = Runtime.getRuntime();
 
@@ -177,7 +177,7 @@ public class MACApplicationManager implements ApplicationManager {
      * @return PID of the current active system.window. -1 is returned in case of errors.
      */
     @Override
-    public int getActivePID() {
+    public synchronized int getActivePID() {
         String scriptPath = getClass().getResource("/applescripts/getActivePID.scpt").getPath();
         Runtime runtime = Runtime.getRuntime();
 
@@ -316,7 +316,7 @@ public class MACApplicationManager implements ApplicationManager {
      * @param appPath path to the app folder
      * @return the Application object.
      */
-    private Application addApplicationFromAppPath(String appPath) {
+    private synchronized Application addApplicationFromAppPath(String appPath) {
         // Make sure the target is an app
         if (appPath.toLowerCase().endsWith(".app")) {
             // Get the app folder

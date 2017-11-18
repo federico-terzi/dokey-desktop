@@ -51,7 +51,7 @@ public class MSApplicationManager implements ApplicationManager {
      * @return true if succeeded, false otherwise.
      */
     @Override
-    public boolean openApplication(String executablePath) {
+    public synchronized boolean openApplication(String executablePath) {
         // Get windows to find out if application is already open
         List<Window> openWindows = getWindowList();
 
@@ -89,7 +89,7 @@ public class MSApplicationManager implements ApplicationManager {
      * @return the Window object of the active system.window.
      */
     @Override
-    public Window getActiveWindow() {
+    public synchronized Window getActiveWindow() {
         // Get the system.window title
         char[] buffer = new char[MAX_TITLE_LENGTH * 2];
         HWND hwnd = User32.INSTANCE.GetForegroundWindow();
@@ -114,7 +114,7 @@ public class MSApplicationManager implements ApplicationManager {
      * @return PID of the current active system.window. -1 is returned in case of errors.
      */
     @Override
-    public int getActivePID() {
+    public synchronized int getActivePID() {
         HWND hwnd = User32.INSTANCE.GetForegroundWindow();
 
         // Get the PID
@@ -414,7 +414,7 @@ public class MSApplicationManager implements ApplicationManager {
      * @param iconPath        the path to the icon. If null is dynamically generated
      * @return an Application object.
      */
-    private Application addApplicationFromExecutablePath(String executablePath, String applicationName, String iconPath) {
+    private synchronized Application addApplicationFromExecutablePath(String executablePath, String applicationName, String iconPath) {
         // Make sure the target is an exe file
         if (executablePath.toLowerCase().endsWith(".exe")) {
             // Generate the application name if null or if
