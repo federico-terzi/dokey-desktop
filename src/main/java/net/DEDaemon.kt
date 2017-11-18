@@ -10,7 +10,7 @@ class DEDaemon(private val manager: DEManager, val connectionListener : OnConnec
                val verbose : Boolean = false) : Thread() {
 
     companion object {
-        val DEFAULT_CHECK_INTERVAL : Long = 100  // How often check for new packets ( in milliseconds )
+        val DEFAULT_CHECK_INTERVAL : Long = 10  // How often check for new packets ( in milliseconds )
     }
 
     var shouldStop : Boolean = false
@@ -48,23 +48,22 @@ class DEDaemon(private val manager: DEManager, val connectionListener : OnConnec
             e.printStackTrace()
             // Send the connection closed signal
             connectionListener?.onConnectionClosed()
+
+            // Close the daemon
+            shouldStop = true
         }
         return null
     }
 
     override fun run() {
         while (!shouldStop) {
-            // Check if there are new packets available
-            if (manager.hasNewPackets()) {
-                // Receive a packet and trigger the corresponding action.
-                val packet = receivePacket()
+            // Receive a packet and trigger the corresponding action.
+            val packet = receivePacket()
 
-                if (packet != null && verbose) {
-                    println(packet)
-                }
-            }else{
-                Thread.sleep(checkInterval)
+            if (packet != null && verbose) {
+                println(packet)
             }
+            Thread.sleep(checkInterval)
         }
     }
 

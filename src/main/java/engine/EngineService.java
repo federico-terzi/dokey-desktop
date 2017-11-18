@@ -1,5 +1,6 @@
 package engine;
 
+import net.DEDaemon;
 import net.LinkManager;
 import net.model.KeyboardKeys;
 import org.jetbrains.annotations.NotNull;
@@ -51,6 +52,14 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     public void start() {
         // Start the linkManager daemon
         linkManager.startDaemon();
+    }
+
+    /**
+     * Set the connection closed listener
+     * @param listener
+     */
+    public void setOnConnectionClosedListener(DEDaemon.OnConnectionClosedListener listener) {
+        linkManager.setOnConnectionClosedListener(listener);
     }
 
     /**

@@ -1,6 +1,7 @@
 package app;
 
 import app.UIControllers.InitializationController;
+import engine.EngineServer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -118,13 +119,18 @@ public class MainApp extends Application {
 
         // Update the tray icon status
         trayIconManager.setTrayIconStatus("Starting service...");
-        trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_RUNNING);
+
+        // Start the engine server
+        startEngineServer();
     }
 
     /**
      * Start the engine server in another thread
      */
     private void startEngineServer() {
+        EngineServer engineServer = new EngineServer(appManager);
+        engineServer.start();
 
+        trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_RUNNING);
     }
 }

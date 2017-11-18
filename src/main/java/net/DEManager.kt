@@ -8,7 +8,11 @@ import java.net.Socket
  * The DEManager manages the socket connection and receives/sends DEPackets.
  */
 open class DEManager @Throws(IOException::class)
-    constructor(private val socket: Socket) {
+    constructor(private val socket: Socket){
+
+    companion object {
+        val SOCKET_TIMEOUT = 1800000  // 1800000 milliseconds, or 30 minutes
+    }
 
     private val inputStream: InputStream
     private val dataInputStream: DataInputStream
@@ -18,6 +22,7 @@ open class DEManager @Throws(IOException::class)
     private var daemon : DEDaemon? = null
 
     var onPacketEventListener: OnPacketEventListener? = null
+    var onConnectionClosedListener : DEDaemon.OnConnectionClosedListener? = null
 
     init {
         inputStream = socket.getInputStream()
@@ -25,7 +30,10 @@ open class DEManager @Throws(IOException::class)
         dataInputStream = DataInputStream(inputStream)
         dataOutputStream = DataOutputStream(outputStream)
 
-        daemon = DEDaemon(this)
+        // Set socket timeout
+        socket.soTimeout = SOCKET_TIMEOUT
+
+        daemon = DEDaemon(this, onConnectionClosedListener)
     }
 
     /**
@@ -89,7 +97,7 @@ open class DEManager @Throws(IOException::class)
     fun startDaemon() {
         // If the daemon is not alive, create a new one
         if (!daemon?.isAlive!!) {
-            daemon = DEDaemon(this)
+            daemon = DEDaemon(this, onConnectionClosedListener)
         }
 
         daemon?.start()
