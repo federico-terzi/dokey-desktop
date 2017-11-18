@@ -31,16 +31,15 @@ class DEDaemon(private val manager: DEManager, val connectionListener : OnConnec
             }else{  // Request packet
                 // If the packet is a request packet,
                 // trigger the callback and get the response from it.
-                val response = manager.onPacketEventListener?.onPacketReceived(packet)
+                var responsePacket = manager.onPacketEventListener?.onPacketReceived(packet)
+
+                // If response packet is null, createResponse the default one
+                if (responsePacket == null) {
+                    responsePacket = DEPacket.responsePacket(packet)
+                }
 
                 // and send the response packet ( ACK ).
-                // ( with a response if available ).
-                val responsePacket = if (response == null) {
-                    DEPacket.responsePacket(packet)
-                }else{
-                    DEPacket.responsePacket(packet, response)
-                }
-                manager.sendPacket(responsePacket)
+                manager.sendPacket(responsePacket!!)
             }
 
             return packet

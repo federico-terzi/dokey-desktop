@@ -3,20 +3,23 @@ package engine;
 import net.DEDaemon;
 import net.LinkManager;
 import net.model.KeyboardKeys;
+import net.model.RemoteApplication;
 import org.jetbrains.annotations.NotNull;
 import system.ApplicationManagerFactory;
 import system.KeyboardManager;
+import system.model.Application;
 import system.model.ApplicationManager;
 
 import java.awt.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
 
 /**
- * Represents the background worker that executes all the actions.
+ * Represents the background worker that executes all the actions in the server.
  */
-public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener {
+public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener {
     private LinkManager linkManager;
     private ApplicationManager appManager;
     private KeyboardManager keyboardManager;
@@ -44,6 +47,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     private void initialization() {
         // Set the listeners
         linkManager.setKeyboardShortcutListener(this);
+        linkManager.setAppListRequestListener(this);
     }
 
     /**
@@ -83,5 +87,25 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         }
 
         return false;
+    }
+
+    /**
+     * Called when receiving a list app request from a client
+     * @return a list of RemoteApplication installed in the system.
+     */
+    @NotNull
+    @Override
+    public List<RemoteApplication> onAppListRequestReceived() {
+        List<RemoteApplication> output = new ArrayList<>();
+        List<Application> apps = appManager.getApplicationList();
+
+        for(Application app : apps) {
+            RemoteApplication remoteApp = new RemoteApplication();
+            remoteApp.setName(app.getName());
+            remoteApp.setPath(app.getExecutablePath());
+            output.add(remoteApp);
+        }
+
+        return output;
     }
 }

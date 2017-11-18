@@ -95,7 +95,7 @@ open class DEManager @Throws(IOException::class)
      * Start the receiving daemon
      */
     fun startDaemon() {
-        // If the daemon is not alive, create a new one
+        // If the daemon is not alive, createRequest a new one
         if (!daemon?.isAlive!!) {
             daemon = DEDaemon(this, onConnectionClosedListener)
         }
@@ -127,6 +127,6 @@ open class DEManager @Throws(IOException::class)
         /**
          * Triggered when receiving a request packet.
          */
-        fun onPacketReceived(packet : DEPacket) : String?
+        fun onPacketReceived(packet : DEPacket) : DEPacket?
     }
 }

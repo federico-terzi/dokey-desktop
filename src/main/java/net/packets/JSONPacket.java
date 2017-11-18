@@ -15,6 +15,10 @@ public class JSONPacket extends DEPacket {
     private boolean isJsonParsed = false;  // If true, it means that the JSON payload has been parsed.
                                            // This is true after calling the parse() method.
 
+    public JSONPacket(int opType) {
+        super(opType);
+    }
+
     public JSONPacket(int opType, String payload){
         super(opType, payload);
     }

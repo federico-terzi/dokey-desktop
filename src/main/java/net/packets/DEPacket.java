@@ -18,16 +18,24 @@ public class DEPacket {
 
     // Fields
     private int opType = OP_TYPE_NORMAL_PACKET;
-    private long packetID;
-    private byte responseFlag;
-    private int payloadLength;
-    private byte[] payload;
+    private long packetID = 0;
+    private byte responseFlag = RESPONSE_FLAG_REQUEST;
+    private int payloadLength = 0;
+    private byte[] payload = new byte[0];
 
     /**
-     * Constructor for building an empty packet with random ID.
+     * Constructor for building an empty packet.
      */
     public DEPacket() {
         this.packetID = RandomUtils.getNextID();
+    }
+
+    /**
+     * Constructor for building an empty packet with random ID and custom opType.
+     */
+    public DEPacket(int opType) {
+        this.packetID = RandomUtils.getNextID();
+        this.opType = opType;
     }
 
     /**
@@ -136,6 +144,17 @@ public class DEPacket {
         return this.responseFlag == RESPONSE_FLAG_RESPONSE;
     }
 
+    /**
+     * Convert the current packet into a response packet for the given
+     * request packet.
+     * @param requestPacket the request DEPacket
+     */
+    public void convertToResponsePacket(DEPacket requestPacket) {
+        setPacketID(requestPacket.getPacketID());
+        setOpType(requestPacket.getOpType());
+        setResponseFlag(DEPacket.RESPONSE_FLAG_RESPONSE);
+    }
+
     @Override
     public String toString() {
         String payloadString = "<EMPTY>";
@@ -203,6 +222,19 @@ public class DEPacket {
         packet.setResponseFlag(DEPacket.RESPONSE_FLAG_RESPONSE);
         packet.setPayloadLength(response.length());
         packet.setPayload(response.getBytes());
+        return packet;
+    }
+
+    /**
+     * Generate the response packet for the given request packet and the given response.
+     */
+    public static DEPacket responsePacket(DEPacket requestPacket, byte[] response) {
+        DEPacket packet = new DEPacket();
+        packet.setPacketID(requestPacket.getPacketID());
+        packet.setOpType(requestPacket.getOpType());
+        packet.setResponseFlag(DEPacket.RESPONSE_FLAG_RESPONSE);
+        packet.setPayloadLength(response.length);
+        packet.setPayload(response);
         return packet;
     }
 

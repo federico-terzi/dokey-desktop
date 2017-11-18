@@ -1,17 +1,8 @@
 package net.packets;
 
 import net.model.KeyboardKeys;
-import net.packets.DEPacket;
 import org.junit.*;
-import org.mockito.ArgumentMatchers;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,7 +33,7 @@ public class KeyboardShortcutPacketTest {
 
     @Test
     public void testGetKeys() throws KeyboardShortcutPacket.KeyboardShortcutParseException {
-        KeyboardShortcutPacket packet = KeyboardShortcutPacket.create("testApp", "ctrl +  c");
+        KeyboardShortcutPacket packet = KeyboardShortcutPacket.createRequest("testApp", "ctrl +  c");
         packet.parse();
         List<KeyboardKeys> expected = Arrays.asList(KeyboardKeys.VK_CONTROL, KeyboardKeys.VK_C);
 
@@ -51,7 +42,7 @@ public class KeyboardShortcutPacketTest {
 
     @Test(expected = JSONPacket.NotParsedException.class)
     public void testGetKeysBeforeParseShouldRaiseException() throws KeyboardShortcutPacket.KeyboardShortcutParseException {
-        KeyboardShortcutPacket packet = KeyboardShortcutPacket.create("testApp", "ctrl +  c");
+        KeyboardShortcutPacket packet = KeyboardShortcutPacket.createRequest("testApp", "ctrl +  c");
         List<KeyboardKeys> expected = Arrays.asList(KeyboardKeys.VK_CONTROL, KeyboardKeys.VK_C);
 
         assertTrue(packet.getKeys().equals(expected));
@@ -59,7 +50,7 @@ public class KeyboardShortcutPacketTest {
 
     @Test
     public void testParse() throws KeyboardShortcutPacket.KeyboardShortcutParseException {
-        KeyboardShortcutPacket packet = KeyboardShortcutPacket.create("testApp", "ctrl +  c");
+        KeyboardShortcutPacket packet = KeyboardShortcutPacket.createRequest("testApp", "ctrl +  c");
         KeyboardShortcutPacket newPacket = new KeyboardShortcutPacket(packet.getPayloadAsString());
         newPacket.parse();
         assertEquals(newPacket.getKeysString(), "CTRL+C");

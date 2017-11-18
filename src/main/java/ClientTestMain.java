@@ -1,5 +1,6 @@
 import net.DEManager;
 import net.LinkManager;
+import net.model.RemoteApplication;
 import net.packets.DEPacket;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,6 +10,7 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.StringTokenizer;
 
 public class ClientTestMain {
@@ -51,6 +53,15 @@ public class ClientTestMain {
                         @Override
                         public void onKeyboardShortcutAcknowledged(@NotNull String response) {
                             System.out.println("Response: "+response);
+                        }
+                    });
+                }else if (line.startsWith("apps")) {  // APP LIST REQUEST
+                    manager.requestAppList(new LinkManager.OnAppListResponseListener() {
+                        @Override
+                        public void onAppListResponceReceived(@NotNull List<? extends RemoteApplication> apps) {
+                            for (RemoteApplication app : apps) {
+                                System.out.println(app);
+                            }
                         }
                     });
                 }

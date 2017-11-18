@@ -15,8 +15,8 @@ public class KeyboardShortcutPacket extends JSONPacket {
     public static final int OP_TYPE = 1001;
 
     // Response codes
-    public static final String RESPONSE_OK = "OK";
-    public static final String RESPONSE_ERROR = "ER";
+    public static final byte[] RESPONSE_OK = "OK".getBytes();
+    public static final byte[] RESPONSE_ERROR = "ER".getBytes();
 
     // Payload values, must be populated with the parse() method.
     private String application = null;
@@ -35,12 +35,12 @@ public class KeyboardShortcutPacket extends JSONPacket {
     }
 
     /**
-     * Create a KeyboardShortcutPacket.
+     * Create a KeyboardShortcutPacket request.
      * @param application String application identifier
      * @param keyCombination keyboard combination as String
      * @throws KeyboardShortcutParseException
      */
-    public static KeyboardShortcutPacket create(String application, String keyCombination) throws KeyboardShortcutParseException {
+    public static KeyboardShortcutPacket createRequest(String application, String keyCombination) throws KeyboardShortcutParseException {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("app", application);
         jsonObject.put("keys", cleanKeyCombination(keyCombination));

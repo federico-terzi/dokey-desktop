@@ -1,10 +1,11 @@
 package net
 
 import net.model.KeyboardKeys
+import net.model.RemoteApplication
+import net.packets.AppListPacket
 import net.packets.DEPacket
 import net.packets.KeyboardShortcutPacket
 import java.net.Socket
-import java.security.Key
 
 /**
  * The LinkManager manages the transmission of complex data between receivers.
@@ -32,6 +33,7 @@ class LinkManager(val socket: Socket) : DEManager(socket), DEManager.OnPacketEve
     private fun registerPacketTypes() {
         // Register here all the specialized packet types
         packetTypes.put(KeyboardShortcutPacket.OP_TYPE, KeyboardShortcutPacket::class.java)
+        packetTypes.put(AppListPacket.OP_TYPE, AppListPacket::class.java)
     }
 
     /**
@@ -73,7 +75,7 @@ class LinkManager(val socket: Socket) : DEManager(socket), DEManager.OnPacketEve
     /**
      * Implemented from the DEManager, used to keep track of all the packets.
      */
-    override fun onPacketReceived(packet: DEPacket): String? {
+    override fun onPacketReceived(packet: DEPacket): DEPacket? {
         // Get the specialized packet.
         val specializedPacket = getSpecializedPacket(packet)
 
@@ -133,7 +135,7 @@ class LinkManager(val socket: Socket) : DEManager(socket), DEManager.OnPacketEve
         /**
          * Triggered when receiving a request packet.
          */
-        fun onPacketReceived(packet: DEPacket): String?
+        fun onPacketReceived(packet: DEPacket): DEPacket?
     }
 
     /**
@@ -148,7 +150,7 @@ class LinkManager(val socket: Socket) : DEManager(socket), DEManager.OnPacketEve
      * Used to send a keyboard shortcut to the remote server
      */
     fun sendKeyboardShortcut(application: String, keys: String, listener: OnKeyboardShortcutAcknowledgedListener) {
-        val packet = KeyboardShortcutPacket.create(application, keys)
+        val packet = KeyboardShortcutPacket.createRequest(application, keys)
         sendPacket(packet, object : OnPacketAcknowledgedListener {
             override fun onPacketAcknowledged(packet: DEPacket) {
                 val response = packet.payloadAsString
@@ -170,20 +172,59 @@ class LinkManager(val socket: Socket) : DEManager(socket), DEManager.OnPacketEve
      */
     fun setKeyboardShortcutListener(listener: OnKeyboardShortcutReceivedListener) {
         setEventListener(KeyboardShortcutPacket.OP_TYPE, object : OnPacketReceivedListener {
-            override fun onPacketReceived(packet: DEPacket): String? {
+            override fun onPacketReceived(packet: DEPacket): DEPacket? {
                 val keyPacket = packet as KeyboardShortcutPacket  // Cast the packet
                 keyPacket.parse()  // Parse the values
-                val res = listener.onKeyboardShortcutReceived(keyPacket.application, keyPacket.keys)
-                if (res) {
-                    return KeyboardShortcutPacket.RESPONSE_OK
+                val result = listener.onKeyboardShortcutReceived(keyPacket.application, keyPacket.keys)
+                val finalResponse = if (result) {
+                    KeyboardShortcutPacket.RESPONSE_OK
                 } else {
-                    return KeyboardShortcutPacket.RESPONSE_ERROR
+                    KeyboardShortcutPacket.RESPONSE_ERROR
                 }
+                return DEPacket.responsePacket(packet, finalResponse)
             }
         })
     }
 
     interface OnKeyboardShortcutReceivedListener {
         fun onKeyboardShortcutReceived(application: String, keys: List<KeyboardKeys>): Boolean
+    }
+
+    /**
+     * APPLICATION LIST REQUEST
+     */
+
+    /**
+     * Request a list of apps to the server
+     */
+    fun requestAppList(listener: OnAppListResponseListener) {
+        val packet = AppListPacket.createRequest();
+        sendPacket(packet, object : OnPacketAcknowledgedListener {
+            override fun onPacketAcknowledged(packet: DEPacket) {
+                val appListPacket = packet as AppListPacket  // Cast the packet
+                appListPacket.parse()  // Parse the values
+                // Send the received list of apps
+                listener.onAppListResponceReceived(appListPacket.applications)
+            }
+        })
+    }
+
+
+    interface OnAppListResponseListener {
+        fun onAppListResponceReceived(apps : List<RemoteApplication> )
+    }
+
+    fun setAppListRequestListener(listener: OnAppListRequestListener) {
+        setEventListener(AppListPacket.OP_TYPE, object : OnPacketReceivedListener {
+            override fun onPacketReceived(packet: DEPacket): DEPacket? {
+                val apps = listener.onAppListRequestReceived()
+                val resPacket = AppListPacket.createResponse(packet, apps)
+                return resPacket
+            }
+        })
+    }
+
+    interface OnAppListRequestListener {
+        fun onAppListRequestReceived(): List<RemoteApplication>
     }
 }

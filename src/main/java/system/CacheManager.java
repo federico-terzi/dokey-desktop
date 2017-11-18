@@ -35,7 +35,7 @@ public class CacheManager {
         // Get the cache directory
         File cacheDir = new File(homeDir, ApplicationManager.CACHE_DIRECTORY_NAME);
 
-        // If it doesn't exists, create it
+        // If it doesn't exists, createRequest it
         if (!cacheDir.isDirectory()) {
             cacheDir.mkdir();
         }
@@ -54,7 +54,7 @@ public class CacheManager {
         // Get the icon cache directory
         File iconCacheDir = new File(cacheDir, ApplicationManager.ICON_CACHE_DIRECTORY_NAME);
 
-        // If it doesn't exists, create it
+        // If it doesn't exists, createRequest it
         if (!iconCacheDir.isDirectory()) {
             iconCacheDir.mkdir();
         }
