@@ -136,7 +136,11 @@ public class MSApplicationManager implements ApplicationManager {
     @Override
     public Application getActiveApplication() {
         Window activeWindow = getActiveWindow();
-        return activeWindow.getApplication();
+        if (activeWindow != null) {
+            return activeWindow.getApplication();
+        }else{
+            return null;
+        }
     }
 
     /**

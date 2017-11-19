@@ -1,20 +1,12 @@
 import engine.EngineService;
-import net.DEManager;
-import net.LinkManager;
-import net.model.KeyboardKeys;
-import net.packets.DEPacket;
-import org.jetbrains.annotations.NotNull;
 import system.ApplicationManagerFactory;
+import system.ApplicationSwitchDaemon;
 import system.model.ApplicationManager;
-import system.model.Window;
 
 import java.awt.*;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
 
 public class ServerMain {
     public static void main(String[] args) {
@@ -32,6 +24,8 @@ public class ServerMain {
                 System.out.println("loaded!");
             }
         });
+
+        ApplicationSwitchDaemon applicationSwitchDaemon = new ApplicationSwitchDaemon(wm);
 
         // Open server socket
         ServerSocket serverSocket = null;
@@ -53,7 +47,7 @@ public class ServerMain {
 
                 System.out.println("Connected with: "+socket.getInetAddress().toString());
 
-                EngineService engineService = new EngineService(socket, wm);
+                EngineService engineService = new EngineService(socket, wm, applicationSwitchDaemon);
                 engineService.start();
 
             } catch (IOException e) {

@@ -5,7 +5,7 @@ import net.LinkManager;
 import net.model.KeyboardKeys;
 import net.model.RemoteApplication;
 import org.jetbrains.annotations.NotNull;
-import system.ApplicationManagerFactory;
+import system.ApplicationSwitchDaemon;
 import system.KeyboardManager;
 import system.model.Application;
 import system.model.ApplicationManager;
@@ -19,23 +19,26 @@ import java.util.List;
 /**
  * Represents the background worker that executes all the actions in the server.
  */
-public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener {
+public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener {
     private LinkManager linkManager;
     private ApplicationManager appManager;
     private KeyboardManager keyboardManager;
+    private ApplicationSwitchDaemon applicationSwitchDaemon;
 
-    public EngineService(LinkManager linkManager, ApplicationManager appManager) throws AWTException {
+    public EngineService(LinkManager linkManager, ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon) throws AWTException {
         this.linkManager = linkManager;
         this.appManager = appManager;
+        this.applicationSwitchDaemon = applicationSwitchDaemon;
         this.keyboardManager = new KeyboardManager();
 
         initialization();
     }
 
-    public EngineService(Socket socket, ApplicationManager appManager) throws AWTException {
+    public EngineService(Socket socket, ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon) throws AWTException {
         // Create a link manager
         this.linkManager = new LinkManager(socket);
         this.appManager = appManager;
+        this.applicationSwitchDaemon = applicationSwitchDaemon;
         this.keyboardManager = new KeyboardManager();
 
         initialization();
@@ -48,6 +51,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         // Set the listeners
         linkManager.setKeyboardShortcutListener(this);
         linkManager.setAppListRequestListener(this);
+        applicationSwitchDaemon.addApplicationSwitchListener(this);
     }
 
     /**
@@ -56,6 +60,17 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     public void start() {
         // Start the linkManager daemon
         linkManager.startDaemon();
+    }
+
+    /**
+     * Close gracefully and unregister from listeners
+     */
+    public void close() {
+        // Stop the linkManager
+        linkManager.stopDaemon();
+
+        // Remove the listeners
+        applicationSwitchDaemon.removeApplicationSwitchListener(this);
     }
 
     /**
@@ -107,5 +122,14 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         }
 
         return output;
+    }
+
+    /**
+     * Called when the user switch to another application
+     * @param application the current focused application
+     */
+    @Override
+    public void onApplicationSwitch(@NotNull Application application) {
+        System.out.println("CLIENT "+application);
     }
 }

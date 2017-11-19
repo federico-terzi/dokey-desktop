@@ -1,8 +1,8 @@
 package engine;
 
+import system.ApplicationSwitchDaemon;
 import system.model.ApplicationManager;
 
-import java.awt.*;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -14,9 +14,11 @@ public class EngineServer extends Thread {
     private ServerSocket serverSocket = null;
 
     private ApplicationManager appManager;
+    private ApplicationSwitchDaemon applicationSwitchDaemon;
 
-    public EngineServer(ApplicationManager appManager) {
+    public EngineServer(ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon) {
         this.appManager = appManager;
+        this.applicationSwitchDaemon = applicationSwitchDaemon;
     }
 
     @Override
@@ -37,7 +39,7 @@ public class EngineServer extends Thread {
             try {
                 Socket socket = serverSocket.accept();
 
-                EngineWorker worker = new EngineWorker(socket, appManager);
+                EngineWorker worker = new EngineWorker(socket, appManager, applicationSwitchDaemon);
                 worker.start();
 
                 System.out.println("Connected with: "+socket.getInetAddress().toString());

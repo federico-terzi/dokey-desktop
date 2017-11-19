@@ -1,30 +1,17 @@
 package app;
 
-import app.UIControllers.InitializationController;
 import engine.EngineServer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import sun.applet.Main;
 import system.ApplicationManagerFactory;
+import system.ApplicationSwitchDaemon;
 import system.model.ApplicationManager;
-import system.model.Window;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.Date;
-import java.util.Random;
 import java.util.Timer;
-import java.util.TimerTask;
 
 public class MainApp extends Application {
     // a timer allowing the tray icon to provide a periodic notification event.
@@ -32,6 +19,7 @@ public class MainApp extends Application {
 
     private TrayIconManager trayIconManager = new TrayIconManager();
     private ApplicationManager appManager;
+    private ApplicationSwitchDaemon applicationSwitchDaemon;
 
     private Stage primaryStage;
     private InitializationStage initializationStage;
@@ -55,6 +43,9 @@ public class MainApp extends Application {
 
         // Initialize the application manager
         appManager = ApplicationManagerFactory.getInstance();
+
+        // Initialize the application switch daemon
+        applicationSwitchDaemon = new ApplicationSwitchDaemon(appManager);
 
         // load the applications
         loadApplications();
@@ -128,7 +119,10 @@ public class MainApp extends Application {
      * Start the engine server in another thread
      */
     private void startEngineServer() {
-        EngineServer engineServer = new EngineServer(appManager);
+        // Start the application switch daemon
+        applicationSwitchDaemon.start();
+
+        EngineServer engineServer = new EngineServer(appManager, applicationSwitchDaemon);
         engineServer.start();
 
         // Update the tray icon status
