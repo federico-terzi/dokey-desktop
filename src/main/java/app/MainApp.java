@@ -1,6 +1,7 @@
 package app;
 
 import engine.EngineServer;
+import engine.EngineWorker;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -13,7 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
 
-public class MainApp extends Application {
+public class MainApp extends Application implements EngineWorker.OnDeviceConnectionListener {
     // a timer allowing the tray icon to provide a periodic notification event.
     private Timer notificationTimer = new Timer();
 
@@ -66,7 +67,7 @@ public class MainApp extends Application {
                 appManager.loadApplications(new ApplicationManager.OnLoadApplicationsListener() {
                     @Override
                     public void onProgressUpdate(String applicationName, String iconPath, int current, int total) {
-                        System.out.println("Loading: "+applicationName+" "+current+"/"+total);
+                        System.out.println("Loading: " + applicationName + " " + current + "/" + total);
                         // Calculate the percentage
                         double percentage = (current / (double) total);
                         // Get the icon file
@@ -123,10 +124,42 @@ public class MainApp extends Application {
         applicationSwitchDaemon.start();
 
         EngineServer engineServer = new EngineServer(appManager, applicationSwitchDaemon);
+        engineServer.setDeviceConnectionListener(this);
         engineServer.start();
 
         // Update the tray icon status
-        trayIconManager.setTrayIconStatus("Running");
-        trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_RUNNING);
+        trayIconManager.setTrayIconStatus("Not connected");
+        trayIconManager.setLoading(false);
+        trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_READY);
     }
+
+    /**
+     * Called when a device connects to the server.
+     *
+     * @param deviceID the string ID of the device
+     * @param deviceName the name of the device
+     */
+    @Override
+    public void onDeviceConnected(String deviceID, String deviceName) {
+        System.out.println("Connected to: "+deviceID);
+
+        // Set the tray icon as running
+        trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_CONNECTED);
+        trayIconManager.setTrayIconStatus("Connected");
+    }
+
+    /**
+     * Called when a device disconnects from the server.
+     *
+     * @param deviceID the string ID of the device
+     */
+    @Override
+    public void onDeviceDisconnected(String deviceID) {
+        System.out.println("Disconnected from: "+deviceID);
+
+        // Set the tray icon as ready
+        trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_READY);
+        trayIconManager.setTrayIconStatus("Not connected");
+    }
+
 }

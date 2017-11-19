@@ -1,5 +1,6 @@
 package engine;
 
+import app.MainApp;
 import system.ApplicationSwitchDaemon;
 import system.model.ApplicationManager;
 
@@ -15,6 +16,7 @@ public class EngineServer extends Thread {
 
     private ApplicationManager appManager;
     private ApplicationSwitchDaemon applicationSwitchDaemon;
+    private EngineWorker.OnDeviceConnectionListener deviceConnectionListener;
 
     public EngineServer(ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon) {
         this.appManager = appManager;
@@ -40,6 +42,7 @@ public class EngineServer extends Thread {
                 Socket socket = serverSocket.accept();
 
                 EngineWorker worker = new EngineWorker(socket, appManager, applicationSwitchDaemon);
+                worker.setDeviceConnectionListener(deviceConnectionListener);
                 worker.start();
 
                 System.out.println("Connected with: "+socket.getInetAddress().toString());
@@ -48,5 +51,13 @@ public class EngineServer extends Thread {
                 System.err.println("Socket error.");
             }
         }
+    }
+
+    public EngineWorker.OnDeviceConnectionListener getDeviceConnectionListener() {
+        return deviceConnectionListener;
+    }
+
+    public void setDeviceConnectionListener(EngineWorker.OnDeviceConnectionListener deviceConnectionListener) {
+        this.deviceConnectionListener = deviceConnectionListener;
     }
 }

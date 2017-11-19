@@ -44,7 +44,6 @@ class DEDaemon(private val manager: DEManager, val connectionListener : OnConnec
 
             return packet
         } catch (e: IOException) {
-            e.printStackTrace()
             // Send the connection closed signal
             connectionListener?.onConnectionClosed()
 

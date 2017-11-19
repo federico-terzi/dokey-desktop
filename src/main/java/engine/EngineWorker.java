@@ -11,6 +11,7 @@ public class EngineWorker extends Thread {
     private Socket socket;
     private ApplicationManager appManager;
     private ApplicationSwitchDaemon applicationSwitchDaemon;
+    private OnDeviceConnectionListener deviceConnectionListener;
 
     private volatile boolean shouldTerminate = false;
 
@@ -38,6 +39,11 @@ public class EngineWorker extends Thread {
             // Start the daemons
             service.start();
 
+            // Send the connect notification
+            if (deviceConnectionListener != null) {
+                deviceConnectionListener.onDeviceConnected("test123", "TEST DEVICE");  // TODO: implement device id logic
+            }
+
             // Loop until should terminate is true
             while(!shouldTerminate) {
                 Thread.sleep(1000);
@@ -52,5 +58,26 @@ public class EngineWorker extends Thread {
         if (service != null) {
             service.close();
         }
+
+        // Send the disconnect notification
+        if (deviceConnectionListener != null) {
+            deviceConnectionListener.onDeviceDisconnected("test123");  // TODO: implement device id logic
+        }
+    }
+
+    public OnDeviceConnectionListener getDeviceConnectionListener() {
+        return deviceConnectionListener;
+    }
+
+    public void setDeviceConnectionListener(OnDeviceConnectionListener deviceConnectionListener) {
+        this.deviceConnectionListener = deviceConnectionListener;
+    }
+
+    /**
+     * Used to notify when a device connects or disconnects from the server
+     */
+    public interface OnDeviceConnectionListener {
+        void onDeviceConnected(String deviceID, String deviceName);
+        void onDeviceDisconnected(String deviceID);
     }
 }
