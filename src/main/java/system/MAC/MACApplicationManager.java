@@ -97,6 +97,15 @@ public class MACApplicationManager implements ApplicationManager {
     }
 
     /**
+     * @return the active Application
+     */
+    @Override
+    public Application getActiveApplication() {
+        Window activeWindow = getActiveWindow();
+        return activeWindow.getApplication();
+    }
+
+    /**
      * Return the executable path for the given PID. Return null if not found.
      * It uses the ps command line utility.
      *

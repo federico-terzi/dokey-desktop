@@ -21,6 +21,11 @@ public interface ApplicationManager {
     int getActivePID();
 
     /**
+     * @return the active Application
+     */
+    Application getActiveApplication();
+
+    /**
      * Get a list of Window currently active.
      */
     List<Window> getWindowList();

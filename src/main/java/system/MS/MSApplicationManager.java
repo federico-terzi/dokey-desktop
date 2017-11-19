@@ -20,8 +20,6 @@ import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 
@@ -101,8 +99,18 @@ public class MSApplicationManager implements ApplicationManager {
         // Get the executable path
         String executablePath = getExecutablePathFromPID(PID.getValue());
 
+        // Make sure an executable path exists
+        if (executablePath == null) {
+            return null;
+        }
+
         // Get the application
         Application application = applicationMap.get(executablePath);
+
+        // If application is not present in the list, load it dynamically
+        if (application == null) {
+            application = addApplicationFromExecutablePath(executablePath, null, null);
+        }
 
         Window window = new MSWindow(titleText, application, PID.getValue(), hwnd);
         return window;
@@ -123,13 +131,44 @@ public class MSApplicationManager implements ApplicationManager {
     }
 
     /**
+     * @return the active Application
+     */
+    @Override
+    public Application getActiveApplication() {
+        Window activeWindow = getActiveWindow();
+        return activeWindow.getApplication();
+    }
+
+    /**
+     * Return the executable path for the given PID. Return null if not found.
+     * It uses a kernel call to obtain it.
+     *
+     * @param pid process PID.
+     * @return the executable path for the given PID. null if not found.
+     */
+    private String getExecutablePathFromPID(int pid) {
+        PsApi psapi = (PsApi) Native.loadLibrary("psapi", PsApi.class);
+        byte[] pathText = new byte[1024];
+        WinNT.HANDLE process = Kernel32.INSTANCE.OpenProcess(0x0400 | 0x0010, false, pid);
+        psapi.GetModuleFileNameExA(process, null, pathText, 1024);
+        String executablePath= Native.toString(pathText);
+
+        // If the executablePath is empty, return null
+        if (executablePath.length() == 0) {
+            return null;
+        }
+
+        return executablePath;
+    }
+
+    /**
      * Return the executable path for the given PID. Return null if not found.
      * It uses the WMIC command line utility.
      *
      * @param pid process PID.
      * @return the executable path for the given PID. null if not found.
      */
-    private String getExecutablePathFromPID(int pid) {
+    private String getExecutablePathFromPIDUsingWMIC(int pid) {
         String cmd = "wmic process where ProcessID=" + pid + " get ProcessID,ExecutablePath /FORMAT:csv";
         Runtime runtime = Runtime.getRuntime();
 
@@ -252,14 +291,10 @@ public class MSApplicationManager implements ApplicationManager {
 
                 // Get the executable path
                 //String executablePath = executablesMap.get(PID.getValue());
-                PsApi psapi = (PsApi) Native.loadLibrary("psapi", PsApi.class);
-                byte[] pathText = new byte[1024];
-                WinNT.HANDLE process = Kernel32.INSTANCE.OpenProcess(0x0400 | 0x0010, false, PID.getValue());
-                psapi.GetModuleFileNameExA(process, null, pathText, 1024);
-                String executablePath= Native.toString(pathText);
+                String executablePath= getExecutablePathFromPID(PID.getValue());
 
                 // If the executablePath is empty, skip the process
-                if (executablePath.length() == 0) {
+                if (executablePath == null) {
                     return true;
                 }
 
@@ -281,6 +316,9 @@ public class MSApplicationManager implements ApplicationManager {
         return windowList;
     }
 
+    /**
+     * Used to get the executable path for the given pid
+     */
     public interface PsApi extends StdCallLibrary {
 
         int GetModuleFileNameExA(WinNT.HANDLE process, WinNT.HANDLE module ,
