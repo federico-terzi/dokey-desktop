@@ -15,8 +15,8 @@ public class KeyboardShortcutPacket extends JSONPacket {
     public static final int OP_TYPE = 1001;
 
     // Response codes
-    public static final byte[] RESPONSE_OK = "OK".getBytes();
-    public static final byte[] RESPONSE_ERROR = "ER".getBytes();
+    public static final String RESPONSE_OK = "OK";
+    public static final String RESPONSE_ERROR = "ER";
 
     // Payload values, must be populated with the parse() method.
     private String application = null;
