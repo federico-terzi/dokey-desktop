@@ -75,9 +75,7 @@ public class AppListPacket extends JSONPacket {
 
         for (Object jsonObj : jsonArray) {
             JSONObject jsonApp = (JSONObject) jsonObj;
-            RemoteApplication app = new RemoteApplication();
-            app.setName(jsonApp.getString("name"));
-            app.setPath(jsonApp.getString("path"));
+            RemoteApplication app = RemoteApplication.fromJson(jsonApp);
             applications.add(app);
         }
 

@@ -3,6 +3,7 @@ package net
 import net.model.KeyboardKeys
 import net.model.RemoteApplication
 import net.packets.AppListPacket
+import net.packets.AppSwitchPacket
 import net.packets.DEPacket
 import net.packets.KeyboardShortcutPacket
 import java.net.Socket
@@ -34,6 +35,7 @@ class LinkManager(val socket: Socket) : DEManager(socket), DEManager.OnPacketEve
         // Register here all the specialized packet types
         packetTypes.put(KeyboardShortcutPacket.OP_TYPE, KeyboardShortcutPacket::class.java)
         packetTypes.put(AppListPacket.OP_TYPE, AppListPacket::class.java)
+        packetTypes.put(AppSwitchPacket.OP_TYPE, AppSwitchPacket::class.java)
     }
 
     /**
@@ -226,5 +228,40 @@ class LinkManager(val socket: Socket) : DEManager(socket), DEManager.OnPacketEve
 
     interface OnAppListRequestListener {
         fun onAppListRequestReceived(): List<RemoteApplication>
+    }
+
+    /**
+     * APPLICATION SWITCH EVENT
+     */
+
+    /**
+     * Send the signal of focused app change
+     */
+    fun sendAppSwitchEvent(application: RemoteApplication, listener: OnAppSwitchAckListener) {
+        val packet = AppSwitchPacket.create(application);
+        sendPacket(packet, object : OnPacketAcknowledgedListener {
+            override fun onPacketAcknowledged(packet: DEPacket) {
+                listener.onAppSwitchAck()
+            }
+        })
+    }
+
+    interface OnAppSwitchAckListener {
+        fun onAppSwitchAck()
+    }
+
+    fun setAppSwitchEventListener(listener: OnAppSwitchEventListener) {
+        setEventListener(AppSwitchPacket.OP_TYPE, object : OnPacketReceivedListener {
+            override fun onPacketReceived(packet: DEPacket): DEPacket? {
+                val appSwitchPacket = packet as AppSwitchPacket
+                appSwitchPacket.parse()
+                listener.onAppSwitchReceived(appSwitchPacket.application)
+                return null
+            }
+        })
+    }
+
+    interface OnAppSwitchEventListener {
+        fun onAppSwitchReceived(application: RemoteApplication)
     }
 }

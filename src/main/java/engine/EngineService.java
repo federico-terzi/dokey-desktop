@@ -130,6 +130,15 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
      */
     @Override
     public void onApplicationSwitch(@NotNull Application application) {
-        System.out.println("CLIENT "+application);
+        RemoteApplication remoteApplication = new RemoteApplication();
+        remoteApplication.setName(application.getName());
+        remoteApplication.setPath(application.getExecutablePath());
+
+        linkManager.sendAppSwitchEvent(remoteApplication, new LinkManager.OnAppSwitchAckListener() {
+            @Override
+            public void onAppSwitchAck() {
+                System.out.println("App Switch Event Received");
+            }
+        });
     }
 }

@@ -37,6 +37,13 @@ public class ClientTestMain {
 
         try {
             LinkManager manager = new LinkManager(socket);
+
+            manager.setAppSwitchEventListener(new LinkManager.OnAppSwitchEventListener() {
+                @Override
+                public void onAppSwitchReceived(@NotNull RemoteApplication application) {
+                    System.out.println("App Switch REQUEST: "+application);
+                }
+            });
             manager.startDaemon();
 
             System.out.println("Client started!");

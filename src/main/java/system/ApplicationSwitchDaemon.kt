@@ -34,7 +34,11 @@ class ApplicationSwitchDaemon(val appManager : ApplicationManager) : Thread(){
 
                     // Notify the change to all listeners
                     listeners.forEach({
-                        it.onApplicationSwitch(application)
+                        try {
+                            it.onApplicationSwitch(application)
+                        }catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     })
                 }
             }

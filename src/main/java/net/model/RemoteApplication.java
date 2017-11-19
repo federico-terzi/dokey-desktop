@@ -30,6 +30,13 @@ public class RemoteApplication {
         return json;
     }
 
+    public static RemoteApplication fromJson(JSONObject jsonApp) {
+        RemoteApplication app = new RemoteApplication();
+        app.setName(jsonApp.getString("name"));
+        app.setPath(jsonApp.getString("path"));
+        return app;
+    }
+
     @Override
     public String toString() {
         return "RemoteApplication{" +
