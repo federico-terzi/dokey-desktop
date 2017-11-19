@@ -24,6 +24,7 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'net.java.dev.jna:jna:4.5.0'
     compile 'net.java.dev.jna:jna-platform:4.5.0'
     compile group: 'org.json', name: 'json', version: '20171018'
