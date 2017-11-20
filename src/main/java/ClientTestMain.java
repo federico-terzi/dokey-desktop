@@ -5,6 +5,7 @@ import net.packets.DEPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -65,10 +66,28 @@ public class ClientTestMain {
                 }else if (line.startsWith("apps")) {  // APP LIST REQUEST
                     manager.requestAppList(new LinkManager.OnAppListResponseListener() {
                         @Override
-                        public void onAppListResponceReceived(@NotNull List<? extends RemoteApplication> apps) {
+                        public void onAppListResponseReceived(@NotNull List<? extends RemoteApplication> apps) {
                             for (RemoteApplication app : apps) {
                                 System.out.println(app);
                             }
+                        }
+                    });
+                }else if (line.startsWith("icon")) {  // APP ICON REQUEST
+                    StringTokenizer st = new StringTokenizer(line, ";");
+                    st.nextToken();
+                    String appPath = st.nextToken();
+                    RemoteApplication remoteApplication = new RemoteApplication();
+                    remoteApplication.setPath(appPath);
+
+                    manager.requestAppIcon(remoteApplication, new LinkManager.OnAppIconResponseListener() {
+                        @Override
+                        public void onAppIconReceived(String s, File file) {
+                            System.out.println("Icon found: "+file.getPath());
+                        }
+
+                        @Override
+                        public void onAppIconNotFound(String s) {
+                            System.out.println("Icon not found for: "+s);
                         }
                     });
                 }

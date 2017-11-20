@@ -48,6 +48,13 @@ public interface ApplicationManager {
     boolean openApplication(String executablePath);
 
     /**
+     * Return the icon file associated with the specified application.
+     * @param executablePath path to the application
+     * @return the icon image File object.
+     */
+    File getApplicationIcon(String executablePath);
+
+    /**
      * Interface used to update the status of the "loadApplications" operation.
      */
     interface OnLoadApplicationsListener {

@@ -5,12 +5,14 @@ import net.LinkManager;
 import net.model.KeyboardKeys;
 import net.model.RemoteApplication;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import system.ApplicationSwitchDaemon;
 import system.KeyboardManager;
 import system.model.Application;
 import system.model.ApplicationManager;
 
 import java.awt.*;
+import java.io.File;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +21,7 @@ import java.util.List;
 /**
  * Represents the background worker that executes all the actions in the server.
  */
-public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener {
+public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnAppIconRequestListener {
     private LinkManager linkManager;
     private ApplicationManager appManager;
     private KeyboardManager keyboardManager;
@@ -51,6 +53,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         // Set the listeners
         linkManager.setKeyboardShortcutListener(this);
         linkManager.setAppListRequestListener(this);
+        linkManager.setAppIconRequestListener(this);
         applicationSwitchDaemon.addApplicationSwitchListener(this);
     }
 
@@ -140,5 +143,16 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
                 System.out.println("App Switch Event Received");
             }
         });
+    }
+
+    /**
+     * Called when a user requests an application icon
+     * @param path
+     * @return
+     */
+    @Nullable
+    @Override
+    public File onAppIconRequestReceived(String path) {
+        return appManager.getApplicationIcon(path);
     }
 }

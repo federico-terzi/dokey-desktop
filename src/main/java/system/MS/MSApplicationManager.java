@@ -82,6 +82,28 @@ public class MSApplicationManager implements ApplicationManager {
     }
 
     /**
+     * Return the icon file associated with the specified application.
+     * @param executablePath path to the application
+     * @return the icon image File object.
+     */
+    @Override
+    public File getApplicationIcon(String executablePath) {
+        // Get the application
+        Application application = applicationMap.get(executablePath);
+        if (application == null) {
+            application = addApplicationFromExecutablePath(executablePath, null, null);
+        }
+
+        // Make sure the application exists
+        if (application != null) {
+            File iconFile = new File(application.getIconPath());
+            return iconFile;
+        }else{
+            return null;
+        }
+    }
+
+    /**
      * @return the Window object of the active system.window.
      */
     @Override

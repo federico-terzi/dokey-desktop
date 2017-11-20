@@ -56,6 +56,28 @@ public class MACApplicationManager implements ApplicationManager {
     }
 
     /**
+     * Return the icon file associated with the specified application.
+     * @param executablePath path to the application
+     * @return the icon image File object.
+     */
+    @Override
+    public File getApplicationIcon(String executablePath) {
+        // Get the application
+        Application application = applicationMap.get(executablePath);
+        if (application == null) {
+            application = addApplicationFromAppPath(executablePath);
+        }
+
+        // Make sure the application exists
+        if (application != null) {
+            File iconFile = new File(application.getIconPath());
+            return iconFile;
+        }else{
+            return null;
+        }
+    }
+
+    /**
      * @return the Window object of the active system.window.
      */
     @Override
