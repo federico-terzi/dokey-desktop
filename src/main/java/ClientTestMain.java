@@ -19,7 +19,7 @@ public class ClientTestMain {
         // Ottengo l'indirizzo
         InetAddress address = null;
         try {
-            address = InetAddress.getByName("localhost");
+            address = InetAddress.getByName("192.168.56.101");
         } catch (UnknownHostException e) {
             System.err.println("Errore nell'indirizzo.");
             System.exit(0);

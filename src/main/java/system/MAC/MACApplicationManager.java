@@ -126,7 +126,7 @@ public class MACApplicationManager implements ApplicationManager {
             Window window = new MACWindow(windowTitle, application, appName);
             return window;
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -138,7 +138,11 @@ public class MACApplicationManager implements ApplicationManager {
     @Override
     public Application getActiveApplication() {
         Window activeWindow = getActiveWindow();
-        return activeWindow.getApplication();
+        if (activeWindow != null) {
+            return activeWindow.getApplication();
+        }else{
+            return null;
+        }
     }
 
     /**
