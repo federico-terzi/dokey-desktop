@@ -19,7 +19,8 @@ public class ClientTestMain {
         // Ottengo l'indirizzo
         InetAddress address = null;
         try {
-            address = InetAddress.getByName("192.168.56.101");
+            //address = InetAddress.getByName("192.168.56.101");
+            address = InetAddress.getByName("localhost");
         } catch (UnknownHostException e) {
             System.err.println("Errore nell'indirizzo.");
             System.exit(0);
@@ -88,6 +89,16 @@ public class ClientTestMain {
                         @Override
                         public void onAppIconNotFound(String s) {
                             System.out.println("Icon not found for: "+s);
+                        }
+                    });
+                }else if (line.startsWith("open")) {  // APP OPEN REQUEST
+                    StringTokenizer st = new StringTokenizer(line, ";");
+                    st.nextToken();
+                    String app = st.nextToken();
+                    manager.requestAppOpen(app, new LinkManager.OnAppOpenAckListener() {
+                        @Override
+                        public void onAppOpenAckReceived(String response) {
+                            System.out.println("Response: "+response);
                         }
                     });
                 }

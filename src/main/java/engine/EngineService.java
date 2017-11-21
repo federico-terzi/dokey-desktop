@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * Represents the background worker that executes all the actions in the server.
  */
-public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnAppIconRequestListener {
+public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnAppIconRequestListener, LinkManager.OnAppOpenRequestReceivedListener {
     public static final int DELAY_FROM_FOCUS_TO_KEYSTROKE = 300;  // In milliseconds
 
     private LinkManager linkManager;
@@ -56,6 +56,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         linkManager.setKeyboardShortcutListener(this);
         linkManager.setAppListRequestListener(this);
         linkManager.setAppIconRequestListener(this);
+        linkManager.setAppOpenRequestListener(this);
         applicationSwitchDaemon.addApplicationSwitchListener(this);
     }
 
@@ -123,6 +124,28 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         }else if (result == ApplicationManager.OPEN_APP_STARTED) {
             // The app was started, don't send the shortcut
             // because it may be loading
+            return true;
+        }
+
+        // Error
+        return false;
+    }
+
+    /**
+     * Called when receiving a request to focus/open an application.
+     * @param application the path to the application
+     * @return true if opened correctly, false otherwise.
+     */
+    @Override
+    public boolean onAppOpenRequestReceived(String application) {
+        // Try to open the application, and get the result
+        int result = appManager.openApplication(application);
+
+        if (result == ApplicationManager.OPEN_APP_ALREADY_FOCUSED) {
+            return true;
+        }else if (result == ApplicationManager.OPEN_APP_FOCUSED) {
+            return true;
+        }else if (result == ApplicationManager.OPEN_APP_STARTED) {
             return true;
         }
 
