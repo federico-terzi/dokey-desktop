@@ -41,6 +41,8 @@ public class InitializationStage extends Stage {
     public void updateAppStatus(String applicationName, double percentage, File iconFile) {
         controller.setAppNameLabel(applicationName);
         controller.setAppProgressBar(percentage);
-        controller.setAppImageFile(iconFile);
+        if (iconFile != null) {
+            controller.setAppImageFile(iconFile);
+        }
     }
 }

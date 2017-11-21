@@ -70,16 +70,28 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
                         System.out.println("Loading: " + applicationName + " " + current + "/" + total);
                         // Calculate the percentage
                         double percentage = (current / (double) total);
-                        // Get the icon file
-                        File iconImage = new File(iconPath);
 
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                // Update the initialization stage
-                                initializationStage.updateAppStatus(applicationName, percentage, iconImage);
-                            }
-                        });
+                        if (iconPath != null) {
+                            // Get the icon file
+                            File iconImage = new File(iconPath);
+
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    // Update the initialization stage
+                                    initializationStage.updateAppStatus(applicationName, percentage, iconImage);
+                                }
+                            });
+                        }else{
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    // Update the initialization stage
+                                    initializationStage.updateAppStatus(applicationName, percentage, null);
+                                }
+                            });
+                        }
+
                     }
 
                     @Override

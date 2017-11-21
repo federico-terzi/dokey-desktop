@@ -343,7 +343,7 @@ public class MACApplicationManager implements ApplicationManager {
             Application application = addApplicationFromAppPath(appPath);
 
             // Update the listener and increase the counter
-            if (listener != null) {
+            if (listener != null && application != null) {
                 listener.onProgressUpdate(application.getName(), application.getIconPath(), current, fileList.size());
             }
             current++;
