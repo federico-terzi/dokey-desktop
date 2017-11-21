@@ -22,7 +22,7 @@ public class KeyboardManager {
      * Used to simulate keyboard presses to complete the keystroke
      * @param keys list of KeyboardKeys to press
      */
-    public void sendKeystroke(List<? extends KeyboardKeys> keys) {
+    public synchronized void sendKeystroke(List<? extends KeyboardKeys> keys) {
         // Press all the keys
         for (KeyboardKeys key : keys) {
             robot.delay(40);
