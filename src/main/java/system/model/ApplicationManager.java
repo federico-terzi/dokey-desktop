@@ -43,9 +43,15 @@ public interface ApplicationManager {
     /**
      * Focus an application if already open or start it if not.
      * @param executablePath path to the application.
-     * @return true if succeeded, false otherwise.
+     * @return one of the OPEN APPLICATION RETURN CODES below
      */
-    boolean openApplication(String executablePath);
+    int openApplication(String executablePath);
+
+    // OPEN APPLICATION RETURN CODES
+    int OPEN_APP_ERROR = -1;
+    int OPEN_APP_ALREADY_FOCUSED = 1;
+    int OPEN_APP_FOCUSED = 2;
+    int OPEN_APP_STARTED = 3;
 
     /**
      * Return the icon file associated with the specified application.

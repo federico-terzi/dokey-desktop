@@ -44,10 +44,20 @@ public class MSApplicationManager implements ApplicationManager {
      * Focus an application if already open or start it if not.
      *
      * @param executablePath path to the application.
-     * @return true if succeeded, false otherwise.
+     * @return one of the OPEN APPLICATION RETURN CODES defined in
+     *         the ApplicationManager interface.
      */
     @Override
-    public synchronized boolean openApplication(String executablePath) {
+    public synchronized int openApplication(String executablePath) {
+        // Check if the requested app is currently in focus
+        Application currentFocusedApp = getActiveApplication();
+        // If the current focused app is the app currently open, do nothing
+        if (currentFocusedApp != null && currentFocusedApp.getExecutablePath().equals(executablePath)) {
+            return ApplicationManager.OPEN_APP_ALREADY_FOCUSED;
+        }
+
+        // App not currently in focus, check if is already running but not in focus.
+
         // Get windows to find out if application is already open
         List<Window> openWindows = getWindowList();
 
@@ -65,6 +75,7 @@ public class MSApplicationManager implements ApplicationManager {
 
         if (isApplicationOpen) {  // App is open, focus the first window
             firstOpenWindow.focusWindow();
+            return ApplicationManager.OPEN_APP_FOCUSED;
         } else {     // App is not open, start it.
             Application application = applicationMap.get(executablePath);
             if (application == null) {
@@ -72,13 +83,17 @@ public class MSApplicationManager implements ApplicationManager {
             }
             // Make sure the app is valid before opening it
             if (application != null) {
-                return application.open();
+                boolean result = application.open();
+                // Make sure the app could be loaded
+                if (result) {
+                    return ApplicationManager.OPEN_APP_STARTED;
+                }else{
+                    return ApplicationManager.OPEN_APP_ERROR;
+                }
             } else {
-                return false;
+                return ApplicationManager.OPEN_APP_ERROR;
             }
         }
-
-        return true;
     }
 
     /**

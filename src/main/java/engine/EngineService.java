@@ -22,6 +22,8 @@ import java.util.List;
  * Represents the background worker that executes all the actions in the server.
  */
 public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnAppIconRequestListener {
+    public static final int DELAY_FROM_FOCUS_TO_KEYSTROKE = 300;  // In milliseconds
+
     private LinkManager linkManager;
     private ApplicationManager appManager;
     private KeyboardManager keyboardManager;
@@ -95,15 +97,36 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
      */
     @Override
     public boolean onKeyboardShortcutReceived(@NotNull String application, @NotNull List<? extends KeyboardKeys> keys) {
-        // Focus the application
-        boolean res = appManager.openApplication(application);
+        // Try to open the application, and get the result
+        int result = appManager.openApplication(application);
 
-        // If the app has been focused correctly, send the keystrokes
-        if (res) {
+        // Do the appropriate action based on the application status
+
+        // The app was already focused, send the keystrokes directly
+        if (result == ApplicationManager.OPEN_APP_ALREADY_FOCUSED) {
             keyboardManager.sendKeystroke(keys);
+            return true;
+        }else if (result == ApplicationManager.OPEN_APP_FOCUSED) {
+            // The application was focused artificially, so wait a bit before
+            // sending the shortcut
+
+            // Delay
+            try {
+                Thread.sleep(DELAY_FROM_FOCUS_TO_KEYSTROKE);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            // Send the keystroke
+            keyboardManager.sendKeystroke(keys);
+            return true;
+        }else if (result == ApplicationManager.OPEN_APP_STARTED) {
+            // The app was started, don't send the shortcut
+            // because it may be loading
             return true;
         }
 
+        // Error
         return false;
     }
 
