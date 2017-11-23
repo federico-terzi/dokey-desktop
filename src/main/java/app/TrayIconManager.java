@@ -153,7 +153,9 @@ public class TrayIconManager {
                             javax.swing.SwingUtilities.invokeLater(() ->
                                     {
                                         currentRotationAngle += ROTATION_DEGREE;
-                                        setTrayIcon(TRAY_ICON_FILENAME_LOADING);
+                                        if (isLoading) {
+                                            setTrayIcon(TRAY_ICON_FILENAME_LOADING);
+                                        }
                                     }
                             );
                         }
