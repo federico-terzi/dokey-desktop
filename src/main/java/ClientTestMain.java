@@ -1,6 +1,8 @@
 import net.DEManager;
 import net.LinkManager;
+import net.discovery.ClientDiscoveryDaemon;
 import net.model.RemoteApplication;
+import net.model.ServerInfo;
 import net.packets.DEPacket;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,16 +18,36 @@ import java.util.StringTokenizer;
 
 public class ClientTestMain {
     public static void main(String[] args) {
-        // Ottengo l'indirizzo
-        InetAddress address = null;
-        try {
-            //address = InetAddress.getByName("192.168.56.101");
-            address = InetAddress.getByName("localhost");
-        } catch (UnknownHostException e) {
-            System.err.println("Errore nell'indirizzo.");
-            System.exit(0);
-        }
+        boolean useServiceDiscovery = true;
 
+        if (args.length == 2) {
+            int port = Integer.parseInt(args[1]);
+            InetAddress address = null;
+            try {
+                //address = InetAddress.getByName("192.168.56.101");
+                address = InetAddress.getByName(args[0]);
+            } catch (UnknownHostException e) {
+                System.err.println("Errore nell'indirizzo.");
+                System.exit(0);
+            }
+            createConnection(address, port);
+        }else{
+            System.out.println("Listening for servers using server discovery...");
+            ClientDiscoveryDaemon daemon = new ClientDiscoveryDaemon(new ClientDiscoveryDaemon.OnDiscoveryUpdatedListener() {
+                @Override
+                public void onDiscoveryUpdated(List<ServerInfo> list) {
+                    // Server found, create connection
+                    ServerInfo serverInfo = list.get(0);
+                    System.out.println("Service found: "+serverInfo);
+                    createConnection(serverInfo.getAddress(), serverInfo.getPort());
+                }
+            });
+            daemon.start();
+        }
+    }
+
+    private static void createConnection(InetAddress address, int port) {
+        System.out.print("Connecting to: "+address.getHostAddress()+":"+port+" ...");
         // Apro la socket
         Socket socket = null;
 
@@ -36,6 +58,8 @@ public class ClientTestMain {
             System.err.println("Errore nell'apertura della socket.");
             System.exit(4);
         }
+
+        System.out.println("Connected!");
 
         try {
             LinkManager manager = new LinkManager(socket);
