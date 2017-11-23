@@ -1,6 +1,7 @@
 package app;
 
 import javafx.application.Platform;
+import utils.OSValidator;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -120,7 +121,7 @@ public class TrayIconManager {
      */
     public void setTrayIcon(String imageCode) {
         // Get the icon file
-        File iconFile = new File(TrayIconManager.class.getResource("/assets/" + imageCode).getFile());
+        File iconFile = getIconFile(imageCode);
 
         // Set the tray image and scale it with antialiasing
         BufferedImage image = null;
@@ -179,5 +180,19 @@ public class TrayIconManager {
         g.rotate(Math.toRadians(deg), imgOld.getWidth() / 2, imgOld.getHeight() / 2);                                    //configure rotation
         g.drawImage(imgOld, 0, 0, null);                                                                                //draw rotated image
         return imgNew;                                                                                                  //return rotated image
+    }
+
+    /**
+     * Get the correct icon file based on the operating system
+     * @return the correct icon file
+     */
+    public static File getIconFile(String imageCode) {
+        String osFolder = "";
+        if (OSValidator.isWindows()) {
+            osFolder = "win/";
+        }else if (OSValidator.isMac()) {
+            osFolder = "mac/";
+        }
+        return new File(TrayIconManager.class.getResource("/assets/" + osFolder + imageCode).getFile());
     }
 }
