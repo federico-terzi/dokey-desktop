@@ -1,13 +1,18 @@
 package app;
 
 import engine.EngineServer;
+import engine.EngineService;
 import engine.EngineWorker;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.stage.Stage;
+import net.discovery.ServerDiscoveryDaemon;
+import net.model.DeviceInfo;
+import net.model.ServerInfo;
 import system.ApplicationManagerFactory;
 import system.ApplicationSwitchDaemon;
+import system.SystemInfoManager;
 import system.model.ApplicationManager;
 
 import java.io.File;
@@ -21,6 +26,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private TrayIconManager trayIconManager = new TrayIconManager();
     private ApplicationManager appManager;
     private ApplicationSwitchDaemon applicationSwitchDaemon;
+    private ServerDiscoveryDaemon serverDiscoveryDaemon;
+    private EngineServer engineServer;
 
     private Stage primaryStage;
     private InitializationStage initializationStage;
@@ -47,6 +54,10 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
         // Initialize the application switch daemon
         applicationSwitchDaemon = new ApplicationSwitchDaemon(appManager);
+
+        // Initialize the discovery daemon
+        ServerInfo serverInfo = SystemInfoManager.getServerInfo(EngineServer.SERVER_PORT);
+        serverDiscoveryDaemon = new ServerDiscoveryDaemon(serverInfo);
 
         // load the applications
         loadApplications();
@@ -135,7 +146,10 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         // Start the application switch daemon
         applicationSwitchDaemon.start();
 
-        EngineServer engineServer = new EngineServer(appManager, applicationSwitchDaemon);
+        // Start the server discovery daemon
+        serverDiscoveryDaemon.start();
+
+        engineServer = new EngineServer(appManager, applicationSwitchDaemon);
         engineServer.setDeviceConnectionListener(this);
         engineServer.start();
 
@@ -143,6 +157,15 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         trayIconManager.setTrayIconStatus("Not connected");
         trayIconManager.setLoading(false);
         trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_READY);
+    }
+
+    /**
+     * Stop all the running services
+     */
+    private void stopAllServices() {
+        applicationSwitchDaemon.setShouldStop(true);
+        serverDiscoveryDaemon.stopDiscovery();
+        engineServer.stopServer();
     }
 
     /**
@@ -173,5 +196,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_READY);
         trayIconManager.setTrayIconStatus("Not connected");
     }
+
+
 
 }

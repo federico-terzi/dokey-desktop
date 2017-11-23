@@ -18,6 +18,8 @@ public class EngineServer extends Thread {
     private ApplicationSwitchDaemon applicationSwitchDaemon;
     private EngineWorker.OnDeviceConnectionListener deviceConnectionListener;
 
+    private volatile boolean shouldStop = false;
+
     public EngineServer(ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon) {
         this.appManager = appManager;
         this.applicationSwitchDaemon = applicationSwitchDaemon;
@@ -37,7 +39,7 @@ public class EngineServer extends Thread {
         System.out.println("Server started!");
 
         // Endless request loop
-        while(true) {
+        while(!shouldStop) {
             try {
                 Socket socket = serverSocket.accept();
 
@@ -51,6 +53,16 @@ public class EngineServer extends Thread {
                 System.err.println("Socket error.");
             }
         }
+
+        try {
+            serverSocket.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void stopServer() {
+        shouldStop = true;
     }
 
     public EngineWorker.OnDeviceConnectionListener getDeviceConnectionListener() {
