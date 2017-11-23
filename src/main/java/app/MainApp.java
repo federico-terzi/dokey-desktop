@@ -156,7 +156,6 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         // Update the tray icon status
         trayIconManager.setTrayIconStatus("Not connected");
         trayIconManager.setLoading(false);
-        trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_READY);
     }
 
     /**

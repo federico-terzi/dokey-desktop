@@ -5,6 +5,8 @@ import utils.OSValidator;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -162,6 +164,23 @@ public class TrayIconManager {
         } else {
             rotationTimer.cancel();
             currentRotationAngle = 0;
+
+            // Change the icon to ready with a delay
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    javax.swing.SwingUtilities.invokeLater(() ->
+                            {
+                                setTrayIcon(TRAY_ICON_FILENAME_READY);
+                            }
+                    );
+                }
+            }).start();
         }
         isLoading = loading;
     }
