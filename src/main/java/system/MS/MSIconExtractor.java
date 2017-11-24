@@ -118,6 +118,10 @@ public class MSIconExtractor {
                 g = lpBitsColor[i + 1] & 0xFF;
                 r = lpBitsColor[i + 2] & 0xFF;
                 a = 0xFF - lpBitsMask[i] & 0xFF;
+                // Remove the black
+                if (b==0&&g==0&&r==0) {
+                    a=0;
+                }
                 argb = (a << 24) | (r << 16) | (g << 8) | b;
                 image.setRGB(x, y, argb);
                 x = (x + 1) % width;
