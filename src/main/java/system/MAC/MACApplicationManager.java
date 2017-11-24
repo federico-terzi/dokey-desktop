@@ -342,15 +342,21 @@ public class MACApplicationManager implements ApplicationManager {
 
         // Cycle through all entries
         for (File app : fileList) {
-            String appPath = app.getAbsolutePath();
+            try {
+                String appPath = app.getAbsolutePath();
 
-            // Add the application
-            Application application = addApplicationFromAppPath(appPath);
+                // Add the application
+                Application application = addApplicationFromAppPath(appPath);
 
-            // Update the listener and increase the counter
-            if (listener != null && application != null) {
-                listener.onProgressUpdate(application.getName(), application.getIconPath(), current, fileList.size());
+                // Update the listener and increase the counter
+                if (listener != null && application != null) {
+                    listener.onProgressUpdate(application.getName(), application.getIconPath(), current, fileList.size());
+                }
+            }catch(Exception e) {
+                System.out.print("EXC APP "+app.getName());
+                e.printStackTrace();
             }
+
             current++;
         }
 

@@ -409,43 +409,48 @@ public class MSApplicationManager implements ApplicationManager {
 
         // Cycle through all entries
         for (File file : fileList) {
-            // Skip uninstallers
-            if (file.getName().toLowerCase().contains("uninstall")) {
-                System.out.println("Skipping :"+file.getAbsolutePath());
-                continue;
-            }
+            try {
+                // Skip uninstallers
+                if (file.getName().toLowerCase().contains("uninstall")) {
+                    System.out.println("Skipping :"+file.getAbsolutePath());
+                    continue;
+                }
 
-            String applicationName = file.getName().replace(".lnk", "");
-            String executablePath = null;
-            String iconPath = null;
+                String applicationName = file.getName().replace(".lnk", "");
+                String executablePath = null;
+                String iconPath = null;
 
-            // Try to load the application info from the cache
-            if (lnkCacheMap.containsKey(file.getAbsolutePath())) {  // APP in cache
-                MSCachedApplication cachedApp = lnkCacheMap.get(file.getAbsolutePath());
-                executablePath = cachedApp.getExecutablePath();
-                iconPath = cachedApp.getIconPath();
-            } else {  // APP not in cache
-                // Calculate the correct values
-                executablePath = getLnkExecutablePath(file.getAbsolutePath());
+                // Try to load the application info from the cache
+                if (lnkCacheMap.containsKey(file.getAbsolutePath())) {  // APP in cache
+                    MSCachedApplication cachedApp = lnkCacheMap.get(file.getAbsolutePath());
+                    executablePath = cachedApp.getExecutablePath();
+                    iconPath = cachedApp.getIconPath();
+                } else {  // APP not in cache
+                    // Calculate the correct values
+                    executablePath = getLnkExecutablePath(file.getAbsolutePath());
 
-                // Make sure the executable exists
+                    // Make sure the executable exists
+                    if (executablePath != null) {
+                        // Get the app icon
+                        iconPath = getIconPath(executablePath);
+
+                        // Save the info to the cache
+                        writeLnkDestinationToCache(file.getAbsolutePath(), executablePath, iconPath);
+                    }
+                }
+
+                // Make sure the target is an exe file
                 if (executablePath != null) {
-                    // Get the app icon
-                    iconPath = getIconPath(executablePath);
-
-                    // Save the info to the cache
-                    writeLnkDestinationToCache(file.getAbsolutePath(), executablePath, iconPath);
+                    // Add the application
+                    addApplicationFromExecutablePath(executablePath, applicationName, iconPath);
+                    // Update the listener
+                    if (listener != null) {
+                        listener.onProgressUpdate(applicationName, iconPath, current, fileList.size());
+                    }
                 }
-            }
-
-            // Make sure the target is an exe file
-            if (executablePath != null) {
-                // Add the application
-                addApplicationFromExecutablePath(executablePath, applicationName, iconPath);
-                // Update the listener
-                if (listener != null) {
-                    listener.onProgressUpdate(applicationName, iconPath, current, fileList.size());
-                }
+            }catch(Exception e) {
+                System.out.print("EXC APP "+file.getName());
+                e.printStackTrace();
             }
 
             current++;
