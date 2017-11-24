@@ -484,9 +484,21 @@ public class MACApplicationManager implements ApplicationManager {
      */
     public File getInternalIconFileFromPlistFile(File appDir) {
         File infoPlistFile = new File(appDir, "/Contents/info.plist");
-
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(infoPlistFile)));
+            // Convert the plist file to its xml form in a temporary file
+            File tmpFile = File.createTempFile("temp", ".plist");
+
+            Runtime runtime = Runtime.getRuntime();
+
+            // Get the list of apps
+            Process proc = runtime.exec(new String[]{"plutil", "-convert", "xml1", infoPlistFile.getAbsolutePath(),
+                    "-o", tmpFile.getAbsolutePath()});
+
+            // Wait for the conversion
+            proc.waitFor();
+
+            // Read the file
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(tmpFile)));
 
             String line = null;
 
@@ -520,10 +532,9 @@ public class MACApplicationManager implements ApplicationManager {
                     }
                 }
             }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
