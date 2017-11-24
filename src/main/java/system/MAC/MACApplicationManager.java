@@ -127,6 +127,7 @@ public class MACApplicationManager implements ApplicationManager {
             return window;
 
         } catch (Exception e) {
+            System.out.print("ERROR ACTIVE WINDOW: ");
             e.printStackTrace();
         }
         return null;
@@ -532,6 +533,9 @@ public class MACApplicationManager implements ApplicationManager {
                     }
                 }
             }
+
+            // Delete the temporary file
+            tmpFile.delete();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
