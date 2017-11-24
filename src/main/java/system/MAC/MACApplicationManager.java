@@ -525,17 +525,18 @@ public class MACApplicationManager implements ApplicationManager {
 
                             // Make sure it is a valid path
                             if (iconFile.isFile()) {
+                                // Delete the temporary file
+                                tmpFile.delete();
                                 return iconFile;
                             } else {
+                                // Delete the temporary file
+                                tmpFile.delete();
                                 return null;
                             }
                         }
                     }
                 }
             }
-
-            // Delete the temporary file
-            tmpFile.delete();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
