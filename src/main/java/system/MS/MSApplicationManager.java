@@ -1,11 +1,13 @@
 package system.MS;
 
+import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.*;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.win32.StdCallLibrary;
+import com.sun.jna.win32.W32APIOptions;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import system.CacheManager;
@@ -22,6 +24,8 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 import java.util.List;
+
+import static com.sun.jna.platform.WindowUtils.getIconSize;
 
 public class MSApplicationManager implements ApplicationManager {
     private static final int MAX_TITLE_LENGTH = 1024;
@@ -629,6 +633,18 @@ public class MSApplicationManager implements ApplicationManager {
         // Get the icon file
         File iconFile = generateIconFile(executablePath);
 
+        // Try to generate the icon using the native method
+        try {
+            File extractedIcon = extractIconNative(executablePath, iconFile);
+            if (extractedIcon != null) {
+                return extractedIcon;
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Native method had an exception, use the fallback methods.
+
         // The icon can be obtained in two ways, but using powershell the
         // resulting image is better ( higher resolution ).
         if (isPowerShellEnabled) {  // Best method
@@ -686,6 +702,108 @@ public class MSApplicationManager implements ApplicationManager {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * Extract the icon from the executable using the native method.
+     * THIS METHOD USES BLACK MAGIC TO WORK, DON'T MESS WITH IT.
+     *
+     * @param executablePath  path of the executable
+     * @param destinationFile destination image file
+     * @return the extracted file if succeeded, false otherwise.
+     */
+    private File extractIconNative(String executablePath, File destinationFile) {
+        // Create an array that will hold the icon references
+        WinDef.HICON[] icons = new WinDef.HICON[10];
+
+        // Extract the icons, 128x128 size. ( HIGHER SIZES GIVE PROBLEMS ).
+        WinNT.HRESULT hresult = ShellLib.INSTANCE.SHDefExtractIcon(executablePath,
+                0,
+                0,
+                icons,
+                null,
+                128);
+        // Cycle through the icons.
+        for (int j = 0; j<icons.length; j++) {
+            // Get the icon
+            WinDef.HICON hIcon = icons[j];
+            final Dimension iconSize = getIconSize(hIcon);
+
+            if (iconSize.width == 0 || iconSize.height == 0)
+                return null;
+
+            final int width = iconSize.width;
+            final int height = iconSize.height;
+            final short depth = 24;
+
+            final byte[] lpBitsColor = new byte[width * height * depth / 8];
+            final Pointer lpBitsColorPtr = new Memory(lpBitsColor.length);
+            final byte[] lpBitsMask = new byte[width * height * depth / 8];
+            final Pointer lpBitsMaskPtr = new Memory(lpBitsMask.length);
+            final WinGDI.BITMAPINFO bitmapInfo = new WinGDI.BITMAPINFO();
+            final WinGDI.BITMAPINFOHEADER hdr = new WinGDI.BITMAPINFOHEADER();
+
+            bitmapInfo.bmiHeader = hdr;
+            hdr.biWidth = width;
+            hdr.biHeight = height;
+            hdr.biPlanes = 1;
+            hdr.biBitCount = depth;
+            hdr.biCompression = 0;
+            hdr.write();
+            bitmapInfo.write();
+
+            final WinDef.HDC hDC = User32.INSTANCE.GetDC(null);
+            final WinGDI.ICONINFO iconInfo = new WinGDI.ICONINFO();
+            User32.INSTANCE.GetIconInfo(hIcon, iconInfo);
+            iconInfo.read();
+
+            GDI32.INSTANCE.GetDIBits(hDC, iconInfo.hbmColor, 0, height,
+                    lpBitsColorPtr, bitmapInfo, 0);
+            lpBitsColorPtr.read(0, lpBitsColor, 0, lpBitsColor.length);
+            GDI32.INSTANCE.GetDIBits(hDC, iconInfo.hbmMask, 0, height,
+                    lpBitsMaskPtr, bitmapInfo, 0);
+            lpBitsMaskPtr.read(0, lpBitsMask, 0, lpBitsMask.length);
+            final BufferedImage image = new BufferedImage(width, height,
+                    BufferedImage.TYPE_INT_ARGB);
+
+            int r, g, b, a, argb;
+            int x = 0, y = height - 1;
+            for (int i = 0; i < lpBitsColor.length; i = i + 3) {
+                b = lpBitsColor[i] & 0xFF;
+                g = lpBitsColor[i + 1] & 0xFF;
+                r = lpBitsColor[i + 2] & 0xFF;
+                a = 0xFF - lpBitsMask[i] & 0xFF;
+                // Remove the black
+                if (b==0&&g==0&&r==0) {
+                    a=0;
+                }
+                argb = (a << 24) | (r << 16) | (g << 8) | b;
+                image.setRGB(x, y, argb);
+                x = (x + 1) % width;
+                if (x == 0)
+                    y--;
+            }
+
+            User32.INSTANCE.ReleaseDC(null, hDC);
+
+            // Save the image
+            try {
+                ImageIO.write(image, "png", destinationFile);
+                return destinationFile;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Used to extract icons using the kernel calls.
+     */
+    public interface ShellLib extends Shell32 {
+        ShellLib INSTANCE = (ShellLib) Native.loadLibrary("Shell32", ShellLib.class, W32APIOptions.DEFAULT_OPTIONS);
+
+        WinNT.HRESULT SHDefExtractIcon(String lpszFile, int nIconIndex, int flags, WinDef.HICON[] phiconLarge, WinDef.HICON[] phiconSmall, int iconSize);
     }
 
     /**
