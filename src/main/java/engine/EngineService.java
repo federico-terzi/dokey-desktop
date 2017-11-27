@@ -4,10 +4,13 @@ import net.DEDaemon;
 import net.LinkManager;
 import net.model.KeyboardKeys;
 import net.model.RemoteApplication;
+import net.packets.SectionPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import section.model.Section;
 import system.ApplicationSwitchDaemon;
 import system.KeyboardManager;
+import system.SectionManager;
 import system.model.Application;
 import system.model.ApplicationManager;
 
@@ -21,12 +24,13 @@ import java.util.List;
 /**
  * Represents the background worker that executes all the actions in the server.
  */
-public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnAppIconRequestListener, LinkManager.OnAppOpenRequestReceivedListener {
+public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnAppIconRequestListener, LinkManager.OnAppOpenRequestReceivedListener, LinkManager.OnSectionRequestListener {
     public static final int DELAY_FROM_FOCUS_TO_KEYSTROKE = 300;  // In milliseconds
 
     private LinkManager linkManager;
     private ApplicationManager appManager;
     private KeyboardManager keyboardManager;
+    private SectionManager sectionManager;
     private ApplicationSwitchDaemon applicationSwitchDaemon;
 
     public EngineService(LinkManager linkManager, ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon) throws AWTException {
@@ -34,6 +38,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         this.appManager = appManager;
         this.applicationSwitchDaemon = applicationSwitchDaemon;
         this.keyboardManager = new KeyboardManager();
+        this.sectionManager = new SectionManager();
 
         initialization();
     }
@@ -44,6 +49,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         this.appManager = appManager;
         this.applicationSwitchDaemon = applicationSwitchDaemon;
         this.keyboardManager = new KeyboardManager();
+        this.sectionManager = new SectionManager();
 
         initialization();
     }
@@ -57,6 +63,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         linkManager.setAppListRequestListener(this);
         linkManager.setAppIconRequestListener(this);
         linkManager.setAppOpenRequestListener(this);
+        linkManager.setSectionRequestListener(this);
         applicationSwitchDaemon.addApplicationSwitchListener(this);
     }
 
@@ -183,7 +190,9 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         remoteApplication.setName(application.getName());
         remoteApplication.setPath(application.getExecutablePath());
 
-        linkManager.sendAppSwitchEvent(remoteApplication, new LinkManager.OnAppSwitchAckListener() {
+        // TODO: section logic
+
+        linkManager.sendAppSwitchEvent(remoteApplication, -1, new LinkManager.OnAppSwitchAckListener() {
             @Override
             public void onAppSwitchAck() {
                 System.out.println("App Switch Event Received");
@@ -200,5 +209,15 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     @Override
     public File onAppIconRequestReceived(String path) {
         return appManager.getApplicationIcon(path);
+    }
+
+    @NotNull
+    @Override
+    public Section onSectionRequestReceived(String appPath, long lastEdit) throws SectionPacket.AlreadyUpToDateException, SectionPacket.NotFoundException {
+        Section section = sectionManager.getShortcutSection(appPath);
+
+        // TODO: add up to date/error/template logic
+
+        return section;
     }
 }

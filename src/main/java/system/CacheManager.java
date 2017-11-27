@@ -17,10 +17,12 @@ public class CacheManager {
 
     private File cacheDir;
     private File iconCacheDir;
+    private File sectionDir;
 
     private CacheManager() {
         cacheDir = loadCacheDir();
         iconCacheDir = loadIconCacheDir();
+        sectionDir = loadSectionDir();
     }
 
     /**
@@ -62,11 +64,34 @@ public class CacheManager {
         return iconCacheDir;
     }
 
+    /**
+     * Create and retrieve the section directory.
+     *
+     * @return the Section Cache directory.
+     */
+    public File loadSectionDir() {
+        File cacheDir = loadCacheDir();
+
+        // Get the icon cache directory
+        File sectionDir = new File(cacheDir, SectionManager.SECTION_FOLDER_NAME);
+
+        // If it doesn't exists, createRequest it
+        if (!sectionDir.isDirectory()) {
+            sectionDir.mkdir();
+        }
+
+        return sectionDir;
+    }
+
     public File getCacheDir() {
         return cacheDir;
     }
 
     public File getIconCacheDir() {
         return iconCacheDir;
+    }
+
+    public File getSectionDir() {
+        return sectionDir;
     }
 }

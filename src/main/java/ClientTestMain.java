@@ -5,6 +5,7 @@ import net.model.RemoteApplication;
 import net.model.ServerInfo;
 import net.packets.DEPacket;
 import org.jetbrains.annotations.NotNull;
+import section.model.Section;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -66,8 +67,8 @@ public class ClientTestMain {
 
             manager.setAppSwitchEventListener(new LinkManager.OnAppSwitchEventListener() {
                 @Override
-                public void onAppSwitchReceived(@NotNull RemoteApplication application) {
-                    System.out.println("App Switch REQUEST: "+application);
+                public void onAppSwitchReceived(@NotNull RemoteApplication application, long lastEdit) {
+                    System.out.println("App Switch REQUEST: "+application+" lastEdit: "+lastEdit);
                 }
             });
             manager.startDaemon();
@@ -123,6 +124,26 @@ public class ClientTestMain {
                         @Override
                         public void onAppOpenAckReceived(String response) {
                             System.out.println("Response: "+response);
+                        }
+                    });
+                }else if (line.startsWith("section")) {  // SECTION REQUEST
+                    StringTokenizer st = new StringTokenizer(line, ";");
+                    st.nextToken();
+                    String app = st.nextToken();
+                    manager.requestSection(app, -1, new LinkManager.OnSectionResponseListener() {
+                        @Override
+                        public void onSectionAlreadyUpToDate(String s) {
+
+                        }
+
+                        @Override
+                        public void onSectionUpdateReceived(String s, long l, Section section) {
+                            System.out.println("Section: "+section);
+                        }
+
+                        @Override
+                        public void onSectionNotFound(String s) {
+
                         }
                     });
                 }
