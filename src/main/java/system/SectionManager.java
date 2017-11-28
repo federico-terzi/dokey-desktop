@@ -1,8 +1,8 @@
 package system;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import json.JSONObject;
+import json.JSONTokener;
 import section.model.Section;
 import section.model.SectionType;
 
