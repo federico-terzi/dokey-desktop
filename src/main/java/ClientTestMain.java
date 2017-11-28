@@ -130,10 +130,11 @@ public class ClientTestMain {
                     StringTokenizer st = new StringTokenizer(line, ";");
                     st.nextToken();
                     String app = st.nextToken();
-                    manager.requestSection(app, -1, new LinkManager.OnSectionResponseListener() {
+                    long lastEdit = Long.parseLong(st.nextToken());
+                    manager.requestSection(app, lastEdit, new LinkManager.OnSectionResponseListener() {
                         @Override
                         public void onSectionAlreadyUpToDate(String s) {
-
+                            System.out.println("Already up to date");
                         }
 
                         @Override
@@ -143,7 +144,7 @@ public class ClientTestMain {
 
                         @Override
                         public void onSectionNotFound(String s) {
-
+                            System.out.println("Not found");
                         }
                     });
                 }

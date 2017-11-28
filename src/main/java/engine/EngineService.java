@@ -216,7 +216,15 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     public Section onSectionRequestReceived(String appPath, long lastEdit) throws SectionPacket.AlreadyUpToDateException, SectionPacket.NotFoundException {
         Section section = sectionManager.getShortcutSection(appPath);
 
-        // TODO: add up to date/error/template logic
+        // If the section couldn't be found
+        if (section == null) {
+            throw new SectionPacket.NotFoundException("Required section was not found");
+        }
+
+        // If the requested section is already up to date
+        if (section.getLastEdit() <= lastEdit) {
+            throw new SectionPacket.AlreadyUpToDateException("Requested section is already up to date");
+        }
 
         return section;
     }
