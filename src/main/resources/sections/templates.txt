@@ -1,0 +1,1 @@
+Photoshop.exe=photoshop.json

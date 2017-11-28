@@ -7,17 +7,38 @@ import section.model.Section;
 import section.model.SectionType;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * The SectionManager is used to manage sections.
  */
 public class SectionManager {
     public static final String SECTION_FOLDER_NAME = "sections";
+    public static final String TEMPLATE_DB_FILENAME = "templates.txt";
+
+    // This map will hold the association between app name and template file
+    public Map<String, String> templateMap = new HashMap<>();
+
+    public SectionManager() {
+        loadTemplateMap();  // load the template map from the TEMPLATE_DB_FILE
+    }
 
     public Section getShortcutSection(String appPath) {
         // Get the section file
         File sectionFile = getSectionFile(appPath);
 
+        // Read the content
+        return getSectionFromFile(sectionFile);
+    }
+
+    /**
+     * Read a section from the given file
+     * @param sectionFile the section File
+     * @return the Section read from the file
+     */
+    private Section getSectionFromFile(File sectionFile) {
         // Read the content
         try {
             JSONTokener tokener = new JSONTokener(new FileInputStream(sectionFile));
@@ -52,13 +73,19 @@ public class SectionManager {
         // Get the section file
         File sectionFile = new File(userSectionDir, appPathHash + ".json");
 
-        // If the file doesn't exist, fill it with an empty section
+        // If the file doesn't exist, check if a template is available
+        // if not, fill it with an empty section.
         if (!sectionFile.isFile()) {
-            // Generate an empty section
-            Section emptySection = generateEmptyShortcutSection(appPath);
+            // Check if a template is available
+            Section section = getTemplateSectionForApp(appPath);
+
+            // If no template has been found, generate an empty section
+            if (section == null) {
+                section = generateEmptyShortcutSection(appPath);
+            }
 
             // Write the section to the file
-            writeSectionToFile(emptySection, sectionFile);
+            writeSectionToFile(section, sectionFile);
         }
 
         return sectionFile;
@@ -76,6 +103,33 @@ public class SectionManager {
         section.setSectionType(SectionType.SHORTCUTS);
         section.setLastEdit(System.currentTimeMillis());
         section.setRelatedAppId(appPath);
+
+        return section;
+    }
+
+    /**
+     * Search for a template for the given app path.
+     * @param appPath the path of the application. C:\...\prog.exe or /Applications/App.app
+     * @return the requested Section if a template was found, null otherwise.
+     */
+    private Section getTemplateSectionForApp(String appPath) {
+        // Extract the filename from the appPath
+        File appFile = new File(appPath);
+        String appName = appFile.getName();
+
+        // Search in the templateMap
+        String templateFilename = templateMap.get(appName);
+
+        // If a template was not found, return null
+        if (templateFilename == null) {
+            return null;
+        }
+
+        // Template was found, read the Section
+        File templateFile = new File(getClass().getResource("/sections/"+templateFilename).getPath());
+
+        // Read the section
+        Section section = getSectionFromFile(templateFile);
 
         return section;
     }
@@ -103,5 +157,36 @@ public class SectionManager {
         }
 
         return false;
+    }
+
+    /**
+     * Load the template association into the map
+     */
+    private void loadTemplateMap() {
+        // Get the template file
+        File templateDb = new File(getClass().getResource("/sections/"+TEMPLATE_DB_FILENAME).getPath());
+
+        // Reset the template map
+        templateMap = new HashMap<>();
+
+        // Read all the file and populate the map
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(templateDb)));
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                StringTokenizer st = new StringTokenizer(line, "=");
+                String appName = st.nextToken();
+                String templateFilename = st.nextToken();
+
+                // Add it to the map
+                templateMap.put(appName, templateFilename);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
