@@ -13,13 +13,15 @@ import net.model.ServerInfo;
 import system.ApplicationManagerFactory;
 import system.ApplicationSwitchDaemon;
 import system.SystemInfoManager;
+import system.adb.ADBDaemon;
+import system.adb.ADBManager;
 import system.model.ApplicationManager;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
 
-public class MainApp extends Application implements EngineWorker.OnDeviceConnectionListener {
+public class MainApp extends Application implements EngineWorker.OnDeviceConnectionListener, ADBManager.OnUSBDeviceConnectedListener {
     // a timer allowing the tray icon to provide a periodic notification event.
     private Timer notificationTimer = new Timer();
 
@@ -28,6 +30,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private ApplicationSwitchDaemon applicationSwitchDaemon;
     private ServerDiscoveryDaemon serverDiscoveryDaemon;
     private EngineServer engineServer;
+    private ADBManager adbManager;
 
     private Stage primaryStage;
     private InitializationStage initializationStage;
@@ -58,6 +61,9 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         // Initialize the discovery daemon
         ServerInfo serverInfo = SystemInfoManager.getServerInfo(EngineServer.SERVER_PORT);
         serverDiscoveryDaemon = new ServerDiscoveryDaemon(serverInfo);
+
+        // Initialize the ADB manager
+        adbManager = new ADBManager(this);
 
         // load the applications
         loadApplications();
@@ -149,6 +155,9 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         // Start the server discovery daemon
         serverDiscoveryDaemon.start();
 
+        // Start the ADB daemon
+        adbManager.startDaemon();
+
         engineServer = new EngineServer(appManager, applicationSwitchDaemon);
         engineServer.setDeviceConnectionListener(this);
         engineServer.start();
@@ -165,6 +174,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         applicationSwitchDaemon.setShouldStop(true);
         serverDiscoveryDaemon.stopDiscovery();
         engineServer.stopServer();
+        adbManager.stopDaemon();
     }
 
     /**
@@ -197,5 +207,21 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     }
 
 
+    /**
+     * Called when a new USB device has been connected
+     * @param deviceInfo
+     */
+    @Override
+    public void onUSBDeviceConnected(DeviceInfo deviceInfo) {
 
+    }
+
+    /**
+     * Called when a USB device has been disconnected.
+     * @param deviceInfo
+     */
+    @Override
+    public void onUSBDeviceDisconnected(DeviceInfo deviceInfo) {
+
+    }
 }

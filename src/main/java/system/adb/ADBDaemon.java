@@ -13,11 +13,12 @@ import java.net.SocketException;
 import java.nio.charset.Charset;
 import java.util.*;
 
+import static system.adb.ADBManager.ADB_PATH;
+
 /**
  * Daemon used to discover new devices connected using usb.
  */
 public class ADBDaemon extends Thread{
-    public static final String ADB_PATH = "adb";  // path to the adb executable
 
     public static final long CHECK_INTERVAL = 1000;  // Check interval
 
@@ -136,6 +137,11 @@ public class ADBDaemon extends Thread{
                             model = current.split(":")[1];
                         }
                     }
+                    // Set the ID as the model if it wasn't found
+                    if (model == null) {
+                        model = id;
+                    }
+
                     // Package the information
                     DeviceInfo deviceInfo = new DeviceInfo();
                     deviceInfo.setID(id);

@@ -1,27 +1,21 @@
 import net.model.DeviceInfo;
-import system.MS.MSIconExtractor;
-import system.adb.ADBDaemon;
+import system.adb.ADBManager;
 
 public class ADBTestMain {
     public static void main(String[] args) {
-        ADBDaemon daemon = new ADBDaemon(new ADBDaemon.OnDiscoveryUpdatedListener() {
+        ADBManager manager = new ADBManager(new ADBManager.OnUSBDeviceConnectedListener() {
             @Override
-            public void onDeviceConnected(DeviceInfo device) {
-                System.out.println("CONNECTED "+ device);
+            public void onUSBDeviceConnected(DeviceInfo deviceInfo) {
+
             }
 
             @Override
-            public void onDeviceDisconnected(DeviceInfo device) {
-                System.out.println("DISCONNECTED "+ device);
+            public void onUSBDeviceDisconnected(DeviceInfo deviceInfo) {
+
             }
         });
+        manager.startDaemon();
 
-        daemon.start();
-        try {
-            daemon.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.exit(0);
+        while(true) {}
     }
 }
