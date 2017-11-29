@@ -3,18 +3,18 @@ import system.adb.ADBManager;
 
 public class ADBTestMain {
     public static void main(String[] args) {
-        ADBManager manager = new ADBManager(new ADBManager.OnUSBDeviceConnectedListener() {
-            @Override
-            public void onUSBDeviceConnected(DeviceInfo deviceInfo) {
-
-            }
-
-            @Override
-            public void onUSBDeviceDisconnected(DeviceInfo deviceInfo) {
-
-            }
-        });
-        manager.startDaemon();
+//        ADBManager manager = new ADBManager(new ADBManager.OnUSBDeviceConnectedListener() {
+//            @Override
+//            public void onUSBDeviceConnected(DeviceInfo deviceInfo) {
+//
+//            }
+//
+//            @Override
+//            public void onUSBDeviceDisconnected(DeviceInfo deviceInfo) {
+//
+//            }
+//        }, serverInfo);
+//        manager.startDaemon();
 
         while(true) {}
     }

@@ -1,7 +1,6 @@
 package app;
 
 import engine.EngineServer;
-import engine.EngineService;
 import engine.EngineWorker;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -13,7 +12,6 @@ import net.model.ServerInfo;
 import system.ApplicationManagerFactory;
 import system.ApplicationSwitchDaemon;
 import system.SystemInfoManager;
-import system.adb.ADBDaemon;
 import system.adb.ADBManager;
 import system.model.ApplicationManager;
 
@@ -63,7 +61,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         serverDiscoveryDaemon = new ServerDiscoveryDaemon(serverInfo);
 
         // Initialize the ADB manager
-        adbManager = new ADBManager(this);
+        adbManager = new ADBManager(this, serverInfo);
 
         // load the applications
         loadApplications();
