@@ -20,7 +20,6 @@ public class InitializationStage extends Stage {
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root, 400, 300);
         scene.getStylesheets().add(MainApp.class.getResource("/css/initialization.css").toExternalForm());
-        scene.getStylesheets().add(MainApp.class.getResource("/css/bootstrap3.css").toExternalForm());
         this.setTitle("Remote Key Initialization");
         this.setScene(scene);
         this.initStyle(StageStyle.UNDECORATED);

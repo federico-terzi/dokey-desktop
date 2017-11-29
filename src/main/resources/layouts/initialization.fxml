@@ -24,7 +24,7 @@
         <Insets bottom="30.0" top="30.0" />
       </VBox.margin>
     </ImageView>
-    <ProgressBar fx:id="appProgressBar" maxHeight="10.0" prefHeight="10.0" prefWidth="200.0" progress="-1.0">
+    <ProgressBar fx:id="appProgressBar" maxHeight="10.0" prefHeight="10.0" prefWidth="250.0" progress="-1.0">
       <VBox.margin>
         <Insets bottom="10.0" />
       </VBox.margin>

@@ -44,7 +44,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         this.primaryStage = primaryStage;
 
         // Set the MODENA theme
-        setUserAgentStylesheet(STYLESHEET_CASPIAN);
+        setUserAgentStylesheet(STYLESHEET_MODENA);
 
         // instructs the javafx system not to exit implicitly when the last application window is shut.
         Platform.setImplicitExit(false);

@@ -2,3 +2,17 @@
     -fx-background-image: url("/assets/background.png");
     -fx-background-size: stretch;
 }
+
+.progress-bar {
+    -fx-max-height: 5px;
+}
+
+.progress-bar > .track {
+    -fx-background-color: black;
+
+}
+
+.progress-bar > .bar {
+    -fx-padding: 0px;
+    -fx-background-insets: 0px;
+}
