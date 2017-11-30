@@ -22,6 +22,8 @@ public class MACApplicationManager implements ApplicationManager {
      */
     @Override
     public synchronized int openApplication(String executablePath) {
+        // TODO: Remove unnecessary stuff. EFFICIENCY AND SPEED
+
         // Check if the requested app is currently in focus
         Application currentFocusedApp = getActiveApplication();
         // If the current focused app is the app currently open, do nothing
@@ -83,7 +85,7 @@ public class MACApplicationManager implements ApplicationManager {
         }
 
         // Make sure the application exists
-        if (application != null) {
+        if (application != null && application.getIconPath() != null) {
             File iconFile = new File(application.getIconPath());
             return iconFile;
         }else{
