@@ -136,16 +136,41 @@ public class MACApplicationManager implements ApplicationManager {
     }
 
     /**
+     * Get the current active application by using the "getActiveApplication" mac executable.
      * @return the active Application
      */
     @Override
     public Application getActiveApplication() {
-        Window activeWindow = getActiveWindow();
-        if (activeWindow != null) {
-            return activeWindow.getApplication();
-        }else{
-            return null;
+        String scriptPath = getClass().getResource("/mac/getActiveApplication").getPath();
+        Runtime runtime = Runtime.getRuntime();
+
+        try {
+            // Execute the process
+            Process proc = runtime.exec(new String[]{scriptPath});
+
+            // Get the output
+            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+            // Get the executable path and the pid
+            String executablePath = br.readLine();
+            int pid = Integer.parseInt(br.readLine());
+
+            // Convert the executable path to the .app bundle path
+            String appPath = getAppPathFromExecutablePath(executablePath);
+
+            // Get the application
+
+            // Try to get it from the applicationMap
+            if (applicationMap.containsKey(appPath)){
+                return applicationMap.get(appPath);
+            }
+
+            // If not found on the map, dynamically analyze the app.
+            return addApplicationFromAppPath(appPath);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
     /**
@@ -230,24 +255,21 @@ public class MACApplicationManager implements ApplicationManager {
      */
     @Override
     public synchronized int getActivePID() {
-        String scriptPath = getClass().getResource("/applescripts/getActivePID.scpt").getPath();
+        String scriptPath = getClass().getResource("/mac/getActiveApplication").getPath();
         Runtime runtime = Runtime.getRuntime();
 
         try {
             // Execute the process
-            Process proc = runtime.exec(new String[]{"osascript", scriptPath});
+            Process proc = runtime.exec(new String[]{scriptPath});
 
             // Get the output
-            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
 
-            // Get the PID
-            try {
-                int pid = Integer.parseInt(br.readLine());
-                return pid;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return -1;
-            }
+            // Get the executable path and the pid
+            String executablePath = br.readLine();
+            int pid = Integer.parseInt(br.readLine());
+
+            return pid;
         } catch (IOException e) {
             e.printStackTrace();
         }
