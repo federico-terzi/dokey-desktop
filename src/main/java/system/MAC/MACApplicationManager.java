@@ -217,7 +217,7 @@ public class MACApplicationManager implements ApplicationManager {
     }
 
     /**
-     * @return PID of the current active system.window. -1 is returned in case of errors.
+     * @return PID of the current active application. -1 is returned in case of errors.
      */
     @Override
     public synchronized int getActivePID() {
