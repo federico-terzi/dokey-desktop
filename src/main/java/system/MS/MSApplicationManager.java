@@ -48,16 +48,15 @@ public class MSApplicationManager implements ApplicationManager {
      * Focus an application if already open or start it if not.
      *
      * @param executablePath path to the application.
-     * @return one of the OPEN APPLICATION RETURN CODES defined in
-     *         the ApplicationManager interface.
+     * @return true if succeeded, false otherwise.
      */
     @Override
-    public synchronized int openApplication(String executablePath) {
+    public synchronized boolean openApplication(String executablePath) {
         // Check if the requested app is currently in focus
         Application currentFocusedApp = getActiveApplication();
         // If the current focused app is the app currently open, do nothing
         if (currentFocusedApp != null && currentFocusedApp.getExecutablePath().equals(executablePath)) {
-            return ApplicationManager.OPEN_APP_ALREADY_FOCUSED;
+            return true;
         }
 
         // App not currently in focus, check if is already running but not in focus.
@@ -79,7 +78,7 @@ public class MSApplicationManager implements ApplicationManager {
 
         if (isApplicationOpen) {  // App is open, focus the first window
             firstOpenWindow.focusWindow();
-            return ApplicationManager.OPEN_APP_FOCUSED;
+            return true;
         } else {     // App is not open, start it.
             Application application = applicationMap.get(executablePath);
             if (application == null) {
@@ -90,12 +89,12 @@ public class MSApplicationManager implements ApplicationManager {
                 boolean result = application.open();
                 // Make sure the app could be loaded
                 if (result) {
-                    return ApplicationManager.OPEN_APP_STARTED;
+                    return true;
                 }else{
-                    return ApplicationManager.OPEN_APP_ERROR;
+                    return false;
                 }
             } else {
-                return ApplicationManager.OPEN_APP_ERROR;
+                return false;
             }
         }
     }

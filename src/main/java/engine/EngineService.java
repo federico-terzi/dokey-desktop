@@ -106,31 +106,13 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     @Override
     public boolean onKeyboardShortcutReceived(@NotNull String application, @NotNull List<? extends KeyboardKeys> keys) {
         // Try to open the application, and get the result
-        int result = appManager.openApplication(application);
+        boolean result = appManager.openApplication(application);
 
-        // Do the appropriate action based on the application status
+        // TODO: before sending the keystrokes, make sure the requested app is in focus.
 
         // The app was already focused, send the keystrokes directly
-        if (result == ApplicationManager.OPEN_APP_ALREADY_FOCUSED) {
+        if (result) {
             keyboardManager.sendKeystroke(keys);
-            return true;
-        }else if (result == ApplicationManager.OPEN_APP_FOCUSED) {
-            // The application was focused artificially, so wait a bit before
-            // sending the shortcut
-
-            // Delay
-            try {
-                Thread.sleep(DELAY_FROM_FOCUS_TO_KEYSTROKE);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            // Send the keystroke
-            keyboardManager.sendKeystroke(keys);
-            return true;
-        }else if (result == ApplicationManager.OPEN_APP_STARTED) {
-            // The app was started, don't send the shortcut
-            // because it may be loading
             return true;
         }
 
@@ -145,19 +127,8 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
      */
     @Override
     public boolean onAppOpenRequestReceived(String application) {
-        // Try to open the application, and get the result
-        int result = appManager.openApplication(application);
-
-        if (result == ApplicationManager.OPEN_APP_ALREADY_FOCUSED) {
-            return true;
-        }else if (result == ApplicationManager.OPEN_APP_FOCUSED) {
-            return true;
-        }else if (result == ApplicationManager.OPEN_APP_STARTED) {
-            return true;
-        }
-
-        // Error
-        return false;
+        // Try to open the application
+        return appManager.openApplication(application);
     }
 
     /**

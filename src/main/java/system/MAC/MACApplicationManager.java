@@ -17,58 +17,23 @@ public class MACApplicationManager implements ApplicationManager {
      * Focus an application if already open or start it if not.
      *
      * @param executablePath path to the application.
-     * @return one of the OPEN APPLICATION RETURN CODES defined in
-     *         the ApplicationManager interface.
+     * @return true if succeeded, false otherwise.
      */
     @Override
-    public synchronized int openApplication(String executablePath) {
-        // TODO: Remove unnecessary stuff. EFFICIENCY AND SPEED
-
-        // Check if the requested app is currently in focus
-        Application currentFocusedApp = getActiveApplication();
-        // If the current focused app is the app currently open, do nothing
-        if (currentFocusedApp != null && currentFocusedApp.getExecutablePath().equals(executablePath)) {
-            return ApplicationManager.OPEN_APP_ALREADY_FOCUSED;
+    public synchronized boolean openApplication(String executablePath) {
+        // Get the application
+        Application application = applicationMap.get(executablePath);
+        // Not present in the map, analyze it dynamically.
+        if (application == null) {
+            application = addApplicationFromAppPath(executablePath);
         }
 
-        // App not currently in focus, check if is already running but not in focus.
-
-        // Get windows to find out if application is already open
-        List<Window> openWindows = getWindowList();
-
-        // Cycle through windows to find if the app is already open
-        boolean isApplicationOpen = false;
-        Window firstOpenWindow = null;
-
-        for (Window window : openWindows) {
-            if (window.getApplication().getExecutablePath().equals(executablePath)) {
-                isApplicationOpen = true;
-                firstOpenWindow = window;
-                break;
-            }
+        // Open it
+        if (application != null) {
+            return application.open();
         }
 
-        if (isApplicationOpen) {  // App is open, focus the first window
-            firstOpenWindow.focusWindow();
-            return ApplicationManager.OPEN_APP_FOCUSED;
-        } else {     // App is not open, start it.
-            Application application = applicationMap.get(executablePath);
-            if (application == null) {
-                application = addApplicationFromAppPath(executablePath);
-            }
-            // Make sure the app is valid before opening it
-            if (application != null) {
-                boolean result = application.open();
-                // Make sure the app could be loaded
-                if (result) {
-                    return ApplicationManager.OPEN_APP_STARTED;
-                }else{
-                    return ApplicationManager.OPEN_APP_ERROR;
-                }
-            } else {
-                return ApplicationManager.OPEN_APP_ERROR;
-            }
-        }
+        return false;
     }
 
     /**
@@ -167,7 +132,8 @@ public class MACApplicationManager implements ApplicationManager {
 
             // If not found on the map, dynamically analyze the app.
             return addApplicationFromAppPath(appPath);
-        } catch (IOException e) {
+        } catch (Exception e) {
+            System.out.print("CATCHED:");
             e.printStackTrace();
         }
         return null;
@@ -270,7 +236,8 @@ public class MACApplicationManager implements ApplicationManager {
             int pid = Integer.parseInt(br.readLine());
 
             return pid;
-        } catch (IOException e) {
+        } catch (Exception e) {
+            System.out.print("CATCHED: ");
             e.printStackTrace();
         }
         return -1;
