@@ -69,7 +69,7 @@ public class MSApplicationManager implements ApplicationManager {
         Window firstOpenWindow = null;
 
         for (Window window : openWindows) {
-            if (window.getApplication().getExecutablePath().equals(executablePath)) {
+            if (window.getApplication() != null && window.getApplication().getExecutablePath().equals(executablePath)) {
                 isApplicationOpen = true;
                 firstOpenWindow = window;
                 break;
@@ -348,6 +348,11 @@ public class MSApplicationManager implements ApplicationManager {
                 // If application is not present in the list, load it dynamically
                 if (application == null) {
                     application = addApplicationFromExecutablePath(executablePath, null, null);
+                }
+
+                // If the application could not be found, return
+                if (application == null) {
+                    return true;
                 }
 
                 Window window = new MSWindow(titleText, application, PID.getValue(), hwnd);
