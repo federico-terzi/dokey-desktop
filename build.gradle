@@ -1,3 +1,8 @@
+import java.nio.channels.Channels
+import java.nio.channels.ReadableByteChannel
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+
 group 'com.freddyt_studio.remotekey_desktop'
 version '0.1'
 
@@ -39,4 +44,28 @@ compileKotlin {
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+task updateRemoteConnectDependency() {
+    ext.repositoryUrl = "http://federicoterzi.com/remotekey-connect/"
+
+    doLast {
+        // Get the current jar filename
+        def currentJarFilename = new URL(repositoryUrl+"/current.txt").getText()
+        println "Repository version: "+currentJarFilename
+
+        // Make sure the project version is updated
+        def checkFile = new File("libs/"+currentJarFilename)
+        if (checkFile.isFile()) {
+            println "Project JAR is already updated."
+        }else{
+            println "Updating project JAR..."
+            // Download the JAR file
+            URL jarURL = new URL(repositoryUrl+currentJarFilename)
+            InputStream i = jarURL.openStream()
+            def fout = new FileOutputStream(new File("libs/"+currentJarFilename))
+            Files.copy(i, fout)
+            fout.close()
+        }
+    }
 }
