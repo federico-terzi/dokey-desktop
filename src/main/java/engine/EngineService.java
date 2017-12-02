@@ -127,8 +127,16 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
      */
     @Override
     public boolean onAppOpenRequestReceived(String application) {
+        System.out.println("AppOpenRequest");
+        System.out.println(appManager.getActiveApplication());
+        System.out.println(appManager.getActivePID());
         // Try to open the application
-        return appManager.openApplication(application);
+        boolean res = appManager.openApplication(application);
+        System.out.println("Requested open");
+        System.out.println(appManager.getActiveApplication());
+        System.out.println(appManager.getActivePID());
+
+        return res;
     }
 
     /**
