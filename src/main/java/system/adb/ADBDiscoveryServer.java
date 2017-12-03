@@ -41,7 +41,8 @@ public class ADBDiscoveryServer extends Thread{
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 
                 // Write the server port
-                dos.writeInt(serverInfo.getPort());
+                // NOTE: not using the local server port, but the one used by the ADB reversed proxy.
+                dos.writeInt(ADBManager.REMOTE_PORT);
 
                 // Write the payload length
                 dos.writeInt(deviceInfoPayload.length);
