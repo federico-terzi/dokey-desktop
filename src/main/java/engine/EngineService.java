@@ -192,8 +192,15 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
 
     @NotNull
     @Override
-    public Section onSectionRequestReceived(String appPath, long lastEdit) throws SectionPacket.AlreadyUpToDateException, SectionPacket.NotFoundException {
-        Section section = sectionManager.getShortcutSection(appPath);
+    public Section onSectionRequestReceived(String sectionID, long lastEdit) throws SectionPacket.AlreadyUpToDateException, SectionPacket.NotFoundException {
+        Section section = null;
+
+        // Generate the section based on the required sectionID
+        if (sectionID.equals("launchpad")) {  // LAUNCHPAD
+            section = sectionManager.getLaunchpadSection();
+        }else{  // APP SHORTCUT SECTION
+            section = sectionManager.getShortcutSection(sectionID);
+        }
 
         // If the section couldn't be found
         if (section == null) {

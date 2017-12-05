@@ -27,7 +27,15 @@ public class SectionManager {
 
     public Section getShortcutSection(String appPath) {
         // Get the section file
-        File sectionFile = getSectionFile(appPath);
+        File sectionFile = getAppSectionFile(appPath);
+
+        // Read the content
+        return getSectionFromFile(sectionFile);
+    }
+
+    public Section getLaunchpadSection() {
+        // Get the section file
+        File sectionFile = getLaunchpadSectionFile();
 
         // Read the content
         return getSectionFromFile(sectionFile);
@@ -56,6 +64,32 @@ public class SectionManager {
     }
 
     /**
+     * Return the File of the Section associated with the launchpad.
+     * If a section is not available, it generates an empty one and then
+     * writes it to the file.
+     *
+     * @return the File of the Section associated with the launchpad.
+     */
+    private File getLaunchpadSectionFile() {
+        // Get the section directory
+        File userSectionDir = CacheManager.getInstance().getSectionDir();
+
+        // Get the section file
+        File sectionFile = new File(userSectionDir, "launchpad.json");
+
+        // If the file doesn't exist fill it with an empty section.
+        if (!sectionFile.isFile()) {
+            // Check if a template is available
+            Section section = generateEmptyLaunchpadSection();
+
+            // Write the section to the file
+            writeSectionToFile(section, sectionFile);
+        }
+
+        return sectionFile;
+    }
+
+    /**
      * Return the File of the Section associated with the given appPath.
      * If a section is not available, it generates an empty one and then
      * writes it to the file.
@@ -63,7 +97,7 @@ public class SectionManager {
      * @param appPath the application path.
      * @return the File of the Section associated with the application.
      */
-    private File getSectionFile(String appPath) {
+    private File getAppSectionFile(String appPath) {
         // Get the hash of the app path
         String appPathHash = DigestUtils.md5Hex(appPath);
 
@@ -103,6 +137,20 @@ public class SectionManager {
         section.setSectionType(SectionType.SHORTCUTS);
         section.setLastEdit(System.currentTimeMillis());
         section.setRelatedAppId(appPath);
+
+        return section;
+    }
+
+    /**
+     * Generate an empty section for the launchpad
+     *
+     * @return a Launchpad Section.
+     */
+    private Section generateEmptyLaunchpadSection() {
+        // Create an empty section
+        Section section = new Section();
+        section.setSectionType(SectionType.LAUNCHPAD);
+        section.setLastEdit(System.currentTimeMillis());
 
         return section;
     }
