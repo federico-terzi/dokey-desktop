@@ -11,6 +11,7 @@ import com.sun.jna.win32.W32APIOptions;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import system.CacheManager;
+import system.KeyboardManager;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.model.Window;
@@ -20,6 +21,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
@@ -28,6 +30,9 @@ import java.util.List;
 import static com.sun.jna.platform.WindowUtils.getIconSize;
 
 public class MSApplicationManager implements ApplicationManager {
+    public static final int OPEN_APPLICATION_TIMEOUT = 2000;  // Timeout of the application open requests
+    public static final int OPEN_APPLICATION_CHECK_INTERVAL = 300;  // How often to check that the app is effectively open.
+
     private static final int MAX_TITLE_LENGTH = 1024;
 
     private static String START_MENU_CACHE_FILENAME = "startmenucache.txt";
@@ -52,14 +57,11 @@ public class MSApplicationManager implements ApplicationManager {
      */
     @Override
     public synchronized boolean openApplication(String executablePath) {
-        // Check if the requested app is currently in focus
-        Application currentFocusedApp = getActiveApplication();
-        // If the current focused app is the app currently open, do nothing
-        if (currentFocusedApp != null && currentFocusedApp.getExecutablePath().equals(executablePath)) {
-            return true;
-        }
+        // Get the currently active application PID
+        int activePID = getActivePID();
 
-        // App not currently in focus, check if is already running but not in focus.
+        // Get the time at the beginning of the open application try
+        long initialTime = System.currentTimeMillis();
 
         // Get windows to find out if application is already open
         List<Window> openWindows = getWindowList();
@@ -76,27 +78,49 @@ public class MSApplicationManager implements ApplicationManager {
             }
         }
 
-        if (isApplicationOpen) {  // App is open, focus the first window
-            firstOpenWindow.focusWindow();
-            return true;
-        } else {     // App is not open, start it.
-            Application application = applicationMap.get(executablePath);
-            if (application == null) {
-                application = addApplicationFromExecutablePath(executablePath, null, null);
-            }
-            // Make sure the app is valid before opening it
-            if (application != null) {
-                boolean result = application.open();
-                // Make sure the app could be loaded
-                if (result) {
-                    return true;
-                }else{
+        boolean hasBeenOpened = false;
+
+        // Try to open the application until a timeout occurs
+        while ((System.currentTimeMillis()-initialTime) < OPEN_APPLICATION_TIMEOUT && !hasBeenOpened) {
+            if (isApplicationOpen) {
+                firstOpenWindow.focusWindow();
+            }else{
+                // Get the requested application
+                Application application = applicationMap.get(executablePath);
+                if (application == null) {
+                    application = addApplicationFromExecutablePath(executablePath, null, null);
+                }
+                // Make sure the app is valid before opening it
+                if (application == null) {
                     return false;
                 }
-            } else {
-                return false;
+
+                // Try to open the application
+                boolean result = application.open();
+            }
+
+            // Get the current active application PID
+            int currentlyActivePID = getActivePID();
+
+            // If the PIDs are equal, it means that the opening didn't work.
+            if (currentlyActivePID == activePID) {
+                // Try send the ALT-TAB shortcut to unlock the situation
+                triggerAppSwitch();
+                System.out.println("WIN Lock detected, trying with ALT-TAB...");
+            }else{
+                hasBeenOpened = true;
+                break;
+            }
+
+            // Sleep for a bit
+            try {
+                Thread.sleep(OPEN_APPLICATION_CHECK_INTERVAL);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
+
+        return hasBeenOpened;
     }
 
     /**
@@ -284,6 +308,29 @@ public class MSApplicationManager implements ApplicationManager {
             e.printStackTrace();
         }
         return outputMap;
+    }
+
+    /**
+     * Used when windows is stucked and doesn't change window.
+     */
+    private void triggerAppSwitch() {
+        Robot robot = null;
+        try {
+            robot = new Robot();
+            robot.setAutoDelay(40);
+            robot.setAutoWaitForIdle(true);
+            robot.keyPress(KeyEvent.VK_ALT);
+            robot.delay(40);
+            robot.keyPress(KeyEvent.VK_TAB);
+            robot.delay(40);
+            robot.keyRelease(KeyEvent.VK_ALT);
+            robot.delay(40);
+            robot.keyRelease(KeyEvent.VK_TAB);
+            robot.delay(40);
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
