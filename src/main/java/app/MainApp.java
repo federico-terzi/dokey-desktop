@@ -141,6 +141,13 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
         // Start the engine server
         startEngineServer();
+
+        try {
+            AppListStage appListStage = new AppListStage();
+            appListStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

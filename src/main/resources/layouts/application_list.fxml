@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.paint.*?>
+
+<BorderPane prefHeight="550" prefWidth="350" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+  <bottom>
+    <ToolBar>
+      <items>
+        <Button fx:id="addExternalAppBtn" mnemonicParsing="false" text="Add External App..." textAlignment="CENTER" />
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Button fx:id="selectBtn" alignment="CENTER" text="Select" textAlignment="CENTER" />
+      </items>
+    </ToolBar>
+  </bottom>
+  <center>
+    <ListView fx:id="appListView" prefHeight="200.0" prefWidth="200.0" />
+  </center>
+</BorderPane>
