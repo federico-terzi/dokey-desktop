@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import system.model.Application;
 
 
 public class AppListController {
@@ -19,7 +20,7 @@ public class AppListController {
     private Button addExternalAppBtn;
 
     @FXML
-    private ListView<?> appListView;
+    private ListView<Application> appListView;
 
     @FXML
     private Button selectBtn;
@@ -32,11 +33,11 @@ public class AppListController {
         this.addExternalAppBtn = addExternalAppBtn;
     }
 
-    public ListView<?> getAppListView() {
+    public ListView<Application> getAppListView() {
         return appListView;
     }
 
-    public void setAppListView(ListView<?> appListView) {
+    public void setAppListView(ListView<Application> appListView) {
         this.appListView = appListView;
     }
 

@@ -141,13 +141,6 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
         // Start the engine server
         startEngineServer();
-
-        try {
-            AppListStage appListStage = new AppListStage();
-            appListStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -170,6 +163,13 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         // Update the tray icon status
         trayIconManager.setTrayIconStatus("Not connected");
         trayIconManager.setLoading(false);
+
+        try {
+            AppListStage appListStage = new AppListStage(appManager);
+            appListStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
