@@ -1,9 +1,10 @@
 package app.stages;
 
-import app.MainApp;
 import app.UIControllers.AppListController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -18,9 +19,12 @@ import java.util.Collections;
 public class AppListStage extends Stage {
     private AppListController controller;
     private ApplicationManager applicationManager;
+    private OnApplicationListener listener;
 
-    public AppListStage(ApplicationManager applicationManager) throws IOException {
+    public AppListStage(ApplicationManager applicationManager, OnApplicationListener listener) throws IOException {
         this.applicationManager = applicationManager;
+        this.listener = listener;
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layouts/application_list.fxml"));
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root, 350, 550);
@@ -32,6 +36,15 @@ public class AppListStage extends Stage {
         controller = (AppListController) fxmlLoader.getController();
 
         populateAppListView();
+
+        // Set the event listeners
+        controller.getCancelBtn().setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                listener.onCanceled();
+                close();
+            }
+        });
     }
 
     private void populateAppListView() {
@@ -42,5 +55,10 @@ public class AppListStage extends Stage {
 
     public AppListController getController() {
         return controller;
+    }
+
+    public interface OnApplicationListener {
+        void onApplicationSelected(Application application);
+        void onCanceled();
     }
 }

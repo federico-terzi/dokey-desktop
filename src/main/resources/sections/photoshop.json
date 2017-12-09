@@ -32,6 +32,14 @@
       "title": "Most Used"
     }
   ],
+  "bottomBar": [
+    {
+      "iconID": "paste.png",
+      "shortcut": "ctrl+v",
+      "type": "SHORTCUT",
+      "title": "Paste"
+    }
+  ],
   "relatedAppId": "C:\\Program Files\\Adobe\\Adobe Photoshop CS6 (64 Bit)\\Photoshop.exe",
   "sectionType": "SHORTCUTS",
   "lastEdit": 1511816519249

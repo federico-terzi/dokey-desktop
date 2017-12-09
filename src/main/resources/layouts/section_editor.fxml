@@ -10,7 +10,7 @@
   <bottom>
     <ToolBar orientation="HORIZONTAL" BorderPane.alignment="TOP_LEFT">
       <items>
-        <Pane HBox.hgrow="ALWAYS"/>
+        <Pane fx:id="bottomSpacerPane" />
         <Label fx:id="statusLabel" style="-fx-padding: 0 10 0 0;" text="Loading..." />
         <ProgressBar fx:id="statusProgressBar" prefWidth="200.0" progress="-1.0" />
       </items>
@@ -20,6 +20,13 @@
     <SplitPane dividerPositions="0.22841225626740946, 0.776230269266481" focusTraversable="true">
       <items>
         <BorderPane>
+          <bottom>
+            <ToolBar>
+              <items>
+                <Button fx:id="addSectionBtn" mnemonicParsing="false" text="Add Application..." />
+              </items>
+            </ToolBar>
+          </bottom>
           <center>
             <ListView fx:id="sectionsListView" />
           </center>

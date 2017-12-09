@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import app.listcells.ApplicationListCell;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
@@ -29,6 +30,9 @@ public class AppListController {
     @FXML
     private Button selectBtn;
 
+    @FXML
+    private Button cancelBtn;
+
     public void initialize() {
         appListView.setCellFactory(new Callback<ListView<Application>, ListCell<Application>>() {
             @Override
@@ -36,6 +40,14 @@ public class AppListController {
                 return new ApplicationListCell();
             }
         });
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                selectBtn.requestFocus();
+            }
+        });
+
     }
 
     public Button getAddExternalAppBtn() {
@@ -60,5 +72,9 @@ public class AppListController {
 
     public void setSelectBtn(Button selectBtn) {
         this.selectBtn = selectBtn;
+    }
+
+    public Button getCancelBtn() {
+        return cancelBtn;
     }
 }
