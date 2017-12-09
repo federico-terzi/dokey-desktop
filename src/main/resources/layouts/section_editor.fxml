@@ -6,11 +6,23 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<BorderPane prefHeight="728.0" prefWidth="940.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
-  <center>
-    <SplitPane dividerPositions="0.2579957356076759" focusTraversable="true" prefHeight="160.0" prefWidth="200.0">
+<BorderPane prefHeight="801.0" prefWidth="1079.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+  <bottom>
+    <ToolBar orientation="HORIZONTAL" BorderPane.alignment="TOP_LEFT">
       <items>
-        <ListView prefHeight="660.0" prefWidth="248.0" />
+        <Label style="-fx-padding: 0 10 0 0;" text="Loading..." />
+        <ProgressBar fx:id="statusProgressBar" prefWidth="200.0" progress="-1.0" />
+      </items>
+    </ToolBar>
+  </bottom>
+  <center>
+    <SplitPane dividerPositions="0.22841225626740946, 0.776230269266481" focusTraversable="true">
+      <items>
+        <BorderPane>
+          <center>
+            <ListView fx:id="sectionsListView" />
+          </center>
+        </BorderPane>
         <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="AS_NEEDED">
           <content>
             <HBox alignment="CENTER" fillHeight="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="315.0" prefHeight="724.0" prefWidth="315.0" rotate="0.0" scaleX="1.0" scaleY="1.0" scaleZ="1.0" style="-fx-background-color: gray;">
@@ -39,7 +51,53 @@
             </HBox>
           </content>
         </ScrollPane>
+        <BorderPane prefHeight="200.0" prefWidth="200.0">
+          <center>
+            <Accordion>
+              <expandedPane>
+                <TitledPane fx:id="x1" animated="false" text="Properties">
+                  <content>
+                    <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  </content>
+                </TitledPane>
+              </expandedPane>
+              <panes>
+                <fx:reference source="x1" />
+              </panes>
+            </Accordion>
+          </center>
+        </BorderPane>
       </items>
     </SplitPane>
   </center>
+  <top>
+    <VBox prefHeight="-1.0" prefWidth="-1.0">
+      <children>
+        <MenuBar>
+          <menus>
+            <Menu mnemonicParsing="false" text="File">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Close" />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Edit">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Delete" />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+              <items>
+                <MenuItem mnemonicParsing="false" text="About" />
+              </items>
+            </Menu>
+          </menus>
+        </MenuBar>
+        <ToolBar>
+          <items>
+            <Button mnemonicParsing="false" text="Button" />
+          </items>
+        </ToolBar>
+      </children>
+    </VBox>
+  </top>
 </BorderPane>
