@@ -1,0 +1,8 @@
+.applistcell-name {
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bold;
+}
+
+.applistcell-path {
+    -fx-font-size: 1.0em;
+}

@@ -1,7 +1,7 @@
-package app;
+package app.stages;
 
+import app.MainApp;
 import app.UIControllers.InitializationController;
-import com.sun.org.apache.xml.internal.security.Init;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;

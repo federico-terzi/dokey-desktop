@@ -6,7 +6,7 @@ import java.io.File
 /**
  * Represents an application installed in the system
  */
-abstract class Application {
+abstract class Application : Comparable<Application>{
     val name : String
     val executablePath : String
     val iconPath : String?
@@ -43,5 +43,9 @@ abstract class Application {
 
     override fun toString(): String {
         return "Application(name='$name', executablePath='$executablePath', iconPath=$iconPath)"
+    }
+
+    override fun compareTo(other: Application): Int {
+        return this.name.compareTo(other.name)
     }
 }

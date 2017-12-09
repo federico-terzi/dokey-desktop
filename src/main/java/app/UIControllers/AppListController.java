@@ -2,9 +2,13 @@ package app.UIControllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import app.listcells.ApplicationListCell;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.util.Callback;
 import system.model.Application;
 
 
@@ -24,6 +28,15 @@ public class AppListController {
 
     @FXML
     private Button selectBtn;
+
+    public void initialize() {
+        appListView.setCellFactory(new Callback<ListView<Application>, ListCell<Application>>() {
+            @Override
+            public ListCell<Application> call(ListView<Application> param) {
+                return new ApplicationListCell();
+            }
+        });
+    }
 
     public Button getAddExternalAppBtn() {
         return addExternalAppBtn;
