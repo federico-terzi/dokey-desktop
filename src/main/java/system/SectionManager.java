@@ -6,9 +6,7 @@ import json.JSONTokener;
 import section.model.*;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * The SectionManager is used to manage sections.
@@ -22,6 +20,25 @@ public class SectionManager {
 
     public SectionManager() {
         loadTemplateMap();  // load the template map from the TEMPLATE_DB_FILE
+    }
+
+    /**
+     * Get the list of all user Section(s).
+     * @return the list of all user sections.
+     */
+    public List<Section> getSections() {
+        List<Section> output = new ArrayList<>();
+        // Get the section directory
+        File userSectionDir = CacheManager.getInstance().getSectionDir();
+
+        // Go through all user section files
+        for (File sectionFile : userSectionDir.listFiles()) {
+            // Get the section from the file
+            Section currentSection = getSectionFromFile(sectionFile);
+            output.add(currentSection);
+        }
+
+        return output;
     }
 
     public Section getShortcutSection(String appPath) {

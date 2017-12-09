@@ -6,11 +6,12 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<BorderPane prefHeight="801.0" prefWidth="1079.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+<BorderPane prefHeight="801.0" prefWidth="1079.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="app.UIControllers.EditorController">
   <bottom>
     <ToolBar orientation="HORIZONTAL" BorderPane.alignment="TOP_LEFT">
       <items>
-        <Label style="-fx-padding: 0 10 0 0;" text="Loading..." />
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Label fx:id="statusLabel" style="-fx-padding: 0 10 0 0;" text="Loading..." />
         <ProgressBar fx:id="statusProgressBar" prefWidth="200.0" progress="-1.0" />
       </items>
     </ToolBar>
@@ -55,14 +56,14 @@
           <center>
             <Accordion>
               <expandedPane>
-                <TitledPane fx:id="x1" animated="false" text="Properties">
+                <TitledPane fx:id="propertiesPane" animated="false" text="Properties">
                   <content>
                     <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                   </content>
                 </TitledPane>
               </expandedPane>
               <panes>
-                <fx:reference source="x1" />
+                <fx:reference source="propertiesPane" />
               </panes>
             </Accordion>
           </center>

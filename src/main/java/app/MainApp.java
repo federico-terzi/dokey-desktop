@@ -1,6 +1,8 @@
 package app;
 
+import app.UIControllers.EditorController;
 import app.stages.AppListStage;
+import app.stages.EditorStage;
 import app.stages.InitializationStage;
 import engine.EngineServer;
 import engine.EngineWorker;
@@ -167,8 +169,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         trayIconManager.setLoading(false);
 
         try {
-            AppListStage appListStage = new AppListStage(appManager);
-            appListStage.show();
+            EditorStage editorStage = new EditorStage(appManager);
+            editorStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
