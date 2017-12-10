@@ -55,8 +55,14 @@ public class BottomBarGrid extends ComponentGrid implements ComponentGrid.OnComp
 
     @Override
     public void onNewComponentRequested(Component component) {
-        // TODO:
+        // Add the item
+        if (items.size() > component.getY()) {
+            items.add(component.getY(), component.getItem());
+        }else{
+            items.add(component.getItem());
+        }
 
+        // Save the section
         if (sectionModifiedListener != null) {
             sectionModifiedListener.onSectionModified(section);
         }

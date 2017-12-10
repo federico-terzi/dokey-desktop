@@ -20,9 +20,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import section.model.Page;
 import section.model.Section;
 import system.SectionManager;
 import system.model.Application;
@@ -34,9 +37,8 @@ import java.util.List;
 
 public class EditorStage extends Stage implements OnSectionModifiedListener{
     public static final int PAGE_HEIGHT = 400;
-    public static final int PAGE_WIDTH = 320;
+    public static final int CONTENT_WIDTH = 320;
     private static final int BOTTOM_BAR_DEFAULT_COLS = 4;
-    private static final int BOTTOM_BAR_WIDTH = PAGE_WIDTH;
     private static final int BOTTOM_BAR_HEIGHT  = 100;
 
     private EditorController controller;
@@ -129,16 +131,32 @@ public class EditorStage extends Stage implements OnSectionModifiedListener{
         // Clear the previous section
         controller.getContentBox().getChildren().clear();
 
-        // Add the pages        
-        PageGrid pageGrid = new PageGrid(applicationManager, section.getPages().get(0), section);
-        pageGrid.setHeight(PAGE_HEIGHT);
-        pageGrid.setWidth(PAGE_WIDTH);
-        pageGrid.setSectionModifiedListener(this);
-        controller.getContentBox().getChildren().add(pageGrid);
+        // Create the tabpane for the pages and set it up
+        TabPane tabPane = new TabPane();
+        tabPane.setMinWidth(CONTENT_WIDTH);
+        tabPane.setPrefWidth(CONTENT_WIDTH);
+        tabPane.setMaxWidth(CONTENT_WIDTH);
+        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+
+        // Add the pages
+        for (Page page: section.getPages()) {
+            PageGrid pageGrid = new PageGrid(applicationManager, section.getPages().get(0), section);
+            pageGrid.setHeight(PAGE_HEIGHT);
+            pageGrid.setSectionModifiedListener(this);
+
+            Tab tab = new Tab();
+            tab.setText(page.getTitle());
+            tab.setContent(pageGrid);
+
+            tabPane.getTabs().add(tab);
+        }
+        // Add the TabPane
+        controller.getContentBox().getChildren().add(tabPane);
+
         
         // Add the bottom bar
         BottomBarGrid bottomBarGrid = new BottomBarGrid(applicationManager, section.getBottomBarItems(), BOTTOM_BAR_DEFAULT_COLS, section);
-        bottomBarGrid.setWidth(BOTTOM_BAR_WIDTH);
+        bottomBarGrid.setWidth(CONTENT_WIDTH);
         bottomBarGrid.setHeight(BOTTOM_BAR_HEIGHT);
         bottomBarGrid.setSectionModifiedListener(this);
         controller.getContentBox().getChildren().add(bottomBarGrid);
