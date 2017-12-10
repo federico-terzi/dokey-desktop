@@ -140,7 +140,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener{
 
         // Add the pages
         for (Page page: section.getPages()) {
-            PageGrid pageGrid = new PageGrid(applicationManager, section.getPages().get(0), section);
+            PageGrid pageGrid = new PageGrid(applicationManager, page, section);
             pageGrid.setHeight(PAGE_HEIGHT);
             pageGrid.setSectionModifiedListener(this);
 
