@@ -1,19 +1,21 @@
 package app.editor.components;
 
-import javafx.scene.control.Button;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.RowConstraints;
+import app.editor.OnSectionModifiedListener;
 import section.model.Component;
 import section.model.Page;
+import section.model.Section;
 import system.model.ApplicationManager;
 
 public class PageGrid extends ComponentGrid implements ComponentGrid.OnComponentSelectedListener {
     private Page page;
+    private Section section;
 
-    public PageGrid(ApplicationManager applicationManager, Page page) {
+    private OnSectionModifiedListener sectionModifiedListener;
+
+    public PageGrid(ApplicationManager applicationManager, Page page, Section section) {
         super(applicationManager, generateMatrix(page));
         this.page = page;
+        this.section = section;
         setOnComponentSelectedListener(this);
     }
 
@@ -34,5 +36,17 @@ public class PageGrid extends ComponentGrid implements ComponentGrid.OnComponent
     public void onNewComponentRequested(Component component) {
         page.addComponent(component);
 
+        // Save the section
+        if (sectionModifiedListener != null) {
+            sectionModifiedListener.onSectionModified(section);
+        }
+    }
+
+    public OnSectionModifiedListener getSectionModifiedListener() {
+        return sectionModifiedListener;
+    }
+
+    public void setSectionModifiedListener(OnSectionModifiedListener sectionModifiedListener) {
+        this.sectionModifiedListener = sectionModifiedListener;
     }
 }

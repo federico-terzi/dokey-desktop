@@ -57,6 +57,22 @@ public class SectionManager {
         return getSectionFromFile(sectionFile);
     }
 
+    public boolean saveSection(Section section) {
+        File sectionFile = null;
+
+        // Get the appropriate destination file
+        if (section.getSectionType() == SectionType.SHORTCUTS) {
+            sectionFile = getAppSectionFile(section.getRelatedAppId());
+        }else if (section.getSectionType() == SectionType.LAUNCHPAD) {
+            sectionFile = getLaunchpadSectionFile();
+        }else{
+            return false;
+        }
+
+        // Save the section
+        return writeSectionToFile(section, sectionFile);
+    }
+
     /**
      * Read a section from the given file
      * @param sectionFile the section File
@@ -153,6 +169,13 @@ public class SectionManager {
         section.setSectionType(SectionType.SHORTCUTS);
         section.setLastEdit(System.currentTimeMillis());
         section.setRelatedAppId(appPath);
+
+        // Add an empty page
+        Page firstPage = new Page();
+        firstPage.setTitle("Page 1");
+        firstPage.setColCount(4);
+        firstPage.setRowCount(4);
+        section.addPage(firstPage);
 
         return section;
     }

@@ -1,7 +1,9 @@
 package app.editor.components;
 
+import app.editor.OnSectionModifiedListener;
 import section.model.Component;
 import section.model.Item;
+import section.model.Section;
 import system.model.ApplicationManager;
 
 import java.util.List;
@@ -9,11 +11,14 @@ import java.util.List;
 public class BottomBarGrid extends ComponentGrid implements ComponentGrid.OnComponentSelectedListener {
     private List<Item> items;
     private int colCount;
+    private Section section;
+    private OnSectionModifiedListener sectionModifiedListener;
 
-    public BottomBarGrid(ApplicationManager applicationManager, List<Item> items, int colCount) {
+    public BottomBarGrid(ApplicationManager applicationManager, List<Item> items, int colCount, Section section) {
         super(applicationManager, generateMatrix(items, colCount));
         this.items = items;
         this.colCount = colCount;
+        this.section = section;
 
         getStyleClass().add("bottombar");
 
@@ -50,6 +55,18 @@ public class BottomBarGrid extends ComponentGrid implements ComponentGrid.OnComp
 
     @Override
     public void onNewComponentRequested(Component component) {
+        // TODO:
 
+        if (sectionModifiedListener != null) {
+            sectionModifiedListener.onSectionModified(section);
+        }
+    }
+
+    public OnSectionModifiedListener getSectionModifiedListener() {
+        return sectionModifiedListener;
+    }
+
+    public void setSectionModifiedListener(OnSectionModifiedListener sectionModifiedListener) {
+        this.sectionModifiedListener = sectionModifiedListener;
     }
 }

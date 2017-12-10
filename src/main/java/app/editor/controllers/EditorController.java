@@ -61,4 +61,12 @@ public class EditorController {
     public VBox getContentBox() {
         return contentBox;
     }
+
+    public ProgressBar getStatusProgressBar() {
+        return statusProgressBar;
+    }
+
+    public Label getStatusLabel() {
+        return statusLabel;
+    }
 }
