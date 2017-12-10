@@ -45,6 +45,18 @@ public class AppListStage extends Stage {
                 close();
             }
         });
+
+        controller.getSelectBtn().setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Application selectedApp = controller.getAppListView().getSelectionModel().getSelectedItem();
+
+                if (selectedApp != null) {
+                    listener.onApplicationSelected(selectedApp);
+                    close();
+                }
+            }
+        });
     }
 
     private void populateAppListView() {

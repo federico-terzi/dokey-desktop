@@ -1,7 +1,10 @@
-package app.stages;
+package app.editor.stages;
 
-import app.UIControllers.EditorController;
-import app.listcells.SectionListCell;
+import app.editor.components.BottomBarGrid;
+import app.editor.components.PageGrid;
+import app.editor.controllers.EditorController;
+import app.editor.listcells.SectionListCell;
+import app.stages.AppListStage;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,6 +28,12 @@ import java.io.IOException;
 import java.util.List;
 
 public class EditorStage extends Stage {
+    public static final int PAGE_HEIGHT = 400;
+    public static final int PAGE_WIDTH = 320;
+    private static final int BOTTOM_BAR_DEFAULT_COLS = 4;
+    private static final int BOTTOM_BAR_WIDTH = PAGE_WIDTH;
+    private static final int BOTTOM_BAR_HEIGHT  = 100;
+
     private EditorController controller;
     private ApplicationManager applicationManager;
 
@@ -38,6 +47,7 @@ public class EditorStage extends Stage {
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         scene.getStylesheets().add(AppListStage.class.getResource("/css/sectionlistcell.css").toExternalForm());
+        scene.getStylesheets().add(AppListStage.class.getResource("/css/editor.css").toExternalForm());
         this.setTitle("Editor");
         this.setScene(scene);
         this.getIcons().add(new Image(EditorStage.class.getResourceAsStream("/assets/icon.png")));
@@ -56,10 +66,6 @@ public class EditorStage extends Stage {
         });
 
         requestSectionList();
-    }
-
-    private void requestSectionForApplication(Application application) {
-
     }
 
     private void requestSectionList() {
@@ -92,6 +98,25 @@ public class EditorStage extends Stage {
             }
         });
         controller.getSectionsListView().setItems(sections);
+
+        // Load the first section
+        loadSection(sections.get(0));
+    }
+
+    private void loadSection(Section section) {
+        // Add the pages        
+        PageGrid pageGrid = new PageGrid(applicationManager, section.getPages().get(0));
+        pageGrid.setHeight(PAGE_HEIGHT);
+        pageGrid.setWidth(PAGE_WIDTH);
+        
+        controller.getContentBox().getChildren().add(pageGrid);
+        
+        // Add the bottom bar
+        BottomBarGrid bottomBarGrid = new BottomBarGrid(applicationManager, section.getBottomBarItems(), BOTTOM_BAR_DEFAULT_COLS);
+        bottomBarGrid.setWidth(BOTTOM_BAR_WIDTH);
+        bottomBarGrid.setHeight(BOTTOM_BAR_HEIGHT);
+
+        controller.getContentBox().getChildren().add(bottomBarGrid);
     }
 
     private void addSection() {
@@ -111,6 +136,10 @@ public class EditorStage extends Stage {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void requestSectionForApplication(Application application) {
+        //TODO
     }
 
     public EditorController getController() {

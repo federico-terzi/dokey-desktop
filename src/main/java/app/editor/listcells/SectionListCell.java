@@ -1,4 +1,4 @@
-package app.listcells;
+package app.editor.listcells;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;

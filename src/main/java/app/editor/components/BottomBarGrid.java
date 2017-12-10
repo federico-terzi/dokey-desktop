@@ -1,0 +1,55 @@
+package app.editor.components;
+
+import section.model.Component;
+import section.model.Item;
+import system.model.ApplicationManager;
+
+import java.util.List;
+
+public class BottomBarGrid extends ComponentGrid implements ComponentGrid.OnComponentSelectedListener {
+    private List<Item> items;
+    private int colCount;
+
+    public BottomBarGrid(ApplicationManager applicationManager, List<Item> items, int colCount) {
+        super(applicationManager, generateMatrix(items, colCount));
+        this.items = items;
+        this.colCount = colCount;
+
+        getStyleClass().add("bottombar");
+
+        setOnComponentSelectedListener(this);
+    }
+
+    private static Component[][] generateMatrix(List<Item> items, int colCount) {
+        // If there are more items than column count, resize the column count.
+        if (items.size() > colCount) {
+            colCount = items.size();
+        }
+
+        // Create the matrix
+        Component[][] componentMatrix = new Component[colCount][1];
+
+        int currentIndex = 0;
+        // Add all the items
+        for (Item item : items) {
+            Component component = new Component();
+            component.setItem(item);
+            component.setY(currentIndex);
+            component.setX(0);
+            component.setXSpan(1);
+            component.setYSpan(1);
+
+            // Add the component to the matrix
+            componentMatrix[currentIndex][0] = component;
+
+            currentIndex++;
+        }
+
+        return componentMatrix;
+    }
+
+    @Override
+    public void onNewComponentRequested(Component component) {
+
+    }
+}

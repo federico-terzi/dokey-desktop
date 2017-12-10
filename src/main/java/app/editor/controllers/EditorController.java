@@ -1,4 +1,4 @@
-package app.UIControllers;
+package app.editor.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import section.model.Section;
 
 
@@ -38,6 +39,9 @@ public class EditorController {
     private Pane bottomSpacerPane;
 
     @FXML
+    private VBox contentBox;
+
+    @FXML
     void initialize() {
         HBox.setHgrow(bottomSpacerPane, Priority.ALWAYS);
     }
@@ -52,5 +56,9 @@ public class EditorController {
 
     public Pane getBottomSpacerPane() {
         return bottomSpacerPane;
+    }
+
+    public VBox getContentBox() {
+        return contentBox;
     }
 }

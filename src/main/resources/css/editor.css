@@ -1,0 +1,7 @@
+.empty-btn {
+    -fx-opacity: 0.5;
+}
+
+.bottombar {
+    -fx-padding: 10 0 0 0;
+}

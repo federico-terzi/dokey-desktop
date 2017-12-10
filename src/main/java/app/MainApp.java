@@ -1,8 +1,6 @@
 package app;
 
-import app.UIControllers.EditorController;
-import app.stages.AppListStage;
-import app.stages.EditorStage;
+import app.editor.stages.EditorStage;
 import app.stages.InitializationStage;
 import engine.EngineServer;
 import engine.EngineWorker;
