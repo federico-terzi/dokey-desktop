@@ -1,14 +1,17 @@
 package app.editor.components;
 
+import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.TransferMode;
 import system.model.Application;
 
 import java.io.File;
 
-public class EmptyButton extends Button {
+public class EmptyButton extends DragButton {
     public EmptyButton() {
         super();
 

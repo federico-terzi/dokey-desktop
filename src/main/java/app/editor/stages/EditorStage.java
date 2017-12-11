@@ -22,6 +22,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import section.model.Page;
@@ -35,11 +36,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class EditorStage extends Stage implements OnSectionModifiedListener{
+public class EditorStage extends Stage implements OnSectionModifiedListener {
     public static final int PAGE_HEIGHT = 400;
     public static final int CONTENT_WIDTH = 320;
     private static final int BOTTOM_BAR_DEFAULT_COLS = 4;
-    private static final int BOTTOM_BAR_HEIGHT  = 100;
+    private static final int BOTTOM_BAR_HEIGHT = 100;
 
     private EditorController controller;
     private ApplicationManager applicationManager;
@@ -139,13 +140,14 @@ public class EditorStage extends Stage implements OnSectionModifiedListener{
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
         // Add the pages
-        for (Page page: section.getPages()) {
+        for (Page page : section.getPages()) {
             PageGrid pageGrid = new PageGrid(applicationManager, page, section);
             pageGrid.setHeight(PAGE_HEIGHT);
             pageGrid.setSectionModifiedListener(this);
 
             Tab tab = new Tab();
-            tab.setText(page.getTitle());
+            Label tabTitle = new Label(page.getTitle());
+            tab.setGraphic(tabTitle);
             tab.setContent(pageGrid);
 
             // Add the tab context menu
@@ -185,18 +187,32 @@ public class EditorStage extends Stage implements OnSectionModifiedListener{
             delete.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    section.getPages().remove(page);
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Delete Confirmation");
+                    alert.setHeaderText("Do you really want to delete the page?");
 
-                    // Save the section
-                    sectionManager.saveSection(section);
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.get() == ButtonType.OK) {
+                        section.getPages().remove(page);
 
-                    // Reload the section
-                    loadSection(section);
+                        // Save the section
+                        sectionManager.saveSection(section);
+
+                        // Reload the section
+                        loadSection(section);
+                    }
                 }
             });
             contextMenu.getItems().addAll(rename, delete);
             tab.setContextMenu(contextMenu);
 
+            // Handle the drag and drop focus switch
+            tab.getGraphic().setOnDragEntered(new EventHandler<DragEvent>() {
+                @Override
+                public void handle(DragEvent event) {
+                    tabPane.getSelectionModel().select(tab);
+                }
+            });
             tabPane.getTabs().add(tab);
         }
         // Add the "Add Page" tab
@@ -217,7 +233,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener{
                     Page page = new Page();
                     page.setRowCount(SectionManager.DEFAULT_PAGE_ROWS);
                     page.setColCount(SectionManager.DEFAULT_PAGE_COLS);
-                    page.setTitle("Page "+(section.getPages().size()+1));
+                    page.setTitle("Page " + (section.getPages().size() + 1));
 
                     // Add the page
                     section.addPage(page);
@@ -234,7 +250,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener{
         // Add the TabPane
         controller.getContentBox().getChildren().add(tabPane);
 
-        
+
         // Add the bottom bar
         BottomBarGrid bottomBarGrid = new BottomBarGrid(applicationManager, section.getBottomBarItems(), BOTTOM_BAR_DEFAULT_COLS, section);
         bottomBarGrid.setWidth(CONTENT_WIDTH);

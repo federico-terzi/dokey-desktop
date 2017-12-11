@@ -5,9 +5,14 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.*;
+import section.model.Component;
+import section.model.Item;
 
-public class ComponentButton extends Button {
+public class ComponentButton extends DragButton {
     private OnComponentActionListener onComponentActionListener;
+    private Component associatedComponent;
+
 
     public ComponentButton() {
         super();
@@ -29,6 +34,33 @@ public class ComponentButton extends Button {
         });
         contextMenu.getItems().addAll(edit, delete);
         setContextMenu(contextMenu);
+
+        // Set the drag and drop
+        setOnDragDetected(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (associatedComponent != null) {
+                    Dragboard db = startDragAndDrop(TransferMode.MOVE);
+
+                    ClipboardContent content = new ClipboardContent();
+                    content.putString(DragButton.DRAG_PREFIX+associatedComponent.json().toString());
+                    db.setContent(content);
+
+                    event.consume();
+                }
+            }
+        });
+
+        setOnDragDone(new EventHandler<DragEvent>() {
+            public void handle(DragEvent event) {
+                if (event.getTransferMode() == TransferMode.MOVE) {
+                    if (onComponentActionListener != null) {
+                        onComponentActionListener.onComponentDroppedAway();
+                    }
+                }
+                event.consume();
+            }
+        });
     }
 
     public OnComponentActionListener getOnComponentActionListener() {
@@ -39,8 +71,13 @@ public class ComponentButton extends Button {
         this.onComponentActionListener = onComponentActionListener;
     }
 
+    public void setAssociatedComponent(Component associatedComponent) {
+        this.associatedComponent = associatedComponent;
+    }
+
     public interface OnComponentActionListener {
         void onComponentEdit();
         void onComponentDelete();
+        void onComponentDroppedAway();
     }
 }

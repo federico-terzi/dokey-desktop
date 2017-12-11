@@ -4,7 +4,6 @@ import app.stages.AppListStage;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -69,7 +68,7 @@ public class ComponentGrid extends GridPane{
         removeComponentFromGrid(col, row, component);
 
         // Set up the button
-        Button current = getButtonForComponent(component);
+        DragButton current = getButtonForComponent(component);
         current.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -78,6 +77,9 @@ public class ComponentGrid extends GridPane{
         });
         // Set the context menu actions
         if (current instanceof ComponentButton) {
+            // Add the associated component
+            ((ComponentButton) current).setAssociatedComponent(component);
+
             ((ComponentButton) current).setOnComponentActionListener(new ComponentButton.OnComponentActionListener() {
                 @Override
                 public void onComponentEdit() {
@@ -88,6 +90,13 @@ public class ComponentGrid extends GridPane{
                 public void onComponentDelete() {
                     requestDeleteComponent(col, row);
                 }
+
+                // When the component is dropped away, request the
+                // deletion from the grid
+                @Override
+                public void onComponentDroppedAway() {
+                    requestDeleteComponent(col, row);
+                }
             });
         }
 
@@ -95,6 +104,24 @@ public class ComponentGrid extends GridPane{
         if (component != null) {
             componentMatrix[col][row] = component;
         }
+
+        // Set up the drag and drop
+        current.setOnComponentDragListener(new DragButton.OnComponentDragListener() {
+            @Override
+            public void onComponentDropped(Component component) {
+                // Change the component coordinates
+                component.setX(row);
+                component.setY(col);
+
+                // Add the component in the new position
+                addComponentToGrid(col, row, component);
+
+                // Notify the listener
+                if (onComponentSelectedListener != null) {
+                    onComponentSelectedListener.onNewComponentRequested(component);
+                }
+            }
+        });
 
         // Set up the span
         int colSpan = 1;
@@ -184,7 +211,7 @@ public class ComponentGrid extends GridPane{
         }
     }
 
-    public Button getButtonForComponent(Component component) {
+    public DragButton getButtonForComponent(Component component) {
         if (component != null) {
             if (component.getItem() instanceof AppItem) {  // APP ITEM
                 AppItem appItem = (AppItem) component.getItem();
