@@ -15,6 +15,9 @@ public class SectionManager {
     public static final String SECTION_FOLDER_NAME = "sections";
     public static final String TEMPLATE_DB_FILENAME = "templates.txt";
 
+    public static final int DEFAULT_PAGE_ROWS = 4;
+    public static final int DEFAULT_PAGE_COLS = 4;
+
     // This map will hold the association between app name and template file
     public Map<String, String> templateMap = new HashMap<>();
 
@@ -173,8 +176,8 @@ public class SectionManager {
         // Add an empty page
         Page firstPage = new Page();
         firstPage.setTitle("Page 1");
-        firstPage.setColCount(4);
-        firstPage.setRowCount(4);
+        firstPage.setColCount(DEFAULT_PAGE_COLS);
+        firstPage.setRowCount(DEFAULT_PAGE_ROWS);
         section.addPage(firstPage);
 
         return section;

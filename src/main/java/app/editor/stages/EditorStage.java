@@ -3,6 +3,7 @@ package app.editor.stages;
 import app.editor.OnSectionModifiedListener;
 import app.editor.comparators.SectionComparator;
 import app.editor.components.BottomBarGrid;
+import app.editor.components.EmptyButton;
 import app.editor.components.PageGrid;
 import app.editor.controllers.EditorController;
 import app.editor.listcells.SectionListCell;
@@ -18,11 +19,9 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import section.model.Page;
@@ -34,6 +33,7 @@ import system.model.ApplicationManager;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class EditorStage extends Stage implements OnSectionModifiedListener{
     public static final int PAGE_HEIGHT = 400;
@@ -148,8 +148,89 @@ public class EditorStage extends Stage implements OnSectionModifiedListener{
             tab.setText(page.getTitle());
             tab.setContent(pageGrid);
 
+            // Add the tab context menu
+            final ContextMenu contextMenu = new ContextMenu();
+            MenuItem rename = new MenuItem("Rename...");
+            rename.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    TextInputDialog dialog = new TextInputDialog(page.getTitle());
+                    dialog.setTitle("Rename Page...");
+                    dialog.setHeaderText("Rename the Page");
+                    dialog.setContentText("Please enter the name:");
+
+                    Optional<String> result = dialog.showAndWait();
+                    result.ifPresent(s -> {
+                        // Check that the string is valid
+                        if (s.trim().isEmpty()) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Error");
+                            alert.setHeaderText("Page name is not valid");
+                            alert.setContentText("The name can't be empty!");
+                            alert.show();
+                            return;
+                        }
+
+                        page.setTitle(s);
+
+                        // Save the section
+                        sectionManager.saveSection(section);
+
+                        // Reload the section
+                        loadSection(section);
+                    });
+                }
+            });
+            MenuItem delete = new MenuItem("Delete");
+            delete.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    section.getPages().remove(page);
+
+                    // Save the section
+                    sectionManager.saveSection(section);
+
+                    // Reload the section
+                    loadSection(section);
+                }
+            });
+            contextMenu.getItems().addAll(rename, delete);
+            tab.setContextMenu(contextMenu);
+
             tabPane.getTabs().add(tab);
         }
+        // Add the "Add Page" tab
+        Tab addTab = new Tab();
+        Image image = new Image(EmptyButton.class.getResource("/assets/add.png").toExternalForm());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitHeight(16);
+        imageView.setFitWidth(16);
+        imageView.setSmooth(true);
+        addTab.setGraphic(imageView);
+        tabPane.getTabs().add(addTab);
+        // Add the "Add Page" event listener to create a new page
+        tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
+            @Override
+            public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
+                if (newValue.equals(addTab)) {
+                    // Create a new page
+                    Page page = new Page();
+                    page.setRowCount(SectionManager.DEFAULT_PAGE_ROWS);
+                    page.setColCount(SectionManager.DEFAULT_PAGE_COLS);
+                    page.setTitle("Page "+(section.getPages().size()+1));
+
+                    // Add the page
+                    section.addPage(page);
+
+                    // Save the section
+                    sectionManager.saveSection(section);
+
+                    // Reload the section
+                    loadSection(section);
+                }
+            }
+        });
+
         // Add the TabPane
         controller.getContentBox().getChildren().add(tabPane);
 
