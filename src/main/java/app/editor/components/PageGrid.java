@@ -34,7 +34,19 @@ public class PageGrid extends ComponentGrid implements ComponentGrid.OnComponent
 
     @Override
     public void onNewComponentRequested(Component component) {
+        // Add the component to the page
         page.addComponent(component);
+
+        // Save the section
+        if (sectionModifiedListener != null) {
+            sectionModifiedListener.onSectionModified(section);
+        }
+    }
+
+    @Override
+    public void onDeleteComponentRequested(Component component) {
+        // Remove the component from the page
+        page.getComponents().remove(component);
 
         // Save the section
         if (sectionModifiedListener != null) {

@@ -8,6 +8,9 @@
 <?import javafx.scene.paint.*?>
 
 <BorderPane prefHeight="550" prefWidth="350" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="app.UIControllers.AppListController">
+  <top>
+    <TextField fx:id="searchTextField" promptText="Search Application..." />
+  </top>
   <bottom>
     <ToolBar>
       <items>

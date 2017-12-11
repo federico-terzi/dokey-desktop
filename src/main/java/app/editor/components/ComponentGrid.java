@@ -65,13 +65,8 @@ public class ComponentGrid extends GridPane{
     }
 
     public void addComponentToGrid(int col, int row, Component component) {
-        // If the matrix contains a component, delete it.
-        if (componentMatrix[col][row] != null) {
-            // Remove the component from the grid
-            this.getChildren().removeAll(getNodeFromGridPane(this, col, row));
-            // And from the matrix
-            componentMatrix[col][row] = null;
-        }
+        // Remove the previous component
+        removeComponentFromGrid(col, row, component);
 
         // Set up the button
         Button current = getButtonForComponent(component);
@@ -81,6 +76,20 @@ public class ComponentGrid extends GridPane{
                 onComponentClicked(col, row);
             }
         });
+        // Set the context menu actions
+        if (current instanceof ComponentButton) {
+            ((ComponentButton) current).setOnComponentActionListener(new ComponentButton.OnComponentActionListener() {
+                @Override
+                public void onComponentEdit() {
+
+                }
+
+                @Override
+                public void onComponentDelete() {
+                    requestDeleteComponent(col, row);
+                }
+            });
+        }
 
         // Add the component to the matrix
         if (component != null) {
@@ -97,6 +106,20 @@ public class ComponentGrid extends GridPane{
 
         // Add the component to the grid
         this.add(current, col, row, colSpan, rowSpan);
+    }
+
+    private void removeComponentFromGrid(int col, int row, Component component) {
+        // If the matrix contains a component, delete it.
+        if (componentMatrix[col][row] != null) {
+            // Remove the component from the grid
+            Node node = getNodeFromGridPane(this, col, row);
+            while (node != null) {
+                this.getChildren().removeAll(node);
+                node = getNodeFromGridPane(this, col, row);
+            }
+            // And from the matrix
+            componentMatrix[col][row] = null;
+        }
     }
 
     public void onComponentClicked(int col, int row) {
@@ -145,6 +168,20 @@ public class ComponentGrid extends GridPane{
 
     public interface OnComponentSelectedListener {
         void onNewComponentRequested(Component component);
+        void onDeleteComponentRequested(Component component);
+    }
+
+    private void requestDeleteComponent(int col, int row) {
+        Component component = componentMatrix[col][row];
+
+        // Remove the item from the grid and replace it with an empty one
+        removeComponentFromGrid(col, row, component);
+        addComponentToGrid(col, row, null);
+
+        // Notify the listener
+        if (onComponentSelectedListener != null) {
+            onComponentSelectedListener.onDeleteComponentRequested(component);
+        }
     }
 
     public Button getButtonForComponent(Component component) {

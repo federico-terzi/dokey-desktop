@@ -13,6 +13,7 @@ import net.model.DeviceInfo;
 import net.model.ServerInfo;
 import system.ApplicationManagerFactory;
 import system.ApplicationSwitchDaemon;
+import system.SectionManager;
 import system.SystemInfoManager;
 import system.adb.ADBManager;
 import system.model.ApplicationManager;
@@ -64,6 +65,10 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
         // Initialize the ADB manager
         adbManager = new ADBManager(this, serverInfo);
+
+        // Initialize the sections
+        SectionManager sectionManager = new SectionManager();
+        sectionManager.getLaunchpadSection();
 
         // load the applications
         loadApplications();

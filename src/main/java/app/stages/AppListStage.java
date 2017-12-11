@@ -1,6 +1,7 @@
 package app.stages;
 
 import app.UIControllers.AppListController;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -15,11 +16,15 @@ import system.model.ApplicationManager;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class AppListStage extends Stage {
     private AppListController controller;
     private ApplicationManager applicationManager;
     private OnApplicationListener listener;
+
+    private String searchQuery = null;
 
     public AppListStage(ApplicationManager applicationManager, OnApplicationListener listener) throws IOException {
         this.applicationManager = applicationManager;
@@ -57,10 +62,31 @@ public class AppListStage extends Stage {
                 }
             }
         });
+
+        controller.getSearchTextField().textProperty().addListener((observable, oldValue, newValue) -> {
+            searchQuery = newValue;
+            populateAppListView();
+        });
+
+        // Focus the text field
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                controller.getSearchTextField().requestFocus();
+            }
+        });
     }
 
     private void populateAppListView() {
-        ObservableList<Application> apps = FXCollections.observableArrayList(applicationManager.getApplicationList());
+        List<Application> allApps = applicationManager.getApplicationList();
+
+        // Filter the apps based on the query
+        if (searchQuery != null && !searchQuery.isEmpty()) {
+            allApps = allApps.stream().filter(application -> application.getName().toLowerCase().contains(searchQuery)).collect(Collectors.toList());
+        }
+
+        ObservableList<Application> apps = FXCollections.observableArrayList(allApps);
+
         Collections.sort(apps);
         controller.getAppListView().setItems(apps);
     }

@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.util.Callback;
 import system.model.Application;
 
@@ -32,6 +33,9 @@ public class AppListController {
 
     @FXML
     private Button cancelBtn;
+
+    @FXML
+    private TextField searchTextField;
 
     public void initialize() {
         appListView.setCellFactory(new Callback<ListView<Application>, ListCell<Application>>() {
@@ -76,5 +80,9 @@ public class AppListController {
 
     public Button getCancelBtn() {
         return cancelBtn;
+    }
+
+    public TextField getSearchTextField() {
+        return searchTextField;
     }
 }

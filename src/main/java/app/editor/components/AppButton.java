@@ -2,13 +2,15 @@ package app.editor.components;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import system.model.Application;
 
 import java.io.File;
 
-public class AppButton extends Button {
+public class AppButton extends ComponentButton {
     private Application application;
 
     public AppButton(Application application) {
@@ -17,7 +19,6 @@ public class AppButton extends Button {
 
         // Set the button properties
         setText(application.getName());
-        setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
         // If there is an image, set it.
         if (application.getIconPath() != null) {
