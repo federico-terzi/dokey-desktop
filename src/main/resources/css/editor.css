@@ -9,3 +9,7 @@
 .drag-entered {
     -fx-background-color: #6cac6a;
 }
+
+.selected {
+    -fx-background-color: #dada67;
+}

@@ -12,7 +12,7 @@ import section.model.Item;
 public class ComponentButton extends DragButton {
     private OnComponentActionListener onComponentActionListener;
     private Component associatedComponent;
-
+    private boolean isSelected = false;
 
     public ComponentButton() {
         super();
@@ -73,6 +73,19 @@ public class ComponentButton extends DragButton {
 
     public void setAssociatedComponent(Component associatedComponent) {
         this.associatedComponent = associatedComponent;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+        if (isSelected) {
+            getStyleClass().add("selected");
+        }else{
+            getStyleClass().remove("selected");
+        }
     }
 
     public interface OnComponentActionListener {

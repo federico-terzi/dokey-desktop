@@ -265,6 +265,12 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         bottomBarGrid.setWidth(CONTENT_WIDTH);
         bottomBarGrid.setHeight(BOTTOM_BAR_HEIGHT);
         bottomBarGrid.setSectionModifiedListener(this);
+        bottomBarGrid.setOnComponentClickListener(new OnComponentClickListener() {
+            @Override
+            public void onComponentClicked(Component component) {
+                requestProperty(component);
+            }
+        });
         controller.getContentBox().getChildren().add(bottomBarGrid);
 
         // Select the list view entry
@@ -295,7 +301,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     }
 
     private void requestProperty(Component component) {
-        Property property = Property.getPropertyForComponent(component);
+        Property property = Property.getPropertyForComponent(component, applicationManager);
 
         getController().getPropertiesContentPane().setCenter(property);
     }

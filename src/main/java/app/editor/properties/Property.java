@@ -4,20 +4,20 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import section.model.AppItem;
 import section.model.Component;
+import system.model.ApplicationManager;
 
-public class Property extends HBox {
+public class Property extends VBox {
     protected Component associatedComponent;
+    protected ApplicationManager applicationManager;
 
-    public Property(Component associatedComponent) {
+    public Property(Component associatedComponent, ApplicationManager applicationManager) {
         this.associatedComponent = associatedComponent;
-
-        setBorder(new Border(new BorderStroke(Color.BLACK,
-                BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        this.applicationManager = applicationManager;
     }
 
-    public static Property getPropertyForComponent(Component component) {
+    public static Property getPropertyForComponent(Component component, ApplicationManager applicationManager) {
         if (component.getItem() instanceof AppItem) {
-            ApplicationProperty property = new ApplicationProperty(component);
+            ApplicationProperty property = new ApplicationProperty(component, applicationManager);
             return property;
         }
 
