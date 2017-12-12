@@ -5,15 +5,14 @@ import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import section.model.Section;
 
 
 public class EditorController {
 
+    @FXML
+    private BorderPane propertiesContentPane;
     @FXML
     private ResourceBundle resources;
 
@@ -68,5 +67,13 @@ public class EditorController {
 
     public Label getStatusLabel() {
         return statusLabel;
+    }
+
+    public TitledPane getPropertiesPane() {
+        return propertiesPane;
+    }
+
+    public BorderPane getPropertiesContentPane() {
+        return propertiesContentPane;
     }
 }

@@ -43,9 +43,9 @@
             <Accordion>
               <expandedPane>
                 <TitledPane fx:id="propertiesPane" animated="false" text="Properties">
-                  <content>
-                    <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                  </content>
+                  <BorderPane fx:id="propertiesContentPane">
+
+                  </BorderPane>
                 </TitledPane>
               </expandedPane>
               <panes>

@@ -1,12 +1,14 @@
 package app.editor.stages;
 
-import app.editor.OnSectionModifiedListener;
+import app.editor.listeners.OnComponentClickListener;
+import app.editor.listeners.OnSectionModifiedListener;
 import app.editor.comparators.SectionComparator;
 import app.editor.components.BottomBarGrid;
 import app.editor.components.EmptyButton;
 import app.editor.components.PageGrid;
 import app.editor.controllers.EditorController;
 import app.editor.listcells.SectionListCell;
+import app.editor.properties.Property;
 import app.stages.AppListStage;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -25,6 +27,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import section.model.Component;
 import section.model.Page;
 import section.model.Section;
 import system.SectionManager;
@@ -144,6 +147,12 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             PageGrid pageGrid = new PageGrid(applicationManager, page, section);
             pageGrid.setHeight(PAGE_HEIGHT);
             pageGrid.setSectionModifiedListener(this);
+            pageGrid.setOnComponentClickListener(new OnComponentClickListener() {
+                @Override
+                public void onComponentClicked(Component component) {
+                    requestProperty(component);
+                }
+            });
 
             Tab tab = new Tab();
             Label tabTitle = new Label(page.getTitle());
@@ -283,6 +292,12 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void requestProperty(Component component) {
+        Property property = Property.getPropertyForComponent(component);
+
+        getController().getPropertiesContentPane().setCenter(property);
     }
 
     private void requestSectionForApplication(Application application) {

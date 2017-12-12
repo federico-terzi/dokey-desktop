@@ -1,4 +1,4 @@
-package app.editor;
+package app.editor.listeners;
 
 import section.model.Section;
 

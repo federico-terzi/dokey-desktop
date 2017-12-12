@@ -1,5 +1,6 @@
 package app.editor.components;
 
+import app.editor.listeners.OnComponentClickListener;
 import app.stages.AppListStage;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -22,6 +23,7 @@ public class ComponentGrid extends GridPane{
     private int height;
     private int width;
     private OnComponentSelectedListener onComponentSelectedListener;
+    private OnComponentClickListener onComponentClickListener;
 
     private Component[][] componentMatrix;
 
@@ -153,6 +155,10 @@ public class ComponentGrid extends GridPane{
         Component component = componentMatrix[col][row];
         if (component == null) {  // Clicked on empty space
             requestApplicationSelect(col, row);
+        }else{  // Clicked on active component
+            if (onComponentClickListener != null) {
+                onComponentClickListener.onComponentClicked(component);
+            }
         }
     }
 
@@ -191,6 +197,10 @@ public class ComponentGrid extends GridPane{
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setOnComponentClickListener(OnComponentClickListener onComponentClickListener) {
+        this.onComponentClickListener = onComponentClickListener;
     }
 
     public interface OnComponentSelectedListener {

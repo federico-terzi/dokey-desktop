@@ -1,6 +1,6 @@
 package app.editor.components;
 
-import app.editor.OnSectionModifiedListener;
+import app.editor.listeners.OnSectionModifiedListener;
 import section.model.Component;
 import section.model.Item;
 import section.model.Section;
