@@ -6,6 +6,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import section.model.Component;
 import system.model.Application;
 
 import java.io.File;
@@ -13,8 +14,8 @@ import java.io.File;
 public class AppButton extends ComponentButton {
     private Application application;
 
-    public AppButton(Application application) {
-        super();
+    public AppButton(Component associatedComponent, Application application) {
+        super(associatedComponent);
         this.application = application;
 
         // Set the button properties

@@ -11,9 +11,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
-import section.model.AppItem;
-import section.model.Component;
-import section.model.ItemType;
+import section.model.*;
 import system.model.Application;
 import system.model.ApplicationManager;
 
@@ -27,6 +25,7 @@ public class ComponentGrid extends GridPane{
     private int width;
     private OnComponentSelectedListener onComponentSelectedListener;
     private OnComponentClickListener onComponentClickListener;
+    private SectionType sectionType = SectionType.LAUNCHPAD;
 
     private Component[][] componentMatrix;
 
@@ -82,9 +81,6 @@ public class ComponentGrid extends GridPane{
         });
         // Set the context menu actions
         if (current instanceof ComponentButton) {
-            // Add the associated component
-            ((ComponentButton) current).setAssociatedComponent(component);
-
             ((ComponentButton) current).setOnComponentActionListener(new ComponentButton.OnComponentActionListener() {
                 @Override
                 public void onComponentEdit() {
@@ -175,7 +171,12 @@ public class ComponentGrid extends GridPane{
     public void onComponentClicked(int col, int row) {
         Component component = componentMatrix[col][row];
         if (component == null) {  // Clicked on empty space
-            requestApplicationSelect(col, row);
+            if (sectionType == SectionType.LAUNCHPAD) {  // LAUNCHPAD SECTION
+                requestApplicationSelect(col, row);
+            }else if (sectionType == SectionType.SHORTCUTS) {  // LAUNCHPAD SHORTCUTS
+                requestShortcutSelect(col, row);
+            }
+
         }else{  // Clicked on active component
             if (onComponentClickListener != null) {
                 onComponentClickListener.onComponentClicked(component);
@@ -220,14 +221,46 @@ public class ComponentGrid extends GridPane{
         }
     }
 
-    public void setOnComponentClickListener(OnComponentClickListener onComponentClickListener) {
-        this.onComponentClickListener = onComponentClickListener;
+    private void requestShortcutSelect(int col, int row) {
+        // Create the component
+        ShortcutItem item = new ShortcutItem();
+        item.setShortcut("CTRL+C");
+        item.setTitle("Copia");
+        item.setIconID("copy");
+        Component component = new Component();
+        component.setItem(item);
+        component.setX(row);
+        component.setY(col);
+        component.setXSpan(1);
+        component.setYSpan(1);
+
+        // Add the item to the grid
+        addComponentToGrid(col, row, component);
+
+        // Notify the listener
+        if (onComponentSelectedListener != null) {
+            onComponentSelectedListener.onNewComponentRequested(component);
+        }
     }
 
     public interface OnComponentSelectedListener {
         void onNewComponentRequested(Component component);
         void onDeleteComponentRequested(Component component);
     }
+
+    public void setOnComponentClickListener(OnComponentClickListener onComponentClickListener) {
+        this.onComponentClickListener = onComponentClickListener;
+    }
+
+    public SectionType getSectionType() {
+        return sectionType;
+    }
+
+    public void setSectionType(SectionType sectionType) {
+        this.sectionType = sectionType;
+    }
+
+
 
     private void requestDeleteComponent(int col, int row) {
         Component component = componentMatrix[col][row];
@@ -249,9 +282,12 @@ public class ComponentGrid extends GridPane{
                 Application application = applicationManager.getApplication(appItem.getAppID());
                 // Make sure the application exists
                 if (application != null) {
-                    AppButton appButton = new AppButton(application);
+                    AppButton appButton = new AppButton(component, application);
                     return appButton;
                 }
+            }else if (component.getItem() instanceof ShortcutItem) {  // SHORTCUT ITEM
+                //ShortcutItem appItem = (ShortcutItem) component.getItem();
+                return new ShortcutButton(component);
             }
         }
 

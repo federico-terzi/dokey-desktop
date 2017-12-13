@@ -11,11 +11,12 @@ import section.model.Item;
 
 public class ComponentButton extends DragButton {
     private OnComponentActionListener onComponentActionListener;
-    private Component associatedComponent;
+    protected Component associatedComponent;
     private boolean isSelected = false;
 
-    public ComponentButton() {
+    public ComponentButton(Component associatedComponent) {
         super();
+        this.associatedComponent = associatedComponent;
 
         // Set the button properties
         setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);

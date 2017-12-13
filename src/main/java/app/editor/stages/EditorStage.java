@@ -147,6 +147,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             PageGrid pageGrid = new PageGrid(applicationManager, page, section);
             pageGrid.setHeight(PAGE_HEIGHT);
             pageGrid.setSectionModifiedListener(this);
+            pageGrid.setSectionType(section.getSectionType());
             pageGrid.setOnComponentClickListener(new OnComponentClickListener() {
                 @Override
                 public void onComponentClicked(Component component) {
@@ -265,6 +266,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         bottomBarGrid.setWidth(CONTENT_WIDTH);
         bottomBarGrid.setHeight(BOTTOM_BAR_HEIGHT);
         bottomBarGrid.setSectionModifiedListener(this);
+        bottomBarGrid.setSectionType(section.getSectionType());
         bottomBarGrid.setOnComponentClickListener(new OnComponentClickListener() {
             @Override
             public void onComponentClicked(Component component) {
