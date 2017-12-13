@@ -1,6 +1,7 @@
 package app.editor.components;
 
 import app.editor.listeners.OnComponentClickListener;
+import app.editor.stages.ShortcutDialogStage;
 import app.stages.AppListStage;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -222,24 +223,39 @@ public class ComponentGrid extends GridPane{
     }
 
     private void requestShortcutSelect(int col, int row) {
-        // Create the component
-        ShortcutItem item = new ShortcutItem();
-        item.setShortcut("CTRL+C");
-        item.setTitle("Copia");
-        item.setIconID("copy");
-        Component component = new Component();
-        component.setItem(item);
-        component.setX(row);
-        component.setY(col);
-        component.setXSpan(1);
-        component.setYSpan(1);
+        try {
+            ShortcutDialogStage stage = new ShortcutDialogStage(new ShortcutDialogStage.OnShortcutListener() {
+                @Override
+                public void onShortcutSelected(String shortcut, String name) {
+                    // Create the component
+                    ShortcutItem item = new ShortcutItem();
+                    item.setShortcut(shortcut);
+                    item.setTitle(name);
+                    item.setIconID("copy");
+                    Component component = new Component();
+                    component.setItem(item);
+                    component.setX(row);
+                    component.setY(col);
+                    component.setXSpan(1);
+                    component.setYSpan(1);
 
-        // Add the item to the grid
-        addComponentToGrid(col, row, component);
+                    // Add the item to the grid
+                    addComponentToGrid(col, row, component);
 
-        // Notify the listener
-        if (onComponentSelectedListener != null) {
-            onComponentSelectedListener.onNewComponentRequested(component);
+                    // Notify the listener
+                    if (onComponentSelectedListener != null) {
+                        onComponentSelectedListener.onNewComponentRequested(component);
+                    }
+                }
+
+                @Override
+                public void onCanceled() {
+
+                }
+            });
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

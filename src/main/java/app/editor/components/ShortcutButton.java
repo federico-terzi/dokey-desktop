@@ -24,8 +24,10 @@ public class ShortcutButton extends ComponentButton {
         vBox.setAlignment(Pos.CENTER);
         Label titleLabel = new Label(item.getTitle());
         titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px");
+        titleLabel.setWrapText(true);
         Label shortcutLabel = new Label(item.getShortcut());
         shortcutLabel.setStyle("-fx-font-style: italic; -fx-font-size: 11px");
+        shortcutLabel.setWrapText(true);
         vBox.getChildren().addAll(titleLabel, shortcutLabel);
         setGraphic(vBox);
     }

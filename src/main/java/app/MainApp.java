@@ -1,6 +1,7 @@
 package app;
 
 import app.editor.stages.EditorStage;
+import app.editor.stages.ShortcutDialogStage;
 import app.stages.InitializationStage;
 import engine.EngineServer;
 import engine.EngineWorker;
