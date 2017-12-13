@@ -33,7 +33,7 @@
         </BorderPane>
         <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="AS_NEEDED">
           <content>
-            <VBox fx:id="contentBox" alignment="CENTER" fillWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="315.0" prefHeight="724.0" prefWidth="315.0" style="-fx-background-color: gray;">
+            <VBox fx:id="contentBox" alignment="CENTER" fillWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="315.0" prefHeight="724.0" prefWidth="315.0" style="-fx-background-color: #444444;">
 
             </VBox>
           </content>

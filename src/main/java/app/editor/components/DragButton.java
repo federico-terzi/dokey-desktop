@@ -64,10 +64,8 @@ public class DragButton extends Button {
                     if (onComponentDragListener != null) {
                         // Create the component
                         Component component = Component.fromJson(new JSONObject(json));
-                        onComponentDragListener.onComponentDropped(component);
+                        success = onComponentDragListener.onComponentDropped(component);
                     }
-
-                    success = true;
                 }
 
                 event.setDropCompleted(success);
@@ -86,6 +84,6 @@ public class DragButton extends Button {
     }
 
     public interface OnComponentDragListener {
-        void onComponentDropped(Component component);
+        boolean onComponentDropped(Component component);
     }
 }

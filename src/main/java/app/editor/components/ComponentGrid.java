@@ -5,6 +5,8 @@ import app.stages.AppListStage;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -16,6 +18,7 @@ import system.model.Application;
 import system.model.ApplicationManager;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class ComponentGrid extends GridPane{
 
@@ -110,7 +113,23 @@ public class ComponentGrid extends GridPane{
         // Set up the drag and drop
         current.setOnComponentDragListener(new DragButton.OnComponentDragListener() {
             @Override
-            public void onComponentDropped(Component component) {
+            public boolean onComponentDropped(Component component) {
+                // If the button is not empty, ask for the deletion confirmation
+                if (!(current instanceof EmptyButton)) {
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Overwrite Button");
+                    alert.setHeaderText("Are you sure you want to overwrite this button?");
+                    alert.setContentText("If you proceed, the button will be replaced.");
+
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.get() != ButtonType.OK){
+                        return false;
+                    }else{  // OVERWRITE
+                        // Delete the previous component
+                        requestDeleteComponent(col, row);
+                    }
+                }
+
                 // Change the component coordinates
                 component.setX(row);
                 component.setY(col);
@@ -122,6 +141,8 @@ public class ComponentGrid extends GridPane{
                 if (onComponentSelectedListener != null) {
                     onComponentSelectedListener.onNewComponentRequested(component);
                 }
+
+                return true;
             }
         });
 
