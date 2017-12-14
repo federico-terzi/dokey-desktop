@@ -15,6 +15,8 @@ import javafx.scene.layout.RowConstraints;
 import section.model.*;
 import system.model.Application;
 import system.model.ApplicationManager;
+import system.sicons.ShortcutIcon;
+import system.sicons.ShortcutIconManager;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -27,13 +29,15 @@ public class ComponentGrid extends GridPane{
     private OnComponentSelectedListener onComponentSelectedListener;
     private OnComponentClickListener onComponentClickListener;
     private SectionType sectionType = SectionType.LAUNCHPAD;
+    private ShortcutIconManager shortcutIconManager;
 
     private Component[][] componentMatrix;
 
-    public ComponentGrid(ApplicationManager applicationManager, Component[][] componentMatrix) {
+    public ComponentGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, Component[][] componentMatrix) {
         super();
         this.applicationManager = applicationManager;
         this.componentMatrix = componentMatrix;
+        this.shortcutIconManager = shortcutIconManager;
 
         setupConstraints();
 
@@ -224,14 +228,19 @@ public class ComponentGrid extends GridPane{
 
     private void requestShortcutSelect(int col, int row) {
         try {
-            ShortcutDialogStage stage = new ShortcutDialogStage(new ShortcutDialogStage.OnShortcutListener() {
+            ShortcutDialogStage stage = new ShortcutDialogStage(shortcutIconManager, new ShortcutDialogStage.OnShortcutListener() {
                 @Override
-                public void onShortcutSelected(String shortcut, String name) {
+                public void onShortcutSelected(String shortcut, String name, ShortcutIcon icon) {
                     // Create the component
                     ShortcutItem item = new ShortcutItem();
                     item.setShortcut(shortcut);
                     item.setTitle(name);
-                    item.setIconID("copy");
+
+                    // If an icon is specified, save the id
+                    if (icon != null) {
+                        item.setIconID(icon.getId());
+                    }
+
                     Component component = new Component();
                     component.setItem(item);
                     component.setX(row);
@@ -257,6 +266,14 @@ public class ComponentGrid extends GridPane{
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public ShortcutIconManager getShortcutIconManager() {
+        return shortcutIconManager;
+    }
+
+    public void setShortcutIconManager(ShortcutIconManager shortcutIconManager) {
+        this.shortcutIconManager = shortcutIconManager;
     }
 
     public interface OnComponentSelectedListener {
@@ -302,8 +319,12 @@ public class ComponentGrid extends GridPane{
                     return appButton;
                 }
             }else if (component.getItem() instanceof ShortcutItem) {  // SHORTCUT ITEM
-                //ShortcutItem appItem = (ShortcutItem) component.getItem();
-                return new ShortcutButton(component);
+                ShortcutItem appItem = (ShortcutItem) component.getItem();
+                ShortcutIcon shortcutIcon = null;
+                if (appItem.getIconID() != null) {
+                    shortcutIcon = shortcutIconManager.getIcon(appItem.getIconID());
+                }
+                return new ShortcutButton(component, shortcutIcon);
             }
         }
 

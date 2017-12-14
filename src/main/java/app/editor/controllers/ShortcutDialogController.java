@@ -6,6 +6,7 @@ import javafx.scene.control.TextField;
 
 public class ShortcutDialogController {
 
+    public Button iconBtn;
     @FXML
     private Button cancelBtn;
 

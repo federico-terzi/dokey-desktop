@@ -33,6 +33,7 @@ import section.model.Section;
 import system.SectionManager;
 import system.model.Application;
 import system.model.ApplicationManager;
+import system.sicons.ShortcutIconManager;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -48,6 +49,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     private EditorController controller;
     private ApplicationManager applicationManager;
     private SectionManager sectionManager;
+    private ShortcutIconManager shortcutIconManager;
 
     private List<Section> sections;
     private Section activeSection = null;
@@ -67,6 +69,9 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
         // Create the section manager
         sectionManager = new SectionManager();
+
+        // Create the shortcut icon manager
+        shortcutIconManager = new ShortcutIconManager();
 
         // Bind the action listeners
         // ADD SECTION BTN
@@ -147,10 +152,11 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
         // Add the pages
         for (Page page : section.getPages()) {
-            PageGrid pageGrid = new PageGrid(applicationManager, page, section);
+            PageGrid pageGrid = new PageGrid(applicationManager, shortcutIconManager, page, section);
             pageGrid.setHeight(PAGE_HEIGHT);
             pageGrid.setSectionModifiedListener(this);
             pageGrid.setSectionType(section.getSectionType());
+            pageGrid.setShortcutIconManager(shortcutIconManager);
             pageGrid.setOnComponentClickListener(new OnComponentClickListener() {
                 @Override
                 public void onComponentClicked(Component component) {
@@ -257,7 +263,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
 
         // Add the bottom bar
-        BottomBarGrid bottomBarGrid = new BottomBarGrid(applicationManager, section.getBottomBarItems(), BOTTOM_BAR_DEFAULT_COLS, section);
+        BottomBarGrid bottomBarGrid = new BottomBarGrid(applicationManager, shortcutIconManager, section.getBottomBarItems(), BOTTOM_BAR_DEFAULT_COLS, section);
         bottomBarGrid.setWidth(CONTENT_WIDTH);
         bottomBarGrid.setHeight(BOTTOM_BAR_HEIGHT);
         bottomBarGrid.setSectionModifiedListener(this);

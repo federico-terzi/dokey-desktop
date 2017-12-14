@@ -1,9 +1,9 @@
-package app.UIControllers;
+package app.editor.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import app.listcells.ApplicationListCell;
+import app.editor.listcells.ApplicationListCell;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

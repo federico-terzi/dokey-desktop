@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="177.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.editor.controllers.ShortcutDialogController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="233.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.editor.controllers.ShortcutDialogController">
    <center>
       <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
@@ -43,6 +44,11 @@
                   <Insets left="10.0" right="10.0" top="10.0" />
                </padding>
             </HBox>
+            <Button fx:id="iconBtn" mnemonicParsing="false" text="Select Icon...">
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </Button>
          </children>
          <BorderPane.margin>
             <Insets />
@@ -53,7 +59,7 @@
       </VBox>
    </center>
    <bottom>
-      <HBox alignment="TOP_RIGHT" BorderPane.alignment="TOP_LEFT">
+      <HBox alignment="TOP_RIGHT" prefHeight="15.0" prefWidth="450.0" BorderPane.alignment="TOP_LEFT">
          <children>
             <Button fx:id="cancelBtn" mnemonicParsing="false" text="Cancel">
                <HBox.margin>

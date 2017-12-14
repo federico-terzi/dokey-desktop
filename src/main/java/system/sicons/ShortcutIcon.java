@@ -7,8 +7,10 @@ import java.io.File;
 public class ShortcutIcon implements Comparable<ShortcutIcon>{
     private String name;
     private File file;
+    private String id;
 
-    public ShortcutIcon(String name, File file) {
+    public ShortcutIcon(String id, String name, File file) {
+        this.id = id;
         this.name = name;
         this.file = file;
     }
@@ -27,6 +29,14 @@ public class ShortcutIcon implements Comparable<ShortcutIcon>{
 
     public void setFile(File file) {
         this.file = file;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override

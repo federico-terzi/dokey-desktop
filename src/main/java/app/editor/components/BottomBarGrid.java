@@ -5,6 +5,7 @@ import section.model.Component;
 import section.model.Item;
 import section.model.Section;
 import system.model.ApplicationManager;
+import system.sicons.ShortcutIconManager;
 
 import java.util.List;
 
@@ -14,8 +15,8 @@ public class BottomBarGrid extends ComponentGrid implements ComponentGrid.OnComp
     private Section section;
     private OnSectionModifiedListener sectionModifiedListener;
 
-    public BottomBarGrid(ApplicationManager applicationManager, List<Item> items, int colCount, Section section) {
-        super(applicationManager, generateMatrix(items, colCount));
+    public BottomBarGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, List<Item> items, int colCount, Section section) {
+        super(applicationManager, shortcutIconManager, generateMatrix(items, colCount));
         this.items = items;
         this.colCount = colCount;
         this.section = section;

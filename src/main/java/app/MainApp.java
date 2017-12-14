@@ -2,6 +2,7 @@ package app;
 
 import app.editor.stages.EditorStage;
 import app.editor.stages.ShortcutDialogStage;
+import app.editor.stages.ShortcutIconDialogStage;
 import app.stages.InitializationStage;
 import engine.EngineServer;
 import engine.EngineWorker;
@@ -18,6 +19,8 @@ import system.SectionManager;
 import system.SystemInfoManager;
 import system.adb.ADBManager;
 import system.model.ApplicationManager;
+import system.sicons.ShortcutIcon;
+import system.sicons.ShortcutIconManager;
 
 import java.io.File;
 import java.io.IOException;

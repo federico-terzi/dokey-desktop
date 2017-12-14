@@ -3,10 +3,7 @@ package system.sicons;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ShortcutIconManager {
     public static final String SICONS_DIR_NAME = "sicons";
@@ -25,8 +22,9 @@ public class ShortcutIconManager {
         // Cycle through all the icons
         for (File file : iconDir.listFiles()) {
             String name = WordUtils.capitalize(file.getName().replace('_', ' ').replace(".png", ""));
-            ShortcutIcon shortcutIcon = new ShortcutIcon(name, file);
-            output.put(file.getName().replace(".png", ""), shortcutIcon);
+            String id = file.getName().replace(".png", "");
+            ShortcutIcon shortcutIcon = new ShortcutIcon(id, name, file);
+            output.put(id, shortcutIcon);
         }
 
         return output;
@@ -34,5 +32,9 @@ public class ShortcutIconManager {
 
     public ShortcutIcon getIcon(String shortcutID) {
         return icons.get(shortcutID);
+    }
+
+    public List<ShortcutIcon> getIcons() {
+        return new ArrayList<>(icons.values());
     }
 }

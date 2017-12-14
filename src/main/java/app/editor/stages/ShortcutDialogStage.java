@@ -10,22 +10,28 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import net.model.KeyboardKeys;
+import system.sicons.ShortcutIcon;
+import system.sicons.ShortcutIconManager;
 
 import java.io.IOException;
 import java.util.*;
 
 public class ShortcutDialogStage extends Stage {
+    private ShortcutIconManager shortcutIconManager;
     private ShortcutDialogController controller;
     private OnShortcutListener onShortcutListener;
 
     private List<KeyboardKeys> keys = new ArrayList<>();
+    private ShortcutIcon icon = null;
 
-    public ShortcutDialogStage(OnShortcutListener onShortcutListener) throws IOException {
+    public ShortcutDialogStage(ShortcutIconManager shortcutIconManager, OnShortcutListener onShortcutListener) throws IOException {
+        this.shortcutIconManager = shortcutIconManager;
         this.onShortcutListener = onShortcutListener;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layouts/shortcut_dialog.fxml"));
@@ -45,6 +51,14 @@ public class ShortcutDialogStage extends Stage {
         imageView.setSmooth(true);
         controller.getClearShortcutBtn().setGraphic(imageView);
 
+        // Setup the icon button
+        Image iconImage = new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/emoticon.png"));
+        ImageView iconImageView = new ImageView(iconImage);
+        iconImageView.setFitHeight(32);
+        iconImageView.setFitWidth(32);
+        controller.iconBtn.setGraphic(iconImageView);
+        controller.iconBtn.setContentDisplay(ContentDisplay.TOP);
+
         // Set the event listeners
         controller.getCancelBtn().setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -62,7 +76,7 @@ public class ShortcutDialogStage extends Stage {
                     if (name.isEmpty()) {
                         name = getShortcut();
                     }
-                    onShortcutListener.onShortcutSelected(getShortcut(),name);
+                    onShortcutListener.onShortcutSelected(getShortcut(),name, icon);
                     close();
                 }else {
                     Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -71,6 +85,30 @@ public class ShortcutDialogStage extends Stage {
                     alert.setContentText("Please go back and type the keyboard keys or Cancel...");
 
                     alert.showAndWait();
+                }
+            }
+        });
+
+        controller.iconBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                ShortcutIconDialogStage shortcutIconDialogStage = null;
+                try {
+                    shortcutIconDialogStage = new ShortcutIconDialogStage(shortcutIconManager, new ShortcutIconDialogStage.OnIconSelectListener() {
+                        @Override
+                        public void onIconSelected(ShortcutIcon icon) {
+                            ShortcutDialogStage.this.icon = icon;
+                            renderIcon();
+                        }
+
+                        @Override
+                        public void onCanceled() {
+
+                        }
+                    });
+                    shortcutIconDialogStage.show();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -113,6 +151,22 @@ public class ShortcutDialogStage extends Stage {
         controller.getShortcutTextField().setText(getShortcut());
     }
 
+    private void renderIcon() {
+        if (icon != null) {
+            Image image = new Image(icon.getFile().toURI().toString());
+            ImageView imageView = new ImageView(image);
+            imageView.setFitHeight(32);
+            imageView.setFitWidth(32);
+            imageView.setSmooth(true);
+            controller.iconBtn.setGraphic(imageView);
+            controller.iconBtn.setText("Change icon...");
+        }else{
+            controller.iconBtn.setGraphic(null);
+            controller.iconBtn.setText("Select icon...");
+        }
+
+    }
+
     private String getShortcut() {
         StringJoiner joiner = new StringJoiner("+");
         for (KeyboardKeys key : keys) {
@@ -122,7 +176,7 @@ public class ShortcutDialogStage extends Stage {
     }
 
     public interface OnShortcutListener {
-        void onShortcutSelected(String shortcut, String name);
+        void onShortcutSelected(String shortcut, String name, ShortcutIcon icon);
         void onCanceled();
     }
 }

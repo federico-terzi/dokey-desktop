@@ -1,6 +1,6 @@
 package app.editor.stages;
 
-import app.UIControllers.AppListController;
+import app.editor.controllers.AppListController;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
