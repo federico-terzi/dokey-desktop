@@ -321,7 +321,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     }
 
     private void requestProperty(Component component) {
-        Property property = Property.getPropertyForComponent(component, applicationManager);
+        Property property = Property.getPropertyForComponent(component, applicationManager, shortcutIconManager);
 
         getController().getPropertiesContentPane().setCenter(property);
     }
