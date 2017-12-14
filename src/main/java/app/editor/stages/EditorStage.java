@@ -9,7 +9,6 @@ import app.editor.components.PageGrid;
 import app.editor.controllers.EditorController;
 import app.editor.listcells.SectionListCell;
 import app.editor.properties.Property;
-import app.stages.AppListStage;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -25,7 +24,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -59,8 +57,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layouts/section_editor.fxml"));
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
-        scene.getStylesheets().add(AppListStage.class.getResource("/css/sectionlistcell.css").toExternalForm());
-        scene.getStylesheets().add(AppListStage.class.getResource("/css/editor.css").toExternalForm());
+        scene.getStylesheets().add(AppSelectDialogStage.class.getResource("/css/sectionlistcell.css").toExternalForm());
+        scene.getStylesheets().add(AppSelectDialogStage.class.getResource("/css/editor.css").toExternalForm());
         this.setTitle("Editor");
         this.setScene(scene);
         this.getIcons().add(new Image(EditorStage.class.getResourceAsStream("/assets/icon.png")));
@@ -299,7 +297,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
     private void addSection() {
         try {
-            AppListStage appListStage = new AppListStage(applicationManager, new AppListStage.OnApplicationListener() {
+            AppSelectDialogStage appSelectDialogStage = new AppSelectDialogStage(applicationManager, new AppSelectDialogStage.OnApplicationListener() {
                 @Override
                 public void onApplicationSelected(Application application) {
                     requestSectionForApplication(application);
@@ -310,7 +308,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
                 }
             });
-            appListStage.show();
+            appSelectDialogStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }

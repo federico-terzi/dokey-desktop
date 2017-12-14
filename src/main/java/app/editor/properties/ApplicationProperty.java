@@ -2,24 +2,14 @@ package app.editor.properties;
 
 
 import app.editor.controllers.ApplicationPropertyController;
-import app.editor.controllers.EditorController;
-import app.editor.stages.EditorStage;
-import app.stages.AppListStage;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import section.model.AppItem;
 import section.model.Component;
 import system.model.Application;
 import system.model.ApplicationManager;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 

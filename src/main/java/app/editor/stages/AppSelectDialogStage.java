@@ -1,4 +1,4 @@
-package app.stages;
+package app.editor.stages;
 
 import app.UIControllers.AppListController;
 import javafx.application.Platform;
@@ -19,24 +19,24 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AppListStage extends Stage {
+public class AppSelectDialogStage extends Stage {
     private AppListController controller;
     private ApplicationManager applicationManager;
     private OnApplicationListener listener;
 
     private String searchQuery = null;
 
-    public AppListStage(ApplicationManager applicationManager, OnApplicationListener listener) throws IOException {
+    public AppSelectDialogStage(ApplicationManager applicationManager, OnApplicationListener listener) throws IOException {
         this.applicationManager = applicationManager;
         this.listener = listener;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layouts/application_list.fxml"));
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root, 350, 550);
-        scene.getStylesheets().add(AppListStage.class.getResource("/css/applistcell.css").toExternalForm());
+        scene.getStylesheets().add(AppSelectDialogStage.class.getResource("/css/applistcell.css").toExternalForm());
         this.setTitle("Applications");
         this.setScene(scene);
-        this.getIcons().add(new Image(AppListStage.class.getResourceAsStream("/assets/icon.png")));
+        this.getIcons().add(new Image(AppSelectDialogStage.class.getResourceAsStream("/assets/icon.png")));
 
         controller = (AppListController) fxmlLoader.getController();
 

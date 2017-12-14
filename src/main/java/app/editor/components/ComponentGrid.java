@@ -2,7 +2,7 @@ package app.editor.components;
 
 import app.editor.listeners.OnComponentClickListener;
 import app.editor.stages.ShortcutDialogStage;
-import app.stages.AppListStage;
+import app.editor.stages.AppSelectDialogStage;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -187,7 +187,7 @@ public class ComponentGrid extends GridPane{
 
     private void requestApplicationSelect(int col, int row) {
         try {
-            AppListStage appListStage = new AppListStage(applicationManager, new AppListStage.OnApplicationListener() {
+            AppSelectDialogStage appSelectDialogStage = new AppSelectDialogStage(applicationManager, new AppSelectDialogStage.OnApplicationListener() {
                 @Override
                 public void onApplicationSelected(Application application) {
                     // Create the component
@@ -216,7 +216,7 @@ public class ComponentGrid extends GridPane{
 
                 }
             });
-            appListStage.show();
+            appSelectDialogStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
