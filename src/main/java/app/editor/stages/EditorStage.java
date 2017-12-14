@@ -25,6 +25,8 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import section.model.Component;
@@ -132,6 +134,9 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     private void loadSection(Section section) {
         showStatus("Loading app...");
 
+        // Reset the properties
+        removeProperty();
+
         // Clear the previous section
         controller.getContentBox().getChildren().clear();
 
@@ -232,27 +237,19 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         imageView.setFitHeight(16);
         imageView.setFitWidth(16);
         imageView.setSmooth(true);
-        addTab.setGraphic(imageView);
+        VBox imageVBox = new VBox();
+        imageVBox.getChildren().add(imageView);
+        addTab.setGraphic(imageVBox);
         tabPane.getTabs().add(addTab);
         // Add the "Add Page" event listener to create a new page
+        imageVBox.setOnMouseClicked(event -> {
+            addPageToSection(section);
+        });
         tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
             @Override
             public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
                 if (newValue.equals(addTab)) {
-                    // Create a new page
-                    Page page = new Page();
-                    page.setRowCount(SectionManager.DEFAULT_PAGE_ROWS);
-                    page.setColCount(SectionManager.DEFAULT_PAGE_COLS);
-                    page.setTitle("Page " + (section.getPages().size() + 1));
-
-                    // Add the page
-                    section.addPage(page);
-
-                    // Save the section
-                    sectionManager.saveSection(section);
-
-                    // Reload the section
-                    loadSection(section);
+                    addPageToSection(section);
                 }
             }
         });
@@ -283,6 +280,23 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         hideStatus();
     }
 
+    private void addPageToSection(Section section) {
+        // Create a new page
+        Page page = new Page();
+        page.setRowCount(SectionManager.DEFAULT_PAGE_ROWS);
+        page.setColCount(SectionManager.DEFAULT_PAGE_COLS);
+        page.setTitle("Page " + (section.getPages().size() + 1));
+
+        // Add the page
+        section.addPage(page);
+
+        // Save the section
+        sectionManager.saveSection(section);
+
+        // Reload the section
+        loadSection(section);
+    }
+
     private void addSection() {
         try {
             AppListStage appListStage = new AppListStage(applicationManager, new AppListStage.OnApplicationListener() {
@@ -306,6 +320,10 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         Property property = Property.getPropertyForComponent(component, applicationManager);
 
         getController().getPropertiesContentPane().setCenter(property);
+    }
+
+    private void removeProperty() {
+        getController().getPropertiesContentPane().setCenter(null);
     }
 
     private void requestSectionForApplication(Application application) {

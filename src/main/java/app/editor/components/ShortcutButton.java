@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 import section.model.Component;
 import section.model.ShortcutItem;
 import system.model.Application;
@@ -27,6 +28,7 @@ public class ShortcutButton extends ComponentButton {
         titleLabel.setWrapText(true);
         Label shortcutLabel = new Label(item.getShortcut());
         shortcutLabel.setStyle("-fx-font-style: italic; -fx-font-size: 11px");
+        shortcutLabel.setTextAlignment(TextAlignment.CENTER);
         shortcutLabel.setWrapText(true);
         vBox.getChildren().addAll(titleLabel, shortcutLabel);
         setGraphic(vBox);
