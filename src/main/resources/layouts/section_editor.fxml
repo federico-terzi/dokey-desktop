@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<BorderPane prefHeight="801.0" prefWidth="1079.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="app.editor.controllers.EditorController">
+<BorderPane prefHeight="701.0" prefWidth="1079.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="app.editor.controllers.EditorController">
   <bottom>
     <ToolBar orientation="HORIZONTAL" BorderPane.alignment="TOP_LEFT">
       <items>
