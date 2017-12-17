@@ -270,7 +270,7 @@ public class SectionManager {
      * @param dest    the destination File.
      * @return true if succeeded, false otherwise.
      */
-    private boolean writeSectionToFile(Section section, File dest) {
+    public boolean writeSectionToFile(Section section, File dest) {
         try {
             // Write the json section to the file
             FileOutputStream fos = new FileOutputStream(dest);

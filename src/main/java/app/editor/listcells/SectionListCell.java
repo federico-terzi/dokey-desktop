@@ -83,6 +83,20 @@ public class SectionListCell extends ListCell<Section> {
 
         // Set up the context menu
         ContextMenu contextMenu = new ContextMenu();
+        MenuItem reloadItem = new MenuItem("Reload");
+        reloadItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                onContextMenuListener.onReloadSection(section);
+            }
+        });
+        MenuItem exportItem = new MenuItem("Export...");
+        exportItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                onContextMenuListener.onExportSection(section);
+            }
+        });
         MenuItem deleteItem = new MenuItem("Delete");
         deleteItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -98,14 +112,8 @@ public class SectionListCell extends ListCell<Section> {
                 }
             }
         });
-        MenuItem reloadItem = new MenuItem("Reload");
-        reloadItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                onContextMenuListener.onReloadSection(section);
-            }
-        });
-        contextMenu.getItems().addAll(reloadItem, deleteItem);
+
+        contextMenu.getItems().addAll(reloadItem, exportItem, new SeparatorMenuItem(), deleteItem);
         setContextMenu(contextMenu);
 
         setGraphic(grid);
@@ -124,5 +132,6 @@ public class SectionListCell extends ListCell<Section> {
     public interface OnContextMenuListener {
         void onDeleteSection(Section section);
         void onReloadSection(Section section);
+        void onExportSection(Section section);
     }
 }

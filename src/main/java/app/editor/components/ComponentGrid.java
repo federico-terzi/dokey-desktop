@@ -26,14 +26,13 @@ import java.util.Optional;
 public class ComponentGrid extends GridPane {
 
     private ApplicationManager applicationManager;
-    private int height;
-    private int width;
     private OnComponentSelectedListener onComponentSelectedListener;
     private OnComponentClickListener onComponentClickListener;
     private SectionType sectionType = SectionType.LAUNCHPAD;
     private ShortcutIconManager shortcutIconManager;
 
     private Component[][] componentMatrix;
+    private boolean forceDiscardSpan = false;
 
     public ComponentGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, Component[][] componentMatrix) {
         super();
@@ -73,6 +72,11 @@ public class ComponentGrid extends GridPane {
         for (int col = 0; col < componentMatrix.length; col++) {
             for (int row = 0; row < componentMatrix[0].length; row++) {
                 if (componentMatrix[col][row] != null) {
+                    // if force discard span is specified, all the blocks will lose their span
+                    if (forceDiscardSpan) {
+                        componentMatrix[col][row].setYSpan(1);
+                        componentMatrix[col][row].setXSpan(1);
+                    }
                     addComponentToGrid(col, row, componentMatrix[col][row]);
                 }else{
                     // Make sure in this position there isn't any spanned component
@@ -219,7 +223,7 @@ public class ComponentGrid extends GridPane {
                 }
 
                 @Override
-                public void onComponentShrinkRight() {
+                public void onComponentShrinkLeft() {
                     // Make sure the component can fit in the matrix
                     if (component.getYSpan() <= 1) {
                         return;
@@ -237,7 +241,7 @@ public class ComponentGrid extends GridPane {
                 }
 
                 @Override
-                public void onComponentShrinkBottom() {
+                public void onComponentShrinkUp() {
                     // Make sure the component can fit in the matrix
                     if (component.getXSpan() <= 1) {
                         return;
@@ -450,6 +454,10 @@ public class ComponentGrid extends GridPane {
         this.shortcutIconManager = shortcutIconManager;
     }
 
+    public void setForceDiscardSpan(boolean forceDiscardSpan) {
+        this.forceDiscardSpan = forceDiscardSpan;
+    }
+
     public interface OnComponentSelectedListener {
         void onNewComponentRequested(Component component);
         void onDeleteComponentRequested(Component component);
@@ -503,14 +511,12 @@ public class ComponentGrid extends GridPane {
     }
 
     public void setHeight(int height) {
-        this.height = height;
         this.setPrefHeight(height);
         this.setMaxHeight(height);
         this.setMinHeight(height);
     }
 
     public void setWidth(int width) {
-        this.width = width;
         this.setPrefWidth(width);
         this.setMaxWidth(width);
         this.setMinWidth(width);

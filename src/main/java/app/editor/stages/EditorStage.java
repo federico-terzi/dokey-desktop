@@ -25,6 +25,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import section.model.Component;
@@ -35,6 +36,7 @@ import system.model.Application;
 import system.model.ApplicationManager;
 import system.sicons.ShortcutIconManager;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -73,6 +75,19 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
         // Create the shortcut icon manager
         shortcutIconManager = new ShortcutIconManager();
+
+        // Create the main menu
+        Menu fileMenu = new Menu("File");
+        MenuItem closeItem = new MenuItem("Close");
+        closeItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                close();
+            }
+        });
+        fileMenu.getItems().addAll(closeItem);
+        controller.menuBar.getMenus().addAll(fileMenu);
+
 
         // Create the listview context menu
         ContextMenu contextMenu = new ContextMenu();
@@ -158,6 +173,24 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                     @Override
                     public void onReloadSection(Section section) {
                         requestSectionList();
+                    }
+
+                    @Override
+                    public void onExportSection(Section section) {
+                        FileChooser fileChooser = new FileChooser();
+                        fileChooser.setTitle("Export Section...");
+                        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Section layout JSON (*.json)", "*.json");
+                        fileChooser.getExtensionFilters().add(extFilter);
+                        File destFile = fileChooser.showSaveDialog(EditorStage.this);
+                        if (destFile != null) {
+                            boolean res = sectionManager.writeSectionToFile(section, destFile);
+                            if (!res) {
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.setTitle("Error");
+                                alert.setHeaderText("There was an error saving the file");
+                                alert.show();
+                            }
+                        }
                     }
                 });
             }

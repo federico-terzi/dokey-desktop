@@ -24,6 +24,7 @@ public class BottomBarGrid extends ComponentGrid implements ComponentGrid.OnComp
         getStyleClass().add("bottombar");
 
         setOnComponentSelectedListener(this);
+        setForceDiscardSpan(true);  // Discard the span
     }
 
     private static Component[][] generateMatrix(List<Item> items, int colCount) {

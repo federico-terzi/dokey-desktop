@@ -11,6 +11,7 @@ import section.model.Section;
 
 public class EditorController {
 
+    public MenuBar menuBar;
     @FXML
     private BorderPane propertiesContentPane;
     @FXML
