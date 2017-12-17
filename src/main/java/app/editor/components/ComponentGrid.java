@@ -19,9 +19,11 @@ import system.sicons.ShortcutIcon;
 import system.sicons.ShortcutIconManager;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-public class ComponentGrid extends GridPane{
+public class ComponentGrid extends GridPane {
 
     private ApplicationManager applicationManager;
     private int height;
@@ -36,18 +38,18 @@ public class ComponentGrid extends GridPane{
     public ComponentGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, Component[][] componentMatrix) {
         super();
         this.applicationManager = applicationManager;
-        this.componentMatrix = componentMatrix;
         this.shortcutIconManager = shortcutIconManager;
-
-        setupConstraints();
+        this.componentMatrix = componentMatrix;
 
         render();
+
+        setupConstraints();
     }
 
     private void setupConstraints() {
         for (int rowIndex = 0; rowIndex < componentMatrix[0].length; rowIndex++) {
             RowConstraints rc = new RowConstraints();
-            rc.setVgrow(Priority.ALWAYS) ; // allow row to grow
+            rc.setVgrow(Priority.ALWAYS); // allow row to grow
             rc.setFillHeight(true); // ask nodes to fill height for row
             rc.setPercentHeight(100);
             // other settings as needed...
@@ -55,7 +57,7 @@ public class ComponentGrid extends GridPane{
         }
         for (int colIndex = 0; colIndex < componentMatrix.length; colIndex++) {
             ColumnConstraints cc = new ColumnConstraints();
-            cc.setHgrow(Priority.ALWAYS) ; // allow column to grow
+            cc.setHgrow(Priority.ALWAYS); // allow column to grow
             cc.setFillWidth(true); // ask nodes to fill space for column
             cc.setPercentWidth(100);
             // other settings as needed...
@@ -64,18 +66,42 @@ public class ComponentGrid extends GridPane{
     }
 
     public void render() {
+        // Delete all the previous nodes
+        getChildren().clear();
+
         // Add all the components
         for (int col = 0; col < componentMatrix.length; col++) {
             for (int row = 0; row < componentMatrix[0].length; row++) {
-                addComponentToGrid(col, row, componentMatrix[col][row]);
+                if (componentMatrix[col][row] != null) {
+                    addComponentToGrid(col, row, componentMatrix[col][row]);
+                }else{
+                    // Make sure in this position there isn't any spanned component
+                    if (getComponentAtCords(col, row)==null) {
+                        // Add the empty button
+                        addComponentToGrid(col, row, null);
+                    }
+                }
             }
         }
     }
 
-    public void addComponentToGrid(int col, int row, Component component) {
-        // Remove the previous component
-        removeComponentFromGrid(col, row, component);
+    private Component getComponentAtCords(int vCol, int vRow) {
+        for (int col = 0; col < componentMatrix.length; col++) {
+            for (int row = 0; row < componentMatrix[0].length; row++) {
+                if (componentMatrix[col][row] != null &&
+                        vCol >= componentMatrix[col][row].getY() &&
+                        vCol < (componentMatrix[col][row].getY() + componentMatrix[col][row].getYSpan()) &&
+                        vRow >= componentMatrix[col][row].getX() &&
+                        vRow < (componentMatrix[col][row].getX() + componentMatrix[col][row].getXSpan())) {
+                    return componentMatrix[col][row];
+                }
+            }
+        }
 
+        return null;
+    }
+
+    public boolean addComponentToGrid(int col, int row, Component component) {
         // Set up the button
         DragButton current = getButtonForComponent(component);
         current.setOnAction(new EventHandler<ActionEvent>() {
@@ -94,54 +120,73 @@ public class ComponentGrid extends GridPane{
 
                 @Override
                 public void onComponentDelete() {
-                    requestDeleteComponent(col, row);
+                    requestDeleteComponent(component);
+                    render();
                 }
 
                 // When the component is dropped away, request the
                 // deletion from the grid
                 @Override
                 public void onComponentDroppedAway() {
-                    requestDeleteComponent(col, row);
+                    requestDeleteComponent(component);
+                    render();
                 }
             });
-        }
-
-        // Add the component to the matrix
-        if (component != null) {
-            componentMatrix[col][row] = component;
         }
 
         // Set up the drag and drop
         current.setOnComponentDragListener(new DragButton.OnComponentDragListener() {
             @Override
-            public boolean onComponentDropped(Component component) {
-                // If the button is not empty, ask for the deletion confirmation
-                if (!(current instanceof EmptyButton)) {
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                    alert.setTitle("Overwrite Button");
-                    alert.setHeaderText("Are you sure you want to overwrite this button?");
-                    alert.setContentText("If you proceed, the button will be replaced.");
+            public boolean onComponentDropped(Component newComponent) {
+                List<Component> toBeDeleted = new ArrayList<>();
 
-                    Optional<ButtonType> result = alert.showAndWait();
-                    if (result.get() != ButtonType.OK){
-                        return false;
-                    }else{  // OVERWRITE
-                        // Delete the previous component
-                        requestDeleteComponent(col, row);
+                // Add the cells that the component touches if has multiple span
+                for (int jCol = col; jCol < (col + newComponent.getYSpan()); jCol++) {
+                    for (int jRow = row; jRow < (row + newComponent.getXSpan()); jRow++) {
+                        if (componentMatrix.length > jCol && componentMatrix[0].length > jRow) {
+                            if (componentMatrix[jCol][jRow] != null) {
+                                if (componentMatrix[jCol][jRow] == null) {
+                                    toBeDeleted.add(componentMatrix[jCol][jRow]);
+                                }else{
+                                    if (!newComponent.getItem().equals(componentMatrix[jCol][jRow].getItem())) {
+                                        toBeDeleted.add(componentMatrix[jCol][jRow]);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
-                // Change the component coordinates
-                component.setX(row);
-                component.setY(col);
+                // If the component will overwrite some buttons, ask for confirmation
+                if (toBeDeleted.size() > 0) {
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Overwrite Button(s)");
+                    alert.setHeaderText("Are you sure you want to overwrite these buttons?");
+                    alert.setContentText("If you proceed, " + toBeDeleted.size() + " button(s) will be deleted.");
 
-                // Add the component in the new position
-                addComponentToGrid(col, row, component);
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.get() != ButtonType.OK) {  // DONT OVERWRITE
+                        return false;
+                    }
+                }
+
+                // Delete all components
+                for (Component delComponent : toBeDeleted) {
+                    requestDeleteComponent(delComponent);
+                }
+
+                // Change the component coordinates
+                newComponent.setX(row);
+                newComponent.setY(col);
+
+                componentMatrix[col][row] = newComponent;
 
                 // Notify the listener
                 if (onComponentSelectedListener != null) {
-                    onComponentSelectedListener.onNewComponentRequested(component);
+                    onComponentSelectedListener.onNewComponentRequested(newComponent);
                 }
+
+                render();
 
                 return true;
             }
@@ -150,26 +195,23 @@ public class ComponentGrid extends GridPane{
         // Set up the span
         int colSpan = 1;
         int rowSpan = 1;
-        if (componentMatrix[col][row] != null) {
-            colSpan = componentMatrix[col][row].getYSpan();
-            rowSpan = componentMatrix[col][row].getXSpan();
+        if (component != null) {
+            colSpan = component.getYSpan();
+            rowSpan = component.getXSpan();
         }
 
         // Add the component to the grid
         this.add(current, col, row, colSpan, rowSpan);
+
+        return true;
     }
 
-    private void removeComponentFromGrid(int col, int row, Component component) {
-        // If the matrix contains a component, delete it.
-        if (componentMatrix[col][row] != null) {
-            // Remove the component from the grid
-            Node node = getNodeFromGridPane(this, col, row);
-            while (node != null) {
-                this.getChildren().removeAll(node);
-                node = getNodeFromGridPane(this, col, row);
-            }
-            // And from the matrix
-            componentMatrix[col][row] = null;
+    private void removeButtonFromGrid(int col, int row) {
+        // Remove the component from the grid
+        Node node = getNodeFromGridPane(this, col, row);
+        while (node != null) {
+            this.getChildren().removeAll(node);
+            node = getNodeFromGridPane(this, col, row);
         }
     }
 
@@ -178,11 +220,11 @@ public class ComponentGrid extends GridPane{
         if (component == null) {  // Clicked on empty space
             if (sectionType == SectionType.LAUNCHPAD) {  // LAUNCHPAD SECTION
                 requestApplicationSelect(col, row);
-            }else if (sectionType == SectionType.SHORTCUTS) {  // LAUNCHPAD SHORTCUTS
+            } else if (sectionType == SectionType.SHORTCUTS) {  // LAUNCHPAD SHORTCUTS
                 requestShortcutSelect(col, row);
             }
 
-        }else{  // Clicked on active component
+        } else {  // Clicked on active component
             if (onComponentClickListener != null) {
                 onComponentClickListener.onComponentClicked(component);
             }
@@ -206,13 +248,14 @@ public class ComponentGrid extends GridPane{
                     component.setXSpan(1);
                     component.setYSpan(1);
 
-                    // Add the item to the grid
-                    addComponentToGrid(col, row, component);
+                    componentMatrix[col][row] = component;
 
                     // Notify the listener
                     if (onComponentSelectedListener != null) {
                         onComponentSelectedListener.onNewComponentRequested(component);
                     }
+
+                    render();
                 }
 
                 @Override
@@ -248,13 +291,14 @@ public class ComponentGrid extends GridPane{
                     component.setXSpan(1);
                     component.setYSpan(1);
 
-                    // Add the item to the grid
-                    addComponentToGrid(col, row, component);
+                    componentMatrix[col][row] = component;
 
                     // Notify the listener
                     if (onComponentSelectedListener != null) {
                         onComponentSelectedListener.onNewComponentRequested(component);
                     }
+
+                    render();
                 }
 
                 @Override
@@ -278,6 +322,7 @@ public class ComponentGrid extends GridPane{
 
     public interface OnComponentSelectedListener {
         void onNewComponentRequested(Component component);
+
         void onDeleteComponentRequested(Component component);
     }
 
@@ -293,14 +338,9 @@ public class ComponentGrid extends GridPane{
         this.sectionType = sectionType;
     }
 
-
-
-    private void requestDeleteComponent(int col, int row) {
-        Component component = componentMatrix[col][row];
-
-        // Remove the item from the grid and replace it with an empty one
-        removeComponentFromGrid(col, row, component);
-        addComponentToGrid(col, row, null);
+    private void requestDeleteComponent(Component component) {
+        // Delete the component from the matrix
+        componentMatrix[component.getY()][component.getX()] = null;
 
         // Notify the listener
         if (onComponentSelectedListener != null) {
@@ -318,7 +358,7 @@ public class ComponentGrid extends GridPane{
                     AppButton appButton = new AppButton(component, application);
                     return appButton;
                 }
-            }else if (component.getItem() instanceof ShortcutItem) {  // SHORTCUT ITEM
+            } else if (component.getItem() instanceof ShortcutItem) {  // SHORTCUT ITEM
                 ShortcutItem appItem = (ShortcutItem) component.getItem();
                 ShortcutIcon shortcutIcon = null;
                 if (appItem.getIconID() != null) {
