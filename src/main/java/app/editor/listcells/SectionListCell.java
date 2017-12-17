@@ -1,8 +1,9 @@
 package app.editor.listcells;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -13,18 +14,22 @@ import system.model.ApplicationManager;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.Optional;
 
 public class SectionListCell extends ListCell<Section> {
 
     private ApplicationManager appManager;
+    private OnContextMenuListener onContextMenuListener;
 
     private GridPane grid = new GridPane();
     private ImageView image = new ImageView();
     private Label name = new Label();
     private Label path = new Label();
 
-    public SectionListCell(ApplicationManager appManager) {
+    public SectionListCell(ApplicationManager appManager, OnContextMenuListener onContextMenuListener) {
         this.appManager = appManager;
+        this.onContextMenuListener = onContextMenuListener;
+
         configureGrid();
         addControlsToGrid();
     }
@@ -76,6 +81,33 @@ public class SectionListCell extends ListCell<Section> {
             path.setText("The main application launcher");
         }
 
+        // Set up the context menu
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem deleteItem = new MenuItem("Delete");
+        deleteItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Delete Confirmation");
+                alert.setHeaderText("Are you sure you want to delete this section?");
+                alert.setContentText("If you proceed, the section will be deleted.");
+
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == ButtonType.OK) {  // OK DELETE
+                    onContextMenuListener.onDeleteSection(section);
+                }
+            }
+        });
+        MenuItem reloadItem = new MenuItem("Reload");
+        reloadItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                onContextMenuListener.onReloadSection(section);
+            }
+        });
+        contextMenu.getItems().addAll(reloadItem, deleteItem);
+        setContextMenu(contextMenu);
+
         setGraphic(grid);
     }
 
@@ -87,5 +119,10 @@ public class SectionListCell extends ListCell<Section> {
         }else{
             addContent(section);
         }
+    }
+
+    public interface OnContextMenuListener {
+        void onDeleteSection(Section section);
+        void onReloadSection(Section section);
     }
 }

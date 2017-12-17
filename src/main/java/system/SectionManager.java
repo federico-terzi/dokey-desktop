@@ -76,6 +76,19 @@ public class SectionManager {
         return writeSectionToFile(section, sectionFile);
     }
 
+    public boolean deleteSection(Section section) {
+        File sectionFile = null;
+
+        // Get the appropriate destination file and delete it
+        if (section.getSectionType() == SectionType.SHORTCUTS) {
+            sectionFile = getAppSectionFile(section.getRelatedAppId());
+            sectionFile.delete();
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * Read a section from the given file
      * @param sectionFile the section File
@@ -84,14 +97,19 @@ public class SectionManager {
     private Section getSectionFromFile(File sectionFile) {
         // Read the content
         try {
-            JSONTokener tokener = new JSONTokener(new FileInputStream(sectionFile));
+            FileInputStream fis = new FileInputStream(sectionFile);
+            JSONTokener tokener = new JSONTokener(fis);
             JSONObject jsonContent = new JSONObject(tokener);
 
             // Create the section by de-serialization
             Section section = Section.fromJson(jsonContent);
 
+            fis.close();
+
             return section;
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

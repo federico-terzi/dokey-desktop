@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class EditorStage extends Stage implements OnSectionModifiedListener {
     public static final int PAGE_HEIGHT = 400;
@@ -73,6 +74,25 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         // Create the shortcut icon manager
         shortcutIconManager = new ShortcutIconManager();
 
+        // Create the listview context menu
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem reloadItem = new MenuItem("Reload");
+        reloadItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                requestSectionList();
+            }
+        });
+        MenuItem addApplicationItem = new MenuItem("Add Application...");
+        addApplicationItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                addSection();
+            }
+        });
+        contextMenu.getItems().addAll(reloadItem, new SeparatorMenuItem(), addApplicationItem);
+        controller.getSectionsListView().setContextMenu(contextMenu);
+
         // Bind the action listeners
         // ADD SECTION BTN
         controller.getAddSectionBtn().setOnAction(new EventHandler<ActionEvent>() {
@@ -98,6 +118,9 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
     private void requestSectionList() {
         showStatus("Loading...");
+
+        // Reset the list view
+        controller.getSectionsListView().getItems().clear();
 
         Task sectionTask = new Task() {
             @Override
@@ -125,13 +148,38 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         controller.getSectionsListView().setCellFactory(new Callback<ListView<Section>, ListCell<Section>>() {
             @Override
             public ListCell<Section> call(ListView<Section> param) {
-                return new SectionListCell(applicationManager);
+                return new SectionListCell(applicationManager, new SectionListCell.OnContextMenuListener() {
+                    @Override
+                    public void onDeleteSection(Section section) {
+                        sectionManager.deleteSection(section);
+                        requestSectionList();
+                    }
+
+                    @Override
+                    public void onReloadSection(Section section) {
+                        requestSectionList();
+                    }
+                });
             }
         });
         controller.getSectionsListView().setItems(sections);
 
-        // Load the first section
-        loadSection(sections.get(0));
+        // If no active section is specified, load the first section
+        if (activeSection == null) {
+            loadSection(sections.get(0));
+        }else{   // Load the active section
+            // Calculate if the activeSection is present in the new list
+            Optional<Section> newActiveSection =  sections.stream().filter(section -> section.getRelatedAppId() != null && section.getRelatedAppId().equals(activeSection.getRelatedAppId())).
+                    findFirst();
+
+            if (newActiveSection.isPresent()) {
+                loadSection(activeSection);
+                controller.getSectionsListView().getSelectionModel().select(newActiveSection.get());
+            }else{
+                loadSection(sections.get(0));  // Load the first
+            }
+        }
+
     }
 
     private void loadSection(Section section) {
