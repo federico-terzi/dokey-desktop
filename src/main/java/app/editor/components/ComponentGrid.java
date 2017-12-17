@@ -115,7 +115,7 @@ public class ComponentGrid extends GridPane {
             ((ComponentButton) current).setOnComponentActionListener(new ComponentButton.OnComponentActionListener() {
                 @Override
                 public void onComponentEdit() {
-
+                    onComponentClicked(col, row);
                 }
 
                 @Override
@@ -129,6 +129,128 @@ public class ComponentGrid extends GridPane {
                 @Override
                 public void onComponentDroppedAway() {
                     requestDeleteComponent(component);
+                    render();
+                }
+
+                @Override
+                public void onComponentExpandRight() {
+                    // Make sure the component can fit in the matrix
+                    if ((component.getY()+component.getYSpan()+1)>componentMatrix.length) {
+                        return;
+                    }
+
+                    List<Component> toBeDeleted = new ArrayList<>();
+
+                    // Check if the expansion is valid
+                    for (int jCol = col; jCol < (col + component.getYSpan()+1); jCol++) {
+                        for (int jRow = row; jRow < (row + component.getXSpan()); jRow++) {
+                            if (componentMatrix.length > jCol && componentMatrix[0].length > jRow) {
+                                if (componentMatrix[jCol][jRow] != null && !component.equals(componentMatrix[jCol][jRow])) {
+                                    toBeDeleted.add(componentMatrix[jCol][jRow]);
+                                }
+                            }
+                        }
+                    }
+
+                    // If something has to be deleted, ask the user
+                    if (toBeDeleted.size() > 0) {
+                        if (!requestOverrideComponentsDialog(toBeDeleted.size())) {  // DONT OVERWRITE
+                            return;
+                        }
+                    }
+
+                    // Delete the components
+                    for (Component delComponent : toBeDeleted) {
+                        requestDeleteComponent(delComponent);
+                    }
+
+                    // Increase the size
+                    component.setYSpan(component.getYSpan()+1);
+
+                    // Notify the listener
+                    if (onComponentSelectedListener != null) {
+                        onComponentSelectedListener.onEditComponentRequested(component);
+                    }
+
+                    render();
+                }
+
+                @Override
+                public void onComponentExpandBottom() {
+                    // Make sure the component can fit in the matrix
+                    if ((component.getX()+component.getXSpan()+1)>componentMatrix[0].length) {
+                        return;
+                    }
+
+                    List<Component> toBeDeleted = new ArrayList<>();
+
+                    // Check if the expansion is valid
+                    for (int jCol = col; jCol < (col + component.getYSpan()); jCol++) {
+                        for (int jRow = row; jRow < (row + component.getXSpan()+1); jRow++) {
+                            if (componentMatrix.length > jCol && componentMatrix[0].length > jRow) {
+                                if (componentMatrix[jCol][jRow] != null && !component.equals(componentMatrix[jCol][jRow])) {
+                                    toBeDeleted.add(componentMatrix[jCol][jRow]);
+                                }
+                            }
+                        }
+                    }
+
+                    // If something has to be deleted, ask the user
+                    if (toBeDeleted.size() > 0) {
+                        if (!requestOverrideComponentsDialog(toBeDeleted.size())) {  // DONT OVERWRITE
+                            return;
+                        }
+                    }
+
+                    // Delete the components
+                    for (Component delComponent : toBeDeleted) {
+                        requestDeleteComponent(delComponent);
+                    }
+
+                    // Increase the size
+                    component.setXSpan(component.getXSpan()+1);
+
+                    // Notify the listener
+                    if (onComponentSelectedListener != null) {
+                        onComponentSelectedListener.onEditComponentRequested(component);
+                    }
+
+                    render();
+                }
+
+                @Override
+                public void onComponentShrinkRight() {
+                    // Make sure the component can fit in the matrix
+                    if (component.getYSpan() <= 1) {
+                        return;
+                    }
+
+                    // Decrease the size
+                    component.setYSpan(component.getYSpan()-1);
+
+                    // Notify the listener
+                    if (onComponentSelectedListener != null) {
+                        onComponentSelectedListener.onEditComponentRequested(component);
+                    }
+
+                    render();
+                }
+
+                @Override
+                public void onComponentShrinkBottom() {
+                    // Make sure the component can fit in the matrix
+                    if (component.getXSpan() <= 1) {
+                        return;
+                    }
+
+                    // Decrease the size
+                    component.setXSpan(component.getXSpan()-1);
+
+                    // Notify the listener
+                    if (onComponentSelectedListener != null) {
+                        onComponentSelectedListener.onEditComponentRequested(component);
+                    }
+
                     render();
                 }
             });
@@ -159,13 +281,7 @@ public class ComponentGrid extends GridPane {
 
                 // If the component will overwrite some buttons, ask for confirmation
                 if (toBeDeleted.size() > 0) {
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                    alert.setTitle("Overwrite Button(s)");
-                    alert.setHeaderText("Are you sure you want to overwrite these buttons?");
-                    alert.setContentText("If you proceed, " + toBeDeleted.size() + " button(s) will be deleted.");
-
-                    Optional<ButtonType> result = alert.showAndWait();
-                    if (result.get() != ButtonType.OK) {  // DONT OVERWRITE
+                    if (!requestOverrideComponentsDialog(toBeDeleted.size())) {  // DONT OVERWRITE
                         return false;
                     }
                 }
@@ -312,6 +428,20 @@ public class ComponentGrid extends GridPane {
         }
     }
 
+    private boolean requestOverrideComponentsDialog(int number) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Overwrite Button(s)");
+        alert.setHeaderText("Are you sure you want to overwrite these buttons?");
+        alert.setContentText("If you proceed, " + number + " button(s) will be deleted.");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK) {  // Overwrite
+            return true;
+        }else{  // Don't overwite
+            return false;
+        }
+    }
+
     public ShortcutIconManager getShortcutIconManager() {
         return shortcutIconManager;
     }
@@ -322,8 +452,8 @@ public class ComponentGrid extends GridPane {
 
     public interface OnComponentSelectedListener {
         void onNewComponentRequested(Component component);
-
         void onDeleteComponentRequested(Component component);
+        void onEditComponentRequested(Component component);
     }
 
     public void setOnComponentClickListener(OnComponentClickListener onComponentClickListener) {

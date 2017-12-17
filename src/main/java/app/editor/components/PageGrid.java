@@ -55,6 +55,14 @@ public class PageGrid extends ComponentGrid implements ComponentGrid.OnComponent
         }
     }
 
+    @Override
+    public void onEditComponentRequested(Component component) {
+        // Save the section
+        if (sectionModifiedListener != null) {
+            sectionModifiedListener.onSectionModified(section);
+        }
+    }
+
     public OnSectionModifiedListener getSectionModifiedListener() {
         return sectionModifiedListener;
     }

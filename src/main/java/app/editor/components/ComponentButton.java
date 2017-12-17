@@ -5,6 +5,7 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.*;
 import section.model.Component;
 import section.model.Item;
@@ -24,6 +25,43 @@ public class ComponentButton extends DragButton {
         // Setup the context menu
         final ContextMenu contextMenu = new ContextMenu();
         MenuItem edit = new MenuItem("Edit");
+        MenuItem expandRightItem = new MenuItem("Expand Right");
+        expandRightItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (onComponentActionListener != null) {
+                    onComponentActionListener.onComponentExpandRight();
+                }
+            }
+        });
+        MenuItem expandBottomItem = new MenuItem("Expand Bottom");
+        expandBottomItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (onComponentActionListener != null) {
+                    onComponentActionListener.onComponentExpandBottom();
+                }
+            }
+        });
+        MenuItem shrinkRightItem = new MenuItem("Shrink Right");
+        shrinkRightItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (onComponentActionListener != null) {
+                    onComponentActionListener.onComponentShrinkRight();
+                }
+            }
+        });
+        MenuItem shrinkBottomItem = new MenuItem("Shrink Bottom");
+        shrinkBottomItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (onComponentActionListener != null) {
+                    onComponentActionListener.onComponentShrinkBottom();
+                }
+            }
+        });
+
         MenuItem delete = new MenuItem("Delete");
         delete.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -33,7 +71,8 @@ public class ComponentButton extends DragButton {
                 }
             }
         });
-        contextMenu.getItems().addAll(edit, delete);
+        contextMenu.getItems().addAll(edit, new SeparatorMenuItem(), expandRightItem, expandBottomItem,
+                shrinkRightItem, shrinkBottomItem, new SeparatorMenuItem(), delete);
         setContextMenu(contextMenu);
 
         // Set the drag and drop
@@ -93,5 +132,9 @@ public class ComponentButton extends DragButton {
         void onComponentEdit();
         void onComponentDelete();
         void onComponentDroppedAway();
+        void onComponentExpandRight();
+        void onComponentExpandBottom();
+        void onComponentShrinkRight();
+        void onComponentShrinkBottom();
     }
 }
