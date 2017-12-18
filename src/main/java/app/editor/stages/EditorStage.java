@@ -1,6 +1,7 @@
 package app.editor.stages;
 
 import app.editor.listeners.OnComponentClickListener;
+import app.editor.listeners.OnPropertyChangedListener;
 import app.editor.listeners.OnSectionModifiedListener;
 import app.editor.comparators.SectionComparator;
 import app.editor.components.BottomBarGrid;
@@ -403,7 +404,18 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
     private void requestProperty(Component component) {
         Property property = Property.getPropertyForComponent(component, applicationManager, shortcutIconManager);
-
+        property.setOnPropertyChangedListener(new OnPropertyChangedListener() {
+            @Override
+            public void onPropertyChanged() {
+                // Save the section and reload everything
+                if (activeSection != null) {
+                    sectionManager.saveSection(activeSection);
+                    loadSection(activeSection);
+                    removeProperty();
+                    requestProperty(component);
+                }
+            }
+        });
         getController().getPropertiesContentPane().setCenter(property);
     }
 

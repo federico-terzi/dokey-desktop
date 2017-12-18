@@ -3,6 +3,10 @@ package app.editor.properties;
 
 import app.editor.controllers.ApplicationPropertyController;
 import app.editor.controllers.ShortcutPropertyController;
+import app.editor.stages.ShortcutDialogStage;
+import app.editor.stages.ShortcutIconDialogStage;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -45,7 +49,31 @@ public class ShortcutProperty extends Property {
                 controller.shortcutImageView.setManaged(false);
             }
 
+            controller.changeImageBtn.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    ShortcutIconDialogStage shortcutIconDialogStage = null;
+                    try {
+                        shortcutIconDialogStage = new ShortcutIconDialogStage(shortcutIconManager, new ShortcutIconDialogStage.OnIconSelectListener() {
+                            @Override
+                            public void onIconSelected(ShortcutIcon icon) {
+                                shortcutItem.setIconID(icon.getId());
+                                if (onPropertyChangedListener != null) {
+                                    onPropertyChangedListener.onPropertyChanged();
+                                }
+                            }
 
+                            @Override
+                            public void onCanceled() {
+
+                            }
+                        });
+                        shortcutIconDialogStage.show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }

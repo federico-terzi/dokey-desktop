@@ -1,5 +1,6 @@
 package app.editor.properties;
 
+import app.editor.listeners.OnPropertyChangedListener;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import section.model.AppItem;
@@ -11,6 +12,7 @@ import system.sicons.ShortcutIconManager;
 public class Property extends VBox {
     protected Component associatedComponent;
     protected ApplicationManager applicationManager;
+    protected OnPropertyChangedListener onPropertyChangedListener;
 
     public Property(Component associatedComponent, ApplicationManager applicationManager) {
         this.associatedComponent = associatedComponent;
@@ -27,5 +29,13 @@ public class Property extends VBox {
         }
 
         return null;
+    }
+
+    public OnPropertyChangedListener getOnPropertyChangedListener() {
+        return onPropertyChangedListener;
+    }
+
+    public void setOnPropertyChangedListener(OnPropertyChangedListener onPropertyChangedListener) {
+        this.onPropertyChangedListener = onPropertyChangedListener;
     }
 }
