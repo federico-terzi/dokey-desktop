@@ -28,6 +28,7 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import section.model.Component;
 import section.model.Page;
@@ -42,7 +43,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class EditorStage extends Stage implements OnSectionModifiedListener {
     public static final int PAGE_HEIGHT = 400;
@@ -54,12 +54,15 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     private ApplicationManager applicationManager;
     private SectionManager sectionManager;
     private ShortcutIconManager shortcutIconManager;
+    private OnEditorCloseListener onEditorCloseListener;
 
     private List<Section> sections;
     private Section activeSection = null;
 
-    public EditorStage(ApplicationManager applicationManager) throws IOException {
+    public EditorStage(ApplicationManager applicationManager, OnEditorCloseListener onEditorCloseListener) throws IOException {
         this.applicationManager = applicationManager;
+        this.onEditorCloseListener = onEditorCloseListener;
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layouts/section_editor.fxml"));
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
@@ -129,7 +132,20 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             }
         });
 
+        setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                if (onEditorCloseListener != null) {
+                    onEditorCloseListener.onEditorClosed();
+                }
+            }
+        });
+
         requestSectionList();
+    }
+
+    public interface OnEditorCloseListener {
+        void onEditorClosed();
     }
 
     private void requestSectionList() {

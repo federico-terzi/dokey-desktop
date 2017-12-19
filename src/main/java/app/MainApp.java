@@ -1,8 +1,6 @@
 package app;
 
 import app.editor.stages.EditorStage;
-import app.editor.stages.ShortcutDialogStage;
-import app.editor.stages.ShortcutIconDialogStage;
 import app.stages.InitializationStage;
 import engine.EngineServer;
 import engine.EngineWorker;
@@ -19,16 +17,16 @@ import system.SectionManager;
 import system.SystemInfoManager;
 import system.adb.ADBManager;
 import system.model.ApplicationManager;
-import system.sicons.ShortcutIcon;
-import system.sicons.ShortcutIconManager;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
 
-public class MainApp extends Application implements EngineWorker.OnDeviceConnectionListener, ADBManager.OnUSBDeviceConnectedListener {
+public class MainApp extends Application implements EngineWorker.OnDeviceConnectionListener, ADBManager.OnUSBDeviceConnectedListener, TrayIconManager.OnTrayActionListener {
     // a timer allowing the tray icon to provide a periodic notification event.
     private Timer notificationTimer = new Timer();
+
+    private boolean isEditorOpen = false;
 
     private TrayIconManager trayIconManager = new TrayIconManager();
     private ApplicationManager appManager;
@@ -55,7 +53,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         Platform.setImplicitExit(false);
 
         // sets up the tray icon
-        javax.swing.SwingUtilities.invokeLater(trayIconManager::initialize);
+        javax.swing.SwingUtilities.invokeLater(() -> trayIconManager.initialize(MainApp.this));
 
         // Initialize the application manager
         appManager = ApplicationManagerFactory.getInstance();
@@ -175,12 +173,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         trayIconManager.setTrayIconStatus("Not connected");
         trayIconManager.setLoading(false);
 
-        try {
-            EditorStage editorStage = new EditorStage(appManager);
-            editorStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        openEditor();
     }
 
     /**
@@ -191,6 +184,30 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         serverDiscoveryDaemon.stopDiscovery();
         engineServer.stopServer();
         adbManager.stopDaemon();
+    }
+
+    private void openEditor() {
+        if (isEditorOpen) {
+            return;
+        }
+
+        try {
+            isEditorOpen = true;
+            EditorStage editorStage = new EditorStage(appManager, new EditorStage.OnEditorCloseListener() {
+                @Override
+                public void onEditorClosed() {
+                    isEditorOpen = false;
+                }
+            });
+            editorStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onEditorOpenRequest() {
+        openEditor();
     }
 
     /**

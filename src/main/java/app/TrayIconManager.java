@@ -1,12 +1,12 @@
 package app;
 
+import app.editor.stages.EditorStage;
 import javafx.application.Platform;
+import system.model.ApplicationManager;
 import utils.OSValidator;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +42,7 @@ public class TrayIconManager {
     /**
      * Initialize the tray icon
      */
-    public void initialize() {
+    public void initialize(OnTrayActionListener listener) {
         try {
             // ensure awt toolkit is initialized.
             java.awt.Toolkit.getDefaultToolkit();
@@ -73,14 +73,18 @@ public class TrayIconManager {
 
             // if the user selects the default menu item (which includes the app name),
             // show the main app stage.
-            java.awt.MenuItem openItem = new java.awt.MenuItem("Settings");
-            openItem.addActionListener(event -> Platform.runLater(() -> System.out.println("menu click!")));
+            java.awt.MenuItem openEditor = new java.awt.MenuItem("Open Editor");
+            openEditor.addActionListener(event -> Platform.runLater(() -> {
+                if (listener != null) {
+                    listener.onEditorOpenRequest();
+                }
+            }));
 
             // the convention for tray icons seems to be to set the default icon for opening
             // the application stage in a bold font.
             java.awt.Font defaultFont = java.awt.Font.decode(null);
             java.awt.Font boldFont = defaultFont.deriveFont(java.awt.Font.BOLD);
-            openItem.setFont(boldFont);
+            openEditor.setFont(boldFont);
 
             // to really exit the application, the user must go to the system tray icon
             // and select the exit option, this will shutdown JavaFX and remove the
@@ -94,7 +98,7 @@ public class TrayIconManager {
 
             // setup the popup menu for the application.
             final java.awt.PopupMenu popup = new java.awt.PopupMenu();
-            popup.add(openItem);
+            popup.add(openEditor);
             popup.addSeparator();
             popup.add(exitItem);
             trayIcon.setPopupMenu(popup);
@@ -105,6 +109,10 @@ public class TrayIconManager {
             System.out.println("Unable to init system tray");
             e.printStackTrace();
         }
+    }
+
+    public interface OnTrayActionListener {
+        void onEditorOpenRequest();
     }
 
     /**
