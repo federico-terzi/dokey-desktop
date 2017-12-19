@@ -119,7 +119,7 @@ public class ComponentGrid extends GridPane {
             ((ComponentButton) current).setOnComponentActionListener(new ComponentButton.OnComponentActionListener() {
                 @Override
                 public void onComponentEdit() {
-                    onComponentClicked(col, row);
+                    render();
                 }
 
                 @Override
@@ -493,7 +493,7 @@ public class ComponentGrid extends GridPane {
                 Application application = applicationManager.getApplication(appItem.getAppID());
                 // Make sure the application exists
                 if (application != null) {
-                    AppButton appButton = new AppButton(component, application);
+                    AppButton appButton = new AppButton(component, application, applicationManager);
                     return appButton;
                 }
             } else if (component.getItem() instanceof ShortcutItem) {  // SHORTCUT ITEM
@@ -502,7 +502,7 @@ public class ComponentGrid extends GridPane {
                 if (appItem.getIconID() != null) {
                     shortcutIcon = shortcutIconManager.getIcon(appItem.getIconID());
                 }
-                return new ShortcutButton(component, shortcutIcon);
+                return new ShortcutButton(component, shortcutIcon, shortcutIconManager);
             }
         }
 

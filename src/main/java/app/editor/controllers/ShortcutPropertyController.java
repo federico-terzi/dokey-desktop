@@ -12,5 +12,4 @@ public class ShortcutPropertyController {
     public ImageView shortcutImageView;
     public Button changeImageBtn;
     public TextField shortcutTextField;
-    public Button changeShortcutBtn;
 }

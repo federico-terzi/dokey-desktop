@@ -16,6 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import net.model.KeyboardKeys;
+import section.model.ShortcutItem;
 import system.sicons.ShortcutIcon;
 import system.sicons.ShortcutIconManager;
 
@@ -173,6 +174,27 @@ public class ShortcutDialogStage extends Stage {
             joiner.add(key.getKeyName());
         }
         return joiner.toString();
+    }
+
+    public void setShortcutItem(ShortcutItem item) {
+        controller.getNameTextField().setText(item.getTitle());
+        // Add the shortcuts
+        StringTokenizer st = new StringTokenizer(item.getShortcut(), "+");
+        while(st.hasMoreTokens()) {
+            KeyboardKeys keyboardKey = KeyboardKeys.findFromName(st.nextToken().trim());
+            if (keyboardKey != null && !keys.contains(keyboardKey)) {
+                keys.add(keyboardKey);
+                renderKeys();
+            }
+        }
+
+        if (item.getIconID() != null) {
+            ShortcutIcon icon = shortcutIconManager.getIcon(item.getIconID());
+            if (icon != null) {
+                this.icon = icon;
+                renderIcon();
+            }
+        }
     }
 
     public interface OnShortcutListener {

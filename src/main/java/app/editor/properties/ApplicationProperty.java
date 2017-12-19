@@ -2,6 +2,8 @@ package app.editor.properties;
 
 
 import app.editor.controllers.ApplicationPropertyController;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;

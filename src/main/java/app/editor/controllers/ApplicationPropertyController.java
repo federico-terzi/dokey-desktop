@@ -8,18 +8,12 @@ import javafx.scene.image.ImageView;
 
 public class ApplicationPropertyController {
     public TextField pathTextField;
-    @FXML
-    private Button changeAppBtn;
 
     @FXML
     private ImageView appIconImageView;
 
     @FXML
     private Label appTitleLabel;
-
-    public Button getChangeAppBtn() {
-        return changeAppBtn;
-    }
 
     public ImageView getAppIconImageView() {
         return appIconImageView;

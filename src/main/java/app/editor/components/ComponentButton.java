@@ -26,9 +26,7 @@ public class ComponentButton extends DragButton {
         edit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (onComponentActionListener != null) {
-                    onComponentActionListener.onComponentEdit();
-                }
+                showEditDialog();
             }
         });
         MenuItem expandRightItem = new MenuItem("Expand to Right");
@@ -132,6 +130,10 @@ public class ComponentButton extends DragButton {
         }else{
             getStyleClass().remove("selected");
         }
+    }
+
+    public void showEditDialog() {
+        // Implement in subclasses
     }
 
     public interface OnComponentActionListener {
