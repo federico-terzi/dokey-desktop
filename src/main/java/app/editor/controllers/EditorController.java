@@ -13,15 +13,10 @@ public class EditorController {
 
     public MenuBar menuBar;
     @FXML
-    private BorderPane propertiesContentPane;
-    @FXML
     private ResourceBundle resources;
 
     @FXML
     private URL location;
-
-    @FXML
-    private TitledPane propertiesPane;
 
     @FXML
     private ListView<Section> sectionsListView;
@@ -68,13 +63,5 @@ public class EditorController {
 
     public Label getStatusLabel() {
         return statusLabel;
-    }
-
-    public TitledPane getPropertiesPane() {
-        return propertiesPane;
-    }
-
-    public BorderPane getPropertiesContentPane() {
-        return propertiesContentPane;
     }
 }

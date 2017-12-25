@@ -9,7 +9,6 @@ import app.editor.components.EmptyButton;
 import app.editor.components.PageGrid;
 import app.editor.controllers.EditorController;
 import app.editor.listcells.SectionListCell;
-import app.editor.properties.Property;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -235,9 +234,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     private void loadSection(Section section) {
         showStatus("Loading app...");
 
-        // Reset the properties
-        removeProperty();
-
         // Clear the previous section
         controller.getContentBox().getChildren().clear();
 
@@ -258,7 +254,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             pageGrid.setOnComponentClickListener(new OnComponentClickListener() {
                 @Override
                 public void onComponentClicked(Component component) {
-                    requestProperty(component);
+
                 }
             });
 
@@ -369,7 +365,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         bottomBarGrid.setOnComponentClickListener(new OnComponentClickListener() {
             @Override
             public void onComponentClicked(Component component) {
-                requestProperty(component);
+
             }
         });
         controller.getContentBox().getChildren().add(bottomBarGrid);
@@ -416,27 +412,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private void requestProperty(Component component) {
-        Property property = Property.getPropertyForComponent(component, applicationManager, shortcutIconManager);
-        property.setOnPropertyChangedListener(new OnPropertyChangedListener() {
-            @Override
-            public void onPropertyChanged() {
-                // Save the section and reload everything
-                if (activeSection != null) {
-                    sectionManager.saveSection(activeSection);
-                    loadSection(activeSection);
-                    removeProperty();
-                    requestProperty(component);
-                }
-            }
-        });
-        getController().getPropertiesContentPane().setCenter(property);
-    }
-
-    private void removeProperty() {
-        getController().getPropertiesContentPane().setCenter(null);
     }
 
     private void requestSectionForApplication(Application application) {

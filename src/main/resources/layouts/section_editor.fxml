@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<BorderPane prefHeight="701.0" prefWidth="1079.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="app.editor.controllers.EditorController">
+<BorderPane prefHeight="701.0" prefWidth="900.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="app.editor.controllers.EditorController">
   <bottom>
     <ToolBar orientation="HORIZONTAL" BorderPane.alignment="TOP_LEFT">
       <items>
@@ -17,7 +17,7 @@
     </ToolBar>
   </bottom>
   <center>
-    <SplitPane dividerPositions="0.22841225626740946, 0.776230269266481" focusTraversable="true">
+    <SplitPane dividerPositions="0.2541225626740946" focusTraversable="true">
       <items>
         <BorderPane>
           <bottom>
@@ -38,22 +38,6 @@
             </VBox>
           </content>
         </ScrollPane>
-        <BorderPane prefHeight="200.0" prefWidth="200.0">
-          <center>
-            <Accordion>
-              <expandedPane>
-                <TitledPane fx:id="propertiesPane" animated="false" text="Properties">
-                  <BorderPane fx:id="propertiesContentPane">
-
-                  </BorderPane>
-                </TitledPane>
-              </expandedPane>
-              <panes>
-                <fx:reference source="propertiesPane" />
-              </panes>
-            </Accordion>
-          </center>
-        </BorderPane>
       </items>
     </SplitPane>
   </center>
