@@ -1,7 +1,6 @@
 package app.editor.stages;
 
 import app.editor.listeners.OnComponentClickListener;
-import app.editor.listeners.OnPropertyChangedListener;
 import app.editor.listeners.OnSectionModifiedListener;
 import app.editor.comparators.SectionComparator;
 import app.editor.components.BottomBarGrid;
@@ -18,17 +17,21 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
+import javafx.util.Pair;
 import section.model.Component;
 import section.model.Page;
 import section.model.Section;
@@ -39,6 +42,7 @@ import system.sicons.ShortcutIconManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -216,15 +220,15 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         // If no active section is specified, load the first section
         if (activeSection == null) {
             loadSection(sections.get(0));
-        }else{   // Load the active section
+        } else {   // Load the active section
             // Calculate if the activeSection is present in the new list
-            Optional<Section> newActiveSection =  sections.stream().filter(section -> section.getRelatedAppId() != null && section.getRelatedAppId().equals(activeSection.getRelatedAppId())).
+            Optional<Section> newActiveSection = sections.stream().filter(section -> section.getRelatedAppId() != null && section.getRelatedAppId().equals(activeSection.getRelatedAppId())).
                     findFirst();
 
             if (newActiveSection.isPresent()) {
                 loadSection(activeSection);
                 controller.getSectionsListView().getSelectionModel().select(newActiveSection.get());
-            }else{
+            } else {
                 loadSection(sections.get(0));  // Load the first
             }
         }
@@ -296,6 +300,51 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                     });
                 }
             });
+            MenuItem changeSize = new MenuItem("Change Grid Size...");
+            changeSize.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    // Ask for the new size
+                    int res[] = showPageDialog(page.getRowCount(), page.getColCount());
+
+                    // If the size is valid, change it
+                    if (res != null) {
+                        // Make sure that after resizing the page
+                        // no elements are outside the new size.
+                        List<Component> toBeDeleted = new ArrayList<>();
+                        for (Component component : page.getComponents()) {
+                            if (component.getX() >= res[0] ||
+                                    component.getY() >= res[1]) {
+                                toBeDeleted.add(component);
+                            }
+                        }
+                        // If there are elements that will be deleted
+                        // ask for the confirmation
+                        if (toBeDeleted.size()>0) {
+                            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                            alert.setTitle("Delete Confirmation");
+                            alert.setHeaderText("Some buttons will be deleted if you resize the page, are you sure?");
+
+                            Optional<ButtonType> result = alert.showAndWait();
+                            if (result.get() != ButtonType.OK) {
+                                return;
+                            }
+
+                            // Delete the elements
+                            page.getComponents().removeAll(toBeDeleted);
+                        }
+
+                        page.setRowCount(res[0]);
+                        page.setColCount(res[1]);
+
+                        // Save the section
+                        sectionManager.saveSection(section);
+
+                        // Reload the section
+                        loadSection(section);
+                    }
+                }
+            });
             MenuItem delete = new MenuItem("Delete");
             delete.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
@@ -316,7 +365,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                     }
                 }
             });
-            contextMenu.getItems().addAll(rename, delete);
+            contextMenu.getItems().addAll(rename, changeSize, new SeparatorMenuItem(), delete);
             tab.setContextMenu(contextMenu);
 
             // Handle the drag and drop focus switch
@@ -338,6 +387,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         VBox imageVBox = new VBox();
         imageVBox.getChildren().add(imageView);
         addTab.setGraphic(imageVBox);
+        addTab.setText("Add");
         tabPane.getTabs().add(addTab);
         // Add the "Add Page" event listener to create a new page
         imageVBox.setOnMouseClicked(event -> {
@@ -420,6 +470,87 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
         // Refresh the list
         requestSectionList();
+    }
+
+    private int[] showPageDialog(int rows, int cols) {
+        // Create the custom dialog.
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("Change Grid Size");
+        dialog.setHeaderText("Specify the grid size below.\nThe rows and the columns must be a number greater than 0");
+
+        // Set the button types.
+        ButtonType changeSizeType = new ButtonType("Change Size", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(changeSizeType, ButtonType.CANCEL);
+
+        // Create the rows and password labels and fields.
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        Node changeSizeBtn = dialog.getDialogPane().lookupButton(changeSizeType);
+
+        TextField rowField = new TextField();
+        rowField.setText(String.valueOf(rows));
+        TextField colField = new TextField();
+        colField.setText(String.valueOf(cols));
+
+        // Text validator
+        ChangeListener<String> validator = ((observable, oldValue, newValue) ->
+        {
+            try {
+                Integer.parseInt(rowField.getText());
+                Integer.parseInt(colField.getText());
+                changeSizeBtn.setDisable(false);
+            } catch (NumberFormatException e) {
+                changeSizeBtn.setDisable(true);
+            }
+        });
+        rowField.textProperty().addListener(validator);
+        colField.textProperty().addListener(validator);
+
+
+        grid.add(new Label("Rows:"), 0, 0);
+        grid.add(rowField, 1, 0);
+        grid.add(new Label("Columns:"), 0, 1);
+        grid.add(colField, 1, 1);
+
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Request focus on the rows field by default.
+        Platform.runLater(() -> rowField.requestFocus());
+
+        // Convert the result to a rows-password-pair when the login button is clicked.
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == changeSizeType) {
+                return new Pair<String, String>(rowField.getText(), colField.getText());
+            }
+            return null;
+        });
+
+        Optional<Pair<String, String>> result = dialog.showAndWait();
+
+        if (result.isPresent()) {
+            int out[] = new int[2];
+            try {
+                out[0] = Integer.parseInt(result.get().getKey());
+                out[1] = Integer.parseInt(result.get().getValue());
+                if (out[0] > 0 && out[1] > 0) {
+                    return out;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // Errore di input
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("The size must be a valid number!");
+            alert.setContentText("The rows and the columns must be a number greater than 0.");
+            alert.show();
+        }
+        return null;
     }
 
     public EditorController getController() {
