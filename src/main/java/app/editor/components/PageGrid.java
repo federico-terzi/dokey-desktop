@@ -1,6 +1,8 @@
 package app.editor.components;
 
 import app.editor.listeners.OnSectionModifiedListener;
+import app.editor.model.ScreenOrientation;
+import app.editor.stages.EditorStage;
 import section.model.Component;
 import section.model.Page;
 import section.model.Section;
@@ -10,14 +12,17 @@ import system.sicons.ShortcutIconManager;
 public class PageGrid extends ComponentGrid implements ComponentGrid.OnComponentSelectedListener {
     private Page page;
     private Section section;
-
     private OnSectionModifiedListener sectionModifiedListener;
 
-    public PageGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, Page page, Section section) {
-        super(applicationManager, shortcutIconManager, generateMatrix(page));
+    public PageGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, Page page, Section section, ScreenOrientation screenOrientation) {
+        super(applicationManager, shortcutIconManager, generateMatrix(page), screenOrientation);
         this.page = page;
         this.section = section;
         setOnComponentSelectedListener(this);
+
+        // Customize the size based on the orientation
+        setHeight(EditorStage.getHeight(screenOrientation));
+        setWidth(EditorStage.getWidth(screenOrientation));
     }
 
     private static Component[][] generateMatrix(Page page) {

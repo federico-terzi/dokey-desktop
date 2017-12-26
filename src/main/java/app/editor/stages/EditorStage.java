@@ -8,6 +8,7 @@ import app.editor.components.EmptyButton;
 import app.editor.components.PageGrid;
 import app.editor.controllers.EditorController;
 import app.editor.listcells.SectionListCell;
+import app.editor.model.ScreenOrientation;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -18,6 +19,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -26,6 +28,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -48,10 +51,13 @@ import java.util.List;
 import java.util.Optional;
 
 public class EditorStage extends Stage implements OnSectionModifiedListener {
-    public static final int PAGE_HEIGHT = 400;
-    public static final int CONTENT_WIDTH = 320;
+    public static final int PORTRAIT_HEIGHT = 400;
+    public static final int PORTRAIT_WIDTH = 320;
+    public static final int PORTRAIT_BOTTOM_BAR_HEIGHT = 100;
+    public static final int LANDSCAPE_HEIGHT = 320;
+    public static final int LANDSCAPE_WIDTH = 450;
+    public static final int LANDSCAPE_BOTTOM_BAR_WIDTH = 100;
     private static final int BOTTOM_BAR_DEFAULT_COLS = 4;
-    private static final int BOTTOM_BAR_HEIGHT = 100;
 
     private EditorController controller;
     private ApplicationManager applicationManager;
@@ -60,8 +66,10 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     private OnEditorCloseListener onEditorCloseListener;
 
     private List<Section> sections;
+
     private Section activeSection = null;
     private Page activePage = null;
+    private ScreenOrientation screenOrientation = ScreenOrientation.LANDSCAPE;
 
     public EditorStage(ApplicationManager applicationManager, OnEditorCloseListener onEditorCloseListener) throws IOException {
         this.applicationManager = applicationManager;
@@ -151,6 +159,22 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             public void handle(ActionEvent event) {
                 if (activePage != null && activeSection != null) {
                     requestChangePageSize(activePage, activeSection);
+                }
+            }
+        });
+        controller.rotateViewBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                // Invert the screen orientation
+                if (screenOrientation == ScreenOrientation.LANDSCAPE) {
+                    screenOrientation = ScreenOrientation.PORTRAIT;
+                }else{
+                    screenOrientation = ScreenOrientation.LANDSCAPE;
+                }
+
+                // Make sure an active section exists
+                if (activeSection != null) {
+                    loadSection(activeSection);
                 }
             }
         });
@@ -254,15 +278,14 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
         // Create the tabpane for the pages and set it up
         TabPane tabPane = new TabPane();
-        tabPane.setMinWidth(CONTENT_WIDTH);
-        tabPane.setPrefWidth(CONTENT_WIDTH);
-        tabPane.setMaxWidth(CONTENT_WIDTH);
+        tabPane.setMinWidth(getWidth(screenOrientation));
+        tabPane.setPrefWidth(getWidth(screenOrientation));
+        tabPane.setMaxWidth(getWidth(screenOrientation));
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
         // Add the pages
         for (Page page : section.getPages()) {
-            PageGrid pageGrid = new PageGrid(applicationManager, shortcutIconManager, page, section);
-            pageGrid.setHeight(PAGE_HEIGHT);
+            PageGrid pageGrid = new PageGrid(applicationManager, shortcutIconManager, page, section, screenOrientation);
             pageGrid.setSectionModifiedListener(this);
             pageGrid.setSectionType(section.getSectionType());
             pageGrid.setShortcutIconManager(shortcutIconManager);
@@ -379,14 +402,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             }
         });
 
-        // Add the TabPane
-        controller.getContentBox().getChildren().add(tabPane);
-
-
         // Add the bottom bar
-        BottomBarGrid bottomBarGrid = new BottomBarGrid(applicationManager, shortcutIconManager, section.getBottomBarItems(), BOTTOM_BAR_DEFAULT_COLS, section);
-        bottomBarGrid.setWidth(CONTENT_WIDTH);
-        bottomBarGrid.setHeight(BOTTOM_BAR_HEIGHT);
+        BottomBarGrid bottomBarGrid = new BottomBarGrid(applicationManager, shortcutIconManager, section.getBottomBarItems(), BOTTOM_BAR_DEFAULT_COLS, section, screenOrientation);
         bottomBarGrid.setSectionModifiedListener(this);
         bottomBarGrid.setSectionType(section.getSectionType());
         bottomBarGrid.setOnComponentClickListener(new OnComponentClickListener() {
@@ -395,7 +412,24 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
             }
         });
-        controller.getContentBox().getChildren().add(bottomBarGrid);
+
+
+        // Add the elements based on the orientation
+        if (screenOrientation == ScreenOrientation.PORTRAIT) {
+            VBox box = new VBox();
+            box.setAlignment(Pos.CENTER);
+            // Add the elements
+            box.getChildren().add(tabPane);
+            box.getChildren().add(bottomBarGrid);
+            controller.getContentBox().getChildren().add(box);
+        }else{
+            HBox box = new HBox();
+            box.setAlignment(Pos.BOTTOM_CENTER);
+            // Add the elements
+            box.getChildren().add(bottomBarGrid);
+            box.getChildren().add(tabPane);
+            controller.getContentBox().getChildren().add(box);
+        }
 
         // Select the list view entry
         controller.getSectionsListView().getSelectionModel().select(section);
@@ -414,17 +448,32 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     }
 
     private void requestChangePageSize(Page page, Section section) {
-        // Ask for the new size
-        int res[] = showPageDialog(page.getRowCount(), page.getColCount());
+        // Ask for the new size based on the orientation
+        int res[] = null;
+        if (screenOrientation == ScreenOrientation.PORTRAIT) {
+            res = showPageDialog(page.getRowCount(), page.getColCount());
+        }else{
+            res = showPageDialog(page.getColCount(), page.getRowCount());
+        }
 
         // If the size is valid, change it
         if (res != null) {
+            int cols, rows;
+            // Modify the page based on the orientation
+            if (screenOrientation == ScreenOrientation.PORTRAIT) {
+                rows = res[0];
+                cols = res[1];
+            }else{
+                rows = res[1];
+                cols = res[0];
+            }
+
             // Make sure that after resizing the page
             // no elements are outside the new size.
             List<Component> toBeDeleted = new ArrayList<>();
             for (Component component : page.getComponents()) {
-                if (component.getX() >= res[0] ||
-                        component.getY() >= res[1]) {
+                if (component.getX() >= rows ||
+                        component.getY() >= cols) {
                     toBeDeleted.add(component);
                 }
             }
@@ -444,8 +493,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 page.getComponents().removeAll(toBeDeleted);
             }
 
-            page.setRowCount(res[0]);
-            page.setColCount(res[1]);
+            page.setRowCount(rows);
+            page.setColCount(cols);
 
             // Save the section
             sectionManager.saveSection(section);
@@ -619,5 +668,21 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             }
         };
         new Thread(saveTask).start();
+    }
+
+    public static int getWidth(ScreenOrientation screenOrientation) {
+        if (screenOrientation == ScreenOrientation.PORTRAIT) {
+            return PORTRAIT_WIDTH;
+        }else{
+            return LANDSCAPE_WIDTH;
+        }
+    }
+
+    public static int getHeight(ScreenOrientation screenOrientation) {
+        if (screenOrientation == ScreenOrientation.PORTRAIT) {
+            return PORTRAIT_HEIGHT;
+        }else{
+            return LANDSCAPE_HEIGHT;
+        }
     }
 }

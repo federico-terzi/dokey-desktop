@@ -53,6 +53,16 @@
           <items>
             <Button mnemonicParsing="false" text="Button" />
             <Pane HBox.hgrow="ALWAYS" />
+            <Button mnemonicParsing="false" fx:id="rotateViewBtn">
+              <graphic>
+                <ImageView fitHeight="20" fitWidth="20">
+                  <Image url="/assets/screen_rotation.png" />
+                </ImageView>
+              </graphic>
+              <tooltip>
+                <Tooltip text="Rotate View "/>
+              </tooltip>
+            </Button>
             <Button mnemonicParsing="false" fx:id="changeSizeBtn">
               <graphic>
                 <ImageView fitHeight="20" fitWidth="20">

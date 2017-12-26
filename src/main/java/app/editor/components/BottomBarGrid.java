@@ -1,6 +1,8 @@
 package app.editor.components;
 
 import app.editor.listeners.OnSectionModifiedListener;
+import app.editor.model.ScreenOrientation;
+import app.editor.stages.EditorStage;
 import section.model.Component;
 import section.model.Item;
 import section.model.Section;
@@ -15,16 +17,27 @@ public class BottomBarGrid extends ComponentGrid implements ComponentGrid.OnComp
     private Section section;
     private OnSectionModifiedListener sectionModifiedListener;
 
-    public BottomBarGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, List<Item> items, int colCount, Section section) {
-        super(applicationManager, shortcutIconManager, generateMatrix(items, colCount));
+    public BottomBarGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, List<Item> items, int colCount, Section section, ScreenOrientation screenOrientation) {
+        super(applicationManager, shortcutIconManager, generateMatrix(items, colCount), screenOrientation);
         this.items = items;
         this.colCount = colCount;
         this.section = section;
 
-        getStyleClass().add("bottombar");
+
 
         setOnComponentSelectedListener(this);
         setForceDiscardSpan(true);  // Discard the span
+
+        // Customize the size based on the orientation
+        if (screenOrientation == ScreenOrientation.PORTRAIT) {
+            setHeight(EditorStage.PORTRAIT_BOTTOM_BAR_HEIGHT);
+            setWidth(EditorStage.PORTRAIT_WIDTH);
+            getStyleClass().add("bottombar-portrait");
+        }else{
+            setHeight(EditorStage.LANDSCAPE_HEIGHT);
+            setWidth(EditorStage.LANDSCAPE_BOTTOM_BAR_WIDTH);
+            getStyleClass().add("bottombar-landscape");
+        }
     }
 
     private static Component[][] generateMatrix(List<Item> items, int colCount) {

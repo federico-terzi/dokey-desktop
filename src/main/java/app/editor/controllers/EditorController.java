@@ -13,6 +13,7 @@ public class EditorController {
 
     public MenuBar menuBar;
     public Button changeSizeBtn;
+    public Button rotateViewBtn;
     @FXML
     private ResourceBundle resources;
 
