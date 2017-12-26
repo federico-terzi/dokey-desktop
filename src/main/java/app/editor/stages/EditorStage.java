@@ -61,6 +61,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
     private List<Section> sections;
     private Section activeSection = null;
+    private Page activePage = null;
 
     public EditorStage(ApplicationManager applicationManager, OnEditorCloseListener onEditorCloseListener) throws IOException {
         this.applicationManager = applicationManager;
@@ -140,6 +141,16 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             public void handle(WindowEvent event) {
                 if (onEditorCloseListener != null) {
                     onEditorCloseListener.onEditorClosed();
+                }
+            }
+        });
+
+        // Toolbar buttons listeners
+        controller.changeSizeBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (activePage != null && activeSection != null) {
+                    requestChangePageSize(activePage, activeSection);
                 }
             }
         });
@@ -304,45 +315,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             changeSize.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    // Ask for the new size
-                    int res[] = showPageDialog(page.getRowCount(), page.getColCount());
-
-                    // If the size is valid, change it
-                    if (res != null) {
-                        // Make sure that after resizing the page
-                        // no elements are outside the new size.
-                        List<Component> toBeDeleted = new ArrayList<>();
-                        for (Component component : page.getComponents()) {
-                            if (component.getX() >= res[0] ||
-                                    component.getY() >= res[1]) {
-                                toBeDeleted.add(component);
-                            }
-                        }
-                        // If there are elements that will be deleted
-                        // ask for the confirmation
-                        if (toBeDeleted.size()>0) {
-                            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                            alert.setTitle("Delete Confirmation");
-                            alert.setHeaderText("Some buttons will be deleted if you resize the page, are you sure?");
-
-                            Optional<ButtonType> result = alert.showAndWait();
-                            if (result.get() != ButtonType.OK) {
-                                return;
-                            }
-
-                            // Delete the elements
-                            page.getComponents().removeAll(toBeDeleted);
-                        }
-
-                        page.setRowCount(res[0]);
-                        page.setColCount(res[1]);
-
-                        // Save the section
-                        sectionManager.saveSection(section);
-
-                        // Reload the section
-                        loadSection(section);
-                    }
+                    requestChangePageSize(page, section);
                 }
             });
             MenuItem delete = new MenuItem("Delete");
@@ -393,12 +366,16 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         imageVBox.setOnMouseClicked(event -> {
             addPageToSection(section);
         });
+        // Change tab listener
         tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
             @Override
             public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
                 if (newValue.equals(addTab)) {
                     addPageToSection(section);
                 }
+
+                // Change the active page
+                activePage = section.getPages().get(tabPane.getSelectionModel().getSelectedIndex());
             }
         });
 
@@ -425,7 +402,57 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
         activeSection = section;
 
+        // If the active page is contained in the current section, select the tab
+        if (section.getPages().contains(activePage)) {
+            int tabIndex = section.getPages().indexOf(activePage);
+            tabPane.getSelectionModel().select(tabIndex);
+        } else {  // Read the currently active page
+            activePage = section.getPages().get(tabPane.getSelectionModel().getSelectedIndex());
+        }
+
         hideStatus();
+    }
+
+    private void requestChangePageSize(Page page, Section section) {
+        // Ask for the new size
+        int res[] = showPageDialog(page.getRowCount(), page.getColCount());
+
+        // If the size is valid, change it
+        if (res != null) {
+            // Make sure that after resizing the page
+            // no elements are outside the new size.
+            List<Component> toBeDeleted = new ArrayList<>();
+            for (Component component : page.getComponents()) {
+                if (component.getX() >= res[0] ||
+                        component.getY() >= res[1]) {
+                    toBeDeleted.add(component);
+                }
+            }
+            // If there are elements that will be deleted
+            // ask for the confirmation
+            if (toBeDeleted.size() > 0) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Delete Confirmation");
+                alert.setHeaderText("Some buttons will be deleted if you resize the page, are you sure?");
+
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() != ButtonType.OK) {
+                    return;
+                }
+
+                // Delete the elements
+                page.getComponents().removeAll(toBeDeleted);
+            }
+
+            page.setRowCount(res[0]);
+            page.setColCount(res[1]);
+
+            // Save the section
+            sectionManager.saveSection(section);
+
+            // Reload the section
+            loadSection(section);
+        }
     }
 
     private void addPageToSection(Section section) {
@@ -499,9 +526,13 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         ChangeListener<String> validator = ((observable, oldValue, newValue) ->
         {
             try {
-                Integer.parseInt(rowField.getText());
-                Integer.parseInt(colField.getText());
-                changeSizeBtn.setDisable(false);
+                int row = Integer.parseInt(rowField.getText());
+                int col = Integer.parseInt(colField.getText());
+                if (row > 0 && col > 0) {
+                    changeSizeBtn.setDisable(false);
+                }else{
+                    changeSizeBtn.setDisable(true);
+                }
             } catch (NumberFormatException e) {
                 changeSizeBtn.setDisable(true);
             }

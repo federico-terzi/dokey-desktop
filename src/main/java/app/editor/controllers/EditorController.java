@@ -12,6 +12,7 @@ import section.model.Section;
 public class EditorController {
 
     public MenuBar menuBar;
+    public Button changeSizeBtn;
     @FXML
     private ResourceBundle resources;
 

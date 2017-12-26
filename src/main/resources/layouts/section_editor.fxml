@@ -6,6 +6,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <BorderPane prefHeight="701.0" prefWidth="900.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="app.editor.controllers.EditorController">
   <bottom>
     <ToolBar orientation="HORIZONTAL" BorderPane.alignment="TOP_LEFT">
@@ -50,6 +52,17 @@
         <ToolBar>
           <items>
             <Button mnemonicParsing="false" text="Button" />
+            <Pane HBox.hgrow="ALWAYS" />
+            <Button mnemonicParsing="false" fx:id="changeSizeBtn">
+              <graphic>
+                <ImageView fitHeight="20" fitWidth="20">
+                  <Image url="/assets/grid.png" />
+                </ImageView>
+              </graphic>
+              <tooltip>
+                <Tooltip text="Change Grid Size"/>
+              </tooltip>
+            </Button>
           </items>
         </ToolBar>
       </children>
