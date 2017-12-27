@@ -7,6 +7,7 @@ import app.editor.stages.ShortcutDialogStage;
 import app.editor.stages.AppSelectDialogStage;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.ColumnConstraints;
@@ -35,6 +36,7 @@ public class ComponentGrid extends GridPane {
 
     private Component[][] componentMatrix;
     private Component[][] fillMatrix;
+    private DragButton[][] buttonMatrix;
     private boolean forceDiscardSpan = false;
 
     public ComponentGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, Component[][] componentMatrix, ScreenOrientation screenOrientation) {
@@ -63,10 +65,6 @@ public class ComponentGrid extends GridPane {
         } else {
             return componentMatrix[0].length;
         }
-    }
-
-    protected void setOrientedComponent(int col, int row, Component component) {
-        componentMatrix[getOriginalCol(col, row)][getOriginalRow(col, row)] = component;
     }
 
     protected int getOrientedYSpan(Component component) {
@@ -159,6 +157,9 @@ public class ComponentGrid extends GridPane {
         // Initialize the fill matrix
         fillMatrix = new Component[componentMatrix.length][componentMatrix[0].length];
 
+        // Initialize the button matrix
+        buttonMatrix = new DragButton[componentMatrix.length][componentMatrix[0].length];
+
         // Add all the components
         for (int col = 0; col < componentMatrix.length; col++) {
             for (int row = 0; row < componentMatrix[0].length; row++) {
@@ -227,6 +228,7 @@ public class ComponentGrid extends GridPane {
                 // deletion from the grid
                 @Override
                 public void onComponentDroppedAway() {
+                    resetDragSelection();
                     requestDeleteComponent(component);
                     render();
                 }
@@ -325,6 +327,13 @@ public class ComponentGrid extends GridPane {
 
                 return true;
             }
+
+            @Override
+            public boolean onComponentDropping(Component component) {
+                resetDragSelection();
+                activateDragSelection(col, row, component);
+                return false;
+            }
         });
 
         // Set up the span
@@ -333,6 +342,15 @@ public class ComponentGrid extends GridPane {
         if (component != null) {
             colSpan = getOrientedYSpan(component);
             rowSpan = getOrientedXSpan(component);
+        }
+
+        // Add the button to the matrix, also include the span
+        for (int jCol = col; jCol < (col + colSpan); jCol++) {
+            for (int jRow = row; jRow < (row + rowSpan); jRow++) {
+                if (buttonMatrix.length > jCol && buttonMatrix[0].length > jRow) {
+                    buttonMatrix[jCol][jRow] = current;
+                }
+            }
         }
 
         // Adjust the grid position based on the orientation
@@ -615,6 +633,29 @@ public class ComponentGrid extends GridPane {
             return true;
         } else {  // Don't overwite
             return false;
+        }
+    }
+
+    private void activateDragSelection(int col, int row, Component component) {
+        for (int jCol = col; jCol < (col + component.getYSpan()); jCol++) {
+            for (int jRow = row; jRow < (row + component.getXSpan()); jRow++) {
+                if (jCol < buttonMatrix.length && jRow < buttonMatrix[0].length &&
+                        buttonMatrix[jCol][jRow] != null) {
+                    boolean hasOverwriteDanger = !(buttonMatrix[jCol][jRow] instanceof EmptyButton) &&
+                            !fillMatrix[jCol][jRow].equals(component);
+                    buttonMatrix[jCol][jRow].setDragDestination(true, hasOverwriteDanger);
+                }
+            }
+        }
+    }
+
+    public void resetDragSelection() {
+        for (int jCol = 0; jCol < (buttonMatrix.length); jCol++) {
+            for (int jRow = 0; jRow < (buttonMatrix[0].length); jRow++) {
+                if (buttonMatrix[jCol][jRow] != null) {
+                    buttonMatrix[jCol][jRow].setDragDestination(false, false);
+                }
+            }
         }
     }
 

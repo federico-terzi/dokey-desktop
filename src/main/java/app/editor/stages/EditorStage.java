@@ -1,5 +1,6 @@
 package app.editor.stages;
 
+import app.editor.components.ComponentGrid;
 import app.editor.listeners.OnComponentClickListener;
 import app.editor.listeners.OnSectionModifiedListener;
 import app.editor.comparators.SectionComparator;
@@ -27,6 +28,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -38,6 +40,7 @@ import javafx.util.Pair;
 import section.model.Component;
 import section.model.Page;
 import section.model.Section;
+import section.model.SectionType;
 import system.SectionManager;
 import system.model.Application;
 import system.model.ApplicationManager;
@@ -49,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class EditorStage extends Stage implements OnSectionModifiedListener {
     public static final int PORTRAIT_HEIGHT = 400;
@@ -66,6 +70,9 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     private OnEditorCloseListener onEditorCloseListener;
 
     private List<Section> sections;
+    private String sectionQuery = null;
+
+    private List<ComponentGrid> grids;
 
     private Section activeSection = null;
     private Page activePage = null;
@@ -179,6 +186,21 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             }
         });
 
+        // Listener for the search query
+        controller.searchSectionTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            sectionQuery = newValue;
+            populateSectionListView();
+        });
+
+        // Listener to reset all the drop selections
+        controller.getContentBox().setOnDragExited(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event) {
+                grids.forEach(grid -> grid.resetDragSelection());
+            }
+        });
+
+
         requestSectionList();
     }
 
@@ -213,7 +235,26 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     }
 
     private void populateSectionListView() {
-        ObservableList<Section> sections = FXCollections.observableArrayList(this.sections);
+        List<Section> input = this.sections;
+
+        // If there is a search query, filter the results
+        if (sectionQuery != null) {
+            input = input.stream().filter(section -> {
+                if (section.getSectionType()== SectionType.LAUNCHPAD) {
+                    return true;
+                }else if (section.getRelatedAppId() == null) {
+                    return false;
+                }
+
+                Application app = applicationManager.getApplication(section.getRelatedAppId());
+                if (app == null) {
+                    return false;
+                }
+                return app.getName().toLowerCase().contains(sectionQuery.toLowerCase());
+            }).collect(Collectors.toList());
+        }
+
+        ObservableList<Section> sections = FXCollections.observableArrayList(input);
         Collections.sort(sections, new SectionComparator(applicationManager));
         controller.getSectionsListView().setCellFactory(new Callback<ListView<Section>, ListCell<Section>>() {
             @Override
@@ -273,6 +314,9 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     private void loadSection(Section section) {
         showStatus("Loading app...");
 
+        // Clear the previous grids
+        grids = new ArrayList<>();
+
         // Clear the previous section
         controller.getContentBox().getChildren().clear();
 
@@ -295,6 +339,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
                 }
             });
+            grids.add(pageGrid);
 
             Tab tab = new Tab();
             Label tabTitle = new Label(page.getTitle());
@@ -412,6 +457,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
             }
         });
+        grids.add(bottomBarGrid);
 
 
         // Add the elements based on the orientation

@@ -22,6 +22,9 @@
     <SplitPane dividerPositions="0.2541225626740946" focusTraversable="true">
       <items>
         <BorderPane>
+          <top>
+            <TextField fx:id="searchSectionTextField" promptText="Search Application..." />
+          </top>
           <bottom>
             <ToolBar>
               <items>

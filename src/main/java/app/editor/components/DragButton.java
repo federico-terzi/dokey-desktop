@@ -12,6 +12,8 @@ public class DragButton extends Button {
 
     private OnComponentDragListener onComponentDragListener;
 
+    private boolean isDragDestination = false;
+
     public DragButton() {
         super();
 
@@ -31,7 +33,15 @@ public class DragButton extends Button {
             public void handle(DragEvent event) {
                 if (event.getGestureSource() != DragButton.this &&
                         event.getDragboard().hasString() && event.getDragboard().getString().startsWith(DRAG_PREFIX)) {
-                    getStyleClass().add("drag-entered");
+                    // Get the drop json
+                    String json = event.getDragboard().getString().substring(DRAG_PREFIX.length());  // Remove the first DRAG_PREFIX string
+
+                    // Notify the listener
+                    if (onComponentDragListener != null) {
+                        // Create the component
+                        Component component = Component.fromJson(new JSONObject(json));
+                        onComponentDragListener.onComponentDropping(component);
+                    }
                 }
 
                 event.consume();
@@ -43,7 +53,6 @@ public class DragButton extends Button {
             public void handle(DragEvent event) {
                 if (event.getGestureSource() != DragButton.this &&
                         event.getDragboard().hasString() && event.getDragboard().getString().startsWith(DRAG_PREFIX)) {
-                    getStyleClass().remove("drag-entered");
                 }
 
                 event.consume();
@@ -83,7 +92,26 @@ public class DragButton extends Button {
         this.onComponentDragListener = onComponentDragListener;
     }
 
+    public boolean isDragDestination() {
+        return isDragDestination;
+    }
+
+    public void setDragDestination(boolean dragDestination, boolean overwriteDanger) {
+        isDragDestination = dragDestination;
+        if (isDragDestination) {
+            if (!overwriteDanger) {
+                getStyleClass().add("drag-entered");
+            }else{
+                getStyleClass().add("drag-entered-danger");
+            }
+        }else{
+            getStyleClass().remove("drag-entered");
+            getStyleClass().remove("drag-entered-danger");
+        }
+    }
+
     public interface OnComponentDragListener {
         boolean onComponentDropped(Component component);
+        boolean onComponentDropping(Component component);
     }
 }
