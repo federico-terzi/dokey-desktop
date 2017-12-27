@@ -25,7 +25,13 @@
           <bottom>
             <ToolBar>
               <items>
-                <Button fx:id="addSectionBtn" mnemonicParsing="false" text="Add Application..." />
+                <Button fx:id="addSectionBtn" mnemonicParsing="false" text="Add Application..." >
+                  <graphic>
+                    <ImageView fitHeight="16" fitWidth="16">
+                      <Image url="/assets/add.png" />
+                    </ImageView>
+                  </graphic>
+                </Button>
               </items>
             </ToolBar>
           </bottom>

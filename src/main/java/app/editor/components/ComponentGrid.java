@@ -1,12 +1,12 @@
 package app.editor.components;
 
 import app.editor.listeners.OnComponentClickListener;
+import app.editor.model.Direction;
 import app.editor.model.ScreenOrientation;
 import app.editor.stages.ShortcutDialogStage;
 import app.editor.stages.AppSelectDialogStage;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.ColumnConstraints;
@@ -34,6 +34,7 @@ public class ComponentGrid extends GridPane {
     protected ScreenOrientation screenOrientation;
 
     private Component[][] componentMatrix;
+    private Component[][] fillMatrix;
     private boolean forceDiscardSpan = false;
 
     public ComponentGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, Component[][] componentMatrix, ScreenOrientation screenOrientation) {
@@ -64,36 +65,8 @@ public class ComponentGrid extends GridPane {
         }
     }
 
-    protected Component getOrientedComponent(int col, int row) {
-        if (screenOrientation == ScreenOrientation.PORTRAIT) {
-            return componentMatrix[col][row];
-        } else {
-            return componentMatrix[row][col];
-        }
-    }
-
     protected void setOrientedComponent(int col, int row, Component component) {
-        if (screenOrientation == ScreenOrientation.PORTRAIT) {
-            componentMatrix[col][row] = component;
-        } else {
-            componentMatrix[row][col] = component;
-        }
-    }
-
-    protected int getOrientedY(Component component) {
-        if (screenOrientation == ScreenOrientation.PORTRAIT) {
-            return component.getY();
-        } else {
-            return component.getX();
-        }
-    }
-
-    protected int getOrientedX(Component component) {
-        if (screenOrientation == ScreenOrientation.PORTRAIT) {
-            return component.getX();
-        } else {
-            return component.getY();
-        }
+        componentMatrix[getOriginalCol(col, row)][getOriginalRow(col, row)] = component;
     }
 
     protected int getOrientedYSpan(Component component) {
@@ -124,39 +97,39 @@ public class ComponentGrid extends GridPane {
         if (screenOrientation == ScreenOrientation.PORTRAIT) {
             return row;
         } else {
+            return componentMatrix.length - 1 - col;  // Number of columns - 1 - col
+        }
+    }
+
+    protected int getOrientedColSpanFactor() {
+        if (screenOrientation == ScreenOrientation.PORTRAIT) {
+            return 1;
+        } else {
+            return 1;
+        }
+    }
+
+    protected int getOrientedRowSpanFactor() {
+        if (screenOrientation == ScreenOrientation.PORTRAIT) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+
+    protected int getOriginalCol(int col, int row) {
+        if (screenOrientation == ScreenOrientation.PORTRAIT) {
             return col;
+        } else {
+            return componentMatrix.length - 1 - row;  // Columns - 1 - row
         }
     }
 
-    protected void setOrientedY(Component component, int y) {
+    protected int getOriginalRow(int col, int row) {
         if (screenOrientation == ScreenOrientation.PORTRAIT) {
-            component.setY(y);
+            return row;
         } else {
-            component.setX(y);
-        }
-    }
-
-    protected void setOrientedX(Component component, int x) {
-        if (screenOrientation == ScreenOrientation.PORTRAIT) {
-            component.setX(x);
-        } else {
-            component.setY(x);
-        }
-    }
-
-    protected void setOrientedYSpan(Component component, int ySpan) {
-        if (screenOrientation == ScreenOrientation.PORTRAIT) {
-            component.setYSpan(ySpan);
-        } else {
-            component.setXSpan(ySpan);
-        }
-    }
-
-    protected void setOrientedXSpan(Component component, int xSpan) {
-        if (screenOrientation == ScreenOrientation.PORTRAIT) {
-            component.setXSpan(xSpan);
-        } else {
-            component.setYSpan(xSpan);
+            return col;
         }
     }
 
@@ -183,50 +156,57 @@ public class ComponentGrid extends GridPane {
         // Delete all the previous nodes
         getChildren().clear();
 
+        // Initialize the fill matrix
+        fillMatrix = new Component[componentMatrix.length][componentMatrix[0].length];
+
         // Add all the components
-        for (int col = 0; col < getOrientedColCount(); col++) {
-            for (int row = 0; row < getOrientedRowCount(); row++) {
-                if (getOrientedComponent(col, row) != null) {
+        for (int col = 0; col < componentMatrix.length; col++) {
+            for (int row = 0; row < componentMatrix[0].length; row++) {
+                // These are the projected col and row based on the rotation
+                int rotatedCol = getOrientedCol(col, row);
+                int rotatedRow = getOrientedRow(col, row);
+                int rotatedColSpanFactor = getOrientedColSpanFactor();
+                int rotatedRowSpanFactor = getOrientedRowSpanFactor();
+
+                if (componentMatrix[col][row] != null) {
                     // if force discard span is specified, all the blocks will lose their span
                     if (forceDiscardSpan) {
-                        getOrientedComponent(col, row).setYSpan(1);
-                        getOrientedComponent(col, row).setXSpan(1);
+                        componentMatrix[col][row].setYSpan(1);
+                        componentMatrix[col][row].setXSpan(1);
                     }
-                    addComponentToGrid(col, row, getOrientedComponent(col, row));
+
+                    // Fill the span matrix
+                    for (int jCol = col; jCol < (col + componentMatrix[col][row].getYSpan()); jCol++) {
+                        for (int jRow = row; jRow < (row + componentMatrix[col][row].getXSpan()); jRow++) {
+                            if (componentMatrix.length > jCol && componentMatrix[0].length > jRow) {
+                                fillMatrix[jCol][jRow] = componentMatrix[col][row];
+                            }
+                        }
+                    }
+
+                    addComponentToGrid(rotatedCol, rotatedRow, rotatedColSpanFactor, rotatedRowSpanFactor, componentMatrix[col][row]);
                 } else {
                     // Make sure in this position there isn't any spanned component
-                    if (getComponentAtCords(col, row) == null) {
+                    if (fillMatrix[col][row] == null) {
                         // Add the empty button
-                        addComponentToGrid(col, row, null);
+                        addComponentToGrid(rotatedCol, rotatedRow, rotatedColSpanFactor, rotatedRowSpanFactor, null);
                     }
                 }
             }
         }
     }
 
-    private Component getComponentAtCords(int vCol, int vRow) {
-        for (int col = 0; col < getOrientedColCount(); col++) {
-            for (int row = 0; row < getOrientedRowCount(); row++) {
-                if (getOrientedComponent(col, row) != null &&
-                        vCol >= getOrientedY(getOrientedComponent(col, row)) &&
-                        vCol < (getOrientedY(getOrientedComponent(col, row)) + getOrientedYSpan(getOrientedComponent(col, row))) &&
-                        vRow >= getOrientedX(getOrientedComponent(col, row)) &&
-                        vRow < (getOrientedX(getOrientedComponent(col, row)) + getOrientedXSpan(getOrientedComponent(col, row)))) {
-                    return getOrientedComponent(col, row);
-                }
-            }
-        }
+    public boolean addComponentToGrid(int rotatedCol, int rotatedRow, int rotatedColSpanFactor, int rotatedRowSpanFactor, Component component) {
+        // Get the original indexes in the matrix
+        int col = getOriginalCol(rotatedCol, rotatedRow);
+        int row = getOriginalRow(rotatedCol, rotatedRow);
 
-        return null;
-    }
-
-    public boolean addComponentToGrid(int col, int row, Component component) {
         // Set up the button
         DragButton current = getButtonForComponent(component);
         current.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                onComponentClicked(getOrientedCol(col, row), getOrientedRow(col, row));
+                onComponentClicked(col, row);
             }
         });
         // Set the context menu actions
@@ -253,124 +233,50 @@ public class ComponentGrid extends GridPane {
 
                 @Override
                 public void onComponentExpandRight() {
-                    // Make sure the component can fit in the matrix
-                    if ((getOrientedY(component) + getOrientedYSpan(component) + 1) > getOrientedColCount()) {
-                        return;
+                    switch (screenOrientation) {
+                        case PORTRAIT:
+                            resizeComponent(component, Direction.RIGHT);
+                            break;
+                        case LANDSCAPE:
+                            resizeComponent(component, Direction.BOTTOM);
+                            break;
                     }
-
-                    List<Component> toBeDeleted = new ArrayList<>();
-
-                    // Check if the expansion is valid
-                    for (int jCol = getOrientedCol(col, row); jCol < (getOrientedCol(col, row) + getOrientedYSpan(component) + 1); jCol++) {
-                        for (int jRow = getOrientedRow(col, row); jRow < (getOrientedRow(col, row) + getOrientedXSpan(component)); jRow++) {
-                            if (getOrientedColCount() > jCol && getOrientedRowCount() > jRow) {
-                                if (componentMatrix[jCol][jRow] != null && !component.equals(componentMatrix[jCol][jRow])) {
-                                    toBeDeleted.add(getOrientedComponent(jCol, jRow));
-                                }
-                            }
-                        }
-                    }
-
-                    // If something has to be deleted, ask the user
-                    if (toBeDeleted.size() > 0) {
-                        if (!requestOverrideComponentsDialog(toBeDeleted.size())) {  // DONT OVERWRITE
-                            return;
-                        }
-                    }
-
-                    // Delete the components
-                    for (Component delComponent : toBeDeleted) {
-                        requestDeleteComponent(delComponent);
-                    }
-
-                    // Increase the size
-                    setOrientedYSpan(component, getOrientedYSpan(component) + 1);
-
-                    // Notify the listener
-                    if (onComponentSelectedListener != null) {
-                        onComponentSelectedListener.onEditComponentRequested(component);
-                    }
-
-                    render();
                 }
 
                 @Override
                 public void onComponentExpandBottom() {
-                    // Make sure the component can fit in the matrix
-                    if ((getOrientedX(component) + getOrientedXSpan(component) + 1) > getOrientedRowCount()) {
-                        return;
+                    switch (screenOrientation) {
+                        case PORTRAIT:
+                            resizeComponent(component, Direction.BOTTOM);
+                            break;
+                        case LANDSCAPE:
+                            resizeComponent(component, Direction.LEFT);
+                            break;
                     }
-
-                    List<Component> toBeDeleted = new ArrayList<>();
-
-                    // Check if the expansion is valid
-                    for (int jCol = getOrientedCol(col, row); jCol < (getOrientedCol(col, row) + getOrientedYSpan(component)); jCol++) {
-                        for (int jRow = getOrientedRow(col, row); jRow < (getOrientedRow(col, row) + getOrientedXSpan(component) + 1); jRow++) {
-                            if (getOrientedColCount() > jCol && getOrientedRowCount() > jRow) {
-                                if (componentMatrix[jCol][jRow] != null && !component.equals(componentMatrix[jCol][jRow])) {
-                                    toBeDeleted.add(getOrientedComponent(jCol, jRow));
-                                }
-                            }
-                        }
-                    }
-
-                    // If something has to be deleted, ask the user
-                    if (toBeDeleted.size() > 0) {
-                        if (!requestOverrideComponentsDialog(toBeDeleted.size())) {  // DONT OVERWRITE
-                            return;
-                        }
-                    }
-
-                    // Delete the components
-                    for (Component delComponent : toBeDeleted) {
-                        requestDeleteComponent(delComponent);
-                    }
-
-                    // Increase the size
-                    setOrientedXSpan(component, getOrientedXSpan(component) + 1);
-
-                    // Notify the listener
-                    if (onComponentSelectedListener != null) {
-                        onComponentSelectedListener.onEditComponentRequested(component);
-                    }
-
-                    render();
                 }
 
                 @Override
                 public void onComponentShrinkLeft() {
-                    // Make sure the component can fit in the matrix
-                    if (getOrientedYSpan(component) <= 1) {
-                        return;
+                    switch (screenOrientation) {
+                        case PORTRAIT:
+                            resizeComponent(component, Direction.LEFT);
+                            break;
+                        case LANDSCAPE:
+                            resizeComponent(component, Direction.TOP);
+                            break;
                     }
-
-                    // Decrease the size
-                    setOrientedYSpan(component, getOrientedYSpan(component) - 1);
-
-                    // Notify the listener
-                    if (onComponentSelectedListener != null) {
-                        onComponentSelectedListener.onEditComponentRequested(component);
-                    }
-
-                    render();
                 }
 
                 @Override
                 public void onComponentShrinkUp() {
-                    // Make sure the component can fit in the matrix
-                    if (getOrientedXSpan(component) <= 1) {
-                        return;
+                    switch (screenOrientation) {
+                        case PORTRAIT:
+                            resizeComponent(component, Direction.TOP);
+                            break;
+                        case LANDSCAPE:
+                            resizeComponent(component, Direction.RIGHT);
+                            break;
                     }
-
-                    // Decrease the size
-                    setOrientedXSpan(component, getOrientedXSpan(component) - 1);
-
-                    // Notify the listener
-                    if (onComponentSelectedListener != null) {
-                        onComponentSelectedListener.onEditComponentRequested(component);
-                    }
-
-                    render();
                 }
             });
         }
@@ -382,11 +288,11 @@ public class ComponentGrid extends GridPane {
                 List<Component> toBeDeleted = new ArrayList<>();
 
                 // Add the cells that the component touches if has multiple span
-                for (int jCol = getOrientedCol(col, row); jCol < (getOrientedCol(col, row) + getOrientedYSpan(newComponent)); jCol++) {
-                    for (int jRow = getOrientedRow(col, row); jRow < (getOrientedRow(col, row) + getOrientedXSpan(newComponent)); jRow++) {
-                        if (getOrientedColCount() > jCol && getOrientedRowCount() > jRow) {
-                            if (componentMatrix[jCol][jRow] != null && !newComponent.getItem().equals(componentMatrix[jCol][jRow].getItem())) {
-                                toBeDeleted.add(componentMatrix[jCol][jRow]);
+                for (int jCol = col; jCol < (col + newComponent.getYSpan()); jCol++) {
+                    for (int jRow = row; jRow < (row + newComponent.getXSpan()); jRow++) {
+                        if (componentMatrix.length > jCol && componentMatrix[0].length > jRow) {
+                            if (fillMatrix[jCol][jRow] != null && !newComponent.getItem().equals(fillMatrix[jCol][jRow].getItem())) {
+                                toBeDeleted.add(fillMatrix[jCol][jRow]);
                             }
                         }
                     }
@@ -405,10 +311,10 @@ public class ComponentGrid extends GridPane {
                 }
 
                 // Change the component coordinates
-                setOrientedX(newComponent, row);
-                setOrientedY(newComponent, col);
+                newComponent.setX(row);
+                newComponent.setY(col);
 
-                setOrientedComponent(col, row, newComponent);
+                componentMatrix[col][row] = newComponent;
 
                 // Notify the listener
                 if (onComponentSelectedListener != null) {
@@ -429,19 +335,185 @@ public class ComponentGrid extends GridPane {
             rowSpan = getOrientedXSpan(component);
         }
 
+        // Adjust the grid position based on the orientation
+        int gridCol = rotatedCol;
+        int gridRow = rotatedRow;
+        if (rotatedColSpanFactor < 0) {
+            gridCol -= (colSpan - 1);
+            if (gridCol < 0) {
+                colSpan = colSpan + gridCol;
+                gridCol = 0;
+            }
+        }
+        if (rotatedRowSpanFactor < 0) {
+            gridRow -= (rowSpan - 1);
+            if (gridRow < 0) {
+                rowSpan = rowSpan + gridRow;
+                gridRow = 0;
+            }
+        }
+
         // Add the component to the grid
-        this.add(current, col, row, colSpan, rowSpan);
+        this.add(current, gridCol, gridRow, colSpan, rowSpan);
 
         return true;
     }
 
+    private void moveComponent(Component component, Direction direction) {
+        // Populate the final move based on the given direction
+        int finalColMove = 0;
+        int finalRowMove = 0;
+        switch (direction) {
+            case TOP:
+                finalRowMove--;
+                break;
+            case LEFT:
+                finalColMove--;
+                break;
+            case BOTTOM:
+                finalRowMove++;
+                break;
+            case RIGHT:
+                finalColMove++;
+                break;
+        }
+
+        // Make sure the component stays in the grid
+        if ((component.getX() + finalRowMove) < 0 || (component.getY() + finalColMove) < 0 ||
+                (component.getX() + finalRowMove) >= componentMatrix[0].length ||
+                (component.getY() + finalColMove) >= componentMatrix.length) {
+            return;
+        }
+
+        int initialCol = component.getY();
+        int initialRow = component.getX();
+        int finalCol = component.getY() + finalColMove;
+        int finalRow = component.getX() + finalRowMove;
+
+        List<Component> toBeDeleted = new ArrayList<>();
+
+        // Check if the expansion is valid
+        for (int jCol = finalCol; jCol < (finalCol + component.getYSpan()); jCol++) {
+            for (int jRow = finalRow; jRow < (finalRow + component.getXSpan()); jRow++) {
+                if (componentMatrix.length > jCol && componentMatrix[0].length > jRow) {
+                    if (fillMatrix[jCol][jRow] != null && !component.equals(fillMatrix[jCol][jRow])) {
+                        toBeDeleted.add(fillMatrix[jCol][jRow]);
+                    }
+                }
+            }
+        }
+
+        // If something has to be deleted, ask the user
+        if (toBeDeleted.size() > 0) {
+            if (!requestOverrideComponentsDialog(toBeDeleted.size())) {  // DONT OVERWRITE
+                return;
+            }
+        }
+
+        // Delete the components
+        for (Component delComponent : toBeDeleted) {
+            requestDeleteComponent(delComponent);
+        }
+
+        // Delete the previous one
+        componentMatrix[initialCol][initialRow] = null;
+
+        // Change the position
+        component.setX(finalRow);
+        component.setY(finalCol);
+
+        // Save the new one
+        componentMatrix[finalCol][finalRow] = component;
+
+        // Notify the listener
+        if (onComponentSelectedListener != null) {
+            onComponentSelectedListener.onEditComponentRequested(component);
+        }
+
+        render();
+    }
+
+    private void resizeComponent(Component component, Direction direction) {
+        // Populate the final span based on the given direction
+        int finalColSpan = 0;
+        int finalRowSpan = 0;
+        switch (direction) {
+            case TOP:
+                finalRowSpan--;
+                break;
+            case LEFT:
+                finalColSpan--;
+                break;
+            case BOTTOM:
+                finalRowSpan++;
+                break;
+            case RIGHT:
+                finalColSpan++;
+                break;
+        }
+
+        // To resize a component below the 1x1 size, the component must
+        // be moved beforehand to accomodate the stretch
+        if ((component.getXSpan() + finalRowSpan) < 1 || (component.getYSpan() + finalColSpan) < 1) {
+            moveComponent(component, direction);
+            // Reset the final span to a positive number
+            finalColSpan = Math.abs(finalColSpan);
+            finalRowSpan = Math.abs(finalRowSpan);
+        }
+
+        // Make sure the component doesn't exceed the matrix size
+        if ((component.getX() + component.getXSpan() + finalRowSpan) > componentMatrix[0].length ||
+                (component.getY() + component.getYSpan() + finalColSpan) > componentMatrix.length) {
+            return;
+        }
+
+        int col = component.getY();
+        int row = component.getX();
+
+        List<Component> toBeDeleted = new ArrayList<>();
+
+        // Check if the expansion is valid
+        for (int jCol = col; jCol < (col + component.getYSpan() + finalColSpan); jCol++) {
+            for (int jRow = row; jRow < (row + component.getXSpan() + finalRowSpan); jRow++) {
+                if (componentMatrix.length > jCol && componentMatrix[0].length > jRow) {
+                    if (fillMatrix[jCol][jRow] != null && !component.equals(fillMatrix[jCol][jRow])) {
+                        toBeDeleted.add(fillMatrix[jCol][jRow]);
+                    }
+                }
+            }
+        }
+
+        // If something has to be deleted, ask the user
+        if (toBeDeleted.size() > 0) {
+            if (!requestOverrideComponentsDialog(toBeDeleted.size())) {  // DONT OVERWRITE
+                return;
+            }
+        }
+
+        // Delete the components
+        for (Component delComponent : toBeDeleted) {
+            requestDeleteComponent(delComponent);
+        }
+
+        // Increase the size
+        component.setXSpan(component.getXSpan() + finalRowSpan);
+        component.setYSpan(component.getYSpan() + finalColSpan);
+
+        // Notify the listener
+        if (onComponentSelectedListener != null) {
+            onComponentSelectedListener.onEditComponentRequested(component);
+        }
+
+        render();
+    }
+
     public void onComponentClicked(int col, int row) {
-        Component component = getOrientedComponent(col, row);
+        Component component = componentMatrix[col][row];
         if (component == null) {  // Clicked on empty space
             if (sectionType == SectionType.LAUNCHPAD) {  // LAUNCHPAD SECTION
-                requestApplicationSelect(getOrientedCol(col, row), getOrientedRow(col, row));
+                requestApplicationSelect(col, row);
             } else if (sectionType == SectionType.SHORTCUTS) {  // LAUNCHPAD SHORTCUTS
-                requestShortcutSelect(getOrientedCol(col, row), getOrientedRow(col, row));
+                requestShortcutSelect(col, row);
             }
 
         } else {  // Clicked on active component
@@ -463,12 +535,12 @@ public class ComponentGrid extends GridPane {
                     appItem.setItemType(ItemType.APP);
                     Component component = new Component();
                     component.setItem(appItem);
-                    setOrientedX(component, row);
-                    setOrientedY(component, col);
+                    component.setX(row);
+                    component.setY(col);
                     component.setXSpan(1);
                     component.setYSpan(1);
 
-                    setOrientedComponent(col, row, component);
+                    componentMatrix[col][row] = component;
 
                     // Notify the listener
                     if (onComponentSelectedListener != null) {
@@ -506,12 +578,12 @@ public class ComponentGrid extends GridPane {
 
                     Component component = new Component();
                     component.setItem(item);
-                    setOrientedX(component, row);
-                    setOrientedY(component, col);
+                    component.setX(row);
+                    component.setY(col);
                     component.setXSpan(1);
                     component.setYSpan(1);
 
-                    setOrientedComponent(col, row, component);
+                    componentMatrix[col][row] = component;
 
                     // Notify the listener
                     if (onComponentSelectedListener != null) {

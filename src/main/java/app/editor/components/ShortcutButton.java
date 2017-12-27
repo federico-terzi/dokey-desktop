@@ -37,9 +37,9 @@ public class ShortcutButton extends ComponentButton {
             if (shortcutIcon.getFile().isFile()) {
                 Image image = new Image(shortcutIcon.getFile().toURI().toString());
                 ImageView imageView = new ImageView(image);
+                imageView.setSmooth(true);
                 imageView.setFitHeight(32);
                 imageView.setFitWidth(32);
-                imageView.setSmooth(true);
                 vBox.getChildren().add(imageView);
             }
         }
