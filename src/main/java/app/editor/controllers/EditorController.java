@@ -15,6 +15,8 @@ public class EditorController {
     public Button changeSizeBtn;
     public Button rotateViewBtn;
     public TextField searchSectionTextField;
+    public Button addApplicationBtn;
+    public Button exportBtn;
     @FXML
     private ResourceBundle resources;
 

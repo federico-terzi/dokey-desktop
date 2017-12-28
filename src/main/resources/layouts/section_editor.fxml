@@ -44,7 +44,7 @@
         </BorderPane>
         <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="AS_NEEDED">
           <content>
-            <VBox fx:id="contentBox" alignment="CENTER" fillWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="315.0" prefHeight="724.0" prefWidth="315.0" style="-fx-background-color: #444444;">
+            <VBox fx:id="contentBox" alignment="CENTER" fillWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="315.0" prefHeight="724.0" prefWidth="315.0" style="-fx-background-color: #272727;">
 
             </VBox>
           </content>
@@ -60,7 +60,26 @@
         </MenuBar>
         <ToolBar>
           <items>
-            <Button mnemonicParsing="false" text="Button" />
+            <Button mnemonicParsing="false" fx:id="addApplicationBtn">
+              <graphic>
+                <ImageView fitHeight="20" fitWidth="20">
+                  <Image url="/assets/add_app.png" />
+                </ImageView>
+              </graphic>
+              <tooltip>
+                <Tooltip text="Add Application"/>
+              </tooltip>
+            </Button>
+            <Button mnemonicParsing="false" fx:id="exportBtn">
+              <graphic>
+                <ImageView fitHeight="20" fitWidth="20">
+                  <Image url="/assets/export.png" />
+                </ImageView>
+              </graphic>
+              <tooltip>
+                <Tooltip text="Export Application Layout"/>
+              </tooltip>
+            </Button>
             <Pane HBox.hgrow="ALWAYS" />
             <Button mnemonicParsing="false" fx:id="rotateViewBtn">
               <graphic>

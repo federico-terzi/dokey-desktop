@@ -185,6 +185,20 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 }
             }
         });
+        controller.exportBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (activeSection != null) {
+                    exportSection(activeSection);
+                }
+            }
+        });
+        controller.addApplicationBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                addSection();
+            }
+        });
 
         // Listener for the search query
         controller.searchSectionTextField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -273,20 +287,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
                     @Override
                     public void onExportSection(Section section) {
-                        FileChooser fileChooser = new FileChooser();
-                        fileChooser.setTitle("Export Section...");
-                        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Section layout JSON (*.json)", "*.json");
-                        fileChooser.getExtensionFilters().add(extFilter);
-                        File destFile = fileChooser.showSaveDialog(EditorStage.this);
-                        if (destFile != null) {
-                            boolean res = sectionManager.writeSectionToFile(section, destFile);
-                            if (!res) {
-                                Alert alert = new Alert(Alert.AlertType.ERROR);
-                                alert.setTitle("Error");
-                                alert.setHeaderText("There was an error saving the file");
-                                alert.show();
-                            }
-                        }
+                        exportSection(section);
                     }
                 });
             }
@@ -583,6 +584,23 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             appSelectDialogStage.show();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void exportSection(Section section) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export Section...");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Section layout JSON (*.json)", "*.json");
+        fileChooser.getExtensionFilters().add(extFilter);
+        File destFile = fileChooser.showSaveDialog(EditorStage.this);
+        if (destFile != null) {
+            boolean res = sectionManager.writeSectionToFile(section, destFile);
+            if (!res) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("There was an error saving the file");
+                alert.show();
+            }
         }
     }
 
