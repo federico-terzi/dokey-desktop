@@ -10,6 +10,14 @@
     -fx-padding: 0 10 0 0;
 }
 
+.root {
+    -fx-background-color: #232523;
+}
+
+/*.tool-bar {*/
+    /*-fx-background-color: linear-gradient(#01508b 0%, #014174 100%);*/
+/*}*/
+
 .drag-entered {
     -fx-background-color: #6cac6a;
 }
