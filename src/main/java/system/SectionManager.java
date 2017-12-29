@@ -212,25 +212,10 @@ public class SectionManager {
         section.setSectionType(SectionType.LAUNCHPAD);
         section.setLastEdit(System.currentTimeMillis());
 
-        // TODO: remove below
-
         Page firstPage = new Page();
         firstPage.setTitle("Launchpad");
         firstPage.setColCount(4);
         firstPage.setRowCount(4);
-
-        AppItem appItem = new AppItem();
-        appItem.setAppID("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe");
-        appItem.setTitle("Chrome");
-
-        Component component = new Component();
-        component.setItem(appItem);
-        component.setX(0);
-        component.setY(0);
-        component.setXSpan(1);
-        component.setYSpan(1);
-
-        firstPage.addComponent(component);
 
         section.addPage(firstPage);
         return section;

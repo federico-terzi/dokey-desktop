@@ -99,19 +99,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         // Create the shortcut icon manager
         shortcutIconManager = new ShortcutIconManager();
 
-        // Create the main menu
-        Menu fileMenu = new Menu("File");
-        MenuItem closeItem = new MenuItem("Close");
-        closeItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                close();
-            }
-        });
-        fileMenu.getItems().addAll(closeItem);
-        controller.menuBar.getMenus().addAll(fileMenu);
-
-
         // Create the listview context menu
         ContextMenu contextMenu = new ContextMenu();
         MenuItem reloadItem = new MenuItem("Reload");
@@ -132,13 +119,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         controller.getSectionsListView().setContextMenu(contextMenu);
 
         // Bind the action listeners
-        // ADD SECTION BTN
-        controller.getAddSectionBtn().setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                addSection();
-            }
-        });
 
         // SELECT SECTION FROM LIST VIEW
         controller.getSectionsListView().getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
@@ -223,8 +203,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     }
 
     private void requestSectionList() {
-        showStatus("Loading...");
-
         // Reset the list view
         controller.getSectionsListView().getItems().clear();
 
@@ -233,6 +211,12 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             protected Object call() throws Exception {
                 // Get all the sections
                 sections = sectionManager.getSections();
+
+                // Filter out the sections without an associated application
+                sections = sections.stream().filter(section -> {
+                    return section.getSectionType() == SectionType.LAUNCHPAD ||
+                            applicationManager.getApplication(section.getRelatedAppId()) != null;
+                }).collect(Collectors.toList());
 
                 // Populate the listview
                 Platform.runLater(new Runnable() {
@@ -313,8 +297,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     }
 
     private void loadSection(Section section) {
-        showStatus("Loading app...");
-
         // Clear the previous grids
         grids = new ArrayList<>();
 
@@ -490,8 +472,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         } else {  // Read the currently active page
             activePage = section.getPages().get(tabPane.getSelectionModel().getSelectedIndex());
         }
-
-        hideStatus();
     }
 
     private void requestChangePageSize(Page page, Section section) {
@@ -701,20 +681,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         return controller;
     }
 
-    public void hideStatus() {
-        controller.getStatusLabel().setVisible(false);
-        controller.getStatusProgressBar().setVisible(false);
-    }
-
-    public void showStatus(String status) {
-        controller.getStatusLabel().setText(status);
-        controller.getStatusLabel().setVisible(true);
-        controller.getStatusProgressBar().setVisible(true);
-    }
-
     @Override
     public void onSectionModified(Section section) {
-        showStatus("Saving...");
         Task saveTask = new Task() {
             @Override
             protected Object call() throws Exception {
@@ -722,12 +690,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 section.setLastEdit(System.currentTimeMillis());
                 // Save the section
                 sectionManager.saveSection(section);
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        hideStatus();
-                    }
-                });
                 return null;
             }
         };

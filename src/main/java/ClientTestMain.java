@@ -116,6 +116,22 @@ public class ClientTestMain {
                             System.out.println("Icon not found for: "+s);
                         }
                     });
+                }else if (line.startsWith("sicon")) {  // SHORTCUT ICON REQUEST
+                    StringTokenizer st = new StringTokenizer(line, ";");
+                    st.nextToken();
+                    String id = st.nextToken();
+
+                    manager.requestShortcutIcon(id, new LinkManager.OnShortcutIconResponseListener() {
+                        @Override
+                        public void onShortcutIconReceived(String s, File file) {
+                            System.out.println("Icon found: "+file.getPath());
+                        }
+
+                        @Override
+                        public void onShortcutIconNotFound(String s) {
+                            System.out.println("Icon not found for: "+s);
+                        }
+                    });
                 }else if (line.startsWith("open")) {  // APP OPEN REQUEST
                     StringTokenizer st = new StringTokenizer(line, ";");
                     st.nextToken();

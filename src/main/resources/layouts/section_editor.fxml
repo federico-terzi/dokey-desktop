@@ -9,15 +9,6 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
 <BorderPane prefHeight="701.0" prefWidth="900.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="app.editor.controllers.EditorController">
-  <bottom>
-    <ToolBar orientation="HORIZONTAL" BorderPane.alignment="TOP_LEFT">
-      <items>
-        <Pane fx:id="bottomSpacerPane" />
-        <Label fx:id="statusLabel" style="-fx-padding: 0 10 0 0;" text="Loading..." />
-        <ProgressBar fx:id="statusProgressBar" prefWidth="200.0" progress="-1.0" />
-      </items>
-    </ToolBar>
-  </bottom>
   <center>
     <SplitPane dividerPositions="0.2541225626740946" focusTraversable="true">
       <items>
@@ -25,19 +16,6 @@
           <top>
             <TextField fx:id="searchSectionTextField" promptText="Search Application..." />
           </top>
-          <bottom>
-            <ToolBar>
-              <items>
-                <Button fx:id="addSectionBtn" mnemonicParsing="false" text="Add Application..." >
-                  <graphic>
-                    <ImageView fitHeight="16" fitWidth="16">
-                      <Image url="/assets/add.png" />
-                    </ImageView>
-                  </graphic>
-                </Button>
-              </items>
-            </ToolBar>
-          </bottom>
           <center>
             <ListView fx:id="sectionsListView" />
           </center>
@@ -55,9 +33,6 @@
   <top>
     <VBox prefHeight="-1.0" prefWidth="-1.0">
       <children>
-        <MenuBar fx:id="menuBar">
-
-        </MenuBar>
         <ToolBar>
           <items>
             <Button mnemonicParsing="false" fx:id="addApplicationBtn">
