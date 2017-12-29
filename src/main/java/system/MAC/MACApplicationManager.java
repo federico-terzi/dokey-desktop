@@ -59,6 +59,16 @@ public class MACApplicationManager implements ApplicationManager {
     }
 
     /**
+     * Get the application associated with the given executable path.
+     * @param executablePath the path to the application.
+     * @return the Application associated with the executable path if found, null otherwise.
+     */
+    @Override
+    public Application getApplication(String executablePath) {
+        return applicationMap.get(executablePath);
+    }
+
+    /**
      * @return the Window object of the active system.window.
      */
     @Override

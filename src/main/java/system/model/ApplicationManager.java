@@ -41,6 +41,13 @@ public interface ApplicationManager {
     List<Application> getApplicationList();
 
     /**
+     * Get the application associated with the given executable path.
+     * @param executablePath the path to the application.
+     * @return the Application associated with the executable path if found, null otherwise.
+     */
+    Application getApplication(String executablePath);
+
+    /**
      * Focus an application if already open or start it if not.
      * @param executablePath path to the application.
      * @return true if succeeded, false otherwise.

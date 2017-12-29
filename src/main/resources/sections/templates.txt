@@ -1,1 +1,2 @@
 Photoshop.exe=photoshop.json
+chrome.exe=chrome.json

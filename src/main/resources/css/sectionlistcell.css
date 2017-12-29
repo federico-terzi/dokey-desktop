@@ -1,0 +1,10 @@
+.sectionlistcell-name {
+    -fx-font-size: 1.0em;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 0 0;
+
+}
+
+.sectionlistcell-path {
+    -fx-font-size: 1.0em;
+}

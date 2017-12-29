@@ -1,0 +1,23 @@
+.empty-btn {
+    -fx-opacity: 0.5;
+}
+
+.bottombar-portrait {
+    -fx-padding: 10 0 0 0;
+}
+
+.bottombar-landscape {
+    -fx-padding: 0 10 0 0;
+}
+
+.drag-entered {
+    -fx-background-color: #6cac6a;
+}
+
+.drag-entered-danger {
+    -fx-background-color: #b85152;
+}
+
+.selected {
+    -fx-background-color: #dada67;
+}

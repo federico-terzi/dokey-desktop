@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="TOP_CENTER" maxWidth="Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.editor.controllers.ShortcutPropertyController">
+   <children>
+      <Label fx:id="shortcutTitleLabel" text="Copy">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <ImageView fx:id="shortcutImageView" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+         <VBox.margin>
+            <Insets top="10.0" />
+         </VBox.margin></ImageView>
+      <Button fx:id="changeImageBtn" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Change Icon...">
+         <VBox.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </VBox.margin>
+      </Button>
+      <Label maxWidth="1.7976931348623157E308" text="Shortcut">
+         <VBox.margin>
+            <Insets left="10.0" />
+         </VBox.margin>
+      </Label>
+      <TextField fx:id="shortcutTextField" editable="false">
+         <VBox.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" />
+         </VBox.margin>
+      </TextField>
+   </children>
+   <padding>
+      <Insets top="10.0" />
+   </padding>
+</VBox>

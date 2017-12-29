@@ -13,6 +13,8 @@ import system.KeyboardManager;
 import system.SectionManager;
 import system.model.Application;
 import system.model.ApplicationManager;
+import system.sicons.ShortcutIcon;
+import system.sicons.ShortcutIconManager;
 
 import java.awt.*;
 import java.io.File;
@@ -24,7 +26,7 @@ import java.util.List;
 /**
  * Represents the background worker that executes all the actions in the server.
  */
-public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnAppIconRequestListener, LinkManager.OnAppOpenRequestReceivedListener, LinkManager.OnSectionRequestListener {
+public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnAppIconRequestListener, LinkManager.OnAppOpenRequestReceivedListener, LinkManager.OnSectionRequestListener, LinkManager.OnShortcutIconRequestListener {
     public static final int DELAY_FROM_FOCUS_TO_KEYSTROKE = 300;  // In milliseconds
 
     private LinkManager linkManager;
@@ -32,6 +34,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     private KeyboardManager keyboardManager;
     private SectionManager sectionManager;
     private ApplicationSwitchDaemon applicationSwitchDaemon;
+    private ShortcutIconManager shortcutIconManager;
 
     public EngineService(LinkManager linkManager, ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon) throws AWTException {
         this.linkManager = linkManager;
@@ -39,6 +42,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         this.applicationSwitchDaemon = applicationSwitchDaemon;
         this.keyboardManager = new KeyboardManager();
         this.sectionManager = new SectionManager();
+        this.shortcutIconManager = new ShortcutIconManager();
 
         initialization();
     }
@@ -50,6 +54,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         this.applicationSwitchDaemon = applicationSwitchDaemon;
         this.keyboardManager = new KeyboardManager();
         this.sectionManager = new SectionManager();
+        this.shortcutIconManager = new ShortcutIconManager();
 
         initialization();
     }
@@ -64,6 +69,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         linkManager.setAppIconRequestListener(this);
         linkManager.setAppOpenRequestListener(this);
         linkManager.setSectionRequestListener(this);
+        linkManager.setShortcutIconRequestListener(this);
         applicationSwitchDaemon.addApplicationSwitchListener(this);
     }
 
@@ -169,9 +175,14 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         remoteApplication.setName(application.getName());
         remoteApplication.setPath(application.getExecutablePath());
 
-        // TODO: section logic
+        // Load the section associated with the app to obtain the last edit
+        Section section = sectionManager.getShortcutSection(remoteApplication.getPath());
+        long lastEdit = -1;
+        if (section != null) {
+            lastEdit = section.getLastEdit();
+        }
 
-        linkManager.sendAppSwitchEvent(remoteApplication, -1, new LinkManager.OnAppSwitchAckListener() {
+        linkManager.sendAppSwitchEvent(remoteApplication, lastEdit, new LinkManager.OnAppSwitchAckListener() {
             @Override
             public void onAppSwitchAck() {
                 System.out.println("App Switch Event Received");
@@ -181,13 +192,30 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
 
     /**
      * Called when a user requests an application icon
-     * @param path
-     * @return
+     * @param path executable path of the requested application
+     * @return the icon File if found, null otherwise.
      */
     @Nullable
     @Override
     public File onAppIconRequestReceived(String path) {
         return appManager.getApplicationIcon(path);
+    }
+
+    /**
+     * Called when a user requests a shortcut icon
+     * @param id the shortcut icon id.
+     * @return the icon File if found, null otherwise.
+     */
+    @Nullable
+    @Override
+    public File onShortcutIconRequestReceived(String id) {
+        ShortcutIcon shortcutIcon = shortcutIconManager.getIcon(id);
+
+        if (shortcutIcon != null) {
+            return shortcutIcon.getFile();
+        }
+
+        return null;
     }
 
     @NotNull

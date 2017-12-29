@@ -6,9 +6,7 @@ import json.JSONTokener;
 import section.model.*;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * The SectionManager is used to manage sections.
@@ -17,11 +15,33 @@ public class SectionManager {
     public static final String SECTION_FOLDER_NAME = "sections";
     public static final String TEMPLATE_DB_FILENAME = "templates.txt";
 
+    public static final int DEFAULT_PAGE_ROWS = 4;
+    public static final int DEFAULT_PAGE_COLS = 4;
+
     // This map will hold the association between app name and template file
     public Map<String, String> templateMap = new HashMap<>();
 
     public SectionManager() {
         loadTemplateMap();  // load the template map from the TEMPLATE_DB_FILE
+    }
+
+    /**
+     * Get the list of all user Section(s).
+     * @return the list of all user sections.
+     */
+    public List<Section> getSections() {
+        List<Section> output = new ArrayList<>();
+        // Get the section directory
+        File userSectionDir = CacheManager.getInstance().getSectionDir();
+
+        // Go through all user section files
+        for (File sectionFile : userSectionDir.listFiles()) {
+            // Get the section from the file
+            Section currentSection = getSectionFromFile(sectionFile);
+            output.add(currentSection);
+        }
+
+        return output;
     }
 
     public Section getShortcutSection(String appPath) {
@@ -40,6 +60,35 @@ public class SectionManager {
         return getSectionFromFile(sectionFile);
     }
 
+    public boolean saveSection(Section section) {
+        File sectionFile = null;
+
+        // Get the appropriate destination file
+        if (section.getSectionType() == SectionType.SHORTCUTS) {
+            sectionFile = getAppSectionFile(section.getRelatedAppId());
+        }else if (section.getSectionType() == SectionType.LAUNCHPAD) {
+            sectionFile = getLaunchpadSectionFile();
+        }else{
+            return false;
+        }
+
+        // Save the section
+        return writeSectionToFile(section, sectionFile);
+    }
+
+    public boolean deleteSection(Section section) {
+        File sectionFile = null;
+
+        // Get the appropriate destination file and delete it
+        if (section.getSectionType() == SectionType.SHORTCUTS) {
+            sectionFile = getAppSectionFile(section.getRelatedAppId());
+            sectionFile.delete();
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * Read a section from the given file
      * @param sectionFile the section File
@@ -48,14 +97,19 @@ public class SectionManager {
     private Section getSectionFromFile(File sectionFile) {
         // Read the content
         try {
-            JSONTokener tokener = new JSONTokener(new FileInputStream(sectionFile));
+            FileInputStream fis = new FileInputStream(sectionFile);
+            JSONTokener tokener = new JSONTokener(fis);
             JSONObject jsonContent = new JSONObject(tokener);
 
             // Create the section by de-serialization
             Section section = Section.fromJson(jsonContent);
 
+            fis.close();
+
             return section;
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -137,6 +191,13 @@ public class SectionManager {
         section.setLastEdit(System.currentTimeMillis());
         section.setRelatedAppId(appPath);
 
+        // Add an empty page
+        Page firstPage = new Page();
+        firstPage.setTitle("Page 1");
+        firstPage.setColCount(DEFAULT_PAGE_COLS);
+        firstPage.setRowCount(DEFAULT_PAGE_ROWS);
+        section.addPage(firstPage);
+
         return section;
     }
 
@@ -151,25 +212,10 @@ public class SectionManager {
         section.setSectionType(SectionType.LAUNCHPAD);
         section.setLastEdit(System.currentTimeMillis());
 
-        // TODO: remove below
-
         Page firstPage = new Page();
         firstPage.setTitle("Launchpad");
         firstPage.setColCount(4);
         firstPage.setRowCount(4);
-
-        AppItem appItem = new AppItem();
-        appItem.setAppID("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe");
-        appItem.setTitle("Chrome");
-
-        Component component = new Component();
-        component.setItem(appItem);
-        component.setX(0);
-        component.setY(0);
-        component.setXSpan(1);
-        component.setYSpan(1);
-
-        firstPage.addComponent(component);
 
         section.addPage(firstPage);
         return section;
@@ -209,7 +255,7 @@ public class SectionManager {
      * @param dest    the destination File.
      * @return true if succeeded, false otherwise.
      */
-    private boolean writeSectionToFile(Section section, File dest) {
+    public boolean writeSectionToFile(Section section, File dest) {
         try {
             // Write the json section to the file
             FileOutputStream fos = new FileOutputStream(dest);

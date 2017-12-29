@@ -46,6 +46,6 @@ abstract class Application : Comparable<Application>{
     }
 
     override fun compareTo(other: Application): Int {
-        return this.name.compareTo(other.name)
+        return this.name.toLowerCase().compareTo(other.name.toLowerCase())
     }
 }
