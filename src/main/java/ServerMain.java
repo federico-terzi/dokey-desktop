@@ -15,6 +15,11 @@ public class ServerMain {
         // Load the applications
         wm.loadApplications(new ApplicationManager.OnLoadApplicationsListener() {
             @Override
+            public void onPreloadUpdate(String applicationName, int current, int total) {
+                System.out.println("Loading: "+applicationName+" "+current+"/"+total);
+            }
+
+            @Override
             public void onProgressUpdate(String applicationName,String iconPath, int current, int total) {
                 System.out.println("Loading: "+applicationName+" "+current+"/"+total);
             }

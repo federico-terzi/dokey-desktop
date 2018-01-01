@@ -21,6 +21,11 @@ public class TestMain {
         // powershell "[System.Reflection.Assembly]::LoadWithPartialName('System.Drawing')  | Out-Null ; [System.Drawing.Icon]::ExtractAssociatedIcon('C:\Users\Federico\Documents\Skype.exe').ToBitmap().Save('C:\Users\Federico\s.png')"
         wm.loadApplications(new ApplicationManager.OnLoadApplicationsListener() {
             @Override
+            public void onPreloadUpdate(String applicationName, int current, int total) {
+                System.out.println("Loading: "+applicationName+" "+current+"/"+total);
+            }
+
+            @Override
             public void onProgressUpdate(String applicationName,String iconPath, int current, int total) {
                 System.out.println("Loading: "+applicationName+" "+current+"/"+total);
             }

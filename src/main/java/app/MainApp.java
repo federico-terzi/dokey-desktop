@@ -90,31 +90,34 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
             protected Void call() throws Exception {
                 appManager.loadApplications(new ApplicationManager.OnLoadApplicationsListener() {
                     @Override
+                    public void onPreloadUpdate(String applicationName, int current, int total) {
+                        System.out.println("Preload: " + applicationName + " " + current + "/" + total);
+
+                        // Calculate the percentage
+                        double percentage = (current / (double) total) * 0.5;
+
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                // Update the initialization stage
+                                initializationStage.updateAppStatus(applicationName, percentage);
+                            }
+                        });
+                    }
+
+                    @Override
                     public void onProgressUpdate(String applicationName, String iconPath, int current, int total) {
                         System.out.println("Loading: " + applicationName + " " + current + "/" + total);
                         // Calculate the percentage
-                        double percentage = (current / (double) total);
+                        double percentage = (current / (double) total) * 0.5 + 0.5;
 
-                        if (iconPath != null) {
-                            // Get the icon file
-                            File iconImage = new File(iconPath);
-
-                            Platform.runLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    // Update the initialization stage
-                                    initializationStage.updateAppStatus(applicationName, percentage, iconImage);
-                                }
-                            });
-                        }else{
-                            Platform.runLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    // Update the initialization stage
-                                    initializationStage.updateAppStatus(applicationName, percentage, null);
-                                }
-                            });
-                        }
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                // Update the initialization stage
+                                initializationStage.updateAppStatus(applicationName, percentage);
+                            }
+                        });
 
                     }
 

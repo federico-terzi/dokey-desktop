@@ -7,8 +7,9 @@ import system.model.Window;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
-public class MACApplicationManager implements ApplicationManager {
+public class MACApplicationManager extends ApplicationManager {
 
     // This map will hold the applications, associated with their executable path
     private Map<String, Application> applicationMap = new HashMap<>();
@@ -56,6 +57,11 @@ public class MACApplicationManager implements ApplicationManager {
         }else{
             return null;
         }
+    }
+
+    @Override
+    public boolean isApplicationAlreadyPresent(String executablePath) {
+        return applicationMap.containsKey(executablePath);
     }
 
     /**
@@ -337,6 +343,11 @@ public class MACApplicationManager implements ApplicationManager {
             e.printStackTrace();
             return;
         }
+
+        // Load the list of the external applications
+        List<String> externalApps = loadExternalAppPaths();
+        List<File> externalAppFiles = externalApps.stream().map(File::new).collect(Collectors.toList());
+        fileList.addAll(externalAppFiles);
 
         // Current application in the list
         int current = 0;

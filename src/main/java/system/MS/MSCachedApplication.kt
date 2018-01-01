@@ -1,4 +1,4 @@
 package system.MS
 
-data class MSCachedApplication(val lnkPath : String, val executablePath : String, val iconPath : String?) {
+data class MSCachedApplication(val executablePath : String, val iconPath : String?) {
 }

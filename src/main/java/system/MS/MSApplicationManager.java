@@ -29,13 +29,14 @@ import java.util.List;
 
 import static com.sun.jna.platform.WindowUtils.getIconSize;
 
-public class MSApplicationManager implements ApplicationManager {
+public class MSApplicationManager extends ApplicationManager {
     public static final int OPEN_APPLICATION_TIMEOUT = 2000;  // Timeout of the application open requests
     public static final int OPEN_APPLICATION_CHECK_INTERVAL = 300;  // How often to check that the app is effectively open.
 
     private static final int MAX_TITLE_LENGTH = 1024;
 
     private static String START_MENU_CACHE_FILENAME = "startmenucache.txt";
+    private static String APP_CACHE_FILENAME = "appcache.txt";
 
     // This map will hold the applications, associated with their executable path
     private Map<String, Application> applicationMap = new HashMap<>();
@@ -143,6 +144,11 @@ public class MSApplicationManager implements ApplicationManager {
         }else{
             return null;
         }
+    }
+
+    @Override
+    public boolean isApplicationAlreadyPresent(String executablePath) {
+        return applicationMap.containsKey(executablePath);
     }
 
     /**
@@ -455,25 +461,30 @@ public class MSApplicationManager implements ApplicationManager {
         // Initialize the application maps
         applicationMap = new HashMap<>();
 
-        // Create a list that will hold all the files
-        List<File> fileList = new ArrayList<>();
+        // Create a list that will hold all the link files
+        List<File> linkFileList = new ArrayList<>();
 
         // Cycle through all start menus
         for (String startPath : pathsToScan) {
             // Get the files contained in the folder recoursively
             Collection<File> files = FileUtils.listFiles(new File(startPath), extensionsToMatch, true);
             // Add all the files to the collection
-            fileList.addAll(files);
+            linkFileList.addAll(files);
         }
 
         // Get the start menu lnk destination cache
-        Map<String, MSCachedApplication> lnkCacheMap = loadLnkDestinationCacheMap();
+        Map<String, String> lnkCacheMap = loadLnkDestinationCacheMap();
 
-        // Current application in the list
-        int current = 0;
+        // The list that will hold all the application executable paths
+        List<String> executablePaths = new ArrayList<>();
 
-        // Cycle through all entries
-        for (File file : fileList) {
+        // This map will hold the association between the executable path and the app name
+        Map<String, String> appNameMap = new HashMap<>();
+
+        // Populate the list
+        int current = 0; // Current application in the list
+
+        for (File file : linkFileList) {
             try {
                 // Skip uninstallers
                 if (file.getName().toLowerCase().contains("uninstall")) {
@@ -482,39 +493,96 @@ public class MSApplicationManager implements ApplicationManager {
                 }
 
                 String applicationName = file.getName().replace(".lnk", "");
-                String executablePath = null;
+                String executablePath;
                 String iconPath = null;
 
-                // Try to load the application info from the cache
+                // Try to load the executable path from the cache
                 if (lnkCacheMap.containsKey(file.getAbsolutePath())) {  // APP in cache
-                    MSCachedApplication cachedApp = lnkCacheMap.get(file.getAbsolutePath());
-                    executablePath = cachedApp.getExecutablePath();
-                    iconPath = cachedApp.getIconPath();
+                    executablePath = lnkCacheMap.get(file.getAbsolutePath());
+
+                    // Check if the requested executable path should be skipped
+                    if (executablePath.equals("SKIP")) {
+                        continue;
+                    }
                 } else {  // APP not in cache
                     // Calculate the correct values
                     executablePath = getLnkExecutablePath(file.getAbsolutePath());
 
                     // Make sure the executable exists
                     if (executablePath != null) {
-                        // Get the app icon
-                        iconPath = getIconPath(executablePath);
-
-                        // Save the info to the cache
-                        writeLnkDestinationToCache(file.getAbsolutePath(), executablePath, iconPath);
+                        // Save the destination to the cache
+                        writeLnkDestinationToCache(file.getAbsolutePath(), executablePath);
+                    }else{
+                        // Mark the link as skippable
+                        writeLnkDestinationToCache(file.getAbsolutePath(), "SKIP");
                     }
                 }
 
-                // Make sure the target is an exe file
+                // If found, notify the listener
                 if (executablePath != null) {
-                    // Add the application
-                    addApplicationFromExecutablePath(executablePath, applicationName, iconPath);
+                    // Add the executable to the list
+                    executablePaths.add(executablePath);
+
+                    // Add the application name to the map
+                    appNameMap.put(executablePath, applicationName);
+
                     // Update the listener
                     if (listener != null) {
-                        listener.onProgressUpdate(applicationName, iconPath, current, fileList.size());
+                        listener.onPreloadUpdate(applicationName, current, linkFileList.size());
                     }
                 }
             }catch(Exception e) {
                 System.out.print("EXC APP "+file.getName());
+                e.printStackTrace();
+            }
+
+            current++;
+        }
+
+        // Load the list of the external applications
+        List<String> externalApps = loadExternalAppPaths();
+        executablePaths.addAll(externalApps);
+
+        // Current application in the list
+        current = 0;
+
+        // Load the application cache map
+        Map<String, MSCachedApplication> appCacheMap = loadAppCacheMap();
+
+        // Cycle through all executable paths
+        for (String executablePath : executablePaths) {
+            try {
+                String iconPath = null;
+
+                // Try to load the application info from the cache
+                if (appCacheMap.containsKey(executablePath)) {  // APP in cache
+                    MSCachedApplication cachedApp = appCacheMap.get(executablePath);
+                    executablePath = cachedApp.getExecutablePath();
+                    iconPath = cachedApp.getIconPath();
+                } else {  // APP not in cache
+                    // Get the app icon
+                    iconPath = getIconPath(executablePath);
+
+                    // Save the info to the cache
+                    writeAppToCache(executablePath, iconPath);
+                }
+
+                // Get the application name
+                String applicationName = appNameMap.get(executablePath);
+                // If the application name is not present, calculate it dynamically
+                if (applicationName == null) {
+                    applicationName = calculateAppNameFromExecutablePath(executablePath);
+                }
+
+                // Add the application
+                addApplicationFromExecutablePath(executablePath, applicationName, iconPath);
+
+                // Update the listener
+                if (listener != null) {
+                    listener.onProgressUpdate(applicationName, iconPath, current, executablePaths.size());
+                }
+            }catch(Exception e) {
+                System.out.print("EXC APP "+executablePath);
                 e.printStackTrace();
             }
 
@@ -587,10 +655,7 @@ public class MSApplicationManager implements ApplicationManager {
             // executablePath is already present, to mitigate ambiguities of the program name,
             // the executable filename becomes the Application name ( without .exe )
             if (applicationMap.containsKey(executablePath) || applicationName == null) {
-                File appExe = new File(executablePath);
-                // Create the new app name extracting the filename, removing the extension
-                // and capitalizing the first letter
-                applicationName = StringUtils.capitalize(appExe.getName().toLowerCase().replace(".exe", ""));
+                applicationName = calculateAppNameFromExecutablePath(executablePath);
             }
 
             // If the application icon is null, find it
@@ -607,6 +672,18 @@ public class MSApplicationManager implements ApplicationManager {
             return application;
         }
         return null;
+    }
+
+    /**
+     * Calculate the application name by extracting it from the executable path
+     * @param executablePath path to the app exe
+     * @return the extracted name.
+     */
+    private String calculateAppNameFromExecutablePath(String executablePath) {
+        File appExe = new File(executablePath);
+        // Create the new app name extracting the filename, removing the extension
+        // and capitalizing the first letter
+        return StringUtils.capitalize(appExe.getName().toLowerCase().replace(".exe", ""));
     }
 
     /**
@@ -895,9 +972,9 @@ public class MSApplicationManager implements ApplicationManager {
      * Write the specified lnk file path / destination to the cache file.
      *
      * @param lnkFilePath  the lnk file path
-     * @param destFilePath the destination file the lnk file points to
+     * @param executablePath the destination file the lnk file points to
      */
-    private void writeLnkDestinationToCache(String lnkFilePath, String destFilePath, String iconPath) {
+    private void writeLnkDestinationToCache(String lnkFilePath, String executablePath) {
         // Get the cache manager
         CacheManager cacheManager = CacheManager.getInstance();
 
@@ -910,7 +987,31 @@ public class MSApplicationManager implements ApplicationManager {
             // Append the info
             fw.write(lnkFilePath);
             fw.write('\n');
-            fw.write(destFilePath);
+            fw.write(executablePath);
+            fw.write('\n');
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Write the specified application to the cache file.
+     *
+     * @param executablePath  the executable path of the application
+     * @param iconPath path to the app icon.
+     */
+    private void writeAppToCache(String executablePath, String iconPath) {
+        // Get the cache manager
+        CacheManager cacheManager = CacheManager.getInstance();
+
+        // Get the cache destination file
+        File cacheFile = new File(cacheManager.getCacheDir(), APP_CACHE_FILENAME);
+
+        // Open the file
+        try (FileWriter fw = new FileWriter(cacheFile, true)) {
+
+            // Append the info
+            fw.write(executablePath);
             fw.write('\n');
 
             // Write the appropriate value
@@ -932,13 +1033,13 @@ public class MSApplicationManager implements ApplicationManager {
      *
      * @return a map containing the association < LnkPath, CachedApp >
      */
-    private Map<String, MSCachedApplication> loadLnkDestinationCacheMap() {
+    private Map<String, String> loadLnkDestinationCacheMap() {
         CacheManager cacheManager = CacheManager.getInstance();
 
         // Get the cache destination file
         File cacheFile = new File(cacheManager.getCacheDir(), START_MENU_CACHE_FILENAME);
 
-        Map<String, MSCachedApplication> output = new HashMap<>();
+        Map<String, String> output = new HashMap<>();
 
         // Make sure the file exists
         if (cacheFile.isFile()) {
@@ -947,6 +1048,38 @@ public class MSApplicationManager implements ApplicationManager {
                 String lnkPath;
                 while ((lnkPath = reader.readLine()) != null) {
                     String executablePath = reader.readLine();
+
+                    // Add the tuple to the map
+                    output.put(lnkPath, executablePath);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return output;
+    }
+
+    /**
+     * Read the app and return a map that associates the
+     * executable path to the cached application info.
+     *
+     * @return a map containing the association < ExecutablePath, CachedApp >
+     */
+    private Map<String, MSCachedApplication> loadAppCacheMap() {
+        CacheManager cacheManager = CacheManager.getInstance();
+
+        // Get the cache destination file
+        File cacheFile = new File(cacheManager.getCacheDir(), APP_CACHE_FILENAME);
+
+        Map<String, MSCachedApplication> output = new HashMap<>();
+
+        // Make sure the file exists
+        if (cacheFile.isFile()) {
+            // Read all the info
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(cacheFile)))) {
+                String executablePath;
+                while ((executablePath = reader.readLine()) != null) {
                     String iconPath = reader.readLine();
 
                     // Convert the null iconpath
@@ -955,7 +1088,7 @@ public class MSApplicationManager implements ApplicationManager {
                     }
 
                     // Add the tuple to the map
-                    output.put(lnkPath, new MSCachedApplication(lnkPath, executablePath, iconPath));
+                    output.put(executablePath, new MSCachedApplication(executablePath, iconPath));
                 }
             } catch (IOException e) {
                 e.printStackTrace();

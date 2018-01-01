@@ -9,7 +9,6 @@ import javafx.scene.image.ImageView;
 import java.io.File;
 
 public class InitializationController {
-    @FXML private ImageView appImageView;
     @FXML private ProgressBar appProgressBar;
 
     @FXML private Label appNameLabel;
@@ -24,10 +23,5 @@ public class InitializationController {
 
     public void setAppProgressBar(double progress) {
         appProgressBar.setProgress(progress);
-    }
-
-    public void setAppImageFile(File imageFile) {
-        Image image = new Image(imageFile.toURI().toString());
-        appImageView.setImage(image);
     }
 }

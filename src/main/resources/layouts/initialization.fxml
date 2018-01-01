@@ -9,24 +9,11 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="CENTER" prefHeight="300.0" prefWidth="400.0" style="-fx-background-color: black;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="app.UIControllers.InitializationController">
+<VBox alignment="CENTER" prefHeight="300.0" prefWidth="400.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.UIControllers.InitializationController">
   <children>
-    <Label fx:id="titleLabel" alignment="CENTER" contentDisplay="CENTER" text="Remote Key is initializing..." textFill="WHITE">
-      <font>
-        <Font size="20.0" />
-      </font>
-      <VBox.margin>
-        <Insets fx:id="x1" />
-      </VBox.margin>
-    </Label>
-    <ImageView id="imageView" fx:id="appImageView" disable="false" fitHeight="64.0" fitWidth="64.0" focusTraversable="false" style="" visible="true">
-      <VBox.margin>
-        <Insets bottom="30.0" top="30.0" />
-      </VBox.margin>
-    </ImageView>
     <ProgressBar fx:id="appProgressBar" maxHeight="10.0" prefHeight="10.0" prefWidth="250.0" progress="-1.0">
       <VBox.margin>
-        <Insets bottom="10.0" />
+        <Insets bottom="10.0" top="10.0" />
       </VBox.margin>
     </ProgressBar>
     <Label fx:id="appNameLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="-1.0" prefWidth="277.0" text="Loading..." textAlignment="CENTER" textFill="WHITE" textOverrun="ELLIPSIS" wrapText="false" />

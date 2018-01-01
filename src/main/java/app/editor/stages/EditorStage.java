@@ -76,7 +76,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
     private Section activeSection = null;
     private Page activePage = null;
-    private ScreenOrientation screenOrientation = ScreenOrientation.LANDSCAPE;
+    private ScreenOrientation screenOrientation = ScreenOrientation.PORTRAIT;
 
     public EditorStage(ApplicationManager applicationManager, OnEditorCloseListener onEditorCloseListener) throws IOException {
         this.applicationManager = applicationManager;
