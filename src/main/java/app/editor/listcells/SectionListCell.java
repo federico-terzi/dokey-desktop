@@ -72,7 +72,7 @@ public class SectionListCell extends ListCell<Section> {
         }else if (section.getSectionType() == SectionType.LAUNCHPAD){
             Image appImage = null;
             try {
-                appImage = new Image(SectionListCell.class.getResource("/assets/icon-black.png").toURI().toString());
+                appImage = new Image(SectionListCell.class.getResource("/assets/apps.png").toURI().toString());
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }

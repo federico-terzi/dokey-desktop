@@ -89,7 +89,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         scene.getStylesheets().add(AppSelectDialogStage.class.getResource("/css/editor.css").toExternalForm());
         this.setTitle("Editor");
         this.setScene(scene);
-        this.getIcons().add(new Image(EditorStage.class.getResourceAsStream("/assets/icon.png")));
+        this.getIcons().add(new Image(EditorStage.class.getResourceAsStream("/assets/editor.png")));
 
         controller = (EditorController) fxmlLoader.getController();
 
