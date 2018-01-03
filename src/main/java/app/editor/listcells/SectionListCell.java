@@ -90,6 +90,13 @@ public class SectionListCell extends ListCell<Section> {
                 onContextMenuListener.onReloadSection(section);
             }
         });
+        Image reloadImage = new Image(SectionListCell.class.getResourceAsStream("/assets/refresh.png"));
+        ImageView reloadImageView = new ImageView(reloadImage);
+        reloadImageView.setFitWidth(16);
+        reloadImageView.setFitHeight(16);
+        reloadImageView.setSmooth(true);
+        reloadItem.setGraphic(reloadImageView);
+
         MenuItem exportItem = new MenuItem("Export...");
         exportItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -97,6 +104,13 @@ public class SectionListCell extends ListCell<Section> {
                 onContextMenuListener.onExportSection(section);
             }
         });
+        Image exportImage = new Image(SectionListCell.class.getResourceAsStream("/assets/export.png"));
+        ImageView exportImageView = new ImageView(exportImage);
+        exportImageView.setFitWidth(16);
+        exportImageView.setFitHeight(16);
+        exportImageView.setSmooth(true);
+        exportItem.setGraphic(exportImageView);
+
         MenuItem deleteItem = new MenuItem("Delete");
         deleteItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -112,6 +126,12 @@ public class SectionListCell extends ListCell<Section> {
                 }
             }
         });
+        Image deleteImage = new Image(SectionListCell.class.getResourceAsStream("/assets/delete.png"));
+        ImageView deleteImageView = new ImageView(deleteImage);
+        deleteImageView.setFitWidth(16);
+        deleteImageView.setFitHeight(16);
+        deleteImageView.setSmooth(true);
+        deleteItem.setGraphic(deleteImageView);
 
         contextMenu.getItems().addAll(reloadItem, exportItem, new SeparatorMenuItem(), deleteItem);
         setContextMenu(contextMenu);
