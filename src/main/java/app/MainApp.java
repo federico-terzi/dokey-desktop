@@ -1,6 +1,7 @@
 package app;
 
 import app.editor.stages.EditorStage;
+import app.editor.stages.SettingsStage;
 import app.stages.InitializationStage;
 import engine.EngineServer;
 import engine.EngineWorker;
@@ -18,7 +19,6 @@ import system.SystemInfoManager;
 import system.adb.ADBManager;
 import system.model.ApplicationManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
 
@@ -27,6 +27,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private Timer notificationTimer = new Timer();
 
     private boolean isEditorOpen = false;
+    private boolean isSettingsOpen = false;
 
     private TrayIconManager trayIconManager = new TrayIconManager();
     private ApplicationManager appManager;
@@ -176,7 +177,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         trayIconManager.setTrayIconStatus("Not connected");
         trayIconManager.setLoading(false);
 
-        openEditor();
+        //openEditor();
+        openSettings();
     }
 
     /**
@@ -211,6 +213,30 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     @Override
     public void onEditorOpenRequest() {
         openEditor();
+    }
+
+    private void openSettings() {
+        if (isSettingsOpen) {
+            return;
+        }
+
+        try {
+            isSettingsOpen = true;
+            SettingsStage settingsStage = new SettingsStage(appManager, new SettingsStage.OnSettingsCloseListener() {
+                @Override
+                public void onSettingsClosed() {
+                    isSettingsOpen = false;
+                }
+            });
+            settingsStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onSettingsOpenRequest() {
+        openSettings();
     }
 
     /**

@@ -1,8 +1,12 @@
 package app.editor.listcells;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -16,6 +20,8 @@ public class ApplicationListCell extends ListCell<Application> {
     private ImageView image = new ImageView();
     private Label name = new Label();
     private Label path = new Label();
+
+    private OnContextMenuListener onContextMenuListener;
 
     public ApplicationListCell() {
         configureGrid();
@@ -53,6 +59,27 @@ public class ApplicationListCell extends ListCell<Application> {
         name.setText(application.getName());
         path.setText(application.getExecutablePath());
         setGraphic(grid);
+
+        // Set up the context menu
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem deleteItem = new MenuItem("Delete");
+        deleteItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (onContextMenuListener != null) {
+                    onContextMenuListener.onDeleteApplication(application);
+                }
+            }
+        });
+        Image deleteImage = new Image(SectionListCell.class.getResourceAsStream("/assets/delete.png"));
+        ImageView deleteImageView = new ImageView(deleteImage);
+        deleteImageView.setFitWidth(16);
+        deleteImageView.setFitHeight(16);
+        deleteImageView.setSmooth(true);
+        deleteItem.setGraphic(deleteImageView);
+
+        contextMenu.getItems().addAll(deleteItem);
+        setContextMenu(contextMenu);
     }
 
     @Override
@@ -63,5 +90,13 @@ public class ApplicationListCell extends ListCell<Application> {
         }else{
             addContent(application);
         }
+    }
+
+    public void setOnContextMenuListener(OnContextMenuListener onContextMenuListener) {
+        this.onContextMenuListener = onContextMenuListener;
+    }
+
+    public interface OnContextMenuListener {
+        void onDeleteApplication(Application application);
     }
 }

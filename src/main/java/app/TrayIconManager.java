@@ -71,8 +71,6 @@ public class TrayIconManager {
             // if the user double-clicks on the tray icon, show the main app stage.
             trayIcon.addActionListener(event -> Platform.runLater(() -> System.out.println("double click!")));
 
-            // if the user selects the default menu item (which includes the app name),
-            // show the main app stage.
             java.awt.MenuItem openEditor = new java.awt.MenuItem("Open Editor");
             openEditor.addActionListener(event -> Platform.runLater(() -> {
                 if (listener != null) {
@@ -80,15 +78,17 @@ public class TrayIconManager {
                 }
             }));
 
-            // the convention for tray icons seems to be to set the default icon for opening
-            // the application stage in a bold font.
             java.awt.Font defaultFont = java.awt.Font.decode(null);
             java.awt.Font boldFont = defaultFont.deriveFont(java.awt.Font.BOLD);
             openEditor.setFont(boldFont);
 
-            // to really exit the application, the user must go to the system tray icon
-            // and select the exit option, this will shutdown JavaFX and remove the
-            // tray icon (removing the tray icon will also shut down AWT).
+            java.awt.MenuItem settingsItem = new java.awt.MenuItem("Settings");
+            settingsItem.addActionListener(event -> Platform.runLater(() -> {
+                if (listener != null) {
+                    listener.onSettingsOpenRequest();
+                }
+            }));
+
             java.awt.MenuItem exitItem = new java.awt.MenuItem("Exit");
             exitItem.addActionListener(event -> {
                 //notificationTimer.cancel();
@@ -99,6 +99,7 @@ public class TrayIconManager {
             // setup the popup menu for the application.
             final java.awt.PopupMenu popup = new java.awt.PopupMenu();
             popup.add(openEditor);
+            popup.add(settingsItem);
             popup.addSeparator();
             popup.add(exitItem);
             trayIcon.setPopupMenu(popup);
@@ -113,6 +114,7 @@ public class TrayIconManager {
 
     public interface OnTrayActionListener {
         void onEditorOpenRequest();
+        void onSettingsOpenRequest();
     }
 
     /**

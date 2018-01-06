@@ -129,10 +129,56 @@ public abstract class ApplicationManager {
                 fw.write(executablePath);
                 fw.write('\n');
 
-                return true;
             } catch (IOException e) {
                 e.printStackTrace();
+                return false;
             }
+
+            // Reload the application list
+            loadApplications(null);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Remove the given executable path from the external application list
+     * @param executablePath the path of the application to remove.
+     * @return true if succeeded, false otherwise
+     */
+    public boolean removeExternalApplication(String executablePath) {
+        if (isApplicationAlreadyPresent(executablePath)) {
+            List<String> externalApps = loadExternalAppPaths();
+
+            // Remove the element from the list
+            externalApps.remove(executablePath);
+
+            // Write the list again
+
+            // Get the cache manager
+            CacheManager cacheManager = CacheManager.getInstance();
+
+            // Get the external app list file
+            File externalAppsFile = new File(cacheManager.getCacheDir(), EXTERNAL_APP_LIST_FILENAME);
+
+            // Open the file
+            try (FileWriter fw = new FileWriter(externalAppsFile, false)) {
+                for (String currentPath : externalApps) {
+                    // Append the info
+                    fw.write(currentPath);
+                    fw.write('\n');
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            // Reload the application list
+            loadApplications(null);
+
+            return true;
         }
 
         return false;
