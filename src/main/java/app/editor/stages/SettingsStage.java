@@ -44,6 +44,7 @@ public class SettingsStage extends Stage {
         Scene scene = new Scene(root);
         scene.getStylesheets().add(AppSelectDialogStage.class.getResource("/css/applistcell.css").toExternalForm());
         this.setTitle("Settings");
+        this.setResizable(false);
         this.setScene(scene);
         this.getIcons().add(new Image(SettingsStage.class.getResourceAsStream("/assets/icon.png")));
 

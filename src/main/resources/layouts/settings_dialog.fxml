@@ -10,18 +10,18 @@
             prefWidth="579.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="app.editor.controllers.SettingsController">
     <center>
-        <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <TabPane tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
             <tabs>
                 <Tab text="General">
                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+                        <AnchorPane minHeight="0.0" minWidth="0.0"/>
                     </content>
                 </Tab>
                 <Tab text="Applications">
                     <content>
-                        <BorderPane prefHeight="200.0" prefWidth="200.0">
+                        <BorderPane>
                             <center>
-                                <ListView fx:id="externalAppListView" prefHeight="200.0" prefWidth="200.0"
+                                <ListView fx:id="externalAppListView"
                                           BorderPane.alignment="CENTER">
                                     <BorderPane.margin>
                                         <Insets bottom="6.0" left="6.0" right="6.0" top="6.0"/>
