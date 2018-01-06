@@ -6,43 +6,47 @@
 <?import javafx.scene.layout.*?>
 
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="447.0" prefWidth="579.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.editor.controllers.SettingsController">
-   <center>
-      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-        <tabs>
-          <Tab text="Applications">
-               <content>
-                  <BorderPane prefHeight="200.0" prefWidth="200.0">
-                     <center>
-                        <ListView fx:id="externalAppListView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                           <BorderPane.margin>
-                              <Insets bottom="6.0" left="6.0" right="6.0" top="6.0" />
-                           </BorderPane.margin>
-                        </ListView>
-                     </center>
-                     <top>
-                        <Label text="External Applications" BorderPane.alignment="TOP_LEFT">
-                           <BorderPane.margin>
-                              <Insets left="6.0" right="6.0" top="6.0" />
-                           </BorderPane.margin>
-                        </Label>
-                     </top>
-                     <bottom>
-                        <Button fx:id="addApplicationBtn" mnemonicParsing="false" text="Add Application..." BorderPane.alignment="TOP_RIGHT">
-                           <BorderPane.margin>
-                              <Insets bottom="6.0" right="6.0" />
-                           </BorderPane.margin>
-                        </Button>
-                     </bottom>
-                  </BorderPane>
-               </content>
-          </Tab>
-          <Tab text="General">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-            </content>
-          </Tab>
-        </tabs>
-      </TabPane>
-   </center>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="447.0"
+            prefWidth="579.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="app.editor.controllers.SettingsController">
+    <center>
+        <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+            <tabs>
+                <Tab text="General">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+                    </content>
+                </Tab>
+                <Tab text="Applications">
+                    <content>
+                        <BorderPane prefHeight="200.0" prefWidth="200.0">
+                            <center>
+                                <ListView fx:id="externalAppListView" prefHeight="200.0" prefWidth="200.0"
+                                          BorderPane.alignment="CENTER">
+                                    <BorderPane.margin>
+                                        <Insets bottom="6.0" left="6.0" right="6.0" top="6.0"/>
+                                    </BorderPane.margin>
+                                </ListView>
+                            </center>
+                            <top>
+                                <Label text="External Applications" BorderPane.alignment="TOP_LEFT">
+                                    <BorderPane.margin>
+                                        <Insets left="6.0" right="6.0" top="6.0"/>
+                                    </BorderPane.margin>
+                                </Label>
+                            </top>
+                            <bottom>
+                                <Button fx:id="addApplicationBtn" mnemonicParsing="false" text="Add Application..."
+                                        BorderPane.alignment="TOP_RIGHT">
+                                    <BorderPane.margin>
+                                        <Insets bottom="6.0" right="6.0"/>
+                                    </BorderPane.margin>
+                                </Button>
+                            </bottom>
+                        </BorderPane>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </center>
 </BorderPane>
