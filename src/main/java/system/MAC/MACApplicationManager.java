@@ -484,9 +484,13 @@ public class MACApplicationManager extends ApplicationManager {
                     return null;
                 }
 
+                proc.waitFor();
+
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         } else {
             return null;
