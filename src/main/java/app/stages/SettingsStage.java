@@ -1,7 +1,8 @@
-package app.editor.stages;
+package app.stages;
 
-import app.editor.controllers.SettingsController;
+import app.UIControllers.SettingsController;
 import app.editor.listcells.ApplicationListCell;
+import app.editor.stages.AppSelectDialogStage;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,6 +12,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
@@ -18,6 +21,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
+import system.CacheManager;
 import system.model.Application;
 import system.model.ApplicationManager;
 import utils.OSValidator;
@@ -27,7 +31,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 public class SettingsStage extends Stage {
     private ApplicationManager applicationManager;
@@ -89,6 +93,30 @@ public class SettingsStage extends Stage {
                     }
                 });
                 return applicationListCell;
+            }
+        });
+
+        // CLEAR CACHE
+        controller.clearCacheBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                CacheManager cacheManager = CacheManager.getInstance();
+
+                boolean result = cacheManager.clearCache();
+                if (result) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Cache Deleted!");
+                    alert.setHeaderText("Cache have been successfully deleted, now the app will close...");
+
+                    Optional<ButtonType> alertResult = alert.showAndWait();
+                    System.exit(0);
+                }else{
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Error deleting cache!");
+                    alert.setHeaderText("Unfortunately, the cache couldn't be deleted!");
+
+                    Optional<ButtonType> alertResult = alert.showAndWait();
+                }
             }
         });
 

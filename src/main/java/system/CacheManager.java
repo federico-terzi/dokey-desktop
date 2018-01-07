@@ -1,9 +1,15 @@
 package system;
 
 
+import org.apache.commons.io.FileUtils;
 import system.model.ApplicationManager;
+import utils.OSValidator;
 
 import java.io.File;
+import java.io.IOException;
+
+import static system.MS.MSApplicationManager.APP_CACHE_FILENAME;
+import static system.MS.MSApplicationManager.START_MENU_CACHE_FILENAME;
 
 /**
  * Used to manage cache files and folders
@@ -83,6 +89,43 @@ public class CacheManager {
         return sectionDir;
     }
 
+    /**
+     * Clear the app cache, by deleting the icons and the cached apps.
+     * SECTIONS WILL NOT BE DELETED
+     * @return true if succeeded, false otherwise.
+     */
+    public boolean clearCache() {
+        boolean result = true;
+
+        // Delete the icon folder
+        File iconDir = getIconCacheDir();
+        if (iconDir.isDirectory()) {
+            try {
+                FileUtils.deleteDirectory(iconDir);
+            } catch (IOException e) {
+                e.printStackTrace();
+                result = false;
+            }
+        }
+
+        // Delete the app cache files
+        if (OSValidator.isWindows()) {
+            File appCache = new File(getCacheDir(), APP_CACHE_FILENAME);
+            if (appCache.isFile()) {
+                result = result && appCache.delete();
+            }
+
+            File startMenuCache = new File(getCacheDir(), START_MENU_CACHE_FILENAME);
+            if (startMenuCache.isFile()) {
+                result = result && startMenuCache.delete();
+            }
+
+        }
+
+        return result;
+    }
+
+
     public File getCacheDir() {
         return cacheDir;
     }
@@ -94,4 +137,6 @@ public class CacheManager {
     public File getSectionDir() {
         return sectionDir;
     }
+
+
 }

@@ -1,7 +1,7 @@
 package app;
 
 import app.editor.stages.EditorStage;
-import app.editor.stages.SettingsStage;
+import app.stages.SettingsStage;
 import app.stages.InitializationStage;
 import engine.EngineServer;
 import engine.EngineWorker;

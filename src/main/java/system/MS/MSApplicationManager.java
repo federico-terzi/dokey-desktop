@@ -35,8 +35,8 @@ public class MSApplicationManager extends ApplicationManager {
 
     private static final int MAX_TITLE_LENGTH = 1024;
 
-    private static String START_MENU_CACHE_FILENAME = "startmenucache.txt";
-    private static String APP_CACHE_FILENAME = "appcache.txt";
+    public static String START_MENU_CACHE_FILENAME = "startmenucache.txt";
+    public static String APP_CACHE_FILENAME = "appcache.txt";
 
     // This map will hold the applications, associated with their executable path
     private Map<String, Application> applicationMap = new HashMap<>();

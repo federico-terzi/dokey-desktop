@@ -1,4 +1,4 @@
-package app.editor.controllers;
+package app.UIControllers;
 
 import app.editor.listcells.ApplicationListCell;
 import javafx.fxml.FXML;
@@ -15,6 +15,7 @@ import java.util.ResourceBundle;
 public class SettingsController {
     public Button addApplicationBtn;
     public ListView externalAppListView;
+    public Button clearCacheBtn;
 
     @FXML
     private ResourceBundle resources;
