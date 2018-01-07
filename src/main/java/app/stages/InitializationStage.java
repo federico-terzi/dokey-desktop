@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import system.ResourceUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,10 +17,10 @@ public class InitializationStage extends Stage {
     private InitializationController controller;
 
     public InitializationStage() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layouts/initialization.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/initialization.fxml").toURI().toURL());
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root, 400, 300);
-        scene.getStylesheets().add(MainApp.class.getResource("/css/initialization.css").toExternalForm());
+        scene.getStylesheets().add(ResourceUtils.getResource("/css/initialization.css").toURI().toString());
         this.setTitle("Remote Key Initialization");
         this.setScene(scene);
         this.initStyle(StageStyle.UNDECORATED);

@@ -1,6 +1,7 @@
 package system.MAC;
 
 import system.CacheManager;
+import system.ResourceUtils;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.model.Window;
@@ -79,7 +80,7 @@ public class MACApplicationManager extends ApplicationManager {
      */
     @Override
     public synchronized  Window getActiveWindow() {
-        String scriptPath = getClass().getResource("/applescripts/getActiveWindow.scpt").getPath();
+        String scriptPath = ResourceUtils.getResource("/applescripts/getActiveWindow.scpt").getAbsolutePath();
         Runtime runtime = Runtime.getRuntime();
 
         try {
@@ -122,7 +123,7 @@ public class MACApplicationManager extends ApplicationManager {
      */
     @Override
     public Application getActiveApplication() {
-        String scriptPath = getClass().getResource("/mac/getActiveApplication").getPath();
+        String scriptPath = ResourceUtils.getResource("/mac/getActiveApplication").getAbsolutePath();
         Runtime runtime = Runtime.getRuntime();
 
         try {
@@ -237,7 +238,7 @@ public class MACApplicationManager extends ApplicationManager {
      */
     @Override
     public synchronized int getActivePID() {
-        String scriptPath = getClass().getResource("/mac/getActiveApplication").getPath();
+        String scriptPath = ResourceUtils.getResource("/mac/getActiveApplication").getAbsolutePath();
         Runtime runtime = Runtime.getRuntime();
 
         try {
@@ -261,7 +262,7 @@ public class MACApplicationManager extends ApplicationManager {
 
     @Override
     public List<Window> getWindowList() {
-        String scriptPath = getClass().getResource("/applescripts/getWindowList.scpt").getPath();
+        String scriptPath = ResourceUtils.getResource("/applescripts/getWindowList.scpt").getAbsolutePath();
         Runtime runtime = Runtime.getRuntime();
 
         List<Window> windowList = new ArrayList<>();

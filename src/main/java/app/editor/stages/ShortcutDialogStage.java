@@ -17,6 +17,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import net.model.KeyboardKeys;
 import section.model.ShortcutItem;
+import system.ResourceUtils;
 import system.sicons.ShortcutIcon;
 import system.sicons.ShortcutIconManager;
 
@@ -35,7 +36,7 @@ public class ShortcutDialogStage extends Stage {
         this.shortcutIconManager = shortcutIconManager;
         this.onShortcutListener = onShortcutListener;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layouts/shortcut_dialog.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/shortcut_dialog.fxml").toURI().toURL());
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         this.setTitle("Shortcut");

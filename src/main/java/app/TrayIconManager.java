@@ -1,8 +1,6 @@
 package app;
 
-import app.editor.stages.EditorStage;
 import javafx.application.Platform;
-import system.model.ApplicationManager;
 import utils.OSValidator;
 
 import javax.imageio.ImageIO;
@@ -10,6 +8,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -53,13 +52,13 @@ public class TrayIconManager {
                 System.exit(0);
             }
 
-            File iconFile = new File(TrayIconManager.class.getResource("/assets/" + TRAY_ICON_FILENAME_CONNECTED).getFile());
+            InputStream iconStream = TrayIconManager.class.getResourceAsStream("/assets/" + TRAY_ICON_FILENAME_CONNECTED);
 
             // set up a system tray icon.
             java.awt.SystemTray tray = java.awt.SystemTray.getSystemTray();
 
             // Set the tray image
-            BufferedImage image = ImageIO.read(iconFile);
+            BufferedImage image = ImageIO.read(iconStream);
             trayIcon = new java.awt.TrayIcon(image);
             trayIconWidth = trayIcon.getSize().width;
 
@@ -132,13 +131,14 @@ public class TrayIconManager {
      * @param imageCode one of the IMAGE CODEs defined by this class.
      */
     public void setTrayIcon(String imageCode) {
-        // Get the icon file
-        File iconFile = getIconFile(imageCode);
+        // Get the icon file stream
+        InputStream iconStream = getIconStream(imageCode);
 
         // Set the tray image and scale it with antialiasing
         BufferedImage image = null;
         try {
-            image = ImageIO.read(iconFile);
+            image = ImageIO.read(iconStream);
+            iconStream.close();
 
             // If the current rotation angle is different from zero, rotate the image
             if (currentRotationAngle != 0) {
@@ -217,13 +217,13 @@ public class TrayIconManager {
      * Get the correct icon file based on the operating system
      * @return the correct icon file
      */
-    public static File getIconFile(String imageCode) {
+    public static InputStream getIconStream(String imageCode) {
         String osFolder = "";
         if (OSValidator.isWindows()) {
             osFolder = "win/";
         }else if (OSValidator.isMac()) {
             osFolder = "mac/";
         }
-        return new File(TrayIconManager.class.getResource("/assets/" + osFolder + imageCode).getFile());
+        return TrayIconManager.class.getResourceAsStream("/assets/" + osFolder + imageCode);
     }
 }

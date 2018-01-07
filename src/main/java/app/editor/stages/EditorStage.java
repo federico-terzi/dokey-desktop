@@ -41,6 +41,7 @@ import section.model.Component;
 import section.model.Page;
 import section.model.Section;
 import section.model.SectionType;
+import system.ResourceUtils;
 import system.SectionManager;
 import system.model.Application;
 import system.model.ApplicationManager;
@@ -82,11 +83,11 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         this.applicationManager = applicationManager;
         this.onEditorCloseListener = onEditorCloseListener;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layouts/section_editor.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/section_editor.fxml").toURI().toURL());
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
-        scene.getStylesheets().add(AppSelectDialogStage.class.getResource("/css/sectionlistcell.css").toExternalForm());
-        scene.getStylesheets().add(AppSelectDialogStage.class.getResource("/css/editor.css").toExternalForm());
+        scene.getStylesheets().add(ResourceUtils.getResource("/css/sectionlistcell.css").toURI().toString());
+        scene.getStylesheets().add(ResourceUtils.getResource("/css/editor.css").toURI().toString());
         this.setTitle("Editor");
         this.setScene(scene);
         this.getIcons().add(new Image(EditorStage.class.getResourceAsStream("/assets/editor.png")));
@@ -403,7 +404,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         }
         // Add the "Add Page" tab
         Tab addTab = new Tab();
-        Image image = new Image(EmptyButton.class.getResource("/assets/add.png").toExternalForm());
+        Image image = new Image(EmptyButton.class.getResourceAsStream("/assets/add.png"));
         ImageView imageView = new ImageView(image);
         imageView.setFitHeight(16);
         imageView.setFitWidth(16);

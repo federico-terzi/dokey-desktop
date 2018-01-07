@@ -1,5 +1,7 @@
 package utils;
 
+import system.ResourceUtils;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,8 +23,7 @@ public class IconManager {
      * @return the map
      */
     private void loadHighResIconMap() {
-        String iconFolderPath = getClass().getResource("/icons/").getPath();
-        File iconDir = new File(iconFolderPath);
+        File iconDir = ResourceUtils.getResource("/icons/");
 
         highResIconMap = new HashMap<>();
 

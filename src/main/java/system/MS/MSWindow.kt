@@ -2,6 +2,7 @@ package system.MS
 
 import com.sun.jna.platform.win32.User32
 import com.sun.jna.platform.win32.WinDef.HWND
+import system.ResourceUtils
 import system.model.Application
 import system.model.Window
 import java.io.BufferedReader
@@ -29,7 +30,7 @@ class MSWindow(titleText: String, application:Application?,
      */
     fun appActivate() {
         val runtime = Runtime.getRuntime()
-        var scriptPath = javaClass.getResource("/vbscripts/focusApplication.vbs").path
+        var scriptPath = ResourceUtils.getResource("/vbscripts/focusApplication.vbs").absolutePath
 
         // Remove the starting trailing slash
         if (scriptPath.startsWith("/")) {

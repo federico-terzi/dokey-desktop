@@ -71,11 +71,7 @@ public class SectionListCell extends ListCell<Section> {
             }
         }else if (section.getSectionType() == SectionType.LAUNCHPAD){
             Image appImage = null;
-            try {
-                appImage = new Image(SectionListCell.class.getResource("/assets/apps.png").toURI().toString());
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
+            appImage = new Image(SectionListCell.class.getResourceAsStream("/assets/apps.png"));
             image.setImage(appImage);
             name.setText("Launchpad");
             path.setText("The main application launcher");

@@ -12,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import system.ResourceUtils;
 import system.model.Application;
 import system.sicons.ShortcutIcon;
 import system.sicons.ShortcutIconManager;
@@ -32,10 +33,10 @@ public class ShortcutIconDialogStage extends Stage {
         this.listener = listener;
         this.shortcutIconManager = shortcutIconManager;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layouts/shortcut_icon_list.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/shortcut_icon_list.fxml").toURI().toURL());
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
-        scene.getStylesheets().add(ShortcutIconDialogStage.class.getResource("/css/shortcutlistcell.css").toExternalForm());
+        scene.getStylesheets().add(ResourceUtils.getResource("/css/shortcutlistcell.css").toURI().toString());
         this.setTitle("Select the Icon");
         this.setScene(scene);
         this.getIcons().add(new Image(ShortcutIconDialogStage.class.getResourceAsStream("/assets/icon.png")));

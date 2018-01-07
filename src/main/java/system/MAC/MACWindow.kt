@@ -1,5 +1,6 @@
 package system.MAC
 
+import system.ResourceUtils
 import system.model.Application
 import system.model.Window
 import java.io.BufferedReader
@@ -15,7 +16,7 @@ class MACWindow(titleText: String,
      * Focus on a system.window
      */
     override fun focusWindow() : Boolean {
-        val scriptPath = javaClass.getResource("/applescripts/focusApplication.scpt").path
+        val scriptPath = ResourceUtils.getResource("/applescripts/focusApplication.scpt").absolutePath
         val runtime = Runtime.getRuntime()
 
         try {

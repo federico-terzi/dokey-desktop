@@ -12,6 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import system.CacheManager;
 import system.KeyboardManager;
+import system.ResourceUtils;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.model.Window;
@@ -608,7 +609,7 @@ public class MSApplicationManager extends ApplicationManager {
 
     public String getLnkExecutablePath(String lnkFilePath) {
         Runtime runtime = Runtime.getRuntime();
-        String scriptPath = getClass().getResource("/vbscripts/readLnk.vbs").getPath();
+        String scriptPath = ResourceUtils.getResource("/vbscripts/readLnk.vbs").getAbsolutePath();
 
         // Remove the starting trailing slash
         if (scriptPath.startsWith("/")) {

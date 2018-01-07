@@ -240,7 +240,7 @@ public class SectionManager {
         }
 
         // Template was found, read the Section
-        File templateFile = new File(getClass().getResource("/sections/"+templateFilename).getPath());
+        File templateFile = ResourceUtils.getResource("/sections/"+templateFilename);
 
         // Read the section
         Section section = getSectionFromFile(templateFile);
@@ -278,7 +278,7 @@ public class SectionManager {
      */
     private void loadTemplateMap() {
         // Get the template file
-        File templateDb = new File(getClass().getResource("/sections/"+TEMPLATE_DB_FILENAME).getPath());
+        File templateDb = ResourceUtils.getResource("/sections/"+TEMPLATE_DB_FILENAME);
 
         // Reset the template map
         templateMap = new HashMap<>();

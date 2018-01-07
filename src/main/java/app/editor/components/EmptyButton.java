@@ -19,7 +19,7 @@ public class EmptyButton extends DragButton {
         setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         getStyleClass().add("empty-btn");
 
-        Image image = new Image(EmptyButton.class.getResource("/assets/add.png").toExternalForm());
+        Image image = new Image(EmptyButton.class.getResourceAsStream("/assets/add.png"));
         ImageView imageView = new ImageView(image);
         imageView.setFitHeight(32);
         imageView.setFitWidth(32);

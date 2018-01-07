@@ -11,6 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import system.ResourceUtils;
 import system.model.Application;
 import system.model.ApplicationManager;
 
@@ -30,10 +31,10 @@ public class AppSelectDialogStage extends Stage {
         this.applicationManager = applicationManager;
         this.listener = listener;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layouts/application_list.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/application_list.fxml").toURI().toURL());
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root, 350, 550);
-        scene.getStylesheets().add(AppSelectDialogStage.class.getResource("/css/applistcell.css").toExternalForm());
+        scene.getStylesheets().add(ResourceUtils.getResource("/css/applistcell.css").toURI().toString());
         this.setTitle("Applications");
         this.setScene(scene);
         this.getIcons().add(new Image(AppSelectDialogStage.class.getResourceAsStream("/assets/icon.png")));

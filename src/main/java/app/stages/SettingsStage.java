@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import system.CacheManager;
+import system.ResourceUtils;
 import system.model.Application;
 import system.model.ApplicationManager;
 import utils.OSValidator;
@@ -43,10 +44,10 @@ public class SettingsStage extends Stage {
         this.applicationManager = applicationManager;
         this.onSettingsCloseListener = onSettingsCloseListener;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layouts/settings_dialog.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/settings_dialog.fxml").toURI().toURL());
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
-        scene.getStylesheets().add(AppSelectDialogStage.class.getResource("/css/applistcell.css").toExternalForm());
+        scene.getStylesheets().add(ResourceUtils.getResource("/css/applistcell.css").toURI().toString());
         this.setTitle("Settings");
         this.setResizable(false);
         this.setScene(scene);
