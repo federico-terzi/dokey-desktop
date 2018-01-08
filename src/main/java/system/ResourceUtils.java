@@ -2,6 +2,7 @@ package system;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.net.URLDecoder;
 
 public class ResourceUtils {
@@ -14,9 +15,9 @@ public class ResourceUtils {
     public static File getResource(String path) {
         // Get the resource protocol.
         // This may vary if accessing it through JAR or when developing
-        String protocol = ResourceUtils.class.getResource(path).getProtocol();
+        URL resource = ResourceUtils.class.getResource(path);
 
-        if (protocol.equals("jar")) {  // JAR Request
+        if (resource == null || resource.getProtocol().equals("jar")) {  // JAR Request
             // The logic behind this is to get the path of the JAR file
             // that should be in the same dir as the resources directories.
             // Then the file is returned by loading it from his relative path
@@ -29,11 +30,14 @@ public class ResourceUtils {
                 }
                 String decodedPath = URLDecoder.decode(filepath, "UTF-8");
                 File jarFile = new File(decodedPath);
-                return new File(jarFile.getParentFile(), path);
+                File resFile = new File(jarFile.getParentFile(), path);
+                if (resFile.isFile() || resFile.isDirectory()) {
+                    return resFile;
+                }
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-        }else if (protocol.equals("file")) {  // Normal file request
+        }else if (resource != null && resource.getProtocol().equals("file")) {  // Normal file request
             String filepath = ResourceUtils.class.getResource(path).getFile();
             File file = new File(filepath);
             if (file.isFile() || file.isDirectory()) {
