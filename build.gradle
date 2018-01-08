@@ -84,7 +84,7 @@ jfx {
     mainClass = "app.MainApp"
     vendor = "Rocket Guys"
     updateExistingJar = true
-    additionalAppResources = "/src/main/resources/"
+    additionalAppResources = "src/main/resources/"
     copyAdditionalAppResourcesToJar = true
 }
 
