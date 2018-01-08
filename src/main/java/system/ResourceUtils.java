@@ -23,6 +23,10 @@ public class ResourceUtils {
             // starting from the base directory of the JAR.
             String filepath = ResourceUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath();
             try {
+                // Remove the starting / from the path if needed
+                if (path.startsWith("/")) {
+                    path.substring(1);
+                }
                 String decodedPath = URLDecoder.decode(filepath, "UTF-8");
                 File jarFile = new File(decodedPath);
                 return new File(jarFile.getParentFile(), path);
