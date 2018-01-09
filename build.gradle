@@ -82,6 +82,7 @@ task updateRemoteConnectDependency() {
 jfx {
     verbose = true
     mainClass = "app.MainApp"
+    appName = "dokey"
     vendor = "Rocket Guys"
     updateExistingJar = true
     additionalAppResources = "src/main/resources/"

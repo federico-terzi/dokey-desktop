@@ -18,11 +18,11 @@ import java.util.TimerTask;
 public class TrayIconManager {
     // Tray icon filename IMAGE CODES
     public static final String TRAY_ICON_FILENAME_LOADING = "circle.png";
-    public static final String TRAY_ICON_FILENAME_CONNECTED = "icon.png";
-    public static final String TRAY_ICON_FILENAME_READY = "icon-gray.png";
+    public static final String TRAY_ICON_FILENAME_CONNECTED = "trayicon.png";
+    public static final String TRAY_ICON_FILENAME_READY = "trayicon-gray.png";
 
     // Tray icon tooltip app name
-    private static final String TRAY_ICON_APPNAME = "Remote Key";
+    private static final String TRAY_ICON_APPNAME = "dokey";
 
     private static long ROTATION_INTERVAL = 500;  // Interval between rotations in milliseconds
     private static int ROTATION_DEGREE = 45;
@@ -52,7 +52,7 @@ public class TrayIconManager {
                 System.exit(0);
             }
 
-            InputStream iconStream = TrayIconManager.class.getResourceAsStream("/assets/" + TRAY_ICON_FILENAME_CONNECTED);
+            InputStream iconStream = TrayIconManager.class.getResourceAsStream("/assets/" + TRAY_ICON_FILENAME_LOADING);
 
             // set up a system tray icon.
             java.awt.SystemTray tray = java.awt.SystemTray.getSystemTray();
