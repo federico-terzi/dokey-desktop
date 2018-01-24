@@ -2,6 +2,11 @@
     -fx-background-color: #2c3e50;
     -fx-background-insets: 4px;
     -fx-background-radius: 4px;
+    -fx-opacity: 0.8;
+}
+
+.empty-btn:hover {
+    -fx-opacity: 1;
 }
 
 .component-btn {
@@ -9,6 +14,11 @@
     -fx-background-insets: 4px;
     -fx-background-radius: 4px;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 10, 0, 5, 5);
+    -fx-opacity: 0.9;
+}
+
+.component-btn:hover {
+    -fx-opacity: 1;
 }
 
 .bottombar-portrait {
