@@ -9,6 +9,8 @@ import section.model.Section;
 import system.model.ApplicationManager;
 import system.sicons.ShortcutIconManager;
 
+import static app.editor.stages.EditorStage.BORDER_PADDING;
+
 public class PageGrid extends ComponentGrid implements ComponentGrid.OnComponentSelectedListener {
     private Page page;
     private Section section;
@@ -21,8 +23,8 @@ public class PageGrid extends ComponentGrid implements ComponentGrid.OnComponent
         setOnComponentSelectedListener(this);
 
         // Customize the size based on the orientation
-        setHeight(EditorStage.getHeight(screenOrientation));
-        setWidth(EditorStage.getWidth(screenOrientation));
+        setHeight(EditorStage.getHeight(screenOrientation)-BORDER_PADDING);
+        setWidth(EditorStage.getWidth(screenOrientation)-BORDER_PADDING);
     }
 
     private static Component[][] generateMatrix(Page page) {

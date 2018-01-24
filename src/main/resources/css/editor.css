@@ -1,25 +1,40 @@
 .empty-btn {
-    -fx-opacity: 0.5;
+    -fx-background-color: #2c3e50;
+    -fx-background-insets: 4px;
+    -fx-background-radius: 4px;
+}
+
+.component-btn {
+    -fx-background-color: linear-gradient(#41c5ce 0%, #2e888f 100%);;
+    -fx-background-insets: 4px;
+    -fx-background-radius: 4px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 10, 0, 5, 5);
 }
 
 .bottombar-portrait {
-    -fx-padding: 10 0 0 0;
+    -fx-padding: 5px;
+    -fx-background-color: #031828;
+    -fx-background-radius: 8;
 }
 
 .bottombar-landscape {
-    -fx-padding: 0 10 0 0;
+    -fx-padding: 5px;
+    -fx-background-color: #031828;
+    -fx-background-radius: 8;
 }
 
 .tool-bar {
-    -fx-background-color: linear-gradient(#005257 0%, #00474c 100%);
+    -fx-background-color: linear-gradient(#00686e 0%, #005d63 100%);
     -fx-padding: 6 5 7 5;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.8), 10, 0, 0, 0);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.9), 10, 0, 0, 0);
 }
 
 .tool-bar .button{
     -fx-background-color: linear-gradient(#73dfe7 0%, #6bcfd6 100%);
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 7, 0, 3, 3);
     -fx-focus-color: transparent;
+    -fx-background-insets: 0,1,2;
+    -fx-background-radius: 3,2,1;
 }
 
 .tool-bar .button:hover{
@@ -41,7 +56,7 @@
 
 .editor-container {
     /*-fx-background-color: #020d16;*/
-    -fx-background-color: #020d16;
+    -fx-background-color: #060b16;
     -fx-padding: 0;
 }
 
@@ -81,4 +96,46 @@
 .list-view {
     -fx-background-insets: 0, 0;
     -fx-padding: 0;
+}
+
+.tab-pane>*.tab-header-area>*.tab-header-background
+{
+    -fx-background-color: transparent;
+}
+
+.tab-pane
+{
+    -fx-tab-min-width:50px;
+}
+
+.tab-pane:top .tab-content-area {
+    -fx-padding: 5px;
+    -fx-background-color: #031828;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.9), 10, 0, 0, 0);
+}
+
+.tab{
+    -fx-background-insets: 0 1 0 1,0,0;
+    -fx-background-color: #00686e;
+    -fx-focus-color: transparent;
+}
+
+.tab-pane .tab
+{
+    -fx-background-color: #2c3e50;
+}
+
+.tab-pane .tab .tab-label, .tab-pane .tab .label
+{
+    -fx-text-fill: white;
+}
+
+.tab-pane .tab:selected
+{
+    -fx-background-color: #031828;
+}
+
+.tab-pane .tab:selected .label {
+    -fx-text-fill: white;
 }

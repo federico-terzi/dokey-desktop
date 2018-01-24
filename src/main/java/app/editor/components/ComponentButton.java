@@ -19,6 +19,8 @@ public class ComponentButton extends DragButton {
         super();
         this.associatedComponent = associatedComponent;
 
+        getStyleClass().add("component-btn");
+
         // Set the button properties
         setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 

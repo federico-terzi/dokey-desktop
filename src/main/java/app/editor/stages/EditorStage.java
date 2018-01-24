@@ -31,6 +31,7 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -62,7 +63,9 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     public static final int LANDSCAPE_HEIGHT = 320;
     public static final int LANDSCAPE_WIDTH = 450;
     public static final int LANDSCAPE_BOTTOM_BAR_WIDTH = 100;
+    public static final int BORDER_PADDING = 10;
     private static final int BOTTOM_BAR_DEFAULT_COLS = 4;
+
 
     private EditorController controller;
     private ApplicationManager applicationManager;
@@ -346,6 +349,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             // Add the tab context menu
             final ContextMenu contextMenu = new ContextMenu();
             MenuItem rename = new MenuItem("Rename...");
+            rename.setStyle("-fx-text-fill: black;");
             rename.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
@@ -377,6 +381,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 }
             });
             MenuItem changeSize = new MenuItem("Change Grid Size...");
+            changeSize.setStyle("-fx-text-fill: black;");
             changeSize.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
@@ -384,6 +389,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 }
             });
             MenuItem delete = new MenuItem("Delete");
+            delete.setStyle("-fx-text-fill: black;");
             delete.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
@@ -417,7 +423,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         }
         // Add the "Add Page" tab
         Tab addTab = new Tab();
-        Image image = new Image(EmptyButton.class.getResourceAsStream("/assets/add.png"));
+        Image image = new Image(EmptyButton.class.getResourceAsStream("/assets/add_white.png"));
         ImageView imageView = new ImageView(image);
         imageView.setFitHeight(16);
         imageView.setFitWidth(16);
@@ -463,13 +469,24 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             box.setAlignment(Pos.CENTER);
             // Add the elements
             box.getChildren().add(tabPane);
+
+            Pane separator = new Pane();
+            separator.setStyle("-fx-background-color: transparent; -fx-pref-height: 10px");
+            box.getChildren().add(separator);
+
             box.getChildren().add(bottomBarGrid);
+            box.getStyleClass().add("vertical-container");
             controller.getContentBox().getChildren().add(box);
         }else{
             HBox box = new HBox();
             box.setAlignment(Pos.BOTTOM_CENTER);
             // Add the elements
             box.getChildren().add(bottomBarGrid);
+
+            Pane separator = new Pane();
+            separator.setStyle("-fx-background-color: transparent; -fx-pref-width: 10px");
+            box.getChildren().add(separator);
+
             box.getChildren().add(tabPane);
             controller.getContentBox().getChildren().add(box);
         }
