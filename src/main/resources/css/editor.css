@@ -10,13 +10,22 @@
     -fx-padding: 0 10 0 0;
 }
 
-.root {
-    -fx-background-color: #232523;
+.tool-bar {
+    -fx-background-color: linear-gradient(#005257 0%, #00474c 100%);
+    -fx-padding: 6 5 7 5;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.8), 10, 0, 0, 0);
 }
 
-/*.tool-bar {*/
-    /*-fx-background-color: linear-gradient(#01508b 0%, #014174 100%);*/
-/*}*/
+.tool-bar .button{
+    -fx-background-color: linear-gradient(#73dfe7 0%, #6bcfd6 100%);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 7, 0, 3, 3);
+    -fx-focus-color: transparent;
+}
+
+.tool-bar .button:hover{
+    -fx-background-color: #7ef7ff;
+    -fx-focus-color: transparent;
+}
 
 .drag-entered {
     -fx-background-color: #6cac6a;
@@ -28,4 +37,48 @@
 
 .selected {
     -fx-background-color: #dada67;
+}
+
+.editor-container {
+    /*-fx-background-color: #020d16;*/
+    -fx-background-color: #020d16;
+    -fx-padding: 0;
+}
+
+.content-scrollpane {
+    -fx-background-color:transparent;
+    -fx-padding: 0;
+}
+
+.split-pane {
+    -fx-background-insets: 0, 0;
+    -fx-padding: 0;
+}
+
+.split-pane:horizontal > .split-pane-divider {
+    -fx-background-color: linear-gradient(to left, #2c3e50 0%, #263848 100%);;
+    -fx-pref-width: 5px;
+}
+
+.list-view .list-cell:even {
+    -fx-background-color: #eaebff;
+}
+.list-view .list-cell:odd {
+    -fx-background-color: white;
+}
+.list-view .list-cell:filled:selected{
+    -fx-background-color: #57687c;
+}
+
+.list-view .list-cell:filled:selected .label{
+    -fx-text-fill: #ffffff;
+}
+
+.list-view .list-cell {
+    -fx-pref-height: 45px;
+}
+
+.list-view {
+    -fx-background-insets: 0, 0;
+    -fx-padding: 0;
 }

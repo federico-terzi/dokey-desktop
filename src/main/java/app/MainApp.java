@@ -177,7 +177,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         trayIconManager.setTrayIconStatus("Not connected");
         trayIconManager.setLoading(false);
 
-        //openEditor();
+        openEditor();
         //openSettings();
     }
 

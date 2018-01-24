@@ -16,6 +16,7 @@ public class EditorController {
     public TextField searchSectionTextField;
     public Button addApplicationBtn;
     public Button exportBtn;
+    public Button searchBtn;
     @FXML
     private ResourceBundle resources;
 
@@ -30,7 +31,8 @@ public class EditorController {
 
     @FXML
     void initialize() {
-
+        // Initially hide the search bar
+        searchSectionTextField.setManaged(false);
     }
 
     public ListView<Section> getSectionsListView() {

@@ -180,6 +180,19 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 addSection();
             }
         });
+        controller.searchBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (controller.searchSectionTextField.isManaged()) {
+                    sectionQuery = null;
+                    controller.searchSectionTextField.setText(null);
+                    populateSectionListView();
+                    controller.searchSectionTextField.setManaged(false);
+                }else{
+                    controller.searchSectionTextField.setManaged(true);
+                }
+            }
+        });
 
         // Listener for the search query
         controller.searchSectionTextField.textProperty().addListener((observable, oldValue, newValue) -> {

@@ -10,7 +10,7 @@
 <?import javafx.scene.image.Image?>
 <BorderPane prefHeight="701.0" prefWidth="900.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="app.editor.controllers.EditorController">
   <center>
-    <SplitPane dividerPositions="0.2541225626740946" focusTraversable="true">
+    <SplitPane dividerPositions="0.2541225626740946" focusTraversable="true" styleClass="split-pane">
       <items>
         <BorderPane>
           <top>
@@ -20,9 +20,9 @@
             <ListView fx:id="sectionsListView" />
           </center>
         </BorderPane>
-        <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="AS_NEEDED">
+        <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="AS_NEEDED" styleClass="content-scrollpane">
           <content>
-            <VBox fx:id="contentBox" alignment="CENTER" fillWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="315.0" prefHeight="724.0" prefWidth="315.0" style="-fx-background-color: #272727;">
+            <VBox fx:id="contentBox" alignment="CENTER" fillWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="315.0" prefHeight="724.0" prefWidth="315.0" styleClass="editor-container">
 
             </VBox>
           </content>
@@ -55,6 +55,16 @@
                 <Tooltip text="Export Application Layout"/>
               </tooltip>
             </Button>
+            <Button mnemonicParsing="false" fx:id="searchBtn">
+              <graphic>
+                <ImageView fitHeight="20" fitWidth="20">
+                  <Image url="/assets/search.png" />
+                </ImageView>
+              </graphic>
+              <tooltip>
+                <Tooltip text="Search Application"/>
+              </tooltip>
+            </Button>
             <Pane HBox.hgrow="ALWAYS" />
             <Button mnemonicParsing="false" fx:id="rotateViewBtn">
               <graphic>
@@ -81,4 +91,7 @@
       </children>
     </VBox>
   </top>
+  <right>
+
+  </right>
 </BorderPane>
