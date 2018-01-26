@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * Represents the background worker that executes all the actions in the server.
  */
-public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnAppIconRequestListener, LinkManager.OnAppOpenRequestReceivedListener, LinkManager.OnSectionRequestListener, LinkManager.OnShortcutIconRequestListener {
+public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnImageRequestListener, LinkManager.OnAppOpenRequestReceivedListener, LinkManager.OnSectionRequestListener{
     public static final int DELAY_FROM_FOCUS_TO_KEYSTROKE = 300;  // In milliseconds
 
     private LinkManager linkManager;
@@ -66,10 +66,9 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         // Set the listeners
         linkManager.setKeyboardShortcutListener(this);
         linkManager.setAppListRequestListener(this);
-        linkManager.setAppIconRequestListener(this);
+        linkManager.setImageRequestListener(this);
         linkManager.setAppOpenRequestListener(this);
         linkManager.setSectionRequestListener(this);
-        linkManager.setShortcutIconRequestListener(this);
         applicationSwitchDaemon.addApplicationSwitchListener(this);
     }
 
