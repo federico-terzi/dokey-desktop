@@ -98,7 +98,7 @@ public class MSApplicationManager extends ApplicationManager {
                 }
 
                 // Try to open the application
-                boolean result = application.open();
+                return application.open();
             }
 
             // Get the current active application PID
