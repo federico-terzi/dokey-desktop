@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import net.discovery.ServerDiscoveryDaemon;
 import net.model.DeviceInfo;
 import net.model.ServerInfo;
+import section.model.Section;
 import system.ApplicationManagerFactory;
 import system.ApplicationSwitchDaemon;
 import system.SectionManager;
@@ -198,10 +199,17 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
         try {
             isEditorOpen = true;
-            EditorStage editorStage = new EditorStage(appManager, new EditorStage.OnEditorCloseListener() {
+            EditorStage editorStage = new EditorStage(appManager, new EditorStage.OnEditorEventListener() {
                 @Override
                 public void onEditorClosed() {
                     isEditorOpen = false;
+                }
+
+                @Override
+                public void onSectionModified(String sectionID, Section section) {
+                    if (engineServer != null) {
+                        engineServer.notifySectionModifiedEvent(sectionID, section);
+                    }
                 }
             });
             editorStage.show();

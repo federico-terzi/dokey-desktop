@@ -100,6 +100,20 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     }
 
     /**
+     * Notify the change of a Section to the device.
+     * @param sectionID the ID of the Section.
+     * @param section the modified Section object.
+     */
+    public void notifySectionModifiedEvent(String sectionID, Section section) {
+        linkManager.notifyModifiedSection(sectionID, section, new LinkManager.OnModifiedSectionAckListener() {
+            @Override
+            public void onModifiedSectionAck() {
+                System.out.println("Section Modified Event Received Correctly!");
+            }
+        });
+    }
+
+    /**
      * EVENTS
      */
 

@@ -216,6 +216,10 @@ public class ComponentGrid extends GridPane {
                 @Override
                 public void onComponentEdit() {
                     render();
+                    // Notify the listener
+                    if (onComponentSelectedListener != null) {
+                        onComponentSelectedListener.onEditComponentRequested(component);
+                    }
                 }
 
                 @Override

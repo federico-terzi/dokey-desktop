@@ -28,7 +28,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -71,7 +70,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     private ApplicationManager applicationManager;
     private SectionManager sectionManager;
     private ShortcutIconManager shortcutIconManager;
-    private OnEditorCloseListener onEditorCloseListener;
+    private OnEditorEventListener onEditorEventListener;
 
     private List<Section> sections;
     private String sectionQuery = null;
@@ -82,9 +81,9 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     private Page activePage = null;
     private ScreenOrientation screenOrientation = ScreenOrientation.PORTRAIT;
 
-    public EditorStage(ApplicationManager applicationManager, OnEditorCloseListener onEditorCloseListener) throws IOException {
+    public EditorStage(ApplicationManager applicationManager, OnEditorEventListener onEditorEventListener) throws IOException {
         this.applicationManager = applicationManager;
-        this.onEditorCloseListener = onEditorCloseListener;
+        this.onEditorEventListener = onEditorEventListener;
 
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/section_editor.fxml").toURI().toURL());
         Parent root = fxmlLoader.load();
@@ -138,8 +137,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
-                if (onEditorCloseListener != null) {
-                    onEditorCloseListener.onEditorClosed();
+                if (onEditorEventListener != null) {
+                    onEditorEventListener.onEditorClosed();
                 }
             }
         });
@@ -215,8 +214,9 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         requestSectionList();
     }
 
-    public interface OnEditorCloseListener {
+    public interface OnEditorEventListener {
         void onEditorClosed();
+        void onSectionModified(String sectionID, Section section);
     }
 
     private void requestSectionList() {
@@ -373,7 +373,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                         page.setTitle(s);
 
                         // Save the section
-                        sectionManager.saveSection(section);
+                        onSectionModified(section);
 
                         // Reload the section
                         loadSection(section);
@@ -402,7 +402,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                         section.getPages().remove(page);
 
                         // Save the section
-                        sectionManager.saveSection(section);
+                        onSectionModified(section);
 
                         // Reload the section
                         loadSection(section);
@@ -555,7 +555,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             page.setColCount(cols);
 
             // Save the section
-            sectionManager.saveSection(section);
+            onSectionModified(section);
 
             // Reload the section
             loadSection(section);
@@ -573,7 +573,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         section.addPage(page);
 
         // Save the section
-        sectionManager.saveSection(section);
+        onSectionModified(section);
 
         // Reload the section
         loadSection(section);
@@ -719,6 +719,12 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             protected Object call() throws Exception {
                 // Save the section
                 sectionManager.saveSection(section);
+
+                // Notify the modified section
+                if (onEditorEventListener != null) {
+                    onEditorEventListener.onSectionModified(section.getStringID(), section);
+                }
+
                 return null;
             }
         };

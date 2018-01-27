@@ -1,6 +1,7 @@
 package engine;
 
 import net.DEDaemon;
+import section.model.Section;
 import system.ApplicationSwitchDaemon;
 import system.model.ApplicationManager;
 
@@ -12,6 +13,7 @@ public class EngineWorker extends Thread {
     private ApplicationManager appManager;
     private ApplicationSwitchDaemon applicationSwitchDaemon;
     private OnDeviceConnectionListener deviceConnectionListener;
+    private EngineService service = null;
 
     private volatile boolean shouldTerminate = false;
 
@@ -23,7 +25,6 @@ public class EngineWorker extends Thread {
 
     @Override
     public void run() {
-        EngineService service = null;
         try {
             // Create the engine service
             service = new EngineService(socket, appManager, applicationSwitchDaemon);
@@ -65,6 +66,17 @@ public class EngineWorker extends Thread {
         }
     }
 
+    /**
+     * Notify the change of a Section to the device.
+     * @param sectionID the ID of the Section.
+     * @param section the modified Section object.
+     */
+    public void notifySectionModifiedEvent(String sectionID, Section section) {
+        if (service != null) {
+            service.notifySectionModifiedEvent(sectionID, section);
+        }
+    }
+
     public OnDeviceConnectionListener getDeviceConnectionListener() {
         return deviceConnectionListener;
     }
@@ -80,4 +92,5 @@ public class EngineWorker extends Thread {
         void onDeviceConnected(String deviceID, String deviceName);
         void onDeviceDisconnected(String deviceID);
     }
+
 }

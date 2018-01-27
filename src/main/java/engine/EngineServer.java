@@ -1,12 +1,15 @@
 package engine;
 
 import app.MainApp;
+import section.model.Section;
 import system.ApplicationSwitchDaemon;
 import system.model.ApplicationManager;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EngineServer extends Thread {
 
@@ -17,6 +20,8 @@ public class EngineServer extends Thread {
     private ApplicationManager appManager;
     private ApplicationSwitchDaemon applicationSwitchDaemon;
     private EngineWorker.OnDeviceConnectionListener deviceConnectionListener;
+
+    private List<EngineWorker> workers = new ArrayList<>();
 
     private volatile boolean shouldStop = false;
 
@@ -39,7 +44,7 @@ public class EngineServer extends Thread {
         System.out.println("Server started!");
 
         // Endless request loop
-        while(!shouldStop) {
+        while (!shouldStop) {
             try {
                 Socket socket = serverSocket.accept();
 
@@ -47,7 +52,19 @@ public class EngineServer extends Thread {
                 worker.setDeviceConnectionListener(deviceConnectionListener);
                 worker.start();
 
-                System.out.println("Connected with: "+socket.getInetAddress().toString());
+                // Add the worker to the list
+                workers.add(worker);
+
+                // Clean the list removing the stopped threads
+                List<EngineWorker> toBeDeleted = new ArrayList<>();
+                for (EngineWorker cworker : workers) {
+                    if (!cworker.isAlive()) {
+                        toBeDeleted.add(cworker);
+                    }
+                }
+                workers.removeAll(toBeDeleted);
+
+                System.out.println("Connected with: " + socket.getInetAddress().toString());
             } catch (IOException e) {
                 e.printStackTrace();
                 System.err.println("Socket error.");
@@ -63,6 +80,20 @@ public class EngineServer extends Thread {
 
     public void stopServer() {
         shouldStop = true;
+    }
+
+    /**
+     * Notify the change of a Section to all the devices.
+     *
+     * @param sectionID the ID of the Section.
+     * @param section   the modified Section object.
+     */
+    public void notifySectionModifiedEvent(String sectionID, Section section) {
+        for (EngineWorker worker : workers) {
+            if (worker.isAlive()) {
+                worker.notifySectionModifiedEvent(sectionID, section);
+            }
+        }
     }
 
     public EngineWorker.OnDeviceConnectionListener getDeviceConnectionListener() {
