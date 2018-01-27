@@ -104,8 +104,17 @@ public class MSApplicationManager extends ApplicationManager {
             // Get the current active application PID
             int currentlyActivePID = getActivePID();
 
-            // If the PIDs are equal, it means that the opening didn't work.
+            // If the PIDs are equal, it means that the opening didn't work
+            // or the app was already open
             if (currentlyActivePID == activePID) {
+                // Get the path of the currently opened application
+                String focusedExecutablePath = getExecutablePathFromPID(activePID);
+
+                // If the executable path is the one requested, it means the app is already open
+                if (focusedExecutablePath != null && focusedExecutablePath.equals(executablePath)) {
+                    return true;
+                }
+
                 // Try send the ALT-TAB shortcut to unlock the situation
                 triggerAppSwitch();
                 System.out.println("WIN Lock detected, trying with ALT-TAB...");
