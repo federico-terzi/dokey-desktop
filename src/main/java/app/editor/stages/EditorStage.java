@@ -717,8 +717,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         Task saveTask = new Task() {
             @Override
             protected Object call() throws Exception {
-                // Update the last edit
-                section.setLastEdit(System.currentTimeMillis());
                 // Save the section
                 sectionManager.saveSection(section);
                 return null;

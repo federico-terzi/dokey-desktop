@@ -72,6 +72,9 @@ public class SectionManager {
             return false;
         }
 
+        // Update the last edit
+        section.setLastEdit(System.currentTimeMillis());
+
         // Save the section
         return writeSectionToFile(section, sectionFile);
     }
