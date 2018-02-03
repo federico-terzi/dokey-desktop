@@ -206,13 +206,8 @@ public class ComponentGrid extends GridPane {
 
         // Set up the button
         DragButton current = getButtonForComponent(component);
-        current.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                onComponentClicked(col, row);
-            }
-        });
-        // Set the context menu actions
+
+        // Set the context menu actions based on the type of button
         if (current instanceof ComponentButton) {
             ((ComponentButton) current).setOnComponentActionListener(new ComponentButton.OnComponentActionListener() {
                 @Override
@@ -285,6 +280,27 @@ public class ComponentGrid extends GridPane {
                             resizeComponent(component, Direction.RIGHT);
                             break;
                     }
+                }
+            });
+        }else if (current instanceof EmptyButton) {
+            ((EmptyButton) current).setOnEmptyBtnActionListener(new EmptyButton.OnEmptyBtnActionListener() {
+                @Override
+                public void onAddApplication() {
+                    requestApplicationSelect(col, row);
+                }
+                @Override
+                public void onAddShortcut() {
+                    requestShortcutSelect(col, row);
+                }
+
+                @Override
+                public void onAddFolder() {
+
+                }
+
+                @Override
+                public void onAddWebLink() {
+
                 }
             });
         }
@@ -529,22 +545,6 @@ public class ComponentGrid extends GridPane {
         }
 
         render();
-    }
-
-    public void onComponentClicked(int col, int row) {
-        Component component = componentMatrix[col][row];
-        if (component == null) {  // Clicked on empty space
-            if (sectionType == SectionType.LAUNCHPAD) {  // LAUNCHPAD SECTION
-                requestApplicationSelect(col, row);
-            } else if (sectionType == SectionType.SHORTCUTS) {  // LAUNCHPAD SHORTCUTS
-                requestShortcutSelect(col, row);
-            }
-
-        } else {  // Clicked on active component
-            if (onComponentClickListener != null) {
-                onComponentClickListener.onComponentClicked(component);
-            }
-        }
     }
 
     private void requestApplicationSelect(int col, int row) {
