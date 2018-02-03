@@ -15,6 +15,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import section.model.*;
 import system.model.Application;
@@ -22,6 +23,7 @@ import system.model.ApplicationManager;
 import system.sicons.ShortcutIcon;
 import system.sicons.ShortcutIconManager;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -295,7 +297,7 @@ public class ComponentGrid extends GridPane {
 
                 @Override
                 public void onAddFolder() {
-
+                    requestFolderSelect(col, row);
                 }
 
                 @Override
@@ -628,6 +630,34 @@ public class ComponentGrid extends GridPane {
         }
     }
 
+    private void requestFolderSelect(int col, int row) {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Choose the Folder");
+        File selectedDirectory = chooser.showDialog(null);
+
+        // Create the component
+        FolderItem item = new FolderItem();
+        item.setPath(selectedDirectory.getAbsolutePath());
+        item.setTitle(selectedDirectory.getName());
+
+        Component component = new Component();
+        component.setItem(item);
+        component.setX(row);
+        component.setY(col);
+        component.setXSpan(1);
+        component.setYSpan(1);
+
+        componentMatrix[col][row] = component;
+
+        // Notify the listener
+        if (onComponentSelectedListener != null) {
+            onComponentSelectedListener.onNewComponentRequested(component);
+        }
+
+        render();
+    }
+
+
     private boolean requestOverrideComponentsDialog(int number) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
@@ -726,6 +756,9 @@ public class ComponentGrid extends GridPane {
                     shortcutIcon = shortcutIconManager.getIcon(appItem.getIconID());
                 }
                 return new ShortcutButton(component, shortcutIcon, shortcutIconManager);
+            } else if (component.getItem() instanceof FolderItem) {  // FOLDER ITEM
+                FolderItem folderItem = (FolderItem) component.getItem();
+                return new FolderButton(component);
             }
         }
 

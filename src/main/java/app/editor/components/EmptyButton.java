@@ -63,6 +63,14 @@ public class EmptyButton extends DragButton {
         shortcutItem.setGraphic(shortcutTmageView);
 
         MenuItem folderItem = new MenuItem("Add Folder");
+        folderItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (onEmptyBtnActionListener != null) {
+                    onEmptyBtnActionListener.onAddFolder();
+                }
+            }
+        });
         Image folderImage = new Image(ComponentButton.class.getResourceAsStream("/assets/folder.png"));
         ImageView folderImageView = new ImageView(folderImage);
         folderImageView.setFitWidth(32);
@@ -70,7 +78,15 @@ public class EmptyButton extends DragButton {
         folderItem.setGraphic(folderImageView);
 
         MenuItem internetItem = new MenuItem("Add Web Link");
-        Image internetImage = new Image(ComponentButton.class.getResourceAsStream("/assets/explore.png"));
+        internetItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (onEmptyBtnActionListener != null) {
+                    onEmptyBtnActionListener.onAddWebLink();
+                }
+            }
+        });
+        Image internetImage = new Image(ComponentButton.class.getResourceAsStream("/assets/world.png"));
         ImageView internetImageView = new ImageView(internetImage);
         internetImageView.setFitWidth(32);
         internetImageView.setFitHeight(32);
