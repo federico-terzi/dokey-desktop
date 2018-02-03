@@ -1,10 +1,7 @@
 package app.editor.components;
 
 import app.editor.stages.AppSelectDialogStage;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -29,6 +26,11 @@ public class AppButton extends ComponentButton {
 
         // Set the button properties
         setText(application.getName());
+
+        // Create the tooltip
+        final Tooltip tooltip = new Tooltip();
+        tooltip.setText(application.getName());
+        setTooltip(tooltip);
 
         // If there is an image, set it.
         if (application.getIconPath() != null) {

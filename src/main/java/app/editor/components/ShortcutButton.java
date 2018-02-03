@@ -4,6 +4,7 @@ import app.editor.stages.ShortcutDialogStage;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
@@ -51,6 +52,11 @@ public class ShortcutButton extends ComponentButton {
         shortcutLabel.setTextAlignment(TextAlignment.CENTER);
         vBox.getChildren().addAll(titleLabel, shortcutLabel);
         setGraphic(vBox);
+
+        // Create the tooltip
+        final Tooltip tooltip = new Tooltip();
+        tooltip.setText(item.getTitle() + "\n" + item.getShortcut());
+        setTooltip(tooltip);
     }
 
     @Override
