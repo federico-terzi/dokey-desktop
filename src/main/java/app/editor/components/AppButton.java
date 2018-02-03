@@ -5,8 +5,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import section.model.AppItem;
 import section.model.Component;
 import section.model.ItemType;
@@ -37,6 +39,7 @@ public class AppButton extends ComponentButton {
                 imageView.setFitHeight(32);
                 imageView.setFitWidth(32);
                 imageView.setSmooth(true);
+                imageView.setEffect(new DropShadow(5, 4, 4, Color.rgb(0,0,0, 0.3)));
                 setGraphic(imageView);
                 setContentDisplay(ContentDisplay.TOP);
             }

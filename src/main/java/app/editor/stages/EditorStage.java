@@ -90,7 +90,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         Scene scene = new Scene(root);
         scene.getStylesheets().add(ResourceUtils.getResource("/css/sectionlistcell.css").toURI().toString());
         scene.getStylesheets().add(ResourceUtils.getResource("/css/editor.css").toURI().toString());
-        this.setTitle("Editor");
+        this.setTitle("Dokey Editor");
         this.setScene(scene);
         this.getIcons().add(new Image(EditorStage.class.getResourceAsStream("/assets/icon.png")));
 
@@ -354,6 +354,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 @Override
                 public void handle(ActionEvent event) {
                     TextInputDialog dialog = new TextInputDialog(page.getTitle());
+                    Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+                    stage.getIcons().add(new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/icon.png")));
                     dialog.setTitle("Rename Page...");
                     dialog.setHeaderText("Rename the Page");
                     dialog.setContentText("Please enter the name:");
@@ -394,6 +396,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 @Override
                 public void handle(ActionEvent event) {
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                    stage.getIcons().add(new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/icon.png")));
                     alert.setTitle("Delete Confirmation");
                     alert.setHeaderText("Do you really want to delete the page?");
 
@@ -626,6 +630,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     private int[] showPageDialog(int rows, int cols) {
         // Create the custom dialog.
         Dialog<Pair<String, String>> dialog = new Dialog<>();
+        Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/icon.png")));
         dialog.setTitle("Change Grid Size");
         dialog.setHeaderText("Specify the grid size below.\nThe rows and the columns must be a number greater than 0");
 

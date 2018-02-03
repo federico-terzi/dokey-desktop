@@ -54,7 +54,7 @@ public class ShortcutDialogStage extends Stage {
         controller.getClearShortcutBtn().setGraphic(imageView);
 
         // Setup the icon button
-        Image iconImage = new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/emoticon.png"));
+        Image iconImage = new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/cake.png"));
         ImageView iconImageView = new ImageView(iconImage);
         iconImageView.setFitHeight(32);
         iconImageView.setFitWidth(32);

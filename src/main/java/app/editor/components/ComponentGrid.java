@@ -10,10 +10,12 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
+import javafx.stage.Stage;
 import section.model.*;
 import system.model.Application;
 import system.model.ApplicationManager;
@@ -628,6 +630,8 @@ public class ComponentGrid extends GridPane {
 
     private boolean requestOverrideComponentsDialog(int number) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/icon.png")));
         alert.setTitle("Overwrite Button(s)");
         alert.setHeaderText("Are you sure you want to overwrite these buttons?");
         alert.setContentText("If you proceed, " + number + " button(s) will be deleted.");
