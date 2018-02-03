@@ -142,6 +142,26 @@ public class ClientTestMain {
                             System.out.println("Response: "+response);
                         }
                     });
+                }else if (line.startsWith("folder")) {  // FOLDER OPEN REQUEST
+                    StringTokenizer st = new StringTokenizer(line, ";");
+                    st.nextToken();
+                    String folder = st.nextToken();
+                    manager.requestFolderOpen(folder, new LinkManager.OnFolderOpenAckListener() {
+                        @Override
+                        public void onFolderOpenAckReceived(String response) {
+                            System.out.println("Response: "+response);
+                        }
+                    });
+                }else if (line.startsWith("url")) {  // WEB LINK OPEN REQUEST
+                    StringTokenizer st = new StringTokenizer(line, ";");
+                    st.nextToken();
+                    String url = st.nextToken();
+                    manager.requestWebLink(url, new LinkManager.OnWebLinkAckListener() {
+                        @Override
+                        public void onWebLinkAckReceived(String response) {
+                            System.out.println("Response: "+response);
+                        }
+                    });
                 }else if (line.startsWith("section")) {  // SECTION REQUEST
                     StringTokenizer st = new StringTokenizer(line, ";");
                     st.nextToken();

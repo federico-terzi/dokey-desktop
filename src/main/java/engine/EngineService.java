@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * Represents the background worker that executes all the actions in the server.
  */
-public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnImageRequestListener, LinkManager.OnAppOpenRequestReceivedListener, LinkManager.OnSectionRequestListener{
+public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnImageRequestListener, LinkManager.OnAppOpenRequestReceivedListener, LinkManager.OnSectionRequestListener, LinkManager.OnFolderOpenRequestReceivedListener, LinkManager.OnWebLinkRequestReceivedListener {
     public static final int DELAY_FROM_FOCUS_TO_KEYSTROKE = 300;  // In milliseconds
 
     private LinkManager linkManager;
@@ -69,6 +69,8 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         linkManager.setImageRequestListener(this);
         linkManager.setAppOpenRequestListener(this);
         linkManager.setSectionRequestListener(this);
+        linkManager.setFolderOpenRequestListener(this);
+        linkManager.setWebLinkRequestListener(this);
         applicationSwitchDaemon.addApplicationSwitchListener(this);
     }
 
@@ -254,5 +256,25 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         }
 
         return section;
+    }
+
+    /**
+     * Called when the user requests to open a folder.
+     * @param folderPath path to the folder.
+     * @return true if succeeded, false otherwise.
+     */
+    @Override
+    public boolean onFolderOpenRequestReceived(String folderPath) {
+        return appManager.openFolder(folderPath);
+    }
+
+    /**
+     * Called when the user requests to open a web page.
+     * @param url the web url to open
+     * @return true if succeeded, false otherwise.
+     */
+    @Override
+    public boolean onWebLinkRequestReceived(String url) {
+        return appManager.openWebLink(url);
     }
 }

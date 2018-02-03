@@ -65,6 +65,20 @@ public abstract class ApplicationManager {
     public abstract File getApplicationIcon(String executablePath);
 
     /**
+     * Open the specified folder in the file explorer of the current OS.
+     * @param folderPath the path to the folder
+     * @return true if succeeded, false otherwise.
+     */
+    public abstract boolean openFolder(String folderPath);
+
+    /**
+     * Open the specified url in the default browser.
+     * @param url the web url of the page.
+     * @return true if succeeded, false otherwise.
+     */
+    public abstract boolean openWebLink(String url);
+
+    /**
      * Interface used to update the status of the "loadApplications" operation.
      */
     public interface OnLoadApplicationsListener {

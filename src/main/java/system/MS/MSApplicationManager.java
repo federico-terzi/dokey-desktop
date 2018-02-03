@@ -25,6 +25,9 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.*;
 import java.util.List;
 
@@ -154,6 +157,57 @@ public class MSApplicationManager extends ApplicationManager {
         }else{
             return null;
         }
+    }
+
+    @Override
+    public boolean openFolder(String folderPath) {
+        // Make sure the folder exists
+        File folder = new File(folderPath);
+        if (!folder.isDirectory()) {
+            return false;
+        }
+
+        Runtime runtime = Runtime.getRuntime();
+
+        try {
+            // Execute the process
+            Process proc = runtime.exec(new String[]{"explorer", folderPath});
+            proc.waitFor();
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean openWebLink(String url) {
+        // Make sure the url is valid
+        try {
+            URL u = new URL(url);
+            u.toURI();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        Runtime runtime = Runtime.getRuntime();
+
+        try {
+            // Execute the process
+            Process proc = runtime.exec(new String[]{"explorer", url});
+            proc.waitFor();
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     @Override
