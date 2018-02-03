@@ -22,7 +22,7 @@ public class TrayIconManager {
     public static final String TRAY_ICON_FILENAME_READY = "trayicon-gray.png";
 
     // Tray icon tooltip app name
-    private static final String TRAY_ICON_APPNAME = "dokey";
+    private static final String TRAY_ICON_APPNAME = "Dokey";
 
     private static long ROTATION_INTERVAL = 500;  // Interval between rotations in milliseconds
     private static int ROTATION_DEGREE = 45;
