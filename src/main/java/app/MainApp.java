@@ -20,6 +20,10 @@ import system.model.ApplicationManager;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Timer;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MainApp extends Application implements EngineWorker.OnDeviceConnectionListener, ADBManager.OnUSBDeviceConnectedListener, TrayIconManager.OnTrayActionListener {
     // a timer allowing the tray icon to provide a periodic notification event.
@@ -38,7 +42,18 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private Stage primaryStage;
     private InitializationStage initializationStage;
 
+    // Create the logger
+    private final static Logger LOG = Logger.getGlobal();
+
     public static void main(String[] args) {
+        // Set the logging level
+        Level level = Level.INFO;
+        Handler consoleHandler = new ConsoleHandler();
+        consoleHandler.setLevel(level);
+        LOG.setUseParentHandlers( false );
+        LOG.setLevel(level);
+        LOG.addHandler(consoleHandler);
+
         launch(args);
     }
 
@@ -91,7 +106,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
                 appManager.loadApplications(new ApplicationManager.OnLoadApplicationsListener() {
                     @Override
                     public void onPreloadUpdate(String applicationName, int current, int total) {
-                        System.out.println("Preload: " + applicationName + " " + current + "/" + total);
+                        LOG.fine("Preload: " + applicationName + " " + current + "/" + total);
 
                         // Calculate the percentage
                         double percentage = (current / (double) total) * 0.5;
@@ -107,7 +122,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
                     @Override
                     public void onProgressUpdate(String applicationName, String iconPath, int current, int total) {
-                        System.out.println("Loading: " + applicationName + " " + current + "/" + total);
+                        LOG.fine("Loading: " + applicationName + " " + current + "/" + total);
                         // Calculate the percentage
                         double percentage = (current / (double) total) * 0.5 + 0.5;
 
@@ -123,7 +138,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
                     @Override
                     public void onApplicationsLoaded() {
-                        System.out.println("loaded!");
+                        LOG.fine("loaded!");
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
@@ -246,7 +261,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
      */
     @Override
     public void onDeviceConnected(String deviceID, String deviceName) {
-        System.out.println("Connected to: "+deviceID);
+        LOG.info("Connected to: "+deviceID);
 
         // Set the tray icon as running
         trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_CONNECTED);
@@ -260,7 +275,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
      */
     @Override
     public void onDeviceDisconnected(String deviceID) {
-        System.out.println("Disconnected from: "+deviceID);
+        LOG.info("Disconnected from: "+deviceID);
 
         // Set the tray icon as ready
         trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_READY);

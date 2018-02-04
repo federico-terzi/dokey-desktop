@@ -134,7 +134,6 @@ public class MSIconExtractor {
             try {
                 File output = File.createTempFile("test", "test.png");
                 ImageIO.write(image, "png", output);
-                System.out.println(output.getAbsolutePath());
             } catch (IOException e) {
                 e.printStackTrace();
             }

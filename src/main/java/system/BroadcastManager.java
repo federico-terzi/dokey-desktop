@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Logger;
 
 /**
  * Singleton used to propagate events to the entire application
@@ -36,6 +37,9 @@ public class BroadcastManager {
     public interface BroadcastListener {
         void onBroadcastReceived(Serializable param);
     }
+
+    // Create the logger
+    private final static Logger LOG = Logger.getGlobal();
 
     private BroadcastManager() {
         super();
@@ -75,7 +79,7 @@ public class BroadcastManager {
                             try {
                                 listener.onBroadcastReceived(entry.param);
                             }catch(Exception e) {
-                                e.printStackTrace();
+                                LOG.warning(e.toString());
                             }
                         }
                     }
@@ -169,7 +173,7 @@ public class BroadcastManager {
         }
         catch(Exception e)
         {
-            System.out.println("Exception in ObjectCloner = " + e);
+            LOG.warning(e.toString());
             throw(e);
         }
         finally

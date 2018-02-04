@@ -30,6 +30,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static com.sun.jna.platform.WindowUtils.getIconSize;
 
@@ -48,6 +49,9 @@ public class MSApplicationManager extends ApplicationManager {
     private IconManager iconManager = new IconManager();
 
     private boolean isPowerShellEnabled;
+
+    // Create the logger
+    private final static Logger LOG = Logger.getGlobal();
 
     public MSApplicationManager() {
         // Check if powershell is enabled in this machine
@@ -120,7 +124,7 @@ public class MSApplicationManager extends ApplicationManager {
 
                 // Try send the ALT-TAB shortcut to unlock the situation
                 triggerAppSwitch();
-                System.out.println("WIN Lock detected, trying with ALT-TAB...");
+                LOG.info("WIN LOCK DETECTED: trying with ALT-TAB...");
             }else{
                 hasBeenOpened = true;
                 break;
@@ -552,7 +556,7 @@ public class MSApplicationManager extends ApplicationManager {
             try {
                 // Skip uninstallers
                 if (file.getName().toLowerCase().contains("uninstall")) {
-                    System.out.println("Skipping :"+file.getAbsolutePath());
+                    LOG.fine("SKIP :"+file.getAbsolutePath());
                     continue;
                 }
 
@@ -596,8 +600,7 @@ public class MSApplicationManager extends ApplicationManager {
                     }
                 }
             }catch(Exception e) {
-                System.out.print("EXC APP "+file.getName());
-                e.printStackTrace();
+                LOG.info("EXCEPTION WITH APP "+file.getName() + " " + e.toString());
             }
 
             current++;
@@ -646,8 +649,7 @@ public class MSApplicationManager extends ApplicationManager {
                     listener.onProgressUpdate(applicationName, iconPath, current, executablePaths.size());
                 }
             }catch(Exception e) {
-                System.out.print("EXC APP "+executablePath);
-                e.printStackTrace();
+                LOG.info("EXCEPTION WITH APP "+executablePath + " " + e.toString());
             }
 
             current++;
@@ -809,7 +811,7 @@ public class MSApplicationManager extends ApplicationManager {
         // Check if an high res version is available
         if (iconManager.highResIconMap.containsKey(executableFile.getName())) {
             iconFile = iconManager.highResIconMap.get(executableFile.getName());
-            System.out.println("ICON FROM HIGH RES CACHE: "+executablePath);
+            LOG.fine("ICON FROM HIGH RES CACHE: "+executablePath);
         }else{
             // Generate the icon file
             iconFile = generateIconFile(executablePath);
@@ -818,7 +820,7 @@ public class MSApplicationManager extends ApplicationManager {
         // If the file doesn't exist, it must be generated
         if (!iconFile.isFile()) {
             iconFile = extractIcon(executablePath);
-            System.out.println("ICON EXTRACTED: "+executablePath);
+            LOG.fine("ICON EXTRACTED: "+executablePath);
         }
 
         // Return the icon file path

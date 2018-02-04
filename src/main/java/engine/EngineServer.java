@@ -10,6 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class EngineServer extends Thread {
 
@@ -23,6 +24,9 @@ public class EngineServer extends Thread {
 
     private volatile boolean shouldStop = false;
 
+    // Create the logger
+    private final static Logger LOG = Logger.getGlobal();
+
     public EngineServer(ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon) {
         this.appManager = appManager;
         this.applicationSwitchDaemon = applicationSwitchDaemon;
@@ -35,11 +39,11 @@ public class EngineServer extends Thread {
             serverSocket = new ServerSocket(SERVER_PORT);
         } catch (IOException e1) {
             e1.printStackTrace();
-            System.err.println("Error opening socket.");
+            LOG.severe("Error opening socket. "+e1.toString());
             System.exit(4);
         }
 
-        System.out.println("Server started!");
+        LOG.fine("Server started!");
 
         // Endless request loop
         while (!shouldStop) {
@@ -50,10 +54,10 @@ public class EngineServer extends Thread {
                 worker.setDeviceConnectionListener(deviceConnectionListener);
                 worker.start();
 
-                System.out.println("Connected with: " + socket.getInetAddress().toString());
+                LOG.info("Connected with: " + socket.getInetAddress().toString());
             } catch (IOException e) {
                 e.printStackTrace();
-                System.err.println("Socket error.");
+                LOG.severe("Socket error. "+e.toString());
             }
         }
 

@@ -1,5 +1,6 @@
 package engine;
 
+import app.MainApp;
 import json.JSONObject;
 import net.DEDaemon;
 import net.LinkManager;
@@ -24,6 +25,7 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 
 /**
@@ -38,6 +40,9 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     private SectionManager sectionManager;
     private ApplicationSwitchDaemon applicationSwitchDaemon;
     private ShortcutIconManager shortcutIconManager;
+
+    // Create the logger
+    private final static Logger LOG = Logger.getGlobal();
 
     public EngineService(LinkManager linkManager, ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon) throws AWTException {
         this.linkManager = linkManager;
@@ -104,6 +109,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
 
     /**
      * Set the connection closed listener
+     *
      * @param listener
      */
     public void setOnConnectionClosedListener(DEDaemon.OnConnectionClosedListener listener) {
@@ -116,8 +122,9 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
 
     /**
      * Called when receiving a key shortcut request from a client.
+     *
      * @param application the application identifier
-     * @param keys a list of keys to be pressed
+     * @param keys        a list of keys to be pressed
      */
     @Override
     public boolean onKeyboardShortcutReceived(@NotNull String application, @NotNull List<? extends KeyboardKeys> keys) {
@@ -138,25 +145,19 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
 
     /**
      * Called when receiving a request to focus/open an application.
+     *
      * @param application the path to the application
      * @return true if opened correctly, false otherwise.
      */
     @Override
     public boolean onAppOpenRequestReceived(String application) {
-        System.out.println("AppOpenRequest");
-        System.out.println(appManager.getActiveApplication());
-        System.out.println(appManager.getActivePID());
         // Try to open the application
-        boolean res = appManager.openApplication(application);
-        System.out.println("Requested open");
-        System.out.println(appManager.getActiveApplication());
-        System.out.println(appManager.getActivePID());
-
-        return res;
+        return appManager.openApplication(application);
     }
 
     /**
      * Called when receiving a list app request from a client
+     *
      * @return a list of RemoteApplication installed in the system.
      */
     @NotNull
@@ -165,7 +166,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         List<RemoteApplication> output = new ArrayList<>();
         List<Application> apps = appManager.getApplicationList();
 
-        for(Application app : apps) {
+        for (Application app : apps) {
             RemoteApplication remoteApp = new RemoteApplication();
             remoteApp.setName(app.getName());
             remoteApp.setPath(app.getExecutablePath());
@@ -177,6 +178,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
 
     /**
      * Called when the user switch to another application
+     *
      * @param application the current focused application
      */
     @Override
@@ -195,13 +197,14 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         linkManager.sendAppSwitchEvent(remoteApplication, lastEdit, new LinkManager.OnAppSwitchAckListener() {
             @Override
             public void onAppSwitchAck() {
-                System.out.println("App Switch Event Received");
+                LOG.fine("APP SWITCH ACK");
             }
         });
     }
 
     /**
      * Called when a user requests an application icon
+     *
      * @param path executable path of the requested application
      * @return the icon File if found, null otherwise.
      */
@@ -213,6 +216,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
 
     /**
      * Called when a user requests a shortcut icon
+     *
      * @param id the shortcut icon id.
      * @return the icon File if found, null otherwise.
      */
@@ -236,7 +240,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         // Generate the section based on the required sectionID
         if (sectionID.equals("launchpad")) {  // LAUNCHPAD
             section = sectionManager.getLaunchpadSection();
-        }else{  // APP SHORTCUT SECTION
+        } else {  // APP SHORTCUT SECTION
             section = sectionManager.getShortcutSection(sectionID);
         }
 
@@ -255,6 +259,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
 
     /**
      * Called when the user requests to open a folder.
+     *
      * @param folderPath path to the folder.
      * @return true if succeeded, false otherwise.
      */
@@ -265,6 +270,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
 
     /**
      * Called when the user requests to open a web page.
+     *
      * @param url the web url to open
      * @return true if succeeded, false otherwise.
      */
@@ -279,11 +285,11 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     private BroadcastManager.BroadcastListener editorSectionModifiedListener = new BroadcastManager.BroadcastListener() {
         @Override
         public void onBroadcastReceived(Serializable param) {
-            Section section = Section.fromJson(new JSONObject((String)param));
+            Section section = Section.fromJson(new JSONObject((String) param));
             linkManager.notifyModifiedSection(section.getStringID(), section, new LinkManager.OnModifiedSectionAckListener() {
                 @Override
                 public void onModifiedSectionAck() {
-                    System.out.println("Section Modified Event Received Correctly!");
+                    LOG.fine("EDITOR SECTION MODIFIED ACK");
                 }
             });
         }

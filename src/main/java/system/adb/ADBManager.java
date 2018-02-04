@@ -5,6 +5,7 @@ import net.model.DeviceInfo;
 import net.model.ServerInfo;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
     public static final String ADB_PATH = "adb";  // path to the adb executable
@@ -19,6 +20,9 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
     private OnUSBDeviceConnectedListener listener;
     private ServerInfo serverInfo;
 
+    // Create the logger
+    private final static Logger LOG = Logger.getGlobal();
+
     public ADBManager(OnUSBDeviceConnectedListener listener, ServerInfo serverInfo) {
         this.listener = listener;
         this.serverInfo = serverInfo;
@@ -28,7 +32,7 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
             daemon = new ADBDaemon(this);
             adbDiscoveryServer = new ADBDiscoveryServer(serverInfo);
         }else{
-            System.out.println("ADB can't be executed!");
+            LOG.warning("ADB can't be executed!");
         }
     }
 
@@ -40,7 +44,7 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
     public void onDeviceConnected(DeviceInfo device) {
         createPortConnection(device);
         createDiscoveryConnection(device);
-        System.out.println("USB CON "+device);
+        LOG.fine("USB CON "+device);
         listener.onUSBDeviceConnected(device);
     }
 
@@ -50,7 +54,7 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
      */
     @Override
     public void onDeviceDisconnected(DeviceInfo device) {
-        System.out.println("USB DIS "+device);
+        LOG.fine("USB DIS "+device);
         listener.onUSBDeviceDisconnected(device);
     }
 
@@ -60,10 +64,10 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
     public void startDaemon() {
         if (daemon != null) {
             daemon.start();
-            System.out.println("ADB Daemon started!");
+            LOG.fine("ADB Daemon started!");
 
             adbDiscoveryServer.start();
-            System.out.println("ADB Discovery Server started!");
+            LOG.fine("ADB Discovery Server started!");
         }
     }
 

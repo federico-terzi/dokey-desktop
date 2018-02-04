@@ -30,8 +30,6 @@ class ApplicationSwitchDaemon(val appManager : ApplicationManager) : Thread(){
 
                 // Make sure the application exists
                 if (application != null) {
-                    println(application)
-
                     // Notify the change to all listeners
                     listeners.forEach({
                         try {

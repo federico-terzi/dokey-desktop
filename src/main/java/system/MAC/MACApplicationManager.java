@@ -9,12 +9,16 @@ import system.model.Window;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class MACApplicationManager extends ApplicationManager {
 
     // This map will hold the applications, associated with their executable path
     private Map<String, Application> applicationMap = new HashMap<>();
+
+    // Create the logger
+    private final static Logger LOG = Logger.getGlobal();
 
     /**
      * Focus an application if already open or start it if not.
@@ -163,8 +167,7 @@ public class MACApplicationManager extends ApplicationManager {
             return window;
 
         } catch (Exception e) {
-            System.out.print("ERROR ACTIVE WINDOW: ");
-            e.printStackTrace();
+            LOG.info("ERROR ACTIVE WINDOW: "+e.toString());
         }
         return null;
     }
@@ -202,8 +205,7 @@ public class MACApplicationManager extends ApplicationManager {
             // If not found on the map, dynamically analyze the app.
             return addApplicationFromAppPath(appPath);
         } catch (Exception e) {
-            System.out.print("CATCHED:");
-            e.printStackTrace();
+            LOG.info("CATCHED: "+e.toString());
         }
         return null;
     }
@@ -306,8 +308,7 @@ public class MACApplicationManager extends ApplicationManager {
 
             return pid;
         } catch (Exception e) {
-            System.out.print("CATCHED: ");
-            e.printStackTrace();
+            LOG.info("CATCHED: "+e.toString());
         }
         return -1;
     }
@@ -418,8 +419,7 @@ public class MACApplicationManager extends ApplicationManager {
                     listener.onProgressUpdate(application.getName(), application.getIconPath(), current, fileList.size());
                 }
             }catch(Exception e) {
-                System.out.print("EXC APP "+app.getName());
-                e.printStackTrace();
+                LOG.info("EXCEPTION WITH APP "+app.getName() + " " + e.toString());
             }
 
             current++;

@@ -1,5 +1,6 @@
 package engine;
 
+import app.MainApp;
 import net.DEDaemon;
 import section.model.Section;
 import system.ApplicationSwitchDaemon;
@@ -7,6 +8,7 @@ import system.model.ApplicationManager;
 
 import java.awt.*;
 import java.net.Socket;
+import java.util.logging.Logger;
 
 public class EngineWorker extends Thread {
     private Socket socket;
@@ -16,6 +18,9 @@ public class EngineWorker extends Thread {
     private EngineService service = null;
 
     private volatile boolean shouldTerminate = false;
+
+    // Create the logger
+    private final static Logger LOG = Logger.getGlobal();
 
     public EngineWorker(Socket socket, ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon) {
         this.socket = socket;
@@ -54,7 +59,9 @@ public class EngineWorker extends Thread {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("Closing EngineWorker: "+getName());
+
+        LOG.fine("Closing EngineWorker: "+getName());
+
         // Close the service
         if (service != null) {
             service.close();

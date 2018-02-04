@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Logger;
 
 /**
  * Used to manage the system tray icon
@@ -38,6 +39,9 @@ public class TrayIconManager {
 
     private int trayIconWidth;  // Internal usage
 
+    // Create the logger
+    private final static Logger LOG = Logger.getGlobal();
+
     /**
      * Initialize the tray icon
      */
@@ -48,7 +52,7 @@ public class TrayIconManager {
 
             // app requires system tray support, just exit if there is no support.
             if (!java.awt.SystemTray.isSupported()) {
-                System.out.println("No system tray support, application exiting.");
+                LOG.warning("No system tray support, application exiting.");
                 System.exit(0);
             }
 
@@ -66,9 +70,6 @@ public class TrayIconManager {
             setLoading(true);
 
             setTrayIconStatus("Initializing...");
-
-            // if the user double-clicks on the tray icon, show the main app stage.
-            trayIcon.addActionListener(event -> Platform.runLater(() -> System.out.println("double click!")));
 
             java.awt.MenuItem openEditor = new java.awt.MenuItem("Open Editor");
             openEditor.addActionListener(event -> Platform.runLater(() -> {
@@ -106,7 +107,7 @@ public class TrayIconManager {
             // add the application tray icon to the system tray.
             tray.add(trayIcon);
         } catch (java.awt.AWTException | IOException e) {
-            System.out.println("Unable to init system tray");
+            LOG.severe("Unable to init system tray");
             e.printStackTrace();
         }
     }
