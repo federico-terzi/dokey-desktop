@@ -126,7 +126,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
      * @param application the application identifier
      * @param keys        a list of keys to be pressed
      */
-    @Override
+    @Override  // TODO: application field should be nullable for global shortcuts
     public boolean onKeyboardShortcutReceived(@NotNull String application, @NotNull List<? extends KeyboardKeys> keys) {
         // Try to open the application, and get the result
         boolean result = appManager.openApplication(application);
