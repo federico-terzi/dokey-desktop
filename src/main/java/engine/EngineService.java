@@ -1,5 +1,6 @@
 package engine;
 
+import json.JSONObject;
 import net.DEDaemon;
 import net.LinkManager;
 import net.model.KeyboardKeys;
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import section.model.Section;
 import system.ApplicationSwitchDaemon;
+import system.BroadcastManager;
 import system.KeyboardManager;
 import system.SectionManager;
 import system.model.Application;
@@ -18,6 +20,7 @@ import system.sicons.ShortcutIconManager;
 
 import java.awt.*;
 import java.io.File;
+import java.io.Serializable;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +75,9 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         linkManager.setFolderOpenRequestListener(this);
         linkManager.setWebLinkRequestListener(this);
         applicationSwitchDaemon.addApplicationSwitchListener(this);
+
+        // Register broadcast listeners
+        BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.EDITOR_MODIFIED_SECTION_EVENT, editorSectionModifiedListener);
     }
 
     /**
@@ -91,6 +97,9 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
 
         // Remove the listeners
         applicationSwitchDaemon.removeApplicationSwitchListener(this);
+
+        // Unregister the broadcast listeners
+        BroadcastManager.getInstance().unregisterBroadcastListener(BroadcastManager.EDITOR_MODIFIED_SECTION_EVENT, editorSectionModifiedListener);
     }
 
     /**
@@ -99,20 +108,6 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
      */
     public void setOnConnectionClosedListener(DEDaemon.OnConnectionClosedListener listener) {
         linkManager.setOnConnectionClosedListener(listener);
-    }
-
-    /**
-     * Notify the change of a Section to the device.
-     * @param sectionID the ID of the Section.
-     * @param section the modified Section object.
-     */
-    public void notifySectionModifiedEvent(String sectionID, Section section) {
-        linkManager.notifyModifiedSection(sectionID, section, new LinkManager.OnModifiedSectionAckListener() {
-            @Override
-            public void onModifiedSectionAck() {
-                System.out.println("Section Modified Event Received Correctly!");
-            }
-        });
     }
 
     /**
@@ -277,4 +272,20 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     public boolean onWebLinkRequestReceived(String url) {
         return appManager.openWebLink(url);
     }
+
+    /**
+     * Called when the user modifies a section in the editor.
+     */
+    private BroadcastManager.BroadcastListener editorSectionModifiedListener = new BroadcastManager.BroadcastListener() {
+        @Override
+        public void onBroadcastReceived(Serializable param) {
+            Section section = Section.fromJson(new JSONObject((String)param));
+            linkManager.notifyModifiedSection(section.getStringID(), section, new LinkManager.OnModifiedSectionAckListener() {
+                @Override
+                public void onModifiedSectionAck() {
+                    System.out.println("Section Modified Event Received Correctly!");
+                }
+            });
+        }
+    };
 }

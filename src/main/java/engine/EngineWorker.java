@@ -66,17 +66,6 @@ public class EngineWorker extends Thread {
         }
     }
 
-    /**
-     * Notify the change of a Section to the device.
-     * @param sectionID the ID of the Section.
-     * @param section the modified Section object.
-     */
-    public void notifySectionModifiedEvent(String sectionID, Section section) {
-        if (service != null) {
-            service.notifySectionModifiedEvent(sectionID, section);
-        }
-    }
-
     public OnDeviceConnectionListener getDeviceConnectionListener() {
         return deviceConnectionListener;
     }

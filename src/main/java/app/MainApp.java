@@ -13,14 +13,12 @@ import net.discovery.ServerDiscoveryDaemon;
 import net.model.DeviceInfo;
 import net.model.ServerInfo;
 import section.model.Section;
-import system.ApplicationManagerFactory;
-import system.ApplicationSwitchDaemon;
-import system.SectionManager;
-import system.SystemInfoManager;
+import system.*;
 import system.adb.ADBManager;
 import system.model.ApplicationManager;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Timer;
 
 public class MainApp extends Application implements EngineWorker.OnDeviceConnectionListener, ADBManager.OnUSBDeviceConnectedListener, TrayIconManager.OnTrayActionListener {
@@ -203,13 +201,6 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
                 @Override
                 public void onEditorClosed() {
                     isEditorOpen = false;
-                }
-
-                @Override
-                public void onSectionModified(String sectionID, Section section) {
-                    if (engineServer != null) {
-                        engineServer.notifySectionModifiedEvent(sectionID, section);
-                    }
                 }
             });
             editorStage.show();

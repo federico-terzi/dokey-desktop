@@ -21,8 +21,6 @@ public class EngineServer extends Thread {
     private ApplicationSwitchDaemon applicationSwitchDaemon;
     private EngineWorker.OnDeviceConnectionListener deviceConnectionListener;
 
-    private List<EngineWorker> workers = new ArrayList<>();
-
     private volatile boolean shouldStop = false;
 
     public EngineServer(ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon) {
@@ -52,18 +50,6 @@ public class EngineServer extends Thread {
                 worker.setDeviceConnectionListener(deviceConnectionListener);
                 worker.start();
 
-                // Add the worker to the list
-                workers.add(worker);
-
-                // Clean the list removing the stopped threads
-                List<EngineWorker> toBeDeleted = new ArrayList<>();
-                for (EngineWorker cworker : workers) {
-                    if (!cworker.isAlive()) {
-                        toBeDeleted.add(cworker);
-                    }
-                }
-                workers.removeAll(toBeDeleted);
-
                 System.out.println("Connected with: " + socket.getInetAddress().toString());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -80,20 +66,6 @@ public class EngineServer extends Thread {
 
     public void stopServer() {
         shouldStop = true;
-    }
-
-    /**
-     * Notify the change of a Section to all the devices.
-     *
-     * @param sectionID the ID of the Section.
-     * @param section   the modified Section object.
-     */
-    public void notifySectionModifiedEvent(String sectionID, Section section) {
-        for (EngineWorker worker : workers) {
-            if (worker.isAlive()) {
-                worker.notifySectionModifiedEvent(sectionID, section);
-            }
-        }
     }
 
     public EngineWorker.OnDeviceConnectionListener getDeviceConnectionListener() {

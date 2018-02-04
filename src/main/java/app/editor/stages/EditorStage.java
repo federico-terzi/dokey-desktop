@@ -41,6 +41,7 @@ import section.model.Component;
 import section.model.Page;
 import section.model.Section;
 import section.model.SectionType;
+import system.BroadcastManager;
 import system.ResourceUtils;
 import system.SectionManager;
 import system.model.Application;
@@ -216,7 +217,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
     public interface OnEditorEventListener {
         void onEditorClosed();
-        void onSectionModified(String sectionID, Section section);
     }
 
     private void requestSectionList() {
@@ -727,9 +727,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 sectionManager.saveSection(section);
 
                 // Notify the modified section
-                if (onEditorEventListener != null) {
-                    onEditorEventListener.onSectionModified(section.getStringID(), section);
-                }
+                String sectionJson = section.json().toString();
+                BroadcastManager.getInstance().sendBroadcast(BroadcastManager.EDITOR_MODIFIED_SECTION_EVENT, sectionJson);
 
                 return null;
             }
