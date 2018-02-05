@@ -96,7 +96,7 @@ public class MACApplicationManager extends ApplicationManager {
             URL u = new URL(url);
             u.toURI();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.fine("URL CONVERSION ERROR: "+url + " "+e.toString());
             return false;
         }
 
