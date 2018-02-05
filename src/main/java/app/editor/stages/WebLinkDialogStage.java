@@ -106,6 +106,9 @@ public class WebLinkDialogStage extends Stage {
                 controller.urlTextField.requestFocus();
             }
         });
+
+        // Hide the progress bar
+        controller.progressBar.setManaged(false);
     }
 
     private void getAttributes(String url) {

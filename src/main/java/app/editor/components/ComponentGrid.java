@@ -633,26 +633,28 @@ public class ComponentGrid extends GridPane {
         chooser.setTitle("Choose the Folder");
         File selectedDirectory = chooser.showDialog(null);
 
-        // Create the component
-        FolderItem item = new FolderItem();
-        item.setPath(selectedDirectory.getAbsolutePath());
-        item.setTitle(selectedDirectory.getName());
+        if (selectedDirectory != null) {
+            // Create the component
+            FolderItem item = new FolderItem();
+            item.setPath(selectedDirectory.getAbsolutePath());
+            item.setTitle(selectedDirectory.getName());
 
-        Component component = new Component();
-        component.setItem(item);
-        component.setX(row);
-        component.setY(col);
-        component.setXSpan(1);
-        component.setYSpan(1);
+            Component component = new Component();
+            component.setItem(item);
+            component.setX(row);
+            component.setY(col);
+            component.setXSpan(1);
+            component.setYSpan(1);
 
-        componentMatrix[col][row] = component;
+            componentMatrix[col][row] = component;
 
-        // Notify the listener
-        if (onComponentSelectedListener != null) {
-            onComponentSelectedListener.onNewComponentRequested(component);
+            // Notify the listener
+            if (onComponentSelectedListener != null) {
+                onComponentSelectedListener.onNewComponentRequested(component);
+            }
+
+            render();
         }
-
-        render();
     }
 
     private void requestWebLinkSelect(int col, int row) {
