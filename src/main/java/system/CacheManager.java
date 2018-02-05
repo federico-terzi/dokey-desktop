@@ -23,11 +23,13 @@ public class CacheManager {
 
     private File cacheDir;
     private File iconCacheDir;
+    private File webCacheDir;
     private File sectionDir;
 
     private CacheManager() {
         cacheDir = loadCacheDir();
         iconCacheDir = loadIconCacheDir();
+        webCacheDir = loadWebCacheDir();
         sectionDir = loadSectionDir();
     }
 
@@ -68,6 +70,25 @@ public class CacheManager {
         }
 
         return iconCacheDir;
+    }
+
+    /**
+     * Create and retrieve the web cache directory.
+     *
+     * @return the Web Cache directory used to save web icons.
+     */
+    private File loadWebCacheDir() {
+        File cacheDir = loadCacheDir();
+
+        // Get the icon cache directory
+        File webCacheDir = new File(cacheDir, WebLinkResolver.WEB_CACHE_DIRNAME);
+
+        // If it doesn't exists, createRequest it
+        if (!webCacheDir.isDirectory()) {
+            webCacheDir.mkdir();
+        }
+
+        return webCacheDir;
     }
 
     /**
@@ -138,5 +159,7 @@ public class CacheManager {
         return sectionDir;
     }
 
-
+    public File getWebCacheDir() {
+        return webCacheDir;
+    }
 }

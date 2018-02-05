@@ -50,13 +50,15 @@ public class FolderButton extends ComponentButton {
         chooser.setTitle("Choose the Folder");
         File selectedDirectory = chooser.showDialog(null);
 
-        // Create the component
-        item.setPath(selectedDirectory.getAbsolutePath());
-        item.setTitle(selectedDirectory.getName());
+        if (selectedDirectory != null) {
+            // Create the component
+            item.setPath(selectedDirectory.getAbsolutePath());
+            item.setTitle(selectedDirectory.getName());
 
-        // Notify the edit
-        if (getOnComponentActionListener() != null) {
-            getOnComponentActionListener().onComponentEdit();
+            // Notify the edit
+            if (getOnComponentActionListener() != null) {
+                getOnComponentActionListener().onComponentEdit();
+            }
         }
     }
 }

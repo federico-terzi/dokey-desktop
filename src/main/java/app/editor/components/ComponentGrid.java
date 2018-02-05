@@ -5,9 +5,7 @@ import app.editor.model.Direction;
 import app.editor.model.ScreenOrientation;
 import app.editor.stages.ShortcutDialogStage;
 import app.editor.stages.AppSelectDialogStage;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Node;
+import app.editor.stages.WebLinkDialogStage;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
@@ -302,7 +300,7 @@ public class ComponentGrid extends GridPane {
 
                 @Override
                 public void onAddWebLink() {
-
+                    requestWebLinkSelect(col, row);
                 }
             });
         }
@@ -657,6 +655,45 @@ public class ComponentGrid extends GridPane {
         render();
     }
 
+    private void requestWebLinkSelect(int col, int row) {
+        try {
+            WebLinkDialogStage stage = new WebLinkDialogStage(new WebLinkDialogStage.OnWebLinkListener() {
+                @Override
+                public void onWebLinkSelected(String url, String title, String imageUrl) {
+                    // Create the component
+                    WebLinkItem item = new WebLinkItem();
+                    item.setUrl(url);
+                    item.setTitle(title);
+                    item.setIconID(imageUrl);
+
+                    Component component = new Component();
+                    component.setItem(item);
+                    component.setX(row);
+                    component.setY(col);
+                    component.setXSpan(1);
+                    component.setYSpan(1);
+
+                    componentMatrix[col][row] = component;
+
+                    // Notify the listener
+                    if (onComponentSelectedListener != null) {
+                        onComponentSelectedListener.onNewComponentRequested(component);
+                    }
+
+                    render();
+                }
+
+                @Override
+                public void onCanceled() {
+
+                }
+            });
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private boolean requestOverrideComponentsDialog(int number) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -759,6 +796,9 @@ public class ComponentGrid extends GridPane {
             } else if (component.getItem() instanceof FolderItem) {  // FOLDER ITEM
                 FolderItem folderItem = (FolderItem) component.getItem();
                 return new FolderButton(component);
+            } else if (component.getItem() instanceof WebLinkItem) {  // WEB LINK ITEM
+                WebLinkItem webLinkItem = (WebLinkItem) component.getItem();
+                return new WebLinkButton(component);
             }
         }
 

@@ -7,8 +7,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="416.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="416.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.editor.controllers.WebLinkDialogController">
    <center>
       <VBox alignment="TOP_CENTER" BorderPane.alignment="CENTER">
          <children>
@@ -20,13 +19,13 @@
                   <Insets bottom="5.0" />
                </VBox.margin>
             </Label>
-            <TextField alignment="CENTER" promptText="Insert the URL here..." />
+            <TextField fx:id="urlTextField" alignment="CENTER" promptText="Insert the URL here..." />
             <HBox>
                <VBox.margin>
                   <Insets top="15.0" />
                </VBox.margin>
                <children>
-                  <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imageView" fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
                      <HBox.margin>
                         <Insets right="8.0" />
                      </HBox.margin>
@@ -38,8 +37,8 @@
                               <Insets bottom="5.0" />
                            </VBox.margin>
                         </Label>
-                        <TextField promptText="Insert the page title here" />
-                        <ProgressBar maxWidth="1.7976931348623157E308" progress="0.0">
+                        <TextField fx:id="titleTextField" promptText="Insert the page title here" />
+                        <ProgressBar fx:id="progressBar" maxWidth="1.7976931348623157E308" progress="0.0">
                            <VBox.margin>
                               <Insets top="8.0" />
                            </VBox.margin>
@@ -61,15 +60,15 @@
       <HBox BorderPane.alignment="TOP_RIGHT">
          <children>
             <Pane HBox.hgrow="ALWAYS" />
-            <Button mnemonicParsing="false" text="Cancel">
+            <Button fx:id="cancelBtn" mnemonicParsing="false" text="Cancel">
                <HBox.margin>
                   <Insets right="5.0" />
                </HBox.margin>
             </Button>
-            <Button mnemonicParsing="false" text="Select" />
+            <Button fx:id="selectBtn" mnemonicParsing="false" text="Select" />
          </children>
          <padding>
-            <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+            <Insets bottom="8.0" left="8.0" right="8.0" />
          </padding>
       </HBox>
    </bottom>
