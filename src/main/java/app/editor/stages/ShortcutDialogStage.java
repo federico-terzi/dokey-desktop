@@ -10,6 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -20,6 +21,7 @@ import section.model.ShortcutItem;
 import system.ResourceUtils;
 import system.sicons.ShortcutIcon;
 import system.sicons.ShortcutIconManager;
+import utils.OSValidator;
 
 import java.io.IOException;
 import java.util.*;
@@ -140,6 +142,21 @@ public class ShortcutDialogStage extends Stage {
             }
         });
 
+        // Add special keys handlers
+        for (int i = 0; i<controller.specialKeys.length; i++) {
+            Button btn = controller.getSpecialBtns()[i];
+            KeyboardKeys key = controller.specialKeys[i];
+            btn.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    if (!keys.contains(key)) {
+                        keys.add(key);
+                        renderKeys();
+                    }
+                }
+            });
+        }
+
         // Focus the text field
         Platform.runLater(new Runnable() {
             @Override
@@ -150,7 +167,13 @@ public class ShortcutDialogStage extends Stage {
     }
 
     private void renderKeys() {
-        controller.getShortcutTextField().setText(getShortcut());
+        StringJoiner joiner = new StringJoiner("+");
+        for (KeyboardKeys key : keys) {
+            String keyName = key.getKeyName(OSValidator.getOS());
+
+            joiner.add(keyName);
+        }
+        controller.getShortcutTextField().setText(joiner.toString());
     }
 
     private void renderIcon() {

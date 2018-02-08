@@ -1,5 +1,7 @@
 package utils;
 
+import net.model.DeviceInfo;
+
 public class OSValidator {
     private static String OS = System.getProperty("os.name").toLowerCase();
 
@@ -27,4 +29,15 @@ public class OSValidator {
 
     }
 
+    public static DeviceInfo.OS getOS() {
+        if (isWindows()) {
+            return DeviceInfo.OS.WIN;
+        }else if (isMac()) {
+            return DeviceInfo.OS.MAC;
+        }else if (isUnix()) {
+            return DeviceInfo.OS.LINUX;
+        }
+
+        return null;
+    }
 }

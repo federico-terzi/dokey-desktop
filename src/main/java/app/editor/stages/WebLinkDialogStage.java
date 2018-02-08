@@ -85,7 +85,13 @@ public class WebLinkDialogStage extends Stage {
         controller.selectBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                onWebLinkListener.onWebLinkSelected(controller.urlTextField.getText(),
+                // Make sure the link begins with a scheme
+                String url = controller.urlTextField.getText();
+                if (!url.startsWith("http")) {
+                    url = "http://"+url;
+                }
+
+                onWebLinkListener.onWebLinkSelected(url,
                         controller.titleTextField.getText(),
                         imageUrl);
                 close();

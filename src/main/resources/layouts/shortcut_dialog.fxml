@@ -30,7 +30,6 @@
               </columnConstraints>
               <rowConstraints>
                 <RowConstraints />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
                   <Button fx:id="clearShortcutBtn" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" GridPane.columnIndex="1">
@@ -48,6 +47,21 @@
                   <Insets />
                </VBox.margin>
             </GridPane>
+            <ToolBar style="-fx-background-color: transparent;">
+              <items>
+                <Button fx:id="ctrlBtn" mnemonicParsing="false" text="CTRL" />
+                  <Button fx:id="altBtn" mnemonicParsing="false" text="ALT" />
+                  <Button fx:id="metaBtn" mnemonicParsing="false" text="WIN" />
+                  <Button fx:id="escBtn" mnemonicParsing="false" text="ESC" />
+                  <Button fx:id="enterBtn" mnemonicParsing="false" text="ENTER" />
+                  <Button fx:id="delBtn" mnemonicParsing="false" text="DEL" />
+                  <Button fx:id="shiftBtn" mnemonicParsing="false" text="SHIFT" />
+                  <Button fx:id="tabBtn" mnemonicParsing="false" text="TAB" />
+              </items>
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </ToolBar>
             <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
                <children>
                   <Label text="Enter the shortcut name below ( optional ):" textAlignment="CENTER">

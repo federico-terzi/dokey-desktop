@@ -1,9 +1,11 @@
 package system;
 
 import net.model.KeyboardKeys;
+import utils.OSValidator;
 
 import java.awt.Robot;
 import java.awt.AWTException;
+import java.awt.event.KeyEvent;
 import java.util.List;
 
 /**
@@ -25,14 +27,14 @@ public class KeyboardManager {
     public synchronized void sendKeystroke(List<? extends KeyboardKeys> keys) {
         // Press all the keys
         for (KeyboardKeys key : keys) {
-            robot.delay(40);
-            robot.keyPress(key.getKeyCode());
+            robot.delay(3);
+            robot.keyPress(key.getKeyCode(OSValidator.getOS()));
         }
 
         // Release all the keys
         for (KeyboardKeys key : keys) {
-            robot.delay(10);
-            robot.keyRelease(key.getKeyCode());
+            robot.delay(3);
+            robot.keyRelease(key.getKeyCode(OSValidator.getOS()));
         }
     }
 }

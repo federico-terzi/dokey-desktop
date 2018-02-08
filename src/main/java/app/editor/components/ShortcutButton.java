@@ -14,6 +14,7 @@ import section.model.ShortcutItem;
 import system.model.Application;
 import system.sicons.ShortcutIcon;
 import system.sicons.ShortcutIconManager;
+import utils.OSValidator;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class ShortcutButton extends ComponentButton {
 
         Label titleLabel = new Label(item.getTitle());
         titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px");
-        Label shortcutLabel = new Label(item.getShortcut());
+        Label shortcutLabel = new Label(getDisplayShortcut());
         shortcutLabel.setStyle("-fx-font-style: italic; -fx-font-size: 11px");
         shortcutLabel.setTextAlignment(TextAlignment.CENTER);
         vBox.getChildren().addAll(titleLabel, shortcutLabel);
@@ -57,6 +58,21 @@ public class ShortcutButton extends ComponentButton {
         final Tooltip tooltip = new Tooltip();
         tooltip.setText(item.getTitle() + "\n" + item.getShortcut());
         setTooltip(tooltip);
+    }
+
+    /**
+     * @return the display version of the shortcut, correcting OS differences.
+     */
+    private String getDisplayShortcut() {
+        String shortcut = item.getShortcut();
+
+        if (OSValidator.isWindows()) {
+            shortcut = shortcut.replace("META", "WIN");
+        }else if (OSValidator.isMac()) {
+            shortcut = shortcut.replace("META", "CMD");
+        }
+
+        return shortcut;
     }
 
     @Override
