@@ -142,6 +142,22 @@ public class ClientTestMain {
                             System.out.println("Icon not found for: "+s);
                         }
                     });
+                }else if (line.startsWith("wicon")) {  // WEB ICON REQUEST
+                    StringTokenizer st = new StringTokenizer(line, ";");
+                    st.nextToken();
+                    String url = st.nextToken();
+
+                    manager.requestWebLinkIcon(url, new LinkManager.OnWebLinkIconResponseListener() {
+                        @Override
+                        public void onWebLinkIconReceived(String s, File file) {
+                            System.out.println("Icon found: "+file.getPath());
+                        }
+
+                        @Override
+                        public void onWebLinkIconNotFound(String s) {
+                            System.out.println("Icon not found for: "+s);
+                        }
+                    });
                 }else if (line.startsWith("open")) {  // APP OPEN REQUEST
                     StringTokenizer st = new StringTokenizer(line, ";");
                     st.nextToken();

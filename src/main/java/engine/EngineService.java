@@ -11,10 +11,7 @@ import net.packets.SectionPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import section.model.Section;
-import system.ApplicationSwitchDaemon;
-import system.BroadcastManager;
-import system.KeyboardManager;
-import system.SectionManager;
+import system.*;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.sicons.ShortcutIcon;
@@ -235,6 +232,17 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         }
 
         return null;
+    }
+
+    /**
+     * Called when a user requests a web link icon.
+     * @param url the url of the image
+     * @return the icon File if found, null otherwise.
+     */
+    @Nullable
+    @Override
+    public File onWebLinkIconRequestReceived(String url) {
+        return WebLinkResolver.getImage(url);
     }
 
     @NotNull
