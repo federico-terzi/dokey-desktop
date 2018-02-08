@@ -13,4 +13,5 @@ public class WebLinkDialogController {
     public ProgressBar progressBar;
     public Button cancelBtn;
     public Button selectBtn;
+    public Button refreshBtn;
 }

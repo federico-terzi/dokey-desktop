@@ -11,7 +11,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import section.model.WebLinkItem;
 import system.ResourceUtils;
@@ -32,6 +34,7 @@ public class WebLinkDialogStage extends Stage {
 
     private static int SEARCH_AFTER = 500; // milliseconds
     private Thread searchThread = null;
+    private boolean isEdit = false;  // False when creating a new item, true when editing
 
     public WebLinkDialogStage(OnWebLinkListener onWebLinkListener) throws IOException {
         this.onWebLinkListener = onWebLinkListener;
@@ -46,6 +49,14 @@ public class WebLinkDialogStage extends Stage {
 
         controller = (WebLinkDialogController) fxmlLoader.getController();
 
+        // Setup the button image
+        Image refreshImage = new Image(WebLinkDialogStage.class.getResourceAsStream("/assets/refresh.png"));
+        ImageView imageView = new ImageView(refreshImage);
+        imageView.setFitHeight(18);
+        imageView.setFitWidth(18);
+        imageView.setSmooth(true);
+        controller.refreshBtn.setGraphic(imageView);
+
         // Setup the image
         Image image = new Image(WebLinkDialogStage.class.getResourceAsStream("/assets/world.png"));
         controller.imageView.setImage(image);
@@ -54,28 +65,10 @@ public class WebLinkDialogStage extends Stage {
         controller.urlTextField.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                // Make sure the url is valid
-                try {
-                    URL u = new URL(newValue);
-                    u.toURI();
-
-                    // Stop the previous thread if running
-                    // NOTE: it acts like a debouncing mechanism.
-                    if (searchThread != null) {
-                        searchThread.stop();
-                    }
-
-                    // Start a new thread to check the attributes
-                    searchThread = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // Request the attributes
-                            getAttributes(newValue);
-                        }
-                    });
-                    searchThread.start();
-
-                } catch (Exception e) {}
+                if (!isEdit) {
+                    performSearch(newValue);
+                    isEdit = false;
+                }
             }
         });
 
@@ -99,6 +92,14 @@ public class WebLinkDialogStage extends Stage {
             }
         });
 
+        // Refresh button
+        controller.refreshBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                performSearch(controller.urlTextField.getText());
+            }
+        });
+
         // Focus the text field on startup
         Platform.runLater(new Runnable() {
             @Override
@@ -108,7 +109,40 @@ public class WebLinkDialogStage extends Stage {
         });
 
         // Hide the progress bar
-        controller.progressBar.setManaged(false);
+        controller.progressBar.setVisible(false);
+    }
+
+    private void performSearch(String urlQuery) {
+        // Make sure the url is valid
+        try {
+            // Consider the case the url doesn't have the scheme ( HTTP )
+            // a basic check is provided ( contains a dot )
+            if (urlQuery.contains(".") && !urlQuery.startsWith("http")) {
+                urlQuery = "http://"+urlQuery;
+            }
+
+            final String url = urlQuery;
+
+            URL u = new URL(url);
+            u.toURI();
+
+            // Stop the previous thread if running
+            // NOTE: it acts like a debouncing mechanism.
+            if (searchThread != null) {
+                searchThread.stop();
+            }
+
+            // Start a new thread to check the attributes
+            searchThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    // Request the attributes
+                    getAttributes(url);
+                }
+            });
+            searchThread.start();
+
+        } catch (Exception e) {}
     }
 
     private void getAttributes(String url) {
@@ -123,7 +157,7 @@ public class WebLinkDialogStage extends Stage {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                controller.progressBar.setManaged(true);
+                controller.progressBar.setVisible(true);
                 controller.progressBar.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
             }
         });
@@ -141,7 +175,7 @@ public class WebLinkDialogStage extends Stage {
                     public void run() {
                         // Stop the progressbar
                         controller.progressBar.setProgress(0);
-                        controller.progressBar.setManaged(false);
+                        controller.progressBar.setVisible(false);
 
                         if (res != null) {  // If a result is available
                             // Populate the title
@@ -190,6 +224,8 @@ public class WebLinkDialogStage extends Stage {
      * @param item
      */
     public void setWebLinkItem(WebLinkItem item) {
+        isEdit = true;
+
         // Set the fields
         controller.urlTextField.setText(item.getUrl());
         controller.titleTextField.setText(item.getTitle());

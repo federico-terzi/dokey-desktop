@@ -1,5 +1,6 @@
 package system;
 
+import net.sf.image4j.codec.ico.ICODecoder;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
@@ -7,17 +8,24 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * This class is used to get the attributes from a given url.
  */
 public class WebLinkResolver {
     public static final String WEB_CACHE_DIRNAME = "webcache";
+
+    // Create the logger
+    private final static Logger LOG = Logger.getGlobal();
 
     /**
      * Request the attributes ( title and image url ) for the specified link.
@@ -42,6 +50,7 @@ public class WebLinkResolver {
         Elements titleElements = doc.getElementsByTag("title");
         if (titleElements.size() > 0) {
             result.title = titleElements.get(0).text();
+            LOG.fine("WLR: title: "+result.title);
         }
 
         // Try to get the icon by looking at the "apple-touch-icon" tag.
@@ -79,7 +88,7 @@ public class WebLinkResolver {
                     // If the url is relative, get the absolute one.
                     if (!maxUrl.startsWith("http")) {
                         try {
-                            URL baseUrl = baseUrl = new URL(url);
+                            URL baseUrl = new URL(url);
                             URL abs = new URL(baseUrl, maxUrl);
                             maxUrl = abs.toURI().toURL().toString();
                         } catch (MalformedURLException e) {
@@ -93,6 +102,28 @@ public class WebLinkResolver {
                 }
 
             } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Image not found, fallback on the ICO favicon.
+        if (result.imageUrl == null) {
+            // Extract the favicon url
+            try {
+                URI uri = new URI(url);
+                String faviconURLString = uri.getScheme()+"://"+uri.getHost()+"/favicon.ico";
+                // Check if it exists
+                URL faviconURL = new URL(faviconURLString);
+                HttpURLConnection huc =  (HttpURLConnection) faviconURL.openConnection();
+                huc.setRequestMethod("HEAD");
+                if (huc.getResponseCode() == HttpURLConnection.HTTP_OK) {  // The icon exists
+                    result.imageUrl = faviconURLString;
+                }
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -131,9 +162,27 @@ public class WebLinkResolver {
         if (!imageFile.isFile()) {
             // Download the image
             try {
-                System.out.println(imageUrl);
+                LOG.fine("WLR: saving icon: "+imageUrl);
                 URL image = new URL(imageUrl);
-                FileUtils.copyURLToFile(image, imageFile, 3000, 3000);
+                if (!imageUrl.endsWith(".ico")) {  // Not an ICO file, save directly
+                    FileUtils.copyURLToFile(image, imageFile, 3000, 3000);
+                }else{  // ICO file, must be converted beforehand
+                    File tempFile = File.createTempFile("ico", "ico");
+                    // Download the icon
+                    FileUtils.copyURLToFile(image, tempFile, 3000, 3000);
+
+                    // CONVERSION
+                    List<BufferedImage> images = ICODecoder.read(tempFile);
+                    if (images.size() > 0) {
+                        // Find the one with the highest resolution
+                        BufferedImage icoImage = images.stream().max(Comparator.comparingInt(BufferedImage::getHeight)).get();
+
+                        // Save the image
+                        ImageIO.write(icoImage, "png", imageFile);
+                    }
+
+                    tempFile.delete();  // Free the resources
+                }
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {

@@ -47,7 +47,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
     public static void main(String[] args) {
         // Set the logging level
-        Level level = Level.INFO;
+        Level level = Level.FINE;
         Handler consoleHandler = new ConsoleHandler();
         consoleHandler.setLevel(level);
         LOG.setUseParentHandlers( false );
