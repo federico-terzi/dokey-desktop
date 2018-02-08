@@ -191,6 +191,9 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         trayIconManager.setTrayIconStatus("Not connected");
         trayIconManager.setLoading(false);
 
+        // Register the global event listeners
+        BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_EDITOR_REQUEST_EVENT, openEditorRequestListener);
+
         openEditor();
         //openSettings();
     }
@@ -300,4 +303,19 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     public void onUSBDeviceDisconnected(DeviceInfo deviceInfo) {
 
     }
+
+    /**
+     * Called when the user request to open the editor from the app.
+     */
+    private BroadcastManager.BroadcastListener openEditorRequestListener = new BroadcastManager.BroadcastListener() {
+        @Override
+        public void onBroadcastReceived(Serializable param) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    openEditor();
+                }
+            });
+        }
+    };
 }

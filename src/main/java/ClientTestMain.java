@@ -98,6 +98,16 @@ public class ClientTestMain {
                             }
                         }
                     });
+                }else if (line.startsWith("cmd")) {  // COMMAND REQUEST
+                    StringTokenizer st = new StringTokenizer(line, ";");
+                    st.nextToken();
+                    String cmd = st.nextToken();
+                    manager.requestCommand(cmd, new LinkManager.OnCommandResponseListener() {
+                        @Override
+                        public void onCommandResponseReceived(String s) {
+                            System.out.println("RES: "+s);
+                        }
+                    });
                 }else if (line.startsWith("icon")) {  // APP ICON REQUEST
                     StringTokenizer st = new StringTokenizer(line, ";");
                     st.nextToken();

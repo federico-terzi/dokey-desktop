@@ -6,6 +6,7 @@ import net.DEDaemon;
 import net.LinkManager;
 import net.model.KeyboardKeys;
 import net.model.RemoteApplication;
+import net.packets.CommandPacket;
 import net.packets.SectionPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +32,7 @@ import java.util.logging.Logger;
 /**
  * Represents the background worker that executes all the actions in the server.
  */
-public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnImageRequestListener, LinkManager.OnAppOpenRequestReceivedListener, LinkManager.OnSectionRequestListener, LinkManager.OnFolderOpenRequestReceivedListener, LinkManager.OnWebLinkRequestReceivedListener {
+public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnImageRequestListener, LinkManager.OnAppOpenRequestReceivedListener, LinkManager.OnSectionRequestListener, LinkManager.OnFolderOpenRequestReceivedListener, LinkManager.OnWebLinkRequestReceivedListener, LinkManager.OnCommandRequestReceivedListener {
     public static final int DELAY_FROM_FOCUS_TO_KEYSTROKE = 300;  // In milliseconds
 
     private LinkManager linkManager;
@@ -79,6 +80,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         linkManager.setSectionRequestListener(this);
         linkManager.setFolderOpenRequestListener(this);
         linkManager.setWebLinkRequestListener(this);
+        linkManager.setCommandRequestListener(this);
         applicationSwitchDaemon.addApplicationSwitchListener(this);
 
         // Register broadcast listeners
@@ -123,15 +125,18 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     /**
      * Called when receiving a key shortcut request from a client.
      *
-     * @param application the application identifier
+     * @param application the application identifier. If null it means GLOBAL SHORTCUT
      * @param keys        a list of keys to be pressed
      */
-    @Override  // TODO: application field should be nullable for global shortcuts
-    public boolean onKeyboardShortcutReceived(@NotNull String application, @NotNull List<? extends KeyboardKeys> keys) {
-        // Try to open the application, and get the result
-        boolean result = appManager.openApplication(application);
+    @Override
+    public boolean onKeyboardShortcutReceived(String application, @NotNull List<? extends KeyboardKeys> keys) {
+        boolean result = true;  // Initially true for global shortcuts
 
-        // TODO: before sending the keystrokes, make sure the requested app is in focus.
+        // If an application is specified, first focus the application
+        if (application != null) {
+            // Try to open the application, and get the result
+            result = appManager.openApplication(application);
+        }
 
         // The app was already focused, send the keystrokes directly
         if (result) {
@@ -240,6 +245,14 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         // Generate the section based on the required sectionID
         if (sectionID.equals("launchpad")) {  // LAUNCHPAD
             section = sectionManager.getLaunchpadSection();
+        }else if (sectionID.equals("foremost")){  // SECTION OF THE FOREMOST APP (used at startup)
+            // Get the active application
+            Application foremostApp = appManager.getActiveApplication();
+
+            // If valid, load the corresponding section
+            if (foremostApp != null) {
+                section = sectionManager.getShortcutSection(foremostApp.getExecutablePath());
+            }
         } else {  // APP SHORTCUT SECTION
             section = sectionManager.getShortcutSection(sectionID);
         }
@@ -294,4 +307,21 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
             });
         }
     };
+
+    /**
+     * Called when a user request a specific command.
+     * @param command a string containing the command.
+     * @return the response or null
+     */
+    @Nullable
+    @Override
+    public String onCommandRequestReceived(String command) {
+        if (command.equals("open_editor")) {  // Request to open the editor
+            // Send a broadcast event
+            BroadcastManager.getInstance().sendBroadcast(BroadcastManager.OPEN_EDITOR_REQUEST_EVENT, null);
+            return CommandPacket.RESPONSE_OK;
+        }
+
+        return CommandPacket.RESPONSE_ERROR;
+    }
 }

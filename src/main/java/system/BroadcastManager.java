@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 public class BroadcastManager {
     // Events
     public static final int EDITOR_MODIFIED_SECTION_EVENT = 10;
+    public static final int OPEN_EDITOR_REQUEST_EVENT = 20;
 
 
     // internal variables
@@ -127,13 +128,16 @@ public class BroadcastManager {
      * @return true if succeeded, false otherwise.
      */
     public boolean sendBroadcast(int eventID, Serializable param) {
-        // Copy the param object to improve decoupling
-        Serializable copyParam;
-        try {
-            copyParam = deepCopy(param);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        Serializable copyParam = null;
+
+        // Copy the param object to improve decoupling if specified
+        if (param != null) {
+            try {
+                copyParam = deepCopy(param);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
         }
 
         // Create the entry
