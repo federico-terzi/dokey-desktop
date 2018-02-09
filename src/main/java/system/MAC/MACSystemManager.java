@@ -1,5 +1,6 @@
 package system.MAC;
 
+import system.ResourceUtils;
 import system.SystemManager;
 
 import java.io.IOException;
@@ -121,17 +122,49 @@ public class MACSystemManager implements SystemManager {
 
     @Override
     public boolean playOrPause() {
+        String scriptPath = ResourceUtils.getResource("/applescripts/playPause.scpt").getAbsolutePath();
+        Runtime runtime = Runtime.getRuntime();
 
+        try {
+            // Execute the process
+            Process proc = runtime.exec(new String[]{"osascript", scriptPath});
+            proc.waitFor();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     @Override
     public boolean nextTrack() {
+        String scriptPath = ResourceUtils.getResource("/applescripts/nextTrack.scpt").getAbsolutePath();
+        Runtime runtime = Runtime.getRuntime();
+
+        try {
+            // Execute the process
+            Process proc = runtime.exec(new String[]{"osascript", scriptPath});
+            proc.waitFor();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     @Override
     public boolean previousTrack() {
+        String scriptPath = ResourceUtils.getResource("/applescripts/prevTrack.scpt").getAbsolutePath();
+        Runtime runtime = Runtime.getRuntime();
+
+        try {
+            // Execute the process
+            Process proc = runtime.exec(new String[]{"osascript", scriptPath});
+            proc.waitFor();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return false;
     }
 }
