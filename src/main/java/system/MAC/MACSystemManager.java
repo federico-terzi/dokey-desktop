@@ -60,7 +60,7 @@ public class MACSystemManager implements SystemManager {
         Runtime runtime = Runtime.getRuntime();
         try {
             // Execute the process
-            Process proc = runtime.exec(new String[]{"pmset", "sleepnow"});
+            Process proc = runtime.exec(new String[]{"osascript", "-e", "tell app \"System Events\" to sleep"});
             proc.waitFor();
             return true;
         } catch (IOException e) {
