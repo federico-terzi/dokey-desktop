@@ -9,21 +9,65 @@ public class MACSystemManager implements SystemManager {
 
     @Override
     public boolean shutdown() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            // Execute the process
+            Process proc = runtime.exec(new String[]{"osascript", "-e", "tell app \"System Events\" to shut down"});
+            proc.waitFor();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     @Override
     public boolean restart() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            // Execute the process
+            Process proc = runtime.exec(new String[]{"osascript", "-e", "tell app \"System Events\" to restart"});
+            proc.waitFor();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     @Override
     public boolean logout() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            // Execute the process
+            Process proc = runtime.exec(new String[]{"osascript", "-e", "tell app \"System Events\" to log out"});
+            proc.waitFor();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     @Override
     public boolean suspend() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            // Execute the process
+            Process proc = runtime.exec(new String[]{"pmset", "sleepnow"});
+            proc.waitFor();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
