@@ -6,7 +6,7 @@ public class SystemTestMain {
     public static void main(String[] args) {
         SystemManager systemManager = SystemManagerFactory.getInstance();
 
-        systemManager.playOrPause();
+        systemManager.logout();
 
         System.exit(0);
     }

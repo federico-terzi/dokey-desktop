@@ -10,6 +10,8 @@ import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.win32.StdCallLibrary;
 import com.sun.jna.win32.W32APIOptions;
 
+import java.io.IOException;
+
 /**
  * Windows system manager.
  */
@@ -17,21 +19,65 @@ public class MSSystemManager implements SystemManager {
 
     @Override
     public boolean shutdown() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            // Execute the process
+            Process proc = runtime.exec(new String[]{"Shutdown.exe", "-s", "-t", "00"});
+            proc.waitFor();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     @Override
     public boolean restart() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            // Execute the process
+            Process proc = runtime.exec(new String[]{"Shutdown.exe", "-r", "-t", "00"});
+            proc.waitFor();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     @Override
     public boolean logout() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            // Execute the process
+            Process proc = runtime.exec(new String[]{"Rundll32.exe", "User32.dll,LockWorkStation"});
+            proc.waitFor();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     @Override
     public boolean suspend() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            // Execute the process
+            Process proc = runtime.exec(new String[]{"rundll32.exe", "powrprof.dll,SetSuspendState", "0,1,0"});
+            proc.waitFor();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
