@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 /**
  * Represents the background worker that executes all the actions in the server.
  */
-public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnImageRequestListener, LinkManager.OnAppOpenRequestReceivedListener, LinkManager.OnSectionRequestListener, LinkManager.OnFolderOpenRequestReceivedListener, LinkManager.OnWebLinkRequestReceivedListener, LinkManager.OnCommandRequestReceivedListener {
+public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnImageRequestListener, LinkManager.OnAppOpenRequestReceivedListener, LinkManager.OnSectionRequestListener, LinkManager.OnFolderOpenRequestReceivedListener, LinkManager.OnWebLinkRequestReceivedListener, LinkManager.OnCommandRequestReceivedListener, LinkManager.OnAppInfoRequestReceivedListener {
     public static final int DELAY_FROM_FOCUS_TO_KEYSTROKE = 300;  // In milliseconds
 
     private LinkManager linkManager;
@@ -78,6 +78,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         linkManager.setFolderOpenRequestListener(this);
         linkManager.setWebLinkRequestListener(this);
         linkManager.setCommandRequestListener(this);
+        linkManager.setAppInfoRequestListener(this);
         applicationSwitchDaemon.addApplicationSwitchListener(this);
 
         // Register broadcast listeners
@@ -331,5 +332,25 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         }
 
         return CommandPacket.RESPONSE_ERROR;
+    }
+
+    /**
+     * Called when a user request information about an app
+     * @param appPath the application path
+     * @return the Remote application requested or null
+     */
+    @Nullable
+    @Override
+    public RemoteApplication onAppInfoRequestReceived(String appPath) {
+        Application application = appManager.getApplication(appPath);
+
+        if (application == null)
+            return null;
+
+        RemoteApplication remoteApp = new RemoteApplication();
+        remoteApp.setName(application.getName());
+        remoteApp.setPath(appPath);
+
+        return remoteApp;
     }
 }

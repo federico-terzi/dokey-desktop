@@ -108,6 +108,21 @@ public class ClientTestMain {
                             System.out.println("RES: "+s);
                         }
                     });
+                }else if (line.startsWith("ainfo")) {  // APP INFO REQUEST
+                    StringTokenizer st = new StringTokenizer(line, ";");
+                    st.nextToken();
+                    String app = st.nextToken();
+                    manager.requestAppInfo(app, new LinkManager.OnAppInfoResponseListener() {
+                        @Override
+                        public void onAppInfoNotFound(String s) {
+                            System.out.println("Not found for: "+s);
+                        }
+
+                        @Override
+                        public void onAppInfoFound(String s, RemoteApplication remoteApplication) {
+                            System.out.println(remoteApplication);
+                        }
+                    });
                 }else if (line.startsWith("icon")) {  // APP ICON REQUEST
                     StringTokenizer st = new StringTokenizer(line, ";");
                     st.nextToken();
