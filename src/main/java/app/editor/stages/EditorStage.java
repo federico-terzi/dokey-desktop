@@ -455,7 +455,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         });
 
         // Add the bottom bar
-        BottomBarGrid bottomBarGrid = new BottomBarGrid(applicationManager, shortcutIconManager, section.getBottomBarItems(), BOTTOM_BAR_DEFAULT_COLS, section, screenOrientation);
+        BottomBarGrid bottomBarGrid = new BottomBarGrid(applicationManager, shortcutIconManager, BOTTOM_BAR_DEFAULT_COLS, section, screenOrientation);
         bottomBarGrid.setSectionModifiedListener(this);
         bottomBarGrid.setSectionType(section.getSectionType());
         bottomBarGrid.setOnComponentClickListener(new OnComponentClickListener() {

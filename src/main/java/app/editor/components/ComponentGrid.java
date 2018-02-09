@@ -36,7 +36,7 @@ public class ComponentGrid extends GridPane {
     private ShortcutIconManager shortcutIconManager;
     protected ScreenOrientation screenOrientation;
 
-    private Component[][] componentMatrix;
+    protected Component[][] componentMatrix;
     private Component[][] fillMatrix;
     private DragButton[][] buttonMatrix;
     private boolean forceDiscardSpan = false;

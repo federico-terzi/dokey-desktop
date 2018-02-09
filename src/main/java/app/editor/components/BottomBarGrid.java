@@ -9,17 +9,16 @@ import section.model.Section;
 import system.model.ApplicationManager;
 import system.sicons.ShortcutIconManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BottomBarGrid extends ComponentGrid implements ComponentGrid.OnComponentSelectedListener {
-    private List<Item> items;
     private int colCount;
     private Section section;
     private OnSectionModifiedListener sectionModifiedListener;
 
-    public BottomBarGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, List<Item> items, int colCount, Section section, ScreenOrientation screenOrientation) {
-        super(applicationManager, shortcutIconManager, generateMatrix(items, colCount), screenOrientation);
-        this.items = items;
+    public BottomBarGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, int colCount, Section section, ScreenOrientation screenOrientation) {
+        super(applicationManager, shortcutIconManager, generateMatrix(section.getBottomBarItems(), colCount), screenOrientation);
         this.colCount = colCount;
         this.section = section;
 
@@ -68,14 +67,27 @@ public class BottomBarGrid extends ComponentGrid implements ComponentGrid.OnComp
         return componentMatrix;
     }
 
+    /**
+     * Propagate the items to the section button bar
+     */
+    private void updateSectionButtonBar() {
+        List<Item> newButtonBar = new ArrayList<>();
+
+        // For each element of the component matrix, update the items
+        for (int i = 0; i<componentMatrix.length; i++) {
+            if (componentMatrix[i][0] != null) {
+                newButtonBar.add(componentMatrix[i][0].getItem());
+            }
+        }
+
+        // Set the new items
+        section.setBottomBarItems(newButtonBar);
+    }
+
     @Override
     public void onNewComponentRequested(Component component) {
-        // Add the item
-        if (items.size() > component.getY()) {
-            items.add(component.getY(), component.getItem());
-        }else{
-            items.add(component.getItem());
-        }
+        // Update the section button bar
+        updateSectionButtonBar();
 
         // Save the section
         if (sectionModifiedListener != null) {
@@ -85,8 +97,8 @@ public class BottomBarGrid extends ComponentGrid implements ComponentGrid.OnComp
 
     @Override
     public void onDeleteComponentRequested(Component component) {
-        // Remove the item
-        items.remove(component.getItem());
+        // Update the section button bar
+        updateSectionButtonBar();
 
         // Save the section
         if (sectionModifiedListener != null) {
@@ -96,6 +108,9 @@ public class BottomBarGrid extends ComponentGrid implements ComponentGrid.OnComp
 
     @Override
     public void onEditComponentRequested(Component component) {
+        // Update the section button bar
+        updateSectionButtonBar();
+
         // Save the section
         if (sectionModifiedListener != null) {
             sectionModifiedListener.onSectionModified(section);
