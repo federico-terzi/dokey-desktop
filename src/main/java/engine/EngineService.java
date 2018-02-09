@@ -200,7 +200,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         linkManager.sendAppSwitchEvent(remoteApplication, lastEdit, new LinkManager.OnAppSwitchAckListener() {
             @Override
             public void onAppSwitchAck() {
-                LOG.fine("APP SWITCH ACK");
+                LOG.fine("APP SWITCH ACK "+remoteApplication.getPath());
             }
         });
     }
