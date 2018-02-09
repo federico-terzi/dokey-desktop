@@ -1,6 +1,7 @@
 package system;
 
 import system.MAC.MACApplicationManager;
+import system.MAC.MACSystemManager;
 import system.MS.MSApplicationManager;
 import system.MS.MSSystemManager;
 import system.model.ApplicationManager;
@@ -18,7 +19,7 @@ public class SystemManagerFactory {
             if (OSValidator.isWindows()) {  // WINDOWS
                 instance = new MSSystemManager();
             }else if (OSValidator.isMac()) {  // MAC OSX
-                // TODO
+                instance = new MACSystemManager();
             }
         }
         return instance;
