@@ -11,6 +11,8 @@ import net.packets.SectionPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import section.model.Section;
+import section.model.SystemCommands;
+import section.model.SystemItem;
 import system.*;
 import system.model.Application;
 import system.model.ApplicationManager;
@@ -37,6 +39,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     private KeyboardManager keyboardManager;
     private SectionManager sectionManager;
     private ApplicationSwitchDaemon applicationSwitchDaemon;
+    private SystemManager systemManager;
     private ShortcutIconManager shortcutIconManager;
 
     // Create the logger
@@ -53,11 +56,12 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         initialization();
     }
 
-    public EngineService(Socket socket, ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon) throws AWTException {
+    public EngineService(Socket socket, ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon, SystemManager systemManager) throws AWTException {
         // Create a link manager
         this.linkManager = new LinkManager(socket);
         this.appManager = appManager;
         this.applicationSwitchDaemon = applicationSwitchDaemon;
+        this.systemManager = systemManager;
         this.keyboardManager = new KeyboardManager();
         this.sectionManager = new SectionManager();
         this.shortcutIconManager = new ShortcutIconManager();
@@ -325,7 +329,27 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     @Nullable
     @Override
     public String onCommandRequestReceived(String command) {
-        if (command.equals("open_editor")) {  // Request to open the editor
+        if (command.equals(SystemCommands.VOLUME_UP)) {
+            systemManager.volumeUp();
+        }else if (command.equals(SystemCommands.VOLUME_DOWN)) {
+            systemManager.volumeDown();
+        }else if (command.equals(SystemCommands.VOLUME_MUTE)) {
+            systemManager.volumeMute();
+        }else if (command.equals(SystemCommands.PLAY_OR_PAUSE)) {
+            systemManager.playOrPause();
+        }else if (command.equals(SystemCommands.NEXT_TRACK)) {
+            systemManager.nextTrack();
+        }else if (command.equals(SystemCommands.PREV_TRACK)) {
+            systemManager.previousTrack();
+        }else if (command.equals(SystemCommands.SHUTDOWN)) {
+            systemManager.shutdown();
+        }else if (command.equals(SystemCommands.SUSPEND)) {
+            systemManager.suspend();
+        }else if (command.equals(SystemCommands.LOGOUT)) {
+            systemManager.logout();
+        }else if (command.equals(SystemCommands.RESTART)) {
+            systemManager.restart();
+        }else if (command.equals("open_editor")) {  // Request to open the editor
             // Send a broadcast event
             BroadcastManager.getInstance().sendBroadcast(BroadcastManager.OPEN_EDITOR_REQUEST_EVENT, null);
             return CommandPacket.RESPONSE_OK;

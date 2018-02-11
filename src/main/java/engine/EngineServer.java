@@ -3,6 +3,7 @@ package engine;
 import app.MainApp;
 import section.model.Section;
 import system.ApplicationSwitchDaemon;
+import system.SystemManager;
 import system.model.ApplicationManager;
 
 import java.io.IOException;
@@ -20,6 +21,7 @@ public class EngineServer extends Thread {
 
     private ApplicationManager appManager;
     private ApplicationSwitchDaemon applicationSwitchDaemon;
+    private SystemManager systemManager;
     private EngineWorker.OnDeviceConnectionListener deviceConnectionListener;
 
     private volatile boolean shouldStop = false;
@@ -27,9 +29,10 @@ public class EngineServer extends Thread {
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
 
-    public EngineServer(ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon) {
+    public EngineServer(ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon, SystemManager systemManager) {
         this.appManager = appManager;
         this.applicationSwitchDaemon = applicationSwitchDaemon;
+        this.systemManager = systemManager;
     }
 
     @Override
@@ -50,7 +53,7 @@ public class EngineServer extends Thread {
             try {
                 Socket socket = serverSocket.accept();
 
-                EngineWorker worker = new EngineWorker(socket, appManager, applicationSwitchDaemon);
+                EngineWorker worker = new EngineWorker(socket, appManager, applicationSwitchDaemon, systemManager);
                 worker.setDeviceConnectionListener(deviceConnectionListener);
                 worker.start();
 

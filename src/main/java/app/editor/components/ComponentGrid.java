@@ -5,6 +5,7 @@ import app.editor.model.Direction;
 import app.editor.model.ScreenOrientation;
 import app.editor.stages.ShortcutDialogStage;
 import app.editor.stages.AppSelectDialogStage;
+import app.editor.stages.SystemDialogStage;
 import app.editor.stages.WebLinkDialogStage;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -301,6 +302,11 @@ public class ComponentGrid extends GridPane {
                 @Override
                 public void onAddWebLink() {
                     requestWebLinkSelect(col, row);
+                }
+
+                @Override
+                public void onAddSystem() {
+                    requestSystemSelect(col, row);
                 }
             });
         }
@@ -696,6 +702,40 @@ public class ComponentGrid extends GridPane {
         }
     }
 
+    private void requestSystemSelect(int col, int row) {
+        try {
+            SystemDialogStage stage = new SystemDialogStage(new SystemDialogStage.OnSystemItemListener() {
+                @Override
+                public void onSystemItemSelected(SystemItem item) {
+                    // Create the component
+                    Component component = new Component();
+                    component.setItem(item);
+                    component.setX(row);
+                    component.setY(col);
+                    component.setXSpan(1);
+                    component.setYSpan(1);
+
+                    componentMatrix[col][row] = component;
+
+                    // Notify the listener
+                    if (onComponentSelectedListener != null) {
+                        onComponentSelectedListener.onNewComponentRequested(component);
+                    }
+
+                    render();
+                }
+
+                @Override
+                public void onCanceled() {
+
+                }
+            });
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private boolean requestOverrideComponentsDialog(int number) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -796,11 +836,11 @@ public class ComponentGrid extends GridPane {
                 }
                 return new ShortcutButton(component, shortcutIcon, shortcutIconManager);
             } else if (component.getItem() instanceof FolderItem) {  // FOLDER ITEM
-                FolderItem folderItem = (FolderItem) component.getItem();
                 return new FolderButton(component);
             } else if (component.getItem() instanceof WebLinkItem) {  // WEB LINK ITEM
-                WebLinkItem webLinkItem = (WebLinkItem) component.getItem();
                 return new WebLinkButton(component);
+            } else if (component.getItem() instanceof SystemItem) {  // SYSTEM ITEM
+                return new SystemButton(component);
             }
         }
 

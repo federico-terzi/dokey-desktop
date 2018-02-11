@@ -92,7 +92,22 @@ public class EmptyButton extends DragButton {
         internetImageView.setFitHeight(32);
         internetItem.setGraphic(internetImageView);
 
-        contextMenu.getItems().addAll(appLauncherItem, shortcutItem, folderItem, internetItem);
+        MenuItem systemItem = new MenuItem("Add System Control");
+        systemItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (onEmptyBtnActionListener != null) {
+                    onEmptyBtnActionListener.onAddSystem();
+                }
+            }
+        });
+        Image systemImage = new Image(ComponentButton.class.getResourceAsStream("/assets/shutdown.png"));
+        ImageView systemImageView = new ImageView(systemImage);
+        systemImageView.setFitWidth(32);
+        systemImageView.setFitHeight(32);
+        systemItem.setGraphic(systemImageView);
+
+        contextMenu.getItems().addAll(appLauncherItem, shortcutItem, folderItem, internetItem, systemItem);
         setContextMenu(contextMenu);
 
         // Open the context menu with the right click
@@ -113,5 +128,6 @@ public class EmptyButton extends DragButton {
         void onAddShortcut();
         void onAddFolder();
         void onAddWebLink();
+        void onAddSystem();
     }
 }

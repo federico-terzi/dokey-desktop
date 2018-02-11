@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.paint.*?>
+
+<BorderPane prefHeight="349.0" prefWidth="344.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.editor.controllers.SystemDialogController">
+  <bottom>
+    <ToolBar>
+      <items>
+            <CheckBox fx:id="confirmCheckBox" mnemonicParsing="false" text="Ask for confirmation" />
+        <Pane HBox.hgrow="ALWAYS" />
+        <Button fx:id="cancelBtn" alignment="CENTER" text="Cancel" textAlignment="CENTER" />
+        <Button fx:id="selectBtn" alignment="CENTER" text="Select" textAlignment="CENTER" />
+      </items>
+    </ToolBar>
+  </bottom>
+  <center>
+    <ListView fx:id="systemListView" prefHeight="200.0" prefWidth="200.0" />
+  </center>
+</BorderPane>

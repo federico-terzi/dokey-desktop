@@ -4,6 +4,7 @@ import app.MainApp;
 import net.DEDaemon;
 import section.model.Section;
 import system.ApplicationSwitchDaemon;
+import system.SystemManager;
 import system.model.ApplicationManager;
 
 import java.awt.*;
@@ -14,6 +15,7 @@ public class EngineWorker extends Thread {
     private Socket socket;
     private ApplicationManager appManager;
     private ApplicationSwitchDaemon applicationSwitchDaemon;
+    private SystemManager systemManager;
     private OnDeviceConnectionListener deviceConnectionListener;
     private EngineService service = null;
 
@@ -22,17 +24,18 @@ public class EngineWorker extends Thread {
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
 
-    public EngineWorker(Socket socket, ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon) {
+    public EngineWorker(Socket socket, ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon, SystemManager systemManager) {
         this.socket = socket;
         this.appManager = appManager;
         this.applicationSwitchDaemon = applicationSwitchDaemon;
+        this.systemManager = systemManager;
     }
 
     @Override
     public void run() {
         try {
             // Create the engine service
-            service = new EngineService(socket, appManager, applicationSwitchDaemon);
+            service = new EngineService(socket, appManager, applicationSwitchDaemon, systemManager);
 
             // Set up the connection closed listener
             service.setOnConnectionClosedListener(new DEDaemon.OnConnectionClosedListener() {

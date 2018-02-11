@@ -38,6 +38,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private ServerDiscoveryDaemon serverDiscoveryDaemon;
     private EngineServer engineServer;
     private ADBManager adbManager;
+    private SystemManager systemManager;
 
     private Stage primaryStage;
     private InitializationStage initializationStage;
@@ -86,6 +87,9 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         // Initialize the sections
         SectionManager sectionManager = new SectionManager();
         sectionManager.getLaunchpadSection();
+
+        // Initialize the system manager
+        systemManager = SystemManagerFactory.getInstance();
 
         // load the applications
         loadApplications();
@@ -183,7 +187,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         // Start the ADB daemon
         adbManager.startDaemon();
 
-        engineServer = new EngineServer(appManager, applicationSwitchDaemon);
+        engineServer = new EngineServer(appManager, applicationSwitchDaemon, systemManager);
         engineServer.setDeviceConnectionListener(this);
         engineServer.start();
 
