@@ -212,7 +212,45 @@ public class MACApplicationManager extends ApplicationManager {
 
     @Override
     public List<Application> getActiveApplications() {
-        return null;
+        String scriptPath = ResourceUtils.getResource("/mac/getActiveApplications").getAbsolutePath();
+        Runtime runtime = Runtime.getRuntime();
+
+        List<Application> apps = new ArrayList<>();
+
+        try {
+            // Execute the process
+            Process proc = runtime.exec(new String[]{scriptPath});
+
+            // Get the output
+            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+            // Get the executable path
+            String executablePath;
+
+            // Get the list
+            while ((executablePath = br.readLine()) != null) {
+                // Convert the executable path to the .app bundle path
+                String appPath = getAppPathFromExecutablePath(executablePath);
+
+                Application app = null;
+
+                // Try to get it from the applicationMap
+                if (applicationMap.containsKey(appPath)){
+                    app = applicationMap.get(appPath);
+                }
+
+                // If not found on the map, dynamically analyze the app.
+                app = addApplicationFromAppPath(appPath);
+
+                if (app != null && !apps.contains(app)) {
+                    apps.add(app);
+                }
+            }
+        } catch (Exception e) {
+            LOG.info("CATCHED: "+e.toString());
+        }
+
+        return apps;
     }
 
     /**
