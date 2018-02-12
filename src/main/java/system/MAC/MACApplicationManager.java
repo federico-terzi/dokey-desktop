@@ -210,6 +210,11 @@ public class MACApplicationManager extends ApplicationManager {
         return null;
     }
 
+    @Override
+    public List<Application> getActiveApplications() {
+        return null;
+    }
+
     /**
      * Return the executable path for the given PID. Return null if not found.
      * It uses the ps command line utility.

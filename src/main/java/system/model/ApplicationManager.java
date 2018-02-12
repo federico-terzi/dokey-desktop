@@ -29,6 +29,11 @@ public abstract class ApplicationManager {
     public abstract Application getActiveApplication();
 
     /**
+     * @return the List of active Application(s)
+     */
+    public abstract List<Application> getActiveApplications();
+
+    /**
      * Get a list of Window currently active.
      */
     public abstract List<Window> getWindowList();

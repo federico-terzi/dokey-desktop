@@ -289,6 +289,66 @@ public class MSApplicationManager extends ApplicationManager {
         }
     }
 
+    @Override
+    public List<Application> getActiveApplications() {
+        List<Application> apps = new ArrayList<>();
+
+        User32.INSTANCE.EnumWindows(new WinUser.WNDENUMPROC() {
+            int count = 0;
+
+            public boolean callback(HWND hwnd, Pointer arg1) {
+                char[] windowText = new char[512];
+                User32.INSTANCE.GetWindowText(hwnd, windowText, 512);
+                String titleText = Native.toString(windowText);
+
+                // Skip the ones that are empty or default.
+                if (titleText.isEmpty() || titleText.equals("Default IME") || titleText.equals("MSCTFIME UI")) {
+                    return true;
+                }
+
+                // Make sure the system.window is visible, skip if not
+                boolean isWindowVisible = User32.INSTANCE.IsWindowVisible(hwnd);
+                if (!isWindowVisible) {
+                    return true;
+                }
+
+                // Get the PID
+                IntByReference PID = new IntByReference();
+                User32.INSTANCE.GetWindowThreadProcessId(hwnd, PID);
+
+                // Get the executable path
+                //String executablePath = executablesMap.get(PID.getValue());
+                String executablePath= getExecutablePathFromPID(PID.getValue());
+
+                // If the executablePath is empty, skip the process
+                if (executablePath == null) {
+                    return true;
+                }
+
+                // Get the application
+                Application application = applicationMap.get(executablePath);
+
+                // If application is not present in the list, load it dynamically
+                if (application == null) {
+                    application = addApplicationFromExecutablePath(executablePath, null, null);
+                }
+
+                // If the application could not be found, return
+                if (application == null) {
+                    return true;
+                }
+
+                // Avoid duplicates
+                if (!apps.contains(application)) {
+                    apps.add(application);
+                }
+                return true;
+            }
+        }, null);
+
+        return apps;
+    }
+
     /**
      * Return the executable path for the given PID. Return null if not found.
      * It uses a kernel call to obtain it.
