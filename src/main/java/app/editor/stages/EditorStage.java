@@ -391,6 +391,40 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                     requestChangePageSize(page, section);
                 }
             });
+            MenuItem moveLeft = new MenuItem("Move Left");
+            moveLeft.setStyle("-fx-text-fill: black;");
+            moveLeft.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    int index = section.getPages().indexOf(page);
+                    if (index > 0) {
+                        Collections.swap(section.getPages(), index, index-1);
+
+                        // Save the section
+                        onSectionModified(section);
+
+                        // Reload the section
+                        loadSection(section);
+                    }
+                }
+            });
+            MenuItem moveRight = new MenuItem("Move Right");
+            moveRight.setStyle("-fx-text-fill: black;");
+            moveRight.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    int index = section.getPages().indexOf(page);
+                    if (index >= 0 && index < (section.getPages().size()-1)) {
+                        Collections.swap(section.getPages(), index, index+1);
+
+                        // Save the section
+                        onSectionModified(section);
+
+                        // Reload the section
+                        loadSection(section);
+                    }
+                }
+            });
             MenuItem delete = new MenuItem("Delete");
             delete.setStyle("-fx-text-fill: black;");
             delete.setOnAction(new EventHandler<ActionEvent>() {
@@ -414,7 +448,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                     }
                 }
             });
-            contextMenu.getItems().addAll(rename, changeSize, new SeparatorMenuItem(), delete);
+            contextMenu.getItems().addAll(rename, changeSize, new SeparatorMenuItem(), moveLeft, moveRight, new SeparatorMenuItem(), delete);
             tab.setContextMenu(contextMenu);
 
             // Handle the drag and drop focus switch
