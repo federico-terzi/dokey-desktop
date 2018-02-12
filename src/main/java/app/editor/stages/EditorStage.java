@@ -66,6 +66,10 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     public static final int BORDER_PADDING = 10;
     private static final int BOTTOM_BAR_DEFAULT_COLS = 4;
 
+    // Limits in value
+    private static final int MAX_ROWS = 6;
+    private static final int MAX_COLS = 5;
+    private static final int MAX_PAGES = 8;
 
     private EditorController controller;
     private ApplicationManager applicationManager;
@@ -485,7 +489,10 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 }
 
                 // Change the active page
-                activePage = section.getPages().get(tabPane.getSelectionModel().getSelectedIndex());
+                int index = tabPane.getSelectionModel().getSelectedIndex();
+                if (section.getPages().size() > index) {
+                    activePage = section.getPages().get(index);
+                }
             }
         });
 
@@ -602,6 +609,9 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     }
 
     private void addPageToSection(Section section) {
+        if (section.getPages().size() >= MAX_PAGES)
+            return;
+
         // Create a new page
         Page page = new Page();
         page.setRowCount(SectionManager.DEFAULT_PAGE_ROWS);
@@ -693,7 +703,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             try {
                 int row = Integer.parseInt(rowField.getText());
                 int col = Integer.parseInt(colField.getText());
-                if (row > 0 && col > 0) {
+                if (row > 0 && col > 0 && row <= MAX_ROWS && col <= MAX_COLS) {
                     changeSizeBtn.setDisable(false);
                 }else{
                     changeSizeBtn.setDisable(true);
