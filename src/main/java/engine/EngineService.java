@@ -6,6 +6,7 @@ import net.DEDaemon;
 import net.LinkManager;
 import net.model.KeyboardKeys;
 import net.model.RemoteApplication;
+import net.packets.AppListPacket;
 import net.packets.CommandPacket;
 import net.packets.SectionPacket;
 import org.jetbrains.annotations.NotNull;
@@ -165,14 +166,22 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     /**
      * Called when receiving a list app request from a client
      *
-     * @return a list of RemoteApplication installed in the system.
+     * @return a list of RemoteApplication.
      */
     @NotNull
     @Override
-    public List<RemoteApplication> onAppListRequestReceived() {
+    public List<RemoteApplication> onAppListRequestReceived(int requestType) {
         List<RemoteApplication> output = new ArrayList<>();
-        List<Application> apps = appManager.getApplicationList();
+        List<Application> apps = null;
 
+        // Get the app list based on the request
+        if (requestType == AppListPacket.ALL_APPS) {
+            apps = appManager.getApplicationList();
+        }else if (requestType == AppListPacket.ACTIVE_APPS) {
+            apps = appManager.getActiveApplications();
+        }
+
+        // Convert it to remote applications
         for (Application app : apps) {
             RemoteApplication remoteApp = new RemoteApplication();
             remoteApp.setName(app.getName());

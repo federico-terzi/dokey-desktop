@@ -3,6 +3,7 @@ import net.LinkManager;
 import net.discovery.ClientDiscoveryDaemon;
 import net.model.RemoteApplication;
 import net.model.ServerInfo;
+import net.packets.AppListPacket;
 import net.packets.DEPacket;
 import org.jetbrains.annotations.NotNull;
 import section.model.Section;
@@ -90,7 +91,16 @@ public class ClientTestMain {
                         }
                     });
                 }else if (line.startsWith("apps")) {  // APP LIST REQUEST
-                    manager.requestAppList(new LinkManager.OnAppListResponseListener() {
+                    manager.requestAppList(AppListPacket.ALL_APPS, new LinkManager.OnAppListResponseListener() {
+                        @Override
+                        public void onAppListResponseReceived(@NotNull List<? extends RemoteApplication> apps) {
+                            for (RemoteApplication app : apps) {
+                                System.out.println(app);
+                            }
+                        }
+                    });
+                }else if (line.startsWith("activeapps")) {  // ACTIVE APP LIST REQUEST
+                    manager.requestAppList(AppListPacket.ACTIVE_APPS, new LinkManager.OnAppListResponseListener() {
                         @Override
                         public void onAppListResponseReceived(@NotNull List<? extends RemoteApplication> apps) {
                             for (RemoteApplication app : apps) {
