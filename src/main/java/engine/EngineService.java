@@ -329,25 +329,25 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     @Nullable
     @Override
     public String onCommandRequestReceived(String command) {
-        if (command.equals(SystemCommands.VOLUME_UP)) {
+        if (command.equals(SystemCommands.VOLUME_UP.getCommand())) {
             systemManager.volumeUp();
-        }else if (command.equals(SystemCommands.VOLUME_DOWN)) {
+        }else if (command.equals(SystemCommands.VOLUME_DOWN.getCommand())) {
             systemManager.volumeDown();
-        }else if (command.equals(SystemCommands.VOLUME_MUTE)) {
+        }else if (command.equals(SystemCommands.VOLUME_MUTE.getCommand())) {
             systemManager.volumeMute();
-        }else if (command.equals(SystemCommands.PLAY_OR_PAUSE)) {
+        }else if (command.equals(SystemCommands.PLAY_OR_PAUSE.getCommand())) {
             systemManager.playOrPause();
-        }else if (command.equals(SystemCommands.NEXT_TRACK)) {
+        }else if (command.equals(SystemCommands.NEXT_TRACK.getCommand())) {
             systemManager.nextTrack();
-        }else if (command.equals(SystemCommands.PREV_TRACK)) {
+        }else if (command.equals(SystemCommands.PREV_TRACK.getCommand())) {
             systemManager.previousTrack();
-        }else if (command.equals(SystemCommands.SHUTDOWN)) {
+        }else if (command.equals(SystemCommands.SHUTDOWN.getCommand())) {
             systemManager.shutdown();
-        }else if (command.equals(SystemCommands.SUSPEND)) {
+        }else if (command.equals(SystemCommands.SUSPEND.getCommand())) {
             systemManager.suspend();
-        }else if (command.equals(SystemCommands.LOGOUT)) {
+        }else if (command.equals(SystemCommands.LOGOUT.getCommand())) {
             systemManager.logout();
-        }else if (command.equals(SystemCommands.RESTART)) {
+        }else if (command.equals(SystemCommands.RESTART.getCommand())) {
             systemManager.restart();
         }else if (command.equals("open_editor")) {  // Request to open the editor
             // Send a broadcast event
