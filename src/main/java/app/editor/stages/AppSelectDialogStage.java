@@ -83,7 +83,7 @@ public class AppSelectDialogStage extends Stage {
 
         // Filter the apps based on the query
         if (searchQuery != null && !searchQuery.isEmpty()) {
-            allApps = allApps.stream().filter(application -> application.getName().toLowerCase().contains(searchQuery)).collect(Collectors.toList());
+            allApps = allApps.stream().filter(application -> application.getName().toLowerCase().contains(searchQuery.toLowerCase())).collect(Collectors.toList());
         }
 
         ObservableList<Application> apps = FXCollections.observableArrayList(allApps);
