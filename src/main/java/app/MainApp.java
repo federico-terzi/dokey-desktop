@@ -87,6 +87,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         // Initialize the sections
         SectionManager sectionManager = new SectionManager();
         sectionManager.getLaunchpadSection();
+        sectionManager.getSystemSection();
 
         // Initialize the system manager
         systemManager = SystemManagerFactory.getInstance();

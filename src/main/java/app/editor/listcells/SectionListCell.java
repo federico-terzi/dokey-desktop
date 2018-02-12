@@ -75,6 +75,12 @@ public class SectionListCell extends ListCell<Section> {
             image.setImage(appImage);
             name.setText("Launchpad");
             path.setText("The main application launcher");
+        }else if (section.getSectionType() == SectionType.SYSTEM){
+            Image appImage = null;
+            appImage = new Image(SectionListCell.class.getResourceAsStream("/assets/shutdown.png"));
+            image.setImage(appImage);
+            name.setText("System");
+            path.setText("The system control launchpad");
         }
 
         // Set up the context menu

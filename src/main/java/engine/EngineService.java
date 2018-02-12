@@ -267,6 +267,8 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         // Generate the section based on the required sectionID
         if (sectionID.equals("launchpad")) {  // LAUNCHPAD
             section = sectionManager.getLaunchpadSection();
+        }else if (sectionID.equals("system")) {  // SYSTEM
+            section = sectionManager.getSystemSection();
         }else if (sectionID.equals("foremost")){  // SECTION OF THE FOREMOST APP (used at startup)
             // Get the active application
             Application foremostApp = appManager.getActiveApplication();

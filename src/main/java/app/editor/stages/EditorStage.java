@@ -232,7 +232,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 // Filter out the sections without an associated application
                 sections = sections.stream().filter(section -> {
                     return section.getSectionType() == SectionType.LAUNCHPAD ||
-                            applicationManager.getApplication(section.getRelatedAppId()) != null;
+                            section.getSectionType() == SectionType.SYSTEM ||
+                    applicationManager.getApplication(section.getRelatedAppId()) != null;
                 }).collect(Collectors.toList());
 
                 // Populate the listview

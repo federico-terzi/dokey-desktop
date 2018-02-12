@@ -3,6 +3,7 @@ package system;
 import org.apache.commons.codec.digest.DigestUtils;
 import json.JSONObject;
 import json.JSONTokener;
+import org.apache.commons.io.FileUtils;
 import section.model.*;
 
 import java.io.*;
@@ -55,6 +56,14 @@ public class SectionManager {
     public Section getLaunchpadSection() {
         // Get the section file
         File sectionFile = getLaunchpadSectionFile();
+
+        // Read the content
+        return getSectionFromFile(sectionFile);
+    }
+
+    public Section getSystemSection() {
+        // Get the section file
+        File sectionFile = getSystemSectionFile();
 
         // Read the content
         return getSectionFromFile(sectionFile);
@@ -140,6 +149,38 @@ public class SectionManager {
 
             // Write the section to the file
             writeSectionToFile(section, sectionFile);
+        }
+
+        return sectionFile;
+    }
+
+    /**
+     * Return the File of the Section associated with the system.
+     * If a section is not available, it copies the default one and then
+     * writes it to the file.
+     *
+     * @return the File of the Section associated with the launchpad.
+     */
+    private File getSystemSectionFile() {
+        // Get the section directory
+        File userSectionDir = CacheManager.getInstance().getSectionDir();
+
+        // Get the section file
+        File sectionFile = new File(userSectionDir, "system.json");
+
+        // If the file doesn't exist fill it with an empty section.
+        if (!sectionFile.isFile()) {
+            // Load the default one
+            File defaultSection = ResourceUtils.getResource("/sections/system.json");
+
+            // Copy the default one
+            if (defaultSection != null) {
+                try {
+                    FileUtils.copyFile(defaultSection, sectionFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         return sectionFile;
