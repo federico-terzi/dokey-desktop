@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  */
 public class ActiveApplicationsDaemon extends Thread{
 
-    public static final long CHECK_INTERVAL = 500;  // Check interval
+    public static final long CHECK_INTERVAL = 1000;  // Check interval
 
     private volatile boolean shouldStop = false;
     private ApplicationManager appManager;
