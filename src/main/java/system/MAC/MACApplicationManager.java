@@ -229,8 +229,6 @@ public class MACApplicationManager extends ApplicationManager {
 
             // Get the list
             while ((appPath = br.readLine()) != null) {
-                System.out.println(appPath);
-
                 Application app = null;
 
                 // Try to get it from the applicationMap
