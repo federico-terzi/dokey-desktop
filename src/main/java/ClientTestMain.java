@@ -1,6 +1,7 @@
 import net.DEManager;
 import net.LinkManager;
 import net.discovery.ClientDiscoveryDaemon;
+import net.model.IconTheme;
 import net.model.RemoteApplication;
 import net.model.ServerInfo;
 import net.packets.AppListPacket;
@@ -155,8 +156,9 @@ public class ClientTestMain {
                     StringTokenizer st = new StringTokenizer(line, ";");
                     st.nextToken();
                     String id = st.nextToken();
+                    IconTheme theme = IconTheme.valueOf(st.nextToken());
 
-                    manager.requestShortcutIcon(id, new LinkManager.OnShortcutIconResponseListener() {
+                    manager.requestShortcutIcon(id, theme, new LinkManager.OnShortcutIconResponseListener() {
                         @Override
                         public void onShortcutIconReceived(String s, File file) {
                             System.out.println("Icon found: "+file.getPath());

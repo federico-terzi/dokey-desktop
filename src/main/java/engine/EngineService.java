@@ -4,6 +4,7 @@ import app.MainApp;
 import json.JSONObject;
 import net.DEDaemon;
 import net.LinkManager;
+import net.model.IconTheme;
 import net.model.KeyboardKeys;
 import net.model.RemoteApplication;
 import net.packets.AppListPacket;
@@ -238,8 +239,8 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
      */
     @Nullable
     @Override
-    public File onShortcutIconRequestReceived(String id) {
-        ShortcutIcon shortcutIcon = shortcutIconManager.getIcon(id);
+    public File onShortcutIconRequestReceived(String id, IconTheme theme) {
+        ShortcutIcon shortcutIcon = shortcutIconManager.getIcon(id, theme);
 
         if (shortcutIcon != null) {
             return shortcutIcon.getFile();

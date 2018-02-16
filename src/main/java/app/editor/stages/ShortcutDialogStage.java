@@ -16,6 +16,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import net.model.IconTheme;
 import net.model.KeyboardKeys;
 import section.model.ShortcutItem;
 import system.ResourceUtils;
@@ -213,7 +214,7 @@ public class ShortcutDialogStage extends Stage {
         }
 
         if (item.getIconID() != null) {
-            ShortcutIcon icon = shortcutIconManager.getIcon(item.getIconID());
+            ShortcutIcon icon = shortcutIconManager.getIcon(item.getIconID(), IconTheme.DARK);
             if (icon != null) {
                 this.icon = icon;
                 renderIcon();

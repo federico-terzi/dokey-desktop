@@ -1,5 +1,6 @@
 package system.sicons;
 
+import net.model.IconTheme;
 import org.apache.commons.lang3.text.WordUtils;
 import system.ResourceUtils;
 
@@ -12,27 +13,28 @@ public class ShortcutIconManager {
     private Map<String, ShortcutIcon> icons = null;
 
     public ShortcutIconManager() {
-        icons = loadIcons();
+        icons = new HashMap<>();
+        loadIcons(IconTheme.LIGHT);
+        loadIcons(IconTheme.DARK);
     }
 
-    private Map<String, ShortcutIcon> loadIcons() {
-        Map<String, ShortcutIcon> output = new HashMap<>();
+    private Map<String, ShortcutIcon> loadIcons(IconTheme theme) {
         // Get the icon dir in the resources directory
-        File iconDir = ResourceUtils.getResource("/sicons/");
+        File iconDir = ResourceUtils.getResource("/sicons/"+theme.name()+"/");
 
         // Cycle through all the icons
         for (File file : iconDir.listFiles()) {
             String name = WordUtils.capitalize(file.getName().replace('_', ' ').replace(".png", ""));
             String id = file.getName().replace(".png", "");
             ShortcutIcon shortcutIcon = new ShortcutIcon(id, name, file);
-            output.put(id, shortcutIcon);
+            icons.put(theme.name()+":"+id, shortcutIcon);
         }
 
-        return output;
+        return icons;
     }
 
-    public ShortcutIcon getIcon(String shortcutID) {
-        return icons.get(shortcutID);
+    public ShortcutIcon getIcon(String shortcutID, IconTheme theme) {
+        return icons.get(theme.name() + ":" + shortcutID);
     }
 
     public List<ShortcutIcon> getIcons() {

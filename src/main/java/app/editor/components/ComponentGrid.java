@@ -16,6 +16,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import net.model.IconTheme;
 import section.model.*;
 import system.model.Application;
 import system.model.ApplicationManager;
@@ -832,7 +833,7 @@ public class ComponentGrid extends GridPane {
                 ShortcutItem appItem = (ShortcutItem) component.getItem();
                 ShortcutIcon shortcutIcon = null;
                 if (appItem.getIconID() != null) {
-                    shortcutIcon = shortcutIconManager.getIcon(appItem.getIconID());
+                    shortcutIcon = shortcutIconManager.getIcon(appItem.getIconID(), IconTheme.DARK);
                 }
                 return new ShortcutButton(component, shortcutIcon, shortcutIconManager);
             } else if (component.getItem() instanceof FolderItem) {  // FOLDER ITEM
