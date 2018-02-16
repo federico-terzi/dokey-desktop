@@ -1,6 +1,5 @@
 package engine;
 
-import app.MainApp;
 import json.JSONObject;
 import net.DEDaemon;
 import net.LinkManager;
@@ -14,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import section.model.Section;
 import section.model.SystemCommands;
-import section.model.SystemItem;
 import system.*;
 import system.model.Application;
 import system.model.ApplicationManager;
@@ -249,7 +247,18 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     @Nullable
     @Override
     public File onWebLinkIconRequestReceived(String url) {
-        return WebLinkResolver.getImage(url);
+        File imageFile = WebLinkResolver.getImage(url);
+
+        // If not present, try to request it
+        if (imageFile == null) {
+            if (WebLinkResolver.requestImage(url)) {
+                return WebLinkResolver.getImage(url);
+            }else{
+                return null;
+            }
+        }else{
+            return imageFile;
+        }
     }
 
     @NotNull

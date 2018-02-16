@@ -1,6 +1,7 @@
 package app.editor.components;
 
 import app.editor.stages.WebLinkDialogStage;
+import javafx.application.Platform;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
@@ -28,22 +29,49 @@ public class WebLinkButton extends ComponentButton {
         setText(item.getTitle());
 
         // Get the image if present in the cache
-        Image webImage = null;
         if (item.getIconID() != null) {
             File imageFile = WebLinkResolver.getImage(item.getIconID());
             if (imageFile != null) {
-                try {
-                    FileInputStream fis = new FileInputStream(imageFile);
-                    webImage = new Image(fis);
-                    fis.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                loadWebImage(imageFile);
+            }else{ // Image not available, request it
+                new Thread(new Runnable(){
+                    @Override
+                    public void run() {
+                        if (WebLinkResolver.requestImage(item.getIconID())) {
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    File imageFile = WebLinkResolver.getImage(item.getIconID());
+                                    loadWebImage(imageFile);
+                                }
+                            });
+                        }
+                    }
+                }).start();
             }
+        }else{
+            loadWebImage(null); // Default one
         }
-        if (webImage == null) {  // If image is not available, default fallback
+
+        // Create the tooltip
+        final Tooltip tooltip = new Tooltip();
+        tooltip.setText(item.getTitle() + "\n" + item.getUrl());
+        setTooltip(tooltip);
+    }
+
+    private void loadWebImage(File imageFile) {
+        Image webImage = null;
+        if (imageFile != null) {
+            try {
+                FileInputStream fis = new FileInputStream(imageFile);
+                webImage = new Image(fis);
+                fis.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{  // If image is not available, default fallback
             webImage = new Image(ComponentButton.class.getResourceAsStream("/assets/world.png"));
         }
 
@@ -54,11 +82,6 @@ public class WebLinkButton extends ComponentButton {
         imageView.setFitWidth(32);
         setContentDisplay(ContentDisplay.TOP);
         setGraphic(imageView);
-
-        // Create the tooltip
-        final Tooltip tooltip = new Tooltip();
-        tooltip.setText(item.getTitle() + "\n" + item.getUrl());
-        setTooltip(tooltip);
     }
 
     @Override

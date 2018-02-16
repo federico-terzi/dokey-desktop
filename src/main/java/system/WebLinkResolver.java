@@ -3,6 +3,7 @@ package system;
 import net.sf.image4j.codec.ico.ICODecoder;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -10,7 +11,6 @@ import org.jsoup.select.Elements;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.net.*;
@@ -34,10 +34,34 @@ public class WebLinkResolver {
      * @return the Result if succeeded, null otherwise.
      */
     public static Result getAttributes(String url) {
+        return getAttributes(url, true);
+    }
+
+    /**
+     * Request the attributes ( title and image url ) for the specified link.
+     *
+     * @param url the URL to parse.
+     * @param searchRecoursively if true, the algorithm will also search the subdomain for the image
+     * @return the Result if succeeded, null otherwise.
+     */
+    public static Result getAttributes(String url, boolean searchRecoursively) {
         // Download and parse the web page
         Document doc = null;
         try {
-            doc = Jsoup.connect(url).get();
+            doc = Jsoup.connect(url).ignoreHttpErrors(false).get();
+        } catch (HttpStatusException e) {  // In case of errors, if searchRecoursively is enabled, search in the base domain
+            if (searchRecoursively) {
+                // Get the base domain
+                try {
+                    URI uri = new URI(url);
+                    String baseURL = uri.getScheme()+"://"+uri.getHost()+"/";
+                    Result recursiveResult = getAttributes(baseURL, false);
+
+                    return recursiveResult;
+                } catch (URISyntaxException ex) {
+                    ex.printStackTrace();
+                }
+            }
         } catch (IOException e) {
             return null;
         }
@@ -128,9 +152,25 @@ public class WebLinkResolver {
             }
         }
 
+        // The image couldn't be found, if searchRecoursively is enabled, search in the base domain
+        if (result.imageUrl == null && searchRecoursively) {
+            // Get the base domain
+            try {
+                URI uri = new URI(url);
+                String baseURL = uri.getScheme()+"://"+uri.getHost()+"/";
+                Result recursiveResult = getAttributes(url, false);
+
+                if (recursiveResult.imageUrl != null) {
+                    result.imageUrl = recursiveResult.imageUrl;
+                }
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+
         // Download the image to the cache
         if (result.imageUrl != null) {
-            saveImage(result.imageUrl);
+            requestImage(result.imageUrl);
         }
 
         return result;
@@ -145,17 +185,18 @@ public class WebLinkResolver {
         File imageFile = getImageFromCache(imageUrl);
         if (imageFile.isFile()) {
             return imageFile;
-        } else {
+        } else {  // Image not available in the cache
             return null;
         }
     }
 
     /**
-     * Save the specified image to the web cache.
+     * Request and save the specified image to the web cache.
      *
      * @param imageUrl the URL of the image to save.
+     * @return true if succeeded, false otherwise.
      */
-    private static void saveImage(String imageUrl) {
+    public static boolean requestImage(String imageUrl) {
         File imageFile = getImageFromCache(imageUrl);
 
         // If it doesn't already exist, create it
@@ -166,6 +207,7 @@ public class WebLinkResolver {
                 URL image = new URL(imageUrl);
                 if (!imageUrl.endsWith(".ico")) {  // Not an ICO file, save directly
                     FileUtils.copyURLToFile(image, imageFile, 3000, 3000);
+                    return true;
                 }else{  // ICO file, must be converted beforehand
                     File tempFile = File.createTempFile("ico", "ico");
                     // Download the icon
@@ -182,13 +224,18 @@ public class WebLinkResolver {
                     }
 
                     tempFile.delete();  // Free the resources
+
+                    return true;
                 }
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            return false;
         }
+
+        return true;
     }
 
     /**
