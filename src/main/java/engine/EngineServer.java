@@ -2,6 +2,7 @@ package engine;
 
 import app.MainApp;
 import section.model.Section;
+import system.ActiveApplicationsDaemon;
 import system.ApplicationSwitchDaemon;
 import system.SystemManager;
 import system.model.ApplicationManager;
@@ -22,6 +23,7 @@ public class EngineServer extends Thread {
     private ApplicationManager appManager;
     private ApplicationSwitchDaemon applicationSwitchDaemon;
     private SystemManager systemManager;
+    private ActiveApplicationsDaemon activeApplicationsDaemon;
     private EngineWorker.OnDeviceConnectionListener deviceConnectionListener;
 
     private volatile boolean shouldStop = false;
@@ -29,10 +31,11 @@ public class EngineServer extends Thread {
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
 
-    public EngineServer(ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon, SystemManager systemManager) {
+    public EngineServer(ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon, SystemManager systemManager, ActiveApplicationsDaemon activeApplicationsDaemon) {
         this.appManager = appManager;
         this.applicationSwitchDaemon = applicationSwitchDaemon;
         this.systemManager = systemManager;
+        this.activeApplicationsDaemon = activeApplicationsDaemon;
     }
 
     @Override
@@ -53,7 +56,7 @@ public class EngineServer extends Thread {
             try {
                 Socket socket = serverSocket.accept();
 
-                EngineWorker worker = new EngineWorker(socket, appManager, applicationSwitchDaemon, systemManager);
+                EngineWorker worker = new EngineWorker(socket, appManager, applicationSwitchDaemon, systemManager, activeApplicationsDaemon);
                 worker.setDeviceConnectionListener(deviceConnectionListener);
                 worker.start();
 

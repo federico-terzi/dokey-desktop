@@ -52,7 +52,7 @@ public class ServerMain {
 
                 System.out.println("Connected with: "+socket.getInetAddress().toString());
 
-                EngineService engineService = new EngineService(socket, wm, applicationSwitchDaemon, null);
+                EngineService engineService = new EngineService(socket, wm, applicationSwitchDaemon, null, null);
                 engineService.start();
 
             } catch (IOException e) {

@@ -12,7 +12,6 @@ import javafx.stage.Stage;
 import net.discovery.ServerDiscoveryDaemon;
 import net.model.DeviceInfo;
 import net.model.ServerInfo;
-import section.model.Section;
 import system.*;
 import system.adb.ADBManager;
 import system.model.ApplicationManager;
@@ -36,6 +35,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private ApplicationManager appManager;
     private ApplicationSwitchDaemon applicationSwitchDaemon;
     private ServerDiscoveryDaemon serverDiscoveryDaemon;
+    private ActiveApplicationsDaemon activeApplicationsDaemon;
     private EngineServer engineServer;
     private ADBManager adbManager;
     private SystemManager systemManager;
@@ -91,6 +91,9 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
         // Initialize the system manager
         systemManager = SystemManagerFactory.getInstance();
+
+        // Initialize the active applications daemon
+        activeApplicationsDaemon = new ActiveApplicationsDaemon(appManager);
 
         // load the applications
         loadApplications();
@@ -188,7 +191,10 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         // Start the ADB daemon
         adbManager.startDaemon();
 
-        engineServer = new EngineServer(appManager, applicationSwitchDaemon, systemManager);
+        // Start the active apps daemon
+        activeApplicationsDaemon.start();
+
+        engineServer = new EngineServer(appManager, applicationSwitchDaemon, systemManager, activeApplicationsDaemon);
         engineServer.setDeviceConnectionListener(this);
         engineServer.start();
 
@@ -211,6 +217,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         serverDiscoveryDaemon.stopDiscovery();
         engineServer.stopServer();
         adbManager.stopDaemon();
+        activeApplicationsDaemon.stopDaemon();
     }
 
     private void openEditor() {

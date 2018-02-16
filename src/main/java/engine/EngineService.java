@@ -42,28 +42,20 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     private SectionManager sectionManager;
     private ApplicationSwitchDaemon applicationSwitchDaemon;
     private SystemManager systemManager;
+    private ActiveApplicationsDaemon activeApplicationsDaemon;
     private ShortcutIconManager shortcutIconManager;
 
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
 
-    public EngineService(LinkManager linkManager, ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon) throws AWTException {
-        this.linkManager = linkManager;
-        this.appManager = appManager;
-        this.applicationSwitchDaemon = applicationSwitchDaemon;
-        this.keyboardManager = new KeyboardManager();
-        this.sectionManager = new SectionManager();
-        this.shortcutIconManager = new ShortcutIconManager();
-
-        initialization();
-    }
-
-    public EngineService(Socket socket, ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon, SystemManager systemManager) throws AWTException {
+    public EngineService(Socket socket, ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon,
+                         SystemManager systemManager, ActiveApplicationsDaemon activeApplicationsDaemon) throws AWTException {
         // Create a link manager
         this.linkManager = new LinkManager(socket);
         this.appManager = appManager;
         this.applicationSwitchDaemon = applicationSwitchDaemon;
         this.systemManager = systemManager;
+        this.activeApplicationsDaemon = activeApplicationsDaemon;
         this.keyboardManager = new KeyboardManager();
         this.sectionManager = new SectionManager();
         this.shortcutIconManager = new ShortcutIconManager();
@@ -179,7 +171,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         if (requestType == AppListPacket.ALL_APPS) {
             apps = appManager.getApplicationList();
         }else if (requestType == AppListPacket.ACTIVE_APPS) {
-            apps = appManager.getActiveApplications();
+            apps = activeApplicationsDaemon.getActiveApplications();
         }
 
         // Convert it to remote applications
