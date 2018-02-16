@@ -212,25 +212,24 @@ public class MACApplicationManager extends ApplicationManager {
 
     @Override
     public List<Application> getActiveApplications() {
-        String scriptPath = ResourceUtils.getResource("/mac/getActiveApplications").getAbsolutePath();
+        String scriptPath = ResourceUtils.getResource("/applescripts/getActiveApplications.scpt").getAbsolutePath();
         Runtime runtime = Runtime.getRuntime();
 
         List<Application> apps = new ArrayList<>();
 
         try {
             // Execute the process
-            Process proc = runtime.exec(new String[]{scriptPath});
+            Process proc = runtime.exec(new String[]{"osascript", scriptPath});
 
             // Get the output
-            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
 
             // Get the executable path
-            String executablePath;
+            String appPath;
 
             // Get the list
-            while ((executablePath = br.readLine()) != null) {
-                // Convert the executable path to the .app bundle path
-                String appPath = getAppPathFromExecutablePath(executablePath);
+            while ((appPath = br.readLine()) != null) {
+                System.out.println(appPath);
 
                 Application app = null;
 
