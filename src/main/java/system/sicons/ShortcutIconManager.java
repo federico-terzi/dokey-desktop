@@ -38,6 +38,14 @@ public class ShortcutIconManager {
     }
 
     public List<ShortcutIcon> getIcons() {
-        return new ArrayList<>(icons.values());
+        List<ShortcutIcon> output = new ArrayList<>();
+        for (Map.Entry<String, ShortcutIcon> entry : icons.entrySet()) {
+            String key = entry.getKey();
+            ShortcutIcon value = entry.getValue();
+            if (key.startsWith(IconTheme.DARK.name())) {
+                output.add(value);
+            }
+        }
+        return output;
     }
 }
