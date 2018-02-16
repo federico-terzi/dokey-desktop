@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 /**
  * Represents the background worker that executes all the actions in the server.
  */
-public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnImageRequestListener, LinkManager.OnAppOpenRequestReceivedListener, LinkManager.OnSectionRequestListener, LinkManager.OnFolderOpenRequestReceivedListener, LinkManager.OnWebLinkRequestReceivedListener, LinkManager.OnCommandRequestReceivedListener, LinkManager.OnAppInfoRequestReceivedListener {
+public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnImageRequestListener, LinkManager.OnAppOpenRequestReceivedListener, LinkManager.OnSectionRequestListener, LinkManager.OnFolderOpenRequestReceivedListener, LinkManager.OnWebLinkRequestReceivedListener, LinkManager.OnCommandRequestReceivedListener, LinkManager.OnAppInfoRequestReceivedListener, LinkManager.OnModifiedSectionEventListener {
     public static final int DELAY_FROM_FOCUS_TO_KEYSTROKE = 300;  // In milliseconds
 
     private LinkManager linkManager;
@@ -75,6 +75,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         linkManager.setWebLinkRequestListener(this);
         linkManager.setCommandRequestListener(this);
         linkManager.setAppInfoRequestListener(this);
+        linkManager.setModifiedSectionEventListener(this);
         applicationSwitchDaemon.addApplicationSwitchListener(this);
 
         // Register broadcast listeners
@@ -389,5 +390,24 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         remoteApp.setPath(appPath);
 
         return remoteApp;
+    }
+
+    /**
+     * Called when a user modify a section in the mobile app
+     * @param sectionID the ID of the section.
+     * @param section the Section instance.
+     */
+    @Override
+    public void onModifiedSectionEvent(String sectionID, Section section) {
+        // Save the section
+        if (!sectionManager.saveSection(section)) {
+            LOG.warning("ERROR SAVING SECTION: "+sectionID);
+        }
+
+        // Notify the modified section
+        String sectionJson = section.json().toString();
+        BroadcastManager.getInstance().sendBroadcast(BroadcastManager.PHONE_MODIFIED_SECTION_EVENT, sectionJson);
+
+        // TODO: propagate the change to all the devices
     }
 }

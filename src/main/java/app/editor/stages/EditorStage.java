@@ -37,6 +37,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import javafx.util.Pair;
+import json.JSONObject;
 import section.model.Component;
 import section.model.Page;
 import section.model.Section;
@@ -50,6 +51,7 @@ import system.sicons.ShortcutIconManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -144,6 +146,9 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             public void handle(WindowEvent event) {
                 if (onEditorEventListener != null) {
                     onEditorEventListener.onEditorClosed();
+
+                    // Unregister broadcast listeners
+                    BroadcastManager.getInstance().unregisterBroadcastListener(BroadcastManager.PHONE_MODIFIED_SECTION_EVENT, phoneSectionModifiedListener);
                 }
             }
         });
@@ -215,8 +220,10 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             }
         });
 
-
         requestSectionList();
+
+        // Register broadcast listeners
+        BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.PHONE_MODIFIED_SECTION_EVENT, phoneSectionModifiedListener);
     }
 
     public interface OnEditorEventListener {
@@ -780,6 +787,17 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         };
         new Thread(saveTask).start();
     }
+
+    /**
+     * Called when the user modifies a section in the mobile app.
+     */
+    private BroadcastManager.BroadcastListener phoneSectionModifiedListener = new BroadcastManager.BroadcastListener() {
+        @Override
+        public void onBroadcastReceived(Serializable param) {
+            Section section = Section.fromJson(new JSONObject((String) param));
+            loadSection(section);
+        }
+    };
 
     public static int getWidth(ScreenOrientation screenOrientation) {
         if (screenOrientation == ScreenOrientation.PORTRAIT) {
