@@ -149,6 +149,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
                     // Unregister broadcast listeners
                     BroadcastManager.getInstance().unregisterBroadcastListener(BroadcastManager.PHONE_MODIFIED_SECTION_EVENT, phoneSectionModifiedListener);
+                    BroadcastManager.getInstance().unregisterBroadcastListener(BroadcastManager.OPEN_SHORTCUT_PAGE_FOR_APPLICATION_EVENT, openShortcutPageForAppListener);
                 }
             }
         });
@@ -224,13 +225,14 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
         // Register broadcast listeners
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.PHONE_MODIFIED_SECTION_EVENT, phoneSectionModifiedListener);
+        BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_SHORTCUT_PAGE_FOR_APPLICATION_EVENT, openShortcutPageForAppListener);
     }
 
     public interface OnEditorEventListener {
         void onEditorClosed();
     }
 
-    private void requestSectionList() {
+    private void requestSectionList(String targetSectionID) {
         // Reset the list view
         controller.getSectionsListView().getItems().clear();
 
@@ -252,6 +254,16 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                     @Override
                     public void run() {
                         populateSectionListView();
+
+                        if (targetSectionID != null) {
+                            // Select the correct entry in the list view
+                            for (Section sec : controller.getSectionsListView().getItems()) {
+                                if (sec.getStringID() != null && sec.getStringID().equals(targetSectionID)) {
+                                    controller.getSectionsListView().getSelectionModel().select(sec);
+                                }
+                            }
+                        }
+
                     }
                 });
                 return null;
@@ -259,6 +271,10 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         };
 
         new Thread(sectionTask).start();
+    }
+
+    private void requestSectionList() {
+        requestSectionList(null);
     }
 
     private void populateSectionListView() {
@@ -640,7 +656,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             AppSelectDialogStage appSelectDialogStage = new AppSelectDialogStage(applicationManager, new AppSelectDialogStage.OnApplicationListener() {
                 @Override
                 public void onApplicationSelected(Application application) {
-                    requestSectionForApplication(application);
+                    requestSectionForApplication(application.getExecutablePath());
                 }
 
                 @Override
@@ -671,12 +687,12 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         }
     }
 
-    private void requestSectionForApplication(Application application) {
+    private void requestSectionForApplication(String executablePath) {
         // Create the section
-        sectionManager.getShortcutSection(application.getExecutablePath());
+        sectionManager.getShortcutSection(executablePath);
 
         // Refresh the list
-        requestSectionList();
+        requestSectionList(executablePath);
     }
 
     private int[] showPageDialog(int rows, int cols) {
@@ -806,6 +822,22 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                             controller.getSectionsListView().getSelectionModel().select(sec);
                         }
                     }
+                }
+            });
+        }
+    };
+
+    /**
+     * Called when the user request to open the shortcut page for an app
+     */
+    private BroadcastManager.BroadcastListener openShortcutPageForAppListener = new BroadcastManager.BroadcastListener() {
+        @Override
+        public void onBroadcastReceived(Serializable param) {
+            String executablePath = (String) param;
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    requestSectionForApplication(executablePath);
                 }
             });
         }
