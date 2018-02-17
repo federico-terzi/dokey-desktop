@@ -8,6 +8,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import utils.IconManager;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -77,100 +78,106 @@ public class WebLinkResolver {
             LOG.fine("WLR: title: "+result.title);
         }
 
-        // Try to get the icon by looking at the "apple-touch-icon" tag.
-        Elements linkElements = doc.getElementsByTag("link");
-        for (Element link : linkElements) {
-            if (link.hasAttr("rel") && link.attr("rel").contains("apple-touch-icon")) {
-                result.imageUrl = link.attr("href");
-                break;
+        // Check if a local high res icon is available
+        String highResLocalIcon = IconManager.getInstance().resolveHighResWebIcon(url);
+        if (highResLocalIcon != null) {
+            result.imageUrl = highResLocalIcon;
+        }else{
+            // Try to get the icon by looking at the "apple-touch-icon" tag.
+            Elements linkElements = doc.getElementsByTag("link");
+            for (Element link : linkElements) {
+                if (link.hasAttr("rel") && link.attr("rel").contains("apple-touch-icon")) {
+                    result.imageUrl = link.attr("href");
+                    break;
+                }
             }
-        }
 
-        // If not found with the apple-touch-icon, search for the "icon" attribute
-        if (result.imageUrl == null) {
-            try {
-                // Cycle through all icon elements and find the one with the biggest size
-                int maxSize = 0;
-                String maxUrl = null;
-                for (Element link : linkElements) {
-                    if (link.hasAttr("rel") && link.attr("rel").contains("icon")) {
-                        if (link.hasAttr("sizes")) {
-                            int size = Integer.parseInt(link.attr("sizes").split("x")[0]);
-                            if (size > maxSize) {
-                                maxUrl = link.attr("href");
-                                maxSize = size;
-                            }
-                        } else {
-                            if (link.attr("href").endsWith(".png")) {
-                                result.imageUrl = link.attr("href");
-                                break;
+            // If not found with the apple-touch-icon, search for the "icon" attribute
+            if (result.imageUrl == null) {
+                try {
+                    // Cycle through all icon elements and find the one with the biggest size
+                    int maxSize = 0;
+                    String maxUrl = null;
+                    for (Element link : linkElements) {
+                        if (link.hasAttr("rel") && link.attr("rel").contains("icon")) {
+                            if (link.hasAttr("sizes")) {
+                                int size = Integer.parseInt(link.attr("sizes").split("x")[0]);
+                                if (size > maxSize) {
+                                    maxUrl = link.attr("href");
+                                    maxSize = size;
+                                }
+                            } else {
+                                if (link.attr("href").endsWith(".png")) {
+                                    result.imageUrl = link.attr("href");
+                                    break;
+                                }
                             }
                         }
                     }
-                }
-                if (maxUrl != null) {
-                    // If the url is relative, get the absolute one.
-                    if (!maxUrl.startsWith("http")) {
-                        try {
-                            URL baseUrl = new URL(url);
-                            URL abs = new URL(baseUrl, maxUrl);
-                            maxUrl = abs.toURI().toURL().toString();
-                        } catch (MalformedURLException e) {
-                            e.printStackTrace();
-                        } catch (URISyntaxException e) {
-                            e.printStackTrace();
+                    if (maxUrl != null) {
+                        // If the url is relative, get the absolute one.
+                        if (!maxUrl.startsWith("http")) {
+                            try {
+                                URL baseUrl = new URL(url);
+                                URL abs = new URL(baseUrl, maxUrl);
+                                maxUrl = abs.toURI().toURL().toString();
+                            } catch (MalformedURLException e) {
+                                e.printStackTrace();
+                            } catch (URISyntaxException e) {
+                                e.printStackTrace();
+                            }
                         }
+
+                        result.imageUrl = maxUrl;
                     }
 
-                    result.imageUrl = maxUrl;
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-        }
 
-        // Image not found, fallback on the ICO favicon.
-        if (result.imageUrl == null) {
-            // Extract the favicon url
-            try {
-                URI uri = new URI(url);
-                String faviconURLString = uri.getScheme()+"://"+uri.getHost()+"/favicon.ico";
-                // Check if it exists
-                URL faviconURL = new URL(faviconURLString);
-                HttpURLConnection huc =  (HttpURLConnection) faviconURL.openConnection();
-                huc.setRequestMethod("HEAD");
-                if (huc.getResponseCode() == HttpURLConnection.HTTP_OK) {  // The icon exists
-                    result.imageUrl = faviconURLString;
+            // Image not found, fallback on the ICO favicon.
+            if (result.imageUrl == null) {
+                // Extract the favicon url
+                try {
+                    URI uri = new URI(url);
+                    String faviconURLString = uri.getScheme()+"://"+uri.getHost()+"/favicon.ico";
+                    // Check if it exists
+                    URL faviconURL = new URL(faviconURLString);
+                    HttpURLConnection huc =  (HttpURLConnection) faviconURL.openConnection();
+                    huc.setRequestMethod("HEAD");
+                    if (huc.getResponseCode() == HttpURLConnection.HTTP_OK) {  // The icon exists
+                        result.imageUrl = faviconURLString;
+                    }
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-        }
 
-        // The image couldn't be found, if searchRecoursively is enabled, search in the base domain
-        if (result.imageUrl == null && searchRecoursively) {
-            // Get the base domain
-            try {
-                URI uri = new URI(url);
-                String baseURL = uri.getScheme()+"://"+uri.getHost()+"/";
-                Result recursiveResult = getAttributes(url, false);
+            // The image couldn't be found, if searchRecoursively is enabled, search in the base domain
+            if (result.imageUrl == null && searchRecoursively) {
+                // Get the base domain
+                try {
+                    URI uri = new URI(url);
+                    String baseURL = uri.getScheme()+"://"+uri.getHost()+"/";
+                    Result recursiveResult = getAttributes(url, false);
 
-                if (recursiveResult.imageUrl != null) {
-                    result.imageUrl = recursiveResult.imageUrl;
+                    if (recursiveResult.imageUrl != null) {
+                        result.imageUrl = recursiveResult.imageUrl;
+                    }
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
                 }
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
             }
-        }
 
-        // Download the image to the cache
-        if (result.imageUrl != null) {
-            requestImage(result.imageUrl);
+            // Download the image to the cache
+            if (result.imageUrl != null) {
+                requestImage(result.imageUrl);
+            }
         }
 
         return result;
@@ -182,12 +189,15 @@ public class WebLinkResolver {
      * @return the image File if present, null otherwise.
      */
     public static File getImage(String imageUrl) {
-        File imageFile = getImageFromCache(imageUrl);
-        if (imageFile.isFile()) {
-            return imageFile;
-        } else {  // Image not available in the cache
-            return null;
+        if (imageUrl.startsWith("http")) {  // Remote website icon
+            File imageFile = getImageFromCache(imageUrl);
+            if (imageFile.isFile()) {
+                return imageFile;
+            }
+        }else{  // Local high res image
+            return IconManager.getInstance().webIconMap.get(imageUrl);
         }
+        return null;
     }
 
     /**

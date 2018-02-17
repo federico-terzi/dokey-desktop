@@ -44,8 +44,6 @@ public class MSApplicationManager extends ApplicationManager {
     // This map will hold the applications, associated with their executable path
     private Map<String, Application> applicationMap = new HashMap<>();
 
-    private IconManager iconManager = new IconManager();
-
     private boolean isPowerShellEnabled;
 
     // Create the logger
@@ -867,8 +865,8 @@ public class MSApplicationManager extends ApplicationManager {
         File executableFile = new File(executablePath);
 
         // Check if an high res version is available
-        if (iconManager.highResIconMap.containsKey(executableFile.getName())) {
-            iconFile = iconManager.highResIconMap.get(executableFile.getName());
+        if (IconManager.getInstance().highResIconMap.containsKey(executableFile.getName())) {
+            iconFile = IconManager.getInstance().highResIconMap.get(executableFile.getName());
             LOG.fine("ICON FROM HIGH RES CACHE: "+executablePath);
         }else{
             // Generate the icon file
