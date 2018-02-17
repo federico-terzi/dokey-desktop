@@ -89,6 +89,7 @@ public class SystemDialogStage extends Stage {
 
     public void setSystemItem(SystemItem item) {
         controller.systemListView.getSelectionModel().select(item.getCommandType());
+        controller.confirmCheckBox.setSelected(item.requiresConfirmation());
     }
 
     public interface OnSystemItemListener {

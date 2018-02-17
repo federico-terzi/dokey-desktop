@@ -26,9 +26,6 @@ public class SystemListCell extends ListCell<SystemCommands> {
         grid.setHgap(10);
         grid.setVgap(4);
         grid.setPadding(new Insets(0, 0, 0, 0));
-
-        image.setFitWidth(32);
-        image.setFitHeight(32);
     }
     private void addControlsToGrid() {
         grid.add(image, 0, 0, 1, 1);
@@ -44,7 +41,7 @@ public class SystemListCell extends ListCell<SystemCommands> {
         setText(null);
         File iconFile = SystemItemManager.getIconForType(systemCommand);
         if (iconFile != null) {
-            Image appImage = new Image(iconFile.toURI().toString());
+            Image appImage = new Image(iconFile.toURI().toString(), 32, 32, true, true);
             image.setImage(appImage);
         }
 

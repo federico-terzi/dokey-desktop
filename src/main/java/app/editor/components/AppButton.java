@@ -40,11 +40,8 @@ public class AppButton extends ComponentButton {
         if (application.getIconPath() != null) {
             File iconFile = new File(application.getIconPath());
             if (iconFile.isFile()) {
-                Image image = new Image(iconFile.toURI().toString());
+                Image image = new Image(iconFile.toURI().toString(), 32, 32, true, true);
                 ImageView imageView = new ImageView(image);
-                imageView.setFitHeight(32);
-                imageView.setFitWidth(32);
-                imageView.setSmooth(true);
                 imageView.setEffect(new DropShadow(5, 4, 4, Color.rgb(0,0,0, 0.3)));
                 setGraphic(imageView);
                 setContentDisplay(ContentDisplay.TOP);

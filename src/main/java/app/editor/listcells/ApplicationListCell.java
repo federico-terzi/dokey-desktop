@@ -33,8 +33,6 @@ public class ApplicationListCell extends ListCell<Application> {
         grid.setVgap(4);
         grid.setPadding(new Insets(0, 0, 0, 0));
 
-        image.setFitWidth(32);
-        image.setFitHeight(32);
         name.getStyleClass().add("applistcell-name");
         path.getStyleClass().add("applistcell-path");
     }
@@ -52,7 +50,7 @@ public class ApplicationListCell extends ListCell<Application> {
     private void addContent(Application application) {
         setText(null);
         if (application.getIconPath() != null) {
-            Image appImage = new Image(new File(application.getIconPath()).toURI().toString());
+            Image appImage = new Image(new File(application.getIconPath()).toURI().toString(), 32, 32, true, true);
             image.setImage(appImage);
         }
 
@@ -71,11 +69,8 @@ public class ApplicationListCell extends ListCell<Application> {
                 }
             }
         });
-        Image deleteImage = new Image(SectionListCell.class.getResourceAsStream("/assets/delete.png"));
+        Image deleteImage = new Image(SectionListCell.class.getResourceAsStream("/assets/delete.png"), 16, 16, true, true);
         ImageView deleteImageView = new ImageView(deleteImage);
-        deleteImageView.setFitWidth(16);
-        deleteImageView.setFitHeight(16);
-        deleteImageView.setSmooth(true);
         deleteItem.setGraphic(deleteImageView);
 
         contextMenu.getItems().addAll(deleteItem);

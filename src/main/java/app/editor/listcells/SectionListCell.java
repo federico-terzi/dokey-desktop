@@ -38,10 +38,6 @@ public class SectionListCell extends ListCell<Section> {
         grid.setHgap(10);
         grid.setVgap(4);
         grid.setPadding(new Insets(0, 0, 0, 0));
-
-        image.setFitWidth(32);
-        image.setFitHeight(32);
-        image.setSmooth(true);
         name.getStyleClass().add("sectionlistcell-name");
         path.getStyleClass().add("sectionlistcell-path");
     }
@@ -63,7 +59,7 @@ public class SectionListCell extends ListCell<Section> {
             Application application = appManager.getApplication(section.getRelatedAppId());
 
             if (application != null && application.getIconPath() != null) {
-                Image appImage = new Image(new File(application.getIconPath()).toURI().toString());
+                Image appImage = new Image(new File(application.getIconPath()).toURI().toString(), 32, 32, true, true);
                 image.setImage(appImage);
 
                 name.setText(application.getName());
@@ -71,13 +67,13 @@ public class SectionListCell extends ListCell<Section> {
             }
         }else if (section.getSectionType() == SectionType.LAUNCHPAD){
             Image appImage = null;
-            appImage = new Image(SectionListCell.class.getResourceAsStream("/assets/apps.png"));
+            appImage = new Image(SectionListCell.class.getResourceAsStream("/assets/apps.png"), 32, 32, true, true);
             image.setImage(appImage);
             name.setText("Launchpad");
             path.setText("The main application launcher");
         }else if (section.getSectionType() == SectionType.SYSTEM){
             Image appImage = null;
-            appImage = new Image(SectionListCell.class.getResourceAsStream("/assets/shutdown.png"));
+            appImage = new Image(SectionListCell.class.getResourceAsStream("/assets/shutdown.png"), 32, 32, true, true);
             image.setImage(appImage);
             name.setText("System");
             path.setText("The system control launchpad");

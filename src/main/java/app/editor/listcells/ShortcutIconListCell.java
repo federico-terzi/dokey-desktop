@@ -28,8 +28,6 @@ public class ShortcutIconListCell extends ListCell<ShortcutIcon> {
         grid.setVgap(4);
         grid.setPadding(new Insets(0, 0, 0, 0));
 
-        image.setFitWidth(32);
-        image.setFitHeight(32);
         name.getStyleClass().add("shortcutlistcell-name");
         id.getStyleClass().add("shortcutlistcell-id");
     }
@@ -46,7 +44,7 @@ public class ShortcutIconListCell extends ListCell<ShortcutIcon> {
 
     private void addContent(ShortcutIcon shortcutIcon) {
         setText(null);
-        Image appImage = new Image(shortcutIcon.getFile().toURI().toString());
+        Image appImage = new Image(shortcutIcon.getFile().toURI().toString(), 32, 32, true, true);
         image.setImage(appImage);
 
         name.setText(shortcutIcon.getName());

@@ -49,18 +49,13 @@ public class ShortcutDialogStage extends Stage {
         controller = (ShortcutDialogController) fxmlLoader.getController();
 
         // Setup the button image
-        Image image = new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/clear.png"));
+        Image image = new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/clear.png"), 32, 32, true, true);
         ImageView imageView = new ImageView(image);
-        imageView.setFitHeight(32);
-        imageView.setFitWidth(32);
-        imageView.setSmooth(true);
         controller.getClearShortcutBtn().setGraphic(imageView);
 
         // Setup the icon button
-        Image iconImage = new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/cake.png"));
+        Image iconImage = new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/cake.png"), 32, 32, true, true);
         ImageView iconImageView = new ImageView(iconImage);
-        iconImageView.setFitHeight(32);
-        iconImageView.setFitWidth(32);
         controller.iconBtn.setGraphic(iconImageView);
         controller.iconBtn.setContentDisplay(ContentDisplay.TOP);
 
@@ -179,11 +174,8 @@ public class ShortcutDialogStage extends Stage {
 
     private void renderIcon() {
         if (icon != null) {
-            Image image = new Image(icon.getFile().toURI().toString());
+            Image image = new Image(icon.getFile().toURI().toString(), 32, 32, true, true);
             ImageView imageView = new ImageView(image);
-            imageView.setFitHeight(32);
-            imageView.setFitWidth(32);
-            imageView.setSmooth(true);
             controller.iconBtn.setGraphic(imageView);
             controller.iconBtn.setText("Change icon...");
         }else{

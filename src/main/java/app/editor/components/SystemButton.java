@@ -28,11 +28,8 @@ public class SystemButton extends ComponentButton {
 
         File iconFile = SystemItemManager.getIconForType(item.getCommandType());
         if (iconFile != null) {
-            Image folderImage = new Image(iconFile.toURI().toString());
+            Image folderImage = new Image(iconFile.toURI().toString(), 32, 32, true, true);
             ImageView imageView = new ImageView(folderImage);
-            imageView.setSmooth(true);
-            imageView.setFitHeight(32);
-            imageView.setFitWidth(32);
             setContentDisplay(ContentDisplay.TOP);
             setGraphic(imageView);
         }

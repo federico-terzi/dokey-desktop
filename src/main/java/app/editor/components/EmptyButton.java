@@ -22,11 +22,8 @@ public class EmptyButton extends DragButton {
         setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         getStyleClass().add("empty-btn");
 
-        Image image = new Image(EmptyButton.class.getResourceAsStream("/assets/add.png"));
+        Image image = new Image(EmptyButton.class.getResourceAsStream("/assets/add.png"), 32, 32, true, true);
         ImageView imageView = new ImageView(image);
-        imageView.setFitHeight(32);
-        imageView.setFitWidth(32);
-        imageView.setSmooth(true);
         setGraphic(imageView);
         setContentDisplay(ContentDisplay.TOP);
 
@@ -41,10 +38,8 @@ public class EmptyButton extends DragButton {
                 }
             }
         });
-        Image appLauncherImage = new Image(ComponentButton.class.getResourceAsStream("/assets/launcher.png"));
+        Image appLauncherImage = new Image(ComponentButton.class.getResourceAsStream("/assets/launcher.png"), 32, 32, true, true);
         ImageView appLauncherImageView = new ImageView(appLauncherImage);
-        appLauncherImageView.setFitWidth(32);
-        appLauncherImageView.setFitHeight(32);
         appLauncherItem.setGraphic(appLauncherImageView);
 
         MenuItem shortcutItem = new MenuItem("Add Shortcut");
@@ -56,10 +51,8 @@ public class EmptyButton extends DragButton {
                 }
             }
         });
-        Image shortcutImage = new Image(ComponentButton.class.getResourceAsStream("/assets/keyboard.png"));
+        Image shortcutImage = new Image(ComponentButton.class.getResourceAsStream("/assets/keyboard.png"), 32, 32, true, true);
         ImageView shortcutTmageView = new ImageView(shortcutImage);
-        shortcutTmageView.setFitWidth(32);
-        shortcutTmageView.setFitHeight(32);
         shortcutItem.setGraphic(shortcutTmageView);
 
         MenuItem folderItem = new MenuItem("Add Folder");
@@ -71,10 +64,8 @@ public class EmptyButton extends DragButton {
                 }
             }
         });
-        Image folderImage = new Image(ComponentButton.class.getResourceAsStream("/assets/folder.png"));
+        Image folderImage = new Image(ComponentButton.class.getResourceAsStream("/assets/folder.png"), 32, 32, true, true);
         ImageView folderImageView = new ImageView(folderImage);
-        folderImageView.setFitWidth(32);
-        folderImageView.setFitHeight(32);
         folderItem.setGraphic(folderImageView);
 
         MenuItem internetItem = new MenuItem("Add Web Link");
@@ -86,10 +77,8 @@ public class EmptyButton extends DragButton {
                 }
             }
         });
-        Image internetImage = new Image(ComponentButton.class.getResourceAsStream("/assets/world.png"));
+        Image internetImage = new Image(ComponentButton.class.getResourceAsStream("/assets/world.png"), 32, 32, true, true);
         ImageView internetImageView = new ImageView(internetImage);
-        internetImageView.setFitWidth(32);
-        internetImageView.setFitHeight(32);
         internetItem.setGraphic(internetImageView);
 
         MenuItem systemItem = new MenuItem("Add System Control");
@@ -101,10 +90,8 @@ public class EmptyButton extends DragButton {
                 }
             }
         });
-        Image systemImage = new Image(ComponentButton.class.getResourceAsStream("/assets/shutdown.png"));
+        Image systemImage = new Image(ComponentButton.class.getResourceAsStream("/assets/shutdown.png"), 32, 32, true, true);
         ImageView systemImageView = new ImageView(systemImage);
-        systemImageView.setFitWidth(32);
-        systemImageView.setFitHeight(32);
         systemItem.setGraphic(systemImageView);
 
         contextMenu.getItems().addAll(appLauncherItem, shortcutItem, folderItem, internetItem, systemItem);
