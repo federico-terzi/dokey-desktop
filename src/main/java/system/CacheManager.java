@@ -129,6 +129,17 @@ public class CacheManager {
             }
         }
 
+        // Delete the web cache
+        File webDir = getWebCacheDir();
+        if (webDir.isDirectory()) {
+            try {
+                FileUtils.deleteDirectory(webDir);
+            } catch (IOException e) {
+                e.printStackTrace();
+                result = false;
+            }
+        }
+
         // Delete the app cache files
         if (OSValidator.isWindows()) {
             File appCache = new File(getCacheDir(), APP_CACHE_FILENAME);

@@ -9,7 +9,7 @@ import java.util.List;
 
 public abstract class ApplicationManager {
     // Name of the cache directory created in the home of the user
-    public static final String CACHE_DIRECTORY_NAME = ".remotekey";
+    public static final String CACHE_DIRECTORY_NAME = ".dokey";
     public static final String ICON_CACHE_DIRECTORY_NAME = "icons";
     public static final String EXTERNAL_APP_LIST_FILENAME = "externalapps.txt";
 
