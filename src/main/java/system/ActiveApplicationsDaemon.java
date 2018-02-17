@@ -18,7 +18,7 @@ public class ActiveApplicationsDaemon extends Thread{
     private ApplicationManager appManager;
 
     // The synchronized list that will hold the currently active apps
-    private List<Application> activeApplications = Collections.synchronizedList(new LinkedList<>());
+    private List<Application> activeApplications = Collections.synchronizedList(new ArrayList<>(100));
 
     // The list of apps that must be filtered out
     private Set<String> skippedApps = new HashSet<>();
@@ -36,6 +36,8 @@ public class ActiveApplicationsDaemon extends Thread{
         skippedApps.add("SystemSettings.exe");
         skippedApps.add("SystemSettingsBroker.exe");
         skippedApps.add("Calculator.exe");
+
+        setName("Active Applications Daemon");
     }
 
     @Override

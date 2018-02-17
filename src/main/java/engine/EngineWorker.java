@@ -33,6 +33,8 @@ public class EngineWorker extends Thread {
         this.applicationSwitchDaemon = applicationSwitchDaemon;
         this.systemManager = systemManager;
         this.activeApplicationsDaemon = activeApplicationsDaemon;
+
+        setName("Engine Worker");
     }
 
     @Override

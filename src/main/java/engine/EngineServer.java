@@ -36,6 +36,8 @@ public class EngineServer extends Thread {
         this.applicationSwitchDaemon = applicationSwitchDaemon;
         this.systemManager = systemManager;
         this.activeApplicationsDaemon = activeApplicationsDaemon;
+
+        setName("Engine Server");
     }
 
     @Override

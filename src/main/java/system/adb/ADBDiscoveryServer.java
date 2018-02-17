@@ -22,6 +22,8 @@ public class ADBDiscoveryServer extends Thread{
 
     public ADBDiscoveryServer(ServerInfo serverInfo) {
         this.serverInfo = serverInfo;
+
+        setName("ADB Discovery Server");
     }
 
     @Override

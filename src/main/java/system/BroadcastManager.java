@@ -50,6 +50,7 @@ public class BroadcastManager {
         super();
         // Create the event thread and start it
         eventThread = new Thread(eventLoop);
+        eventThread.setName("Broadcast Manager Event Loop");
         eventThread.start();
     }
 

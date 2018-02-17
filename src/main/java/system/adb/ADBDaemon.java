@@ -30,6 +30,8 @@ public class ADBDaemon extends Thread{
 
     public ADBDaemon(OnDiscoveryUpdatedListener listener) {
         this.listener = listener;
+
+        setName("ADB Daemon");
     }
 
     @Override

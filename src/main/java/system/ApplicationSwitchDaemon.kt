@@ -12,6 +12,10 @@ class ApplicationSwitchDaemon(val appManager : ApplicationManager) : Thread(){
         val DEFAULT_CHECK_INTERVAL : Long = 500 // How ofter check for app changes ( in milliseconds )
     }
 
+    init {
+        name = "Application Switch Daemon"
+    }
+
     var checkInterval : Long = DEFAULT_CHECK_INTERVAL
     var shouldStop = false
 
