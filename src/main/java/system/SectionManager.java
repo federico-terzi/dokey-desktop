@@ -289,6 +289,11 @@ public class SectionManager {
         // Read the section
         Section section = getSectionFromFile(templateFile);
 
+        // Replace the relatedAppID with the correct path
+        if (section != null) {
+            section.setRelatedAppId(appPath);
+        }
+
         return section;
     }
 
