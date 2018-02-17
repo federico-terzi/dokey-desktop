@@ -795,7 +795,19 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         @Override
         public void onBroadcastReceived(Serializable param) {
             Section section = Section.fromJson(new JSONObject((String) param));
-            loadSection(section);
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    loadSection(section);
+
+                    // Select the correct entry in the list view
+                    for (Section sec : controller.getSectionsListView().getItems()) {
+                        if (sec.getStringID().equals(section.getStringID())) {
+                            controller.getSectionsListView().getSelectionModel().select(sec);
+                        }
+                    }
+                }
+            });
         }
     };
 

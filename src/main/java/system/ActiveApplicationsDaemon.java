@@ -28,9 +28,11 @@ public class ActiveApplicationsDaemon extends Thread{
 
         // Initialize the apps that will be filtered out
         skippedApps.add("WinStore.App.exe");
+        skippedApps.add("Microsoft.Photos.exe");
         skippedApps.add("ApplicationFrameHost.exe");
         skippedApps.add("ShellExperienceHost.exe");
         skippedApps.add("googledrivesync.exe");
+        skippedApps.add("SearchUI.exe");
     }
 
     @Override
