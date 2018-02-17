@@ -2,6 +2,7 @@ package system.MS
 
 import com.sun.jna.platform.win32.User32
 import com.sun.jna.platform.win32.WinDef.HWND
+import com.sun.jna.platform.win32.WinUser
 import system.ResourceUtils
 import system.model.Application
 import system.model.Window
@@ -21,6 +22,12 @@ class MSWindow(titleText: String, application:Application?,
         appActivate()
 
         User32.INSTANCE.SetForegroundWindow(hwnd)
+
+        // Restoring it if minimized
+        val winplace = WinUser.WINDOWPLACEMENT()
+        User32.INSTANCE.GetWindowPlacement(hwnd, winplace)
+        if (winplace.showCmd == 2)  // MINIMIZED
+            User32.INSTANCE.ShowWindow(hwnd, 9)  // Restore
 
         return true
     }

@@ -33,6 +33,9 @@ public class ActiveApplicationsDaemon extends Thread{
         skippedApps.add("ShellExperienceHost.exe");
         skippedApps.add("googledrivesync.exe");
         skippedApps.add("SearchUI.exe");
+        skippedApps.add("SystemSettings.exe");
+        skippedApps.add("SystemSettingsBroker.exe");
+        skippedApps.add("Calculator.exe");
     }
 
     @Override
