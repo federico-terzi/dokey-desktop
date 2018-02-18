@@ -289,9 +289,10 @@ public class SectionManager {
         // Read the section
         Section section = getSectionFromFile(templateFile);
 
-        // Replace the relatedAppID with the correct path
+        // Replace the relatedAppID with the correct path and the correct modified id
         if (section != null) {
             section.setRelatedAppId(appPath);
+            section.setLastEdit(System.currentTimeMillis());
         }
 
         return section;
