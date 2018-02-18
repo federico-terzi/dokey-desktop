@@ -17,6 +17,8 @@ public class DragButton extends Button {
     public DragButton() {
         super();
 
+        getStyleClass().add("drag-button");
+
         setOnDragOver(new EventHandler<DragEvent>() {
             public void handle(DragEvent event) {
                 if (event.getGestureSource() != DragButton.this &&

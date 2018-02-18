@@ -59,13 +59,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class EditorStage extends Stage implements OnSectionModifiedListener {
-    public static final int PORTRAIT_HEIGHT = 400;
-    public static final int PORTRAIT_WIDTH = 320;
+    public static final int PORTRAIT_HEIGHT = 450;
+    public static final int PORTRAIT_WIDTH = 350;
     public static final int PORTRAIT_BOTTOM_BAR_HEIGHT = 100;
-    public static final int LANDSCAPE_HEIGHT = 320;
+    public static final int LANDSCAPE_HEIGHT = 400;
     public static final int LANDSCAPE_WIDTH = 450;
     public static final int LANDSCAPE_BOTTOM_BAR_WIDTH = 100;
-    public static final int BORDER_PADDING = 10;
     private static final int BOTTOM_BAR_DEFAULT_COLS = 4;
 
     // Limits in value
@@ -96,7 +95,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         scene.getStylesheets().add(ResourceUtils.getResource("/css/sectionlistcell.css").toURI().toString());
-        scene.getStylesheets().add(ResourceUtils.getResource("/css/editor.css").toURI().toString());
+        scene.getStylesheets().add(ResourceUtils.getResource("/css/main.css").toURI().toString());
         this.setTitle("Dokey Editor");
         this.setScene(scene);
         this.getIcons().add(new Image(EditorStage.class.getResourceAsStream("/assets/icon.png")));

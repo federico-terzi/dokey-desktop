@@ -64,7 +64,7 @@ public class WebLinkButton extends ComponentButton {
         if (imageFile != null) {
             try {
                 FileInputStream fis = new FileInputStream(imageFile);
-                webImage = new Image(fis, 32, 32, true, true);
+                webImage = new Image(fis, 48, 48, true, true);
                 fis.close();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -72,7 +72,7 @@ public class WebLinkButton extends ComponentButton {
                 e.printStackTrace();
             }
         }else{  // If image is not available, default fallback
-            webImage = new Image(ComponentButton.class.getResourceAsStream("/assets/world.png"), 32, 32, true, true);
+            webImage = new Image(ComponentButton.class.getResourceAsStream("/assets/world.png"), 48, 48, true, true);
         }
 
         // Set the image

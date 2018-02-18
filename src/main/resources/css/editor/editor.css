@@ -1,0 +1,103 @@
+@import "toolbar.css";
+@import "buttons.css";
+
+.editor-container {
+    -fx-background-color: -primaryLightColor;
+    -fx-padding: 0;
+}
+
+.bottombar-portrait {
+    -fx-padding: 5px;
+    -fx-background-color: -primaryColor;
+    -fx-background-radius: 2px;
+}
+
+.bottombar-landscape {
+    -fx-padding: 5px;
+    -fx-background-color: -primaryColor;
+    -fx-background-radius: 2px;
+}
+
+.page-grid {
+    -fx-padding: 20px;
+}
+
+.content-scrollpane {
+    -fx-background-color:transparent;
+    -fx-padding: 0;
+}
+
+.split-pane {
+    -fx-background-insets: 0, 0;
+    -fx-padding: 0;
+}
+
+.split-pane:horizontal > .split-pane-divider {
+    -fx-background-color: -primaryLightColor;
+    -fx-pref-width: 5px;
+}
+
+.list-view .list-cell:even {
+    -fx-background-color: -primaryTextColor;
+}
+.list-view .list-cell:odd {
+    -fx-background-color: -primaryTextColor;
+}
+.list-view .list-cell:filled:selected{
+    -fx-background-color: #57687c;
+}
+
+.list-view .list-cell:filled:selected .label{
+    -fx-text-fill: #ffffff;
+}
+
+.list-view .list-cell {
+    -fx-pref-height: 45px;
+}
+
+.list-view {
+    -fx-background-insets: 0, 0;
+    -fx-padding: 0;
+}
+
+.tab-pane>*.tab-header-area>*.tab-header-background
+{
+    -fx-background-color: transparent;
+}
+
+.tab-pane
+{
+    -fx-tab-min-width:50px;
+}
+
+.tab-pane:top .tab-content-area {
+    /*-fx-border-insets: 15px;*/
+    /*-fx-padding: 15px;*/
+    -fx-background-color: -primaryColorEditor;
+    -fx-background-radius: 2;
+}
+
+.tab{
+    -fx-background-insets: 0;
+    -fx-background-color: #00686e;
+    -fx-focus-color: transparent;
+}
+
+.tab-pane .tab
+{
+    -fx-background-color: -primaryDarkColor;
+}
+
+.tab-pane .tab .tab-label, .tab-pane .tab .label
+{
+    -fx-text-fill: white;
+}
+
+.tab-pane .tab:selected
+{
+    -fx-background-color: -primaryColor;
+}
+
+.tab-pane .tab:selected .label {
+    -fx-text-fill: white;
+}

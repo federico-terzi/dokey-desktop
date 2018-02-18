@@ -29,27 +29,29 @@ public class ShortcutButton extends ComponentButton {
 
         item = (ShortcutItem) associatedComponent.getItem();
 
-        // Set up the layout
-        VBox vBox = new VBox();
-        vBox.setFillWidth(true);
-        vBox.setAlignment(Pos.CENTER);
+        getStyleClass().add("shortcut-button");
+
+        setText(item.getTitle());
 
         // If there is an image, set it.
+        Image image = null;
+
         if (shortcutIcon != null) {
             if (shortcutIcon.getFile().isFile()) {
-                Image image = new Image(shortcutIcon.getFile().toURI().toString(), 32, 32, true, true);
-                ImageView imageView = new ImageView(image);
-                vBox.getChildren().add(imageView);
+                image = new Image(shortcutIcon.getFile().toURI().toString(), 36, 36, true, true);
             }
         }
 
-        Label titleLabel = new Label(item.getTitle());
-        titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px");
-        Label shortcutLabel = new Label(getDisplayShortcut());
-        shortcutLabel.setStyle("-fx-font-style: italic; -fx-font-size: 11px");
-        shortcutLabel.setTextAlignment(TextAlignment.CENTER);
-        vBox.getChildren().addAll(titleLabel, shortcutLabel);
-        setGraphic(vBox);
+        if (image == null) {
+            image = new Image(ComponentButton.class.getResourceAsStream("/assets/image.png"), 36, 36, true, true);
+        }
+
+        ImageView imageView = new ImageView(image);
+        VBox box = new VBox();
+        box.getStyleClass().add("shortcut-box");
+        box.getChildren().addAll(imageView);
+        setGraphic(box);
+        setContentDisplay(ContentDisplay.TOP);
 
         // Create the tooltip
         final Tooltip tooltip = new Tooltip();

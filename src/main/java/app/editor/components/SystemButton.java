@@ -23,13 +23,15 @@ public class SystemButton extends ComponentButton {
 
         item = (SystemItem) associatedComponent.getItem();
 
+        getStyleClass().add("system-button");
+
         // Set up the layout
         setText(item.getTitle());
 
         File iconFile = SystemItemManager.getIconForType(item.getCommandType());
         if (iconFile != null) {
-            Image folderImage = new Image(iconFile.toURI().toString(), 32, 32, true, true);
-            ImageView imageView = new ImageView(folderImage);
+            Image systemImage = new Image(iconFile.toURI().toString(), 48, 48, true, true);
+            ImageView imageView = new ImageView(systemImage);
             setContentDisplay(ContentDisplay.TOP);
             setGraphic(imageView);
         }

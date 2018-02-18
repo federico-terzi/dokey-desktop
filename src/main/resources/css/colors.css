@@ -1,0 +1,12 @@
+.root {
+    -primaryColor: #2c3e50;
+    -primaryDarkColor: #031828;
+    -primaryLightColor: #57687c;
+    -primaryTextColor: #ecf0f1;
+    -primaryColorEditor: -primaryColor;
+    -backgroundLightColor: #fafafa;
+    -secondaryColor: #68a4c8;
+    -secondaryDarkColor: #357597;
+    -secondaryLightColor: #9ad5fb;
+    -secondaryTextColor: #000000;
+}

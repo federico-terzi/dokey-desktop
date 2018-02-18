@@ -30,7 +30,9 @@ public class FolderButton extends ComponentButton {
         // Set up the layout
         setText(item.getTitle());
 
-        Image folderImage = new Image(ComponentButton.class.getResourceAsStream("/assets/folder.png"), 32, 32, true, true);
+        getStyleClass().add("folder-button");
+
+        Image folderImage = new Image(ComponentButton.class.getResourceAsStream("/assets/folder_white.png"), 48, 48, true, true);
         ImageView imageView = new ImageView(folderImage);
         setContentDisplay(ContentDisplay.TOP);
         setGraphic(imageView);

@@ -22,7 +22,7 @@
         </BorderPane>
         <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="AS_NEEDED" styleClass="content-scrollpane">
           <content>
-            <VBox fx:id="contentBox" alignment="CENTER" fillWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="315.0" prefHeight="724.0" prefWidth="315.0" styleClass="editor-container">
+            <VBox fx:id="contentBox" alignment="CENTER" fillWidth="true" styleClass="editor-container">
 
             </VBox>
           </content>
@@ -38,7 +38,7 @@
             <Button mnemonicParsing="false" fx:id="addApplicationBtn">
               <graphic>
                 <ImageView fitHeight="20" fitWidth="20">
-                  <Image url="/assets/add_app.png" />
+                  <Image url="/assets/toolbar_icons/add_app.png" />
                 </ImageView>
               </graphic>
               <tooltip>
@@ -48,7 +48,7 @@
             <Button mnemonicParsing="false" fx:id="exportBtn">
               <graphic>
                 <ImageView fitHeight="20" fitWidth="20">
-                  <Image url="/assets/export.png" />
+                  <Image url="/assets/toolbar_icons/export.png" />
                 </ImageView>
               </graphic>
               <tooltip>
@@ -58,7 +58,7 @@
             <Button mnemonicParsing="false" fx:id="searchBtn">
               <graphic>
                 <ImageView fitHeight="20" fitWidth="20">
-                  <Image url="/assets/search.png" />
+                  <Image url="/assets/toolbar_icons/search.png" />
                 </ImageView>
               </graphic>
               <tooltip>
@@ -69,7 +69,7 @@
             <Button mnemonicParsing="false" fx:id="rotateViewBtn">
               <graphic>
                 <ImageView fitHeight="20" fitWidth="20">
-                  <Image url="/assets/screen_rotation.png" />
+                  <Image url="/assets/toolbar_icons/screen_rotation.png" />
                 </ImageView>
               </graphic>
               <tooltip>
@@ -79,7 +79,7 @@
             <Button mnemonicParsing="false" fx:id="changeSizeBtn">
               <graphic>
                 <ImageView fitHeight="20" fitWidth="20">
-                  <Image url="/assets/grid.png" />
+                  <Image url="/assets/toolbar_icons/grid.png" />
                 </ImageView>
               </graphic>
               <tooltip>
