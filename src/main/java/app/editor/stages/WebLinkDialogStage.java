@@ -55,7 +55,7 @@ public class WebLinkDialogStage extends Stage {
         controller.refreshBtn.setGraphic(imageView);
 
         // Setup the image
-        Image image = new Image(WebLinkDialogStage.class.getResourceAsStream("/assets/world.png"), 32, 32, true, true);
+        Image image = new Image(WebLinkDialogStage.class.getResourceAsStream("/assets/world.png"), 64, 64, true, true);
         controller.imageView.setImage(image);
 
         // Listener for the url field change
@@ -195,7 +195,7 @@ public class WebLinkDialogStage extends Stage {
                                     // Setup the image
                                     try {
                                         FileInputStream fis = new FileInputStream(imageFile);
-                                        Image image = new Image(fis, 32, 32, true, true);
+                                        Image image = new Image(fis, 64, 64, true, true);
                                         controller.imageView.setImage(image);
                                         fis.close();
                                         imageUrl = res.imageUrl;
@@ -207,7 +207,7 @@ public class WebLinkDialogStage extends Stage {
 
                                 }
                             }else{ // Image not available, default fallback
-                                Image image = new Image(WebLinkDialogStage.class.getResourceAsStream("/assets/world.png"), 32, 32, true, true);
+                                Image image = new Image(WebLinkDialogStage.class.getResourceAsStream("/assets/world.png"), 64, 64, true, true);
                                 controller.imageView.setImage(image);
                                 imageUrl = null;
                             }
@@ -240,7 +240,7 @@ public class WebLinkDialogStage extends Stage {
             if (imageFile != null) {
                 try {
                     FileInputStream fis = new FileInputStream(imageFile);
-                    Image image = new Image(fis, 32, 32, true, true);
+                    Image image = new Image(fis, 64, 64, true, true);
                     controller.imageView.setImage(image);
                     fis.close();
                 } catch (FileNotFoundException e) {
