@@ -10,7 +10,7 @@
 <?import javafx.scene.image.Image?>
 <BorderPane prefHeight="701.0" prefWidth="900.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="app.editor.controllers.EditorController">
   <center>
-    <SplitPane dividerPositions="0.2541225626740946" focusTraversable="true" styleClass="split-pane">
+    <SplitPane dividerPositions="0.2541225626740946" focusTraversable="true" styleClass="split-pane" fx:id="splitPane">
       <items>
         <BorderPane>
           <top>
@@ -35,6 +35,9 @@
       <children>
         <ToolBar>
           <items>
+            <Button mnemonicParsing="false" fx:id="toggleAppsBtn">
+              <!--Created by code-->
+            </Button>
             <Button mnemonicParsing="false" fx:id="addApplicationBtn">
               <graphic>
                 <ImageView fitHeight="20" fitWidth="20">

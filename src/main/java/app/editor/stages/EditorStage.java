@@ -1,5 +1,6 @@
 package app.editor.stages;
 
+import app.editor.animations.DividerTransition;
 import app.editor.components.ComponentGrid;
 import app.editor.listeners.OnComponentClickListener;
 import app.editor.listeners.OnSectionModifiedListener;
@@ -66,6 +67,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     public static final int LANDSCAPE_WIDTH = 450;
     public static final int LANDSCAPE_BOTTOM_BAR_WIDTH = 100;
     private static final int BOTTOM_BAR_DEFAULT_COLS = 4;
+    public static final double SECTION_LIST_VIEW_OPEN_POSITION = 0.3;
+
 
     // Limits in value
     private static final int MAX_ROWS = 6;
@@ -86,6 +89,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     private Section activeSection = null;
     private Page activePage = null;
     private ScreenOrientation screenOrientation = ScreenOrientation.PORTRAIT;
+
+    private boolean areAppsShown = true;  // If true, the lateral list view is shown.
 
     public EditorStage(ApplicationManager applicationManager, OnEditorEventListener onEditorEventListener) throws IOException {
         this.applicationManager = applicationManager;
@@ -205,6 +210,22 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 }
             }
         });
+        controller.toggleAppsBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (areAppsShown) {
+                    DividerTransition transition = new DividerTransition(controller.splitPane, 0);
+                    transition.play();
+                    areAppsShown = false;
+                }else{
+                    DividerTransition transition = new DividerTransition(controller.splitPane, SECTION_LIST_VIEW_OPEN_POSITION);
+                    transition.play();
+                    areAppsShown = true;
+                }
+
+                renderToggleAppsListView();
+            }
+        });
 
         // Listener for the search query
         controller.searchSectionTextField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -221,6 +242,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         });
 
         requestSectionList();
+
+        renderToggleAppsListView();
 
         // Register broadcast listeners
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.PHONE_MODIFIED_SECTION_EVENT, phoneSectionModifiedListener);
@@ -338,6 +361,26 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             }
         }
 
+    }
+
+    /**
+     * Handle the list view show/hide mechanism
+     */
+    private void renderToggleAppsListView() {
+        Image image = null;
+        String message = null;
+        if (!areAppsShown) {
+            image = new Image(EditorStage.class.getResourceAsStream("/assets/toolbar_icons/menu.png"), 20, 20, true, true);
+            message = "Show Applications";
+        }else{
+            message = "Hide Applications";
+            image = new Image(EditorStage.class.getResourceAsStream("/assets/toolbar_icons/back.png"), 20, 20, true, true);
+        }
+        ImageView buttonImageView = new ImageView(image);
+        buttonImageView.setSmooth(true);
+        Tooltip tooltip = new Tooltip(message);
+        controller.toggleAppsBtn.setGraphic(buttonImageView);
+        controller.toggleAppsBtn.setTooltip(tooltip);
     }
 
     private void loadSection(Section section) {

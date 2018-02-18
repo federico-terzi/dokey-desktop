@@ -17,6 +17,8 @@ public class EditorController {
     public Button addApplicationBtn;
     public Button exportBtn;
     public Button searchBtn;
+    public Button toggleAppsBtn;
+    public SplitPane splitPane;
     @FXML
     private ResourceBundle resources;
 
