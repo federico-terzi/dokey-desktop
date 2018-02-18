@@ -1,13 +1,10 @@
 package app.editor.stages;
 
 import app.editor.animations.DividerTransition;
-import app.editor.components.ComponentGrid;
+import app.editor.components.*;
 import app.editor.listeners.OnComponentClickListener;
 import app.editor.listeners.OnSectionModifiedListener;
 import app.editor.comparators.SectionComparator;
-import app.editor.components.BottomBarGrid;
-import app.editor.components.EmptyButton;
-import app.editor.components.PageGrid;
 import app.editor.controllers.EditorController;
 import app.editor.listcells.SectionListCell;
 import app.editor.model.ScreenOrientation;
@@ -418,40 +415,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
             // Add the tab context menu
             final ContextMenu contextMenu = new ContextMenu();
-            MenuItem rename = new MenuItem("Rename...");
-            rename.setStyle("-fx-text-fill: black;");
-            rename.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    TextInputDialog dialog = new TextInputDialog(page.getTitle());
-                    Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
-                    stage.getIcons().add(new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/icon.png")));
-                    dialog.setTitle("Rename Page...");
-                    dialog.setHeaderText("Rename the Page");
-                    dialog.setContentText("Please enter the name:");
-
-                    Optional<String> result = dialog.showAndWait();
-                    result.ifPresent(s -> {
-                        // Check that the string is valid
-                        if (s.trim().isEmpty()) {
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setTitle("Error");
-                            alert.setHeaderText("Page name is not valid");
-                            alert.setContentText("The name can't be empty!");
-                            alert.show();
-                            return;
-                        }
-
-                        page.setTitle(s);
-
-                        // Save the section
-                        onSectionModified(section);
-
-                        // Reload the section
-                        loadSection(section);
-                    });
-                }
-            });
             MenuItem changeSize = new MenuItem("Change Grid Size...");
             changeSize.setStyle("-fx-text-fill: black;");
             changeSize.setOnAction(new EventHandler<ActionEvent>() {
@@ -517,49 +480,42 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                     }
                 }
             });
-            contextMenu.getItems().addAll(rename, changeSize, new SeparatorMenuItem(), moveLeft, moveRight, new SeparatorMenuItem(), delete);
+            contextMenu.getItems().addAll(changeSize, new SeparatorMenuItem(), moveLeft, moveRight, new SeparatorMenuItem(), delete);
             tab.setContextMenu(contextMenu);
 
-            // Handle the drag and drop focus switch
-            tab.getGraphic().setOnDragEntered(new EventHandler<DragEvent>() {
-                @Override
-                public void handle(DragEvent event) {
-                    tabPane.getSelectionModel().select(tab);
-                }
-            });
             tabPane.getTabs().add(tab);
         }
-        // Add the "Add Page" tab
-        Tab addTab = new Tab();
-        Image image = new Image(EmptyButton.class.getResourceAsStream("/assets/add_white.png"));
-        ImageView imageView = new ImageView(image);
-        imageView.setFitHeight(16);
-        imageView.setFitWidth(16);
-        imageView.setSmooth(true);
-        VBox imageVBox = new VBox();
-        imageVBox.getChildren().add(imageView);
-        addTab.setGraphic(imageVBox);
-        addTab.setText("Add");
-        tabPane.getTabs().add(addTab);
-        // Add the "Add Page" event listener to create a new page
-        imageVBox.setOnMouseClicked(event -> {
-            addPageToSection(section);
-        });
-        // Change tab listener
-        tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
-            @Override
-            public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
-                if (newValue.equals(addTab)) {
-                    addPageToSection(section);
-                }
-
-                // Change the active page
-                int index = tabPane.getSelectionModel().getSelectedIndex();
-                if (section.getPages().size() > index) {
-                    activePage = section.getPages().get(index);
-                }
-            }
-        });
+//        // Add the "Add Page" tab
+//        Tab addTab = new Tab();
+//        Image image = new Image(EmptyButton.class.getResourceAsStream("/assets/add_white.png"));
+//        ImageView imageView = new ImageView(image);
+//        imageView.setFitHeight(16);
+//        imageView.setFitWidth(16);
+//        imageView.setSmooth(true);
+//        VBox imageVBox = new VBox();
+//        imageVBox.getChildren().add(imageView);
+//        addTab.setGraphic(imageVBox);
+//        addTab.setText("Add");
+//        tabPane.getTabs().add(addTab);
+//        // Add the "Add Page" event listener to create a new page
+//        imageVBox.setOnMouseClicked(event -> {
+//
+//        });
+//        // Change tab listener
+//        tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
+//            @Override
+//            public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
+//                if (newValue.equals(addTab)) {
+//                    addPageToSection(section);
+//                }
+//
+//                // Change the active page
+//                int index = tabPane.getSelectionModel().getSelectedIndex();
+//                if (section.getPages().size() > index) {
+//                    activePage = section.getPages().get(index);
+//                }
+//            }
+//        });
 
         // Add the bottom bar
         BottomBarGrid bottomBarGrid = new BottomBarGrid(applicationManager, shortcutIconManager, BOTTOM_BAR_DEFAULT_COLS, section, screenOrientation);
@@ -573,6 +529,17 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         });
         grids.add(bottomBarGrid);
 
+        TabPaneController.OnTabListener onTabListener = new TabPaneController.OnTabListener() {
+            @Override
+            public void onTabSelected(int index) {
+                tabPane.getSelectionModel().select(index);
+            }
+
+            @Override
+            public void onAddTab() {
+                addPageToSection(section);
+            }
+        };
 
         // Add the elements based on the orientation
         if (screenOrientation == ScreenOrientation.PORTRAIT) {
@@ -581,9 +548,10 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             // Add the elements
             box.getChildren().add(tabPane);
 
-            Pane separator = new Pane();
-            separator.setStyle("-fx-background-color: transparent; -fx-pref-height: 10px");
-            box.getChildren().add(separator);
+            HBox container = new HBox();
+            TabPaneController tabPaneDotController = new TabPaneController(tabPane, container, onTabListener);
+            box.getChildren().add(container);
+            container.setMaxWidth(PORTRAIT_WIDTH);
 
             box.getChildren().add(bottomBarGrid);
             box.getStyleClass().add("vertical-container");
@@ -594,9 +562,10 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             // Add the elements
             box.getChildren().add(bottomBarGrid);
 
-            Pane separator = new Pane();
-            separator.setStyle("-fx-background-color: transparent; -fx-pref-width: 10px");
-            box.getChildren().add(separator);
+            VBox container = new VBox();
+            TabPaneController tabPaneDotController = new TabPaneController(tabPane, container, onTabListener);
+            box.getChildren().add(container);
+            container.setMaxHeight(LANDSCAPE_HEIGHT);
 
             box.getChildren().add(tabPane);
             controller.getContentBox().getChildren().add(box);

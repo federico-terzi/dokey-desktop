@@ -65,18 +65,21 @@ public class SectionListCell extends ListCell<Section> {
                 name.setText(application.getName());
                 path.setText(application.getExecutablePath());
             }
+            image.getStyleClass().remove("style-icon");
         }else if (section.getSectionType() == SectionType.LAUNCHPAD){
             Image appImage = null;
             appImage = new Image(SectionListCell.class.getResourceAsStream("/assets/apps.png"), 32, 32, true, true);
             image.setImage(appImage);
             name.setText("Launchpad");
             path.setText("The main application launcher");
+            image.getStyleClass().add("style-icon");
         }else if (section.getSectionType() == SectionType.SYSTEM){
             Image appImage = null;
             appImage = new Image(SectionListCell.class.getResourceAsStream("/assets/shutdown.png"), 32, 32, true, true);
             image.setImage(appImage);
             name.setText("System");
             path.setText("The system control launchpad");
+            image.getStyleClass().add("style-icon");
         }
 
         // Set up the context menu

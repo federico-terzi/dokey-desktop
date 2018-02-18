@@ -20,7 +20,11 @@ public class PageGrid extends ComponentGrid implements ComponentGrid.OnComponent
         this.section = section;
         setOnComponentSelectedListener(this);
 
-        getStyleClass().add("page-grid");
+        if (screenOrientation == ScreenOrientation.PORTRAIT) {
+            getStyleClass().add("page-grid-portrait");
+        }else{
+            getStyleClass().add("page-grid-landscape");
+        }
 
         // Customize the size based on the orientation
         setHeight(EditorStage.getHeight(screenOrientation));
