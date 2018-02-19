@@ -2,12 +2,15 @@ package app.editor.components;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Cursor;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
+import javafx.scene.paint.Color;
 import section.model.Component;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -43,6 +46,11 @@ public class ComponentButton extends DragButton {
                 if (associatedComponent != null) {
                     Dragboard db = startDragAndDrop(TransferMode.MOVE);
 
+                    SnapshotParameters sp = new SnapshotParameters();
+                    sp.setFill(Color.TRANSPARENT);
+                    Image snapshot = snapshot(sp, null);
+                    db.setDragView(snapshot, snapshot.getWidth()/2, snapshot.getHeight()/2);
+
                     ClipboardContent content = new ClipboardContent();
                     content.putString(DragButton.DRAG_PREFIX+associatedComponent.json().toString());
                     db.setContent(content);
@@ -58,6 +66,9 @@ public class ComponentButton extends DragButton {
                         onComponentActionListener.onComponentDroppedAway();
                     }
                 }
+
+                setCursor(Cursor.DEFAULT);
+
                 event.consume();
             }
         });
