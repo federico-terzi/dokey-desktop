@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class WebLinkItemAction extends ItemAction {
     public WebLinkItemAction(ComponentGrid componentGrid) {
-        super(3,"Web Link", "Add Web Link", "/assets/world.png", componentGrid);
+        super(3,"Web Link", "Add Web Link", "/assets/world_black.png", componentGrid);
     }
 
     @Override

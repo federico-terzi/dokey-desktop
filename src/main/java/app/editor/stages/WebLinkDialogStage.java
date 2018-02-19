@@ -52,13 +52,10 @@ public class WebLinkDialogStage extends Stage {
         this.setTitle("Web Link");
         this.setScene(scene);
         this.getIcons().add(new Image(WebLinkDialogStage.class.getResourceAsStream("/assets/icon.png")));
+        scene.getStylesheets().add(ResourceUtils.getResource("/css/main.css").toURI().toString());
+        setResizable(false);
 
         controller = (WebLinkDialogController) fxmlLoader.getController();
-
-        // Setup the button image
-        Image refreshImage = new Image(WebLinkDialogStage.class.getResourceAsStream("/assets/refresh.png"), 18, 18, true, true);
-        ImageView imageView = new ImageView(refreshImage);
-        controller.refreshBtn.setGraphic(imageView);
 
         // Setup the image
         Image image = new Image(WebLinkDialogStage.class.getResourceAsStream("/assets/world.png"), 64, 64, true, true);
@@ -249,7 +246,7 @@ public class WebLinkDialogStage extends Stage {
             if (imageFile != null) {
                 try {
                     FileInputStream fis = new FileInputStream(imageFile);
-                    Image image = new Image(fis, 64, 64, true, true);
+                    Image image = new Image(fis, 48, 48, true, true);
                     controller.imageView.setImage(image);
                     fis.close();
                 } catch (FileNotFoundException e) {
@@ -260,7 +257,7 @@ public class WebLinkDialogStage extends Stage {
             }
         }else{
             // Default image fallback
-            Image image = new Image(WebLinkDialogStage.class.getResourceAsStream("/assets/world.png"), 32, 32, true, true);
+            Image image = new Image(WebLinkDialogStage.class.getResourceAsStream("/assets/world.png"), 48, 48, true, true);
             controller.imageView.setImage(image);
         }
     }

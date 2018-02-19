@@ -76,3 +76,12 @@
 .system-button:hover .image-view{
     -fx-opacity: 1;
 }
+
+.confirmation-button {
+    -fx-background-color: transparent;
+}
+
+.confirmation-button:hover {
+    -fx-background-color: -primaryLightColor;
+    -fx-background-radius: 2px;
+}

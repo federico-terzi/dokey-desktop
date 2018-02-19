@@ -63,7 +63,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     public static final int PORTRAIT_HEIGHT = 450;
     public static final int PORTRAIT_WIDTH = 350;
     public static final int PORTRAIT_BOTTOM_BAR_HEIGHT = 100;
-    public static final int LANDSCAPE_HEIGHT = 400;
+    public static final int LANDSCAPE_HEIGHT = 350;
     public static final int LANDSCAPE_WIDTH = 450;
     public static final int LANDSCAPE_BOTTOM_BAR_WIDTH = 100;
     private static final int BOTTOM_BAR_DEFAULT_COLS = 4;

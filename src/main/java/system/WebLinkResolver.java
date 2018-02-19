@@ -115,19 +115,6 @@ public class WebLinkResolver {
                         }
                     }
                     if (maxUrl != null) {
-                        // If the url is relative, get the absolute one.
-                        if (!maxUrl.startsWith("http")) {
-                            try {
-                                URL baseUrl = new URL(url);
-                                URL abs = new URL(baseUrl, maxUrl);
-                                maxUrl = abs.toURI().toURL().toString();
-                            } catch (MalformedURLException e) {
-                                e.printStackTrace();
-                            } catch (URISyntaxException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
                         result.imageUrl = maxUrl;
                     }
 
@@ -176,6 +163,19 @@ public class WebLinkResolver {
 
             // Download the image to the cache
             if (result.imageUrl != null) {
+                // If the url is relative, get the absolute one.
+                if (!result.imageUrl.startsWith("http")) {
+                    try {
+                        URL baseUrl = new URL(url);
+                        URL abs = new URL(baseUrl, result.imageUrl);
+                        result.imageUrl = abs.toURI().toURL().toString();
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    } catch (URISyntaxException e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 requestImage(result.imageUrl);
             }
         }

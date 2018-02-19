@@ -7,7 +7,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="416.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.editor.controllers.WebLinkDialogController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="416.0" styleClass="dialog-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.editor.controllers.WebLinkDialogController">
    <center>
       <VBox alignment="TOP_CENTER" BorderPane.alignment="CENTER">
          <children>
@@ -29,7 +29,7 @@
                   <Insets top="15.0" />
                </VBox.margin>
                <children>
-                  <ImageView fx:id="imageView" fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imageView" fitHeight="48" fitWidth="48">
                      <HBox.margin>
                         <Insets right="8.0" />
                      </HBox.margin>
@@ -63,18 +63,31 @@
    <bottom>
       <HBox BorderPane.alignment="TOP_RIGHT">
          <children>
-            <Button fx:id="refreshBtn" mnemonicParsing="false" prefWidth="25.0">
+            <Button fx:id="refreshBtn" mnemonicParsing="false" prefWidth="25.0"  styleClass="confirmation-button">
+               <graphic>
+                  <ImageView fitHeight="20" fitWidth="20">
+                     <Image url="/assets/refresh.png" />
+                  </ImageView>
+               </graphic>
                <tooltip>
                   <Tooltip text="Refresh"/>
                </tooltip>
             </Button>
             <Pane HBox.hgrow="ALWAYS" />
-            <Button fx:id="cancelBtn" mnemonicParsing="false" text="Cancel">
-               <HBox.margin>
-                  <Insets right="5.0" />
-               </HBox.margin>
+            <Button fx:id="cancelBtn" mnemonicParsing="false" styleClass="confirmation-button">
+               <graphic>
+                  <ImageView fitHeight="20" fitWidth="20">
+                     <Image url="/assets/clear.png" />
+                  </ImageView>
+               </graphic>
             </Button>
-            <Button fx:id="selectBtn" mnemonicParsing="false" text="Select" />
+            <Button fx:id="selectBtn" mnemonicParsing="false" styleClass="confirmation-button">
+               <graphic>
+                  <ImageView fitHeight="20" fitWidth="20">
+                     <Image url="/assets/done.png" />
+                  </ImageView>
+               </graphic>
+            </Button>
          </children>
          <padding>
             <Insets bottom="8.0" left="8.0" right="8.0" />
