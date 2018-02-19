@@ -50,10 +50,7 @@ import system.sicons.ShortcutIconManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class EditorStage extends Stage implements OnSectionModifiedListener {
@@ -394,6 +391,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         tabPane.setMaxWidth(getWidth(screenOrientation));
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
+        Map<Tab, Node> tabContent = new HashMap<>();
+
         // Add the pages
         for (Page page : section.getPages()) {
             PageGrid pageGrid = new PageGrid(applicationManager, shortcutIconManager, page, section, screenOrientation);
@@ -412,6 +411,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             Label tabTitle = new Label(page.getTitle());
             tab.setGraphic(tabTitle);
             tab.setContent(pageGrid);
+            tabContent.put(tab, pageGrid);
 
             // Add the tab context menu
             final ContextMenu contextMenu = new ContextMenu();
@@ -484,38 +484,12 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             tab.setContextMenu(contextMenu);
 
             tabPane.getTabs().add(tab);
+
+            // Select active tab
+            if (page.equals(activePage)) {
+                tabPane.getSelectionModel().select(tab);
+            }
         }
-//        // Add the "Add Page" tab
-//        Tab addTab = new Tab();
-//        Image image = new Image(EmptyButton.class.getResourceAsStream("/assets/add_white.png"));
-//        ImageView imageView = new ImageView(image);
-//        imageView.setFitHeight(16);
-//        imageView.setFitWidth(16);
-//        imageView.setSmooth(true);
-//        VBox imageVBox = new VBox();
-//        imageVBox.getChildren().add(imageView);
-//        addTab.setGraphic(imageVBox);
-//        addTab.setText("Add");
-//        tabPane.getTabs().add(addTab);
-//        // Add the "Add Page" event listener to create a new page
-//        imageVBox.setOnMouseClicked(event -> {
-//
-//        });
-//        // Change tab listener
-//        tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
-//            @Override
-//            public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
-//                if (newValue.equals(addTab)) {
-//                    addPageToSection(section);
-//                }
-//
-//                // Change the active page
-//                int index = tabPane.getSelectionModel().getSelectedIndex();
-//                if (section.getPages().size() > index) {
-//                    activePage = section.getPages().get(index);
-//                }
-//            }
-//        });
 
         // Add the bottom bar
         BottomBarGrid bottomBarGrid = new BottomBarGrid(applicationManager, shortcutIconManager, BOTTOM_BAR_DEFAULT_COLS, section, screenOrientation);
@@ -537,6 +511,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
             @Override
             public void onAddTab() {
+                activePage = section.getPages().get(tabPane.getSelectionModel().getSelectedIndex());
                 addPageToSection(section);
             }
         };
@@ -549,7 +524,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             box.getChildren().add(tabPane);
 
             HBox container = new HBox();
-            TabPaneController tabPaneDotController = new TabPaneController(tabPane, container, onTabListener);
+            TabPaneController tabPaneDotController = new TabPaneController(tabPane, tabContent, container, onTabListener);
             box.getChildren().add(container);
             container.setMaxWidth(PORTRAIT_WIDTH);
 
@@ -563,7 +538,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             box.getChildren().add(bottomBarGrid);
 
             VBox container = new VBox();
-            TabPaneController tabPaneDotController = new TabPaneController(tabPane, container, onTabListener);
+            TabPaneController tabPaneDotController = new TabPaneController(tabPane, tabContent, container, onTabListener);
             box.getChildren().add(container);
             container.setMaxHeight(LANDSCAPE_HEIGHT);
 

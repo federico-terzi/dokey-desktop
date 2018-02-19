@@ -1,8 +1,13 @@
 package app.editor.components;
 
+import app.editor.stages.EditorStage;
+import javafx.animation.ScaleTransition;
+import javafx.animation.SequentialTransition;
+import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -12,15 +17,22 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
+
+import java.util.Map;
 
 public class TabPaneController {
+    public static final double SLIDE_DURATION = 0.15;
+
     private TabPane tabPane;
+    private Map<Tab, Node> tabContent;
     private Pane masterPane;
     private OnTabListener listener;
 
-    public TabPaneController(TabPane tabPane, Pane masterPane, OnTabListener listener) {
+    public TabPaneController(TabPane tabPane, Map<Tab, Node> tabContent, Pane masterPane, OnTabListener listener) {
         super();
         this.tabPane = tabPane;
+        this.tabContent = tabContent;
         this.masterPane = masterPane;
         this.listener = listener;
 
@@ -91,6 +103,42 @@ public class TabPaneController {
         ImageView imageView = new ImageView(image);
         addBtn.setGraphic(imageView);
         masterPane.getChildren().add(addBtn);
+
+        tabPane.getSelectionModel()
+                .selectedItemProperty()
+                .addListener(
+                        (obs, oldTab, newTab) -> {
+                            int direction;
+
+                            // Determine the slide direction
+                            if (tabPane.getTabs().indexOf(newTab) > tabPane.getTabs().indexOf(oldTab)) {
+                                direction = -1;
+                            }else{
+                                direction = 1;
+                            }
+
+                            oldTab.setContent(null);
+                            Node oldContent = tabContent.get(oldTab);
+                            Node newContent = tabContent.get(newTab);
+
+                            newTab.setContent(oldContent);
+                            TranslateTransition fadeOut = new TranslateTransition(
+                                    Duration.seconds(SLIDE_DURATION), oldContent);
+                            fadeOut.setByX(direction*EditorStage.PORTRAIT_WIDTH);
+
+                            TranslateTransition fadeIn = new TranslateTransition(
+                                    Duration.seconds(SLIDE_DURATION), newContent);
+                            fadeIn.setFromX(-direction*EditorStage.PORTRAIT_WIDTH);
+                            fadeIn.setToX(0);
+                            fadeOut.setOnFinished(event -> {
+                                newTab.setContent(newContent);
+                            });
+
+                            SequentialTransition crossFade = new SequentialTransition(
+                                    fadeOut, fadeIn);
+                            crossFade.play();
+                        });
+
     }
 
     public interface OnTabListener {
