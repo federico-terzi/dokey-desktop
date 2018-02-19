@@ -15,8 +15,8 @@ import java.io.File;
 public class EmptyButton extends DragButton {
     private OnEmptyBtnActionListener onEmptyBtnActionListener;
 
-    public EmptyButton() {
-        super();
+    public EmptyButton(ComponentGrid componentGrid) {
+        super(componentGrid);
 
         // Set the button properties
         setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);

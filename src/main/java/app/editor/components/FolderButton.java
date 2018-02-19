@@ -22,8 +22,8 @@ import java.io.IOException;
 public class FolderButton extends ComponentButton {
     private FolderItem item;
 
-    public FolderButton(Component component) {
-        super(component);
+    public FolderButton(ComponentGrid componentGrid, Component component) {
+        super(componentGrid, component);
 
         item = (FolderItem) associatedComponent.getItem();
 

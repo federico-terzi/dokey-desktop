@@ -3,26 +3,22 @@
     {
       "components": [
         {
-          "xSpan": 1,
           "item": {
             "iconID": "paste.png",
             "shortcut": "ctrl+v",
             "type": "SHORTCUT",
             "title": "Paste"
           },
-          "ySpan": 1,
           "x": 0,
           "y": 0
         },
         {
-          "xSpan": 1,
           "item": {
             "iconID": "copy.png",
             "shortcut": "ctrl+c",
             "type": "SHORTCUT",
             "title": "Copy"
           },
-          "ySpan": 2,
           "x": 0,
           "y": 1
         }

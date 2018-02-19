@@ -21,12 +21,16 @@ import java.util.List;
 
 public class AppButton extends ComponentButton {
     private Application application;
-    private ApplicationManager applicationManager;
 
-    public AppButton(Component associatedComponent, Application application, ApplicationManager applicationManager) {
-        super(associatedComponent);
-        this.application = application;
-        this.applicationManager = applicationManager;
+    public AppButton(ComponentGrid componentGrid, Component component) {
+        super(componentGrid, component);
+
+        // Get the item
+        AppItem item = (AppItem) component.getItem();
+
+        // Get the application
+        application = componentGrid.getApplicationManager().getApplication(item.getAppID());
+        // TODO: with null application, throw exception
 
         // Set the button properties
         setText(application.getName());
@@ -52,7 +56,7 @@ public class AppButton extends ComponentButton {
     @Override
     public void showEditDialog() {
         try {
-            AppSelectDialogStage appSelectDialogStage = new AppSelectDialogStage(applicationManager, new AppSelectDialogStage.OnApplicationListener() {
+            AppSelectDialogStage appSelectDialogStage = new AppSelectDialogStage(componentGrid.getApplicationManager(), new AppSelectDialogStage.OnApplicationListener() {
                 @Override
                 public void onApplicationSelected(Application application) {
                     // Create the component

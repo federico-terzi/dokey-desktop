@@ -9,6 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
+import net.model.IconTheme;
 import section.model.Component;
 import section.model.ShortcutItem;
 import system.model.Application;
@@ -20,32 +21,38 @@ import java.io.File;
 import java.io.IOException;
 
 public class ShortcutButton extends ComponentButton {
-    private ShortcutIconManager shortcutIconManager;
     private ShortcutItem item;
 
-    public ShortcutButton(Component component, ShortcutIcon shortcutIcon, ShortcutIconManager shortcutIconManager) {
-        super(component);
-        this.shortcutIconManager = shortcutIconManager;
+    public ShortcutButton(ComponentGrid componentGrid, Component component) {
+        super(componentGrid, component);
 
-        item = (ShortcutItem) associatedComponent.getItem();
-
+        // Add the style
         getStyleClass().add("shortcut-button");
+
+        item = (ShortcutItem) component.getItem();
+
+        // Get the icon from the shortcut icon manager
+        ShortcutIcon shortcutIcon = null;
+        if (item.getIconID() != null) {
+            shortcutIcon = componentGrid.getShortcutIconManager().getIcon(item.getIconID(), IconTheme.DARK);
+        }
+
+        // Set up the button
 
         setText(item.getTitle());
 
         // If there is an image, set it.
         Image image = null;
-
         if (shortcutIcon != null) {
             if (shortcutIcon.getFile().isFile()) {
                 image = new Image(shortcutIcon.getFile().toURI().toString(), 36, 36, true, true);
             }
         }
-
-        if (image == null) {
+        if (image == null) {   // No image found, default fallback
             image = new Image(ComponentButton.class.getResourceAsStream("/assets/image.png"), 36, 36, true, true);
         }
 
+        // Create the icon box
         ImageView imageView = new ImageView(image);
         VBox box = new VBox();
         box.getStyleClass().add("shortcut-box");
@@ -59,25 +66,10 @@ public class ShortcutButton extends ComponentButton {
         setTooltip(tooltip);
     }
 
-    /**
-     * @return the display version of the shortcut, correcting OS differences.
-     */
-    private String getDisplayShortcut() {
-        String shortcut = item.getShortcut();
-
-        if (OSValidator.isWindows()) {
-            shortcut = shortcut.replace("META", "WIN");
-        }else if (OSValidator.isMac()) {
-            shortcut = shortcut.replace("META", "CMD");
-        }
-
-        return shortcut;
-    }
-
     @Override
     public void showEditDialog() {
         try {
-            ShortcutDialogStage stage = new ShortcutDialogStage(shortcutIconManager, new ShortcutDialogStage.OnShortcutListener() {
+            ShortcutDialogStage stage = new ShortcutDialogStage(componentGrid.getShortcutIconManager(), new ShortcutDialogStage.OnShortcutListener() {
                 @Override
                 public void onShortcutSelected(String shortcut, String name, ShortcutIcon icon) {
                     // Create the component

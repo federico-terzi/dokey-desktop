@@ -18,8 +18,8 @@ public class ComponentButton extends DragButton {
     protected Component associatedComponent;
     private boolean isSelected = false;
 
-    public ComponentButton(Component associatedComponent) {
-        super();
+    public ComponentButton(ComponentGrid componentGrid, Component associatedComponent) {
+        super(componentGrid);
         this.associatedComponent = associatedComponent;
 
         getStyleClass().add("component-btn");
@@ -80,68 +80,6 @@ public class ComponentButton extends DragButton {
         editImageView.setFitHeight(16);
         edit.setGraphic(editImageView);
 
-        // DISABLED UNTIL THE MOBILE APP SUPPORT IT
-
-//        MenuItem expandRightItem = new MenuItem("Expand Right");
-//        expandRightItem.setOnAction(new EventHandler<ActionEvent>() {
-//            @Override
-//            public void handle(ActionEvent event) {
-//                if (onComponentActionListener != null) {
-//                    onComponentActionListener.onComponentExpandRight();
-//                }
-//            }
-//        });
-//        Image rightImage = new Image(ComponentButton.class.getResourceAsStream("/assets/right_arrow.png"));
-//        ImageView rightImageView = new ImageView(rightImage);
-//        rightImageView.setFitWidth(16);
-//        rightImageView.setFitHeight(16);
-//        expandRightItem.setGraphic(rightImageView);
-//
-//        MenuItem expandBottomItem = new MenuItem("Expand Down");
-//        expandBottomItem.setOnAction(new EventHandler<ActionEvent>() {
-//            @Override
-//            public void handle(ActionEvent event) {
-//                if (onComponentActionListener != null) {
-//                    onComponentActionListener.onComponentExpandBottom();
-//                }
-//            }
-//        });
-//        Image bottomImage = new Image(ComponentButton.class.getResourceAsStream("/assets/down_arrow.png"));
-//        ImageView downImageView = new ImageView(bottomImage);
-//        downImageView.setFitWidth(16);
-//        downImageView.setFitHeight(16);
-//        expandBottomItem.setGraphic(downImageView);
-//
-//        MenuItem shrinkLeftItem = new MenuItem("Shrink Left");
-//        shrinkLeftItem.setOnAction(new EventHandler<ActionEvent>() {
-//            @Override
-//            public void handle(ActionEvent event) {
-//                if (onComponentActionListener != null) {
-//                    onComponentActionListener.onComponentShrinkLeft();
-//                }
-//            }
-//        });
-//        Image leftImage = new Image(ComponentButton.class.getResourceAsStream("/assets/left_arrow.png"));
-//        ImageView leftImageView = new ImageView(leftImage);
-//        leftImageView.setFitWidth(16);
-//        leftImageView.setFitHeight(16);
-//        shrinkLeftItem.setGraphic(leftImageView);
-//
-//        MenuItem shrinkUpItem = new MenuItem("Shrink Up");
-//        shrinkUpItem.setOnAction(new EventHandler<ActionEvent>() {
-//            @Override
-//            public void handle(ActionEvent event) {
-//                if (onComponentActionListener != null) {
-//                    onComponentActionListener.onComponentShrinkUp();
-//                }
-//            }
-//        });
-//        Image upImage = new Image(ComponentButton.class.getResourceAsStream("/assets/up_arrow.png"));
-//        ImageView upImageView = new ImageView(upImage);
-//        upImageView.setFitWidth(16);
-//        upImageView.setFitHeight(16);
-//        shrinkUpItem.setGraphic(upImageView);
-
         MenuItem delete = new MenuItem("Delete");
         delete.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -194,9 +132,5 @@ public class ComponentButton extends DragButton {
         void onComponentEdit();
         void onComponentDelete();
         void onComponentDroppedAway();
-        void onComponentExpandRight();
-        void onComponentExpandBottom();
-        void onComponentShrinkLeft();
-        void onComponentShrinkUp();
     }
 }

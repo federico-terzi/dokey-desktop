@@ -14,8 +14,11 @@ public class DragButton extends Button {
 
     private boolean isDragDestination = false;
 
-    public DragButton() {
+    protected ComponentGrid componentGrid;
+
+    public DragButton(ComponentGrid componentGrid) {
         super();
+        this.componentGrid = componentGrid;
 
         getStyleClass().add("drag-button");
 

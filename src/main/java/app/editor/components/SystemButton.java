@@ -18,8 +18,8 @@ import java.io.IOException;
 public class SystemButton extends ComponentButton {
     private SystemItem item;
 
-    public SystemButton(Component component) {
-        super(component);
+    public SystemButton(ComponentGrid componentGrid, Component component) {
+        super(componentGrid, component);
 
         item = (SystemItem) associatedComponent.getItem();
 

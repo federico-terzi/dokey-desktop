@@ -20,8 +20,8 @@ import java.io.IOException;
 public class WebLinkButton extends ComponentButton {
     private WebLinkItem item;
 
-    public WebLinkButton(Component component) {
-        super(component);
+    public WebLinkButton(ComponentGrid componentGrid, Component component) {
+        super(componentGrid, component);
 
         item = (WebLinkItem) associatedComponent.getItem();
 

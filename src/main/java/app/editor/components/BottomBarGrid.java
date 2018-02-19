@@ -25,7 +25,6 @@ public class BottomBarGrid extends ComponentGrid implements ComponentGrid.OnComp
 
 
         setOnComponentSelectedListener(this);
-        setForceDiscardSpan(true);  // Discard the span
 
         // Customize the size based on the orientation
         if (screenOrientation == ScreenOrientation.PORTRAIT) {
@@ -55,8 +54,6 @@ public class BottomBarGrid extends ComponentGrid implements ComponentGrid.OnComp
             component.setItem(item);
             component.setY(currentIndex);
             component.setX(0);
-            component.setXSpan(1);
-            component.setYSpan(1);
 
             // Add the component to the matrix
             componentMatrix[currentIndex][0] = component;

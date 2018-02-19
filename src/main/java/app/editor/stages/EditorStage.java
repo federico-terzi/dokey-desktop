@@ -2,7 +2,6 @@ package app.editor.stages;
 
 import app.editor.animations.DividerTransition;
 import app.editor.components.*;
-import app.editor.listeners.OnComponentClickListener;
 import app.editor.listeners.OnSectionModifiedListener;
 import app.editor.comparators.SectionComparator;
 import app.editor.controllers.EditorController;
@@ -231,14 +230,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             populateSectionListView();
         });
 
-        // Listener to reset all the drop selections
-        controller.getContentBox().setOnDragExited(new EventHandler<DragEvent>() {
-            @Override
-            public void handle(DragEvent event) {
-                grids.forEach(grid -> grid.resetDragSelection());
-            }
-        });
-
         requestSectionList();
 
         renderToggleAppsListView();
@@ -398,14 +389,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         for (Page page : section.getPages()) {
             PageGrid pageGrid = new PageGrid(applicationManager, shortcutIconManager, page, section, screenOrientation);
             pageGrid.setSectionModifiedListener(this);
-            pageGrid.setSectionType(section.getSectionType());
             pageGrid.setShortcutIconManager(shortcutIconManager);
-            pageGrid.setOnComponentClickListener(new OnComponentClickListener() {
-                @Override
-                public void onComponentClicked(Component component) {
-
-                }
-            });
             grids.add(pageGrid);
 
             Tab tab = new Tab();
@@ -495,13 +479,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         // Add the bottom bar
         BottomBarGrid bottomBarGrid = new BottomBarGrid(applicationManager, shortcutIconManager, BOTTOM_BAR_DEFAULT_COLS, section, screenOrientation);
         bottomBarGrid.setSectionModifiedListener(this);
-        bottomBarGrid.setSectionType(section.getSectionType());
-        bottomBarGrid.setOnComponentClickListener(new OnComponentClickListener() {
-            @Override
-            public void onComponentClicked(Component component) {
-
-            }
-        });
         grids.add(bottomBarGrid);
 
         TabPaneController.OnTabListener onTabListener = new TabPaneController.OnTabListener() {
