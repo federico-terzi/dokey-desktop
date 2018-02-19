@@ -1,6 +1,7 @@
 package app.editor.components;
 
 import app.editor.model.ScreenOrientation;
+import app.editor.model.item_actions.*;
 import app.editor.stages.ShortcutDialogStage;
 import app.editor.stages.AppSelectDialogStage;
 import app.editor.stages.SystemDialogStage;
@@ -14,7 +15,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import net.model.IconTheme;
 import section.model.*;
 import system.model.Application;
 import system.model.ApplicationManager;
@@ -40,6 +40,9 @@ public class ComponentGrid extends GridPane {
     // This map will hold the association between the item type and the corresponding button class
     protected Map<ItemType, Class<? extends ComponentButton>> itemTypeClassMap = new HashMap<>();
 
+    // This mapp will hold the association between the item type and the corresponding actions
+    protected Map<ItemType, ItemAction> itemTypeActions = new HashMap<>();
+
     public ComponentGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, Component[][] componentMatrix, ScreenOrientation screenOrientation) {
         super();
         this.applicationManager = applicationManager;
@@ -47,7 +50,8 @@ public class ComponentGrid extends GridPane {
         this.componentMatrix = componentMatrix;
         this.screenOrientation = screenOrientation;
 
-        setupItemTypeClassMap();
+        setupItemTypeClasses();
+        setupItemTypeActions();
 
         render();
 
@@ -57,12 +61,24 @@ public class ComponentGrid extends GridPane {
     /**
      * Populate the map that will hold the association between an item and the corresponding button.
      */
-    private void setupItemTypeClassMap() {
+    private void setupItemTypeClasses() {
         itemTypeClassMap.put(ItemType.APP, AppButton.class);
         itemTypeClassMap.put(ItemType.SHORTCUT, ShortcutButton.class);
         itemTypeClassMap.put(ItemType.FOLDER, FolderButton.class);
         itemTypeClassMap.put(ItemType.WEB_LINK, WebLinkButton.class);
         itemTypeClassMap.put(ItemType.SYSTEM, SystemButton.class);
+    }
+
+
+    /**
+     * Populate the map that will hold the association between an item and the corresponding actions.
+     */
+    private void setupItemTypeActions() {
+        itemTypeActions.put(ItemType.APP, new AppItemAction(this));
+        itemTypeActions.put(ItemType.SHORTCUT, new ShortcutItemAction(this));
+        itemTypeActions.put(ItemType.FOLDER, new FolderItemAction(this));
+        itemTypeActions.put(ItemType.SYSTEM, new SystemItemAction(this));
+        itemTypeActions.put(ItemType.WEB_LINK, new WebLinkItemAction(this));
     }
 
     /**
@@ -112,6 +128,7 @@ public class ComponentGrid extends GridPane {
     /**
      * Given the col and row in the component matrix, return the actual col in the grid based on
      * the screen orientation.
+     *
      * @param col the col index in the component matrix.
      * @param row the row index in the component matrix.
      * @return the actual col in the grid based on the screen orientation.
@@ -127,6 +144,7 @@ public class ComponentGrid extends GridPane {
     /**
      * Given the col and row in the component matrix, return the actual row in the grid based on
      * the screen orientation.
+     *
      * @param col the col index in the component matrix.
      * @param row the row index in the component matrix.
      * @return the actual row in the grid based on the screen orientation.
@@ -151,20 +169,46 @@ public class ComponentGrid extends GridPane {
             for (int row = 0; row < componentMatrix[0].length; row++) {
                 if (componentMatrix[col][row] != null) {
                     addComponentToGridPane(componentMatrix[col][row]);
-                }else{
+                } else {
                     addEmptyButtonToGridPane(col, row);
                 }
             }
         }
     }
 
+    /**
+     * Add an empty button in the given position.
+     *
+     * @param col the col index in the component matrix.
+     * @param row the row index in the component matrix.
+     */
     private void addEmptyButtonToGridPane(int col, int row) {
-        EmptyButton emptyButton = new EmptyButton(this);
+        EmptyButton emptyButton = new EmptyButton(this, itemTypeActions, new EmptyButton.OnEmptyBtnActionListener() {
+            @Override
+            public void onActionSelected(ItemAction action) {
+                // Request to add the item
+                action.requestAddItem(col, row, new ItemAction.OnActionCompletedListener() {
+                    @Override
+                    public void onActionCompleted(Component component) {
+                        // Add the item
+                        componentMatrix[col][row] = component;
+
+                        // Notify the listener
+                        if (onComponentSelectedListener != null) {
+                            onComponentSelectedListener.onNewComponentRequested(component);
+                        }
+
+                        render();
+                    }
+                });
+            }
+        });
         addButtonToGridPane(col, row, emptyButton);
     }
 
     /**
      * Add a component to the GridPane.
+     *
      * @param component the component to add.
      * @return
      */
@@ -178,64 +222,68 @@ public class ComponentGrid extends GridPane {
         int row = component.getX();
 
         // Get the current button
-        DragButton current = getButtonForComponent(component);
+        ComponentButton current = getButtonForComponent(component);
 
-        // Set the context menu actions based on the type of button
-        if (current instanceof ComponentButton) {
-            ((ComponentButton) current).setOnComponentActionListener(new ComponentButton.OnComponentActionListener() {
-                @Override
-                public void onComponentEdit() {
-                    render();
-                    // Notify the listener
-                    if (onComponentSelectedListener != null) {
-                        onComponentSelectedListener.onEditComponentRequested(component);
+        // Make sure a button is available for the given component
+        if (current == null)
+            return;
+
+        // Set the context menu actions
+        current.setOnComponentActionListener(new ComponentButton.OnComponentActionListener() {
+            @Override
+            public void onComponentEdit() {
+                ItemAction action = itemTypeActions.get(component.getItem().getItemType());
+
+                // Make sure an action exists
+                if (action == null)
+                    return;
+
+                // Request to add the item
+                action.requestEditItem(component, new ItemAction.OnActionCompletedListener() {
+                    @Override
+                    public void onActionCompleted(Component component) {
+                        // Add the item
+                        componentMatrix[col][row] = component;
+
+                        // Notify the listener
+                        if (onComponentSelectedListener != null) {
+                            onComponentSelectedListener.onEditComponentRequested(component);
+                        }
+
+                        render();
                     }
-                }
+                });
+            }
 
-                @Override
-                public void onComponentDelete() {
-                    requestDeleteComponent(component);
-                    render();
-                }
+            @Override
+            public void onComponentDelete() {
+                deleteComponent(component, true);
+                render();
+            }
 
-                // When the component is dropped away, request the
-                // deletion from the grid
-                @Override
-                public void onComponentDroppedAway() {
-                    requestDeleteComponent(component);
-                    render();
-                }
-            });
-        }else if (current instanceof EmptyButton) {
-            ((EmptyButton) current).setOnEmptyBtnActionListener(new EmptyButton.OnEmptyBtnActionListener() {
-                @Override
-                public void onAddApplication() {
-                    requestApplicationSelect(col, row);
-                }
-                @Override
-                public void onAddShortcut() {
-                    requestShortcutSelect(col, row);
-                }
+            // When the component is dropped away, request the
+            // deletion from the grid
+            @Override
+            public void onComponentDroppedAway() {
+                deleteComponent(component, true);
+                render();
+            }
+        });
 
-                @Override
-                public void onAddFolder() {
-                    requestFolderSelect(col, row);
-                }
+        addButtonToGridPane(col, row, current);
+    }
 
-                @Override
-                public void onAddWebLink() {
-                    requestWebLinkSelect(col, row);
-                }
-
-                @Override
-                public void onAddSystem() {
-                    requestSystemSelect(col, row);
-                }
-            });
-        }
-
+    /**
+     * Add the given button to the GridPane, correcting the coordinates based on the screen orientation.
+     * and adding the drag and drop listener.
+     *
+     * @param col    the col index in the component matrix.
+     * @param row    the row index in the component matrix.
+     * @param button the button to add.
+     */
+    private void addButtonToGridPane(int col, int row, DragButton button) {
         // Set up the drag and drop
-        current.setOnComponentDragListener(new DragButton.OnComponentDragListener() {
+        button.setOnComponentDragListener(new DragButton.OnComponentDragListener() {
             @Override
             public boolean onComponentDropped(Component newComponent) {
                 Optional<Component> toBeDeleted = Optional.empty();
@@ -254,7 +302,7 @@ public class ComponentGrid extends GridPane {
                     }
 
                     // Delete the component
-                    requestDeleteComponent(toBeDeleted.get());
+                    deleteComponent(toBeDeleted.get(), false);
                 }
 
                 // Change the component coordinates
@@ -275,18 +323,18 @@ public class ComponentGrid extends GridPane {
 
             @Override
             public boolean onComponentDropping(Component component) {
-                // TODO Selection
+                // Determine if the dropping can cause an overwrite.
+                boolean isDangerous = true;
+                if (button instanceof EmptyButton) {
+                    isDangerous = false;
+                }
 
-                //resetDragSelection();
-                //activateDragSelection(col, row, component);
+                // Select the component
+                button.setDragDestination(true, isDangerous);
                 return false;
             }
         });
 
-        addButtonToGridPane(col, row, current);
-    }
-
-    private void addButtonToGridPane(int col, int row, DragButton button) {
         // Adjust the grid position based on the orientation
         int gridCol = getOrientedCol(col, row);
         int gridRow = getOrientedRow(col, row);
@@ -295,186 +343,34 @@ public class ComponentGrid extends GridPane {
         this.add(button, gridCol, gridRow, 1, 1);
     }
 
-    private void requestApplicationSelect(int col, int row) {
-        try {
-            AppSelectDialogStage appSelectDialogStage = new AppSelectDialogStage(applicationManager, new AppSelectDialogStage.OnApplicationListener() {
-                @Override
-                public void onApplicationSelected(Application application) {
-                    // Create the component
-                    AppItem appItem = new AppItem();
-                    appItem.setAppID(application.getExecutablePath());
-                    appItem.setTitle(application.getName());
-                    appItem.setItemType(ItemType.APP);
-                    Component component = new Component();
-                    component.setItem(appItem);
-                    component.setX(row);
-                    component.setY(col);
+    /**
+     * Delete the given component from the componentMatrix, and send a notification to the
+     * associated listener.
+     *
+     * @param component      the component to delete.
+     * @param notifyListener if true, the listener will be notified of the deletion.
+     */
+    private void deleteComponent(Component component, boolean notifyListener) {
+        // Delete the component from the matrix
+        componentMatrix[component.getY()][component.getX()] = null;
 
-                    componentMatrix[col][row] = component;
-
-                    // Notify the listener
-                    if (onComponentSelectedListener != null) {
-                        onComponentSelectedListener.onNewComponentRequested(component);
-                    }
-
-                    render();
-                }
-
-                @Override
-                public void onCanceled() {
-
-                }
-            });
-            appSelectDialogStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
+        // Notify the listener
+        if (onComponentSelectedListener != null && notifyListener) {
+            onComponentSelectedListener.onDeleteComponentRequested(component);
         }
     }
 
-    private void requestShortcutSelect(int col, int row) {
-        try {
-            ShortcutDialogStage stage = new ShortcutDialogStage(shortcutIconManager, new ShortcutDialogStage.OnShortcutListener() {
-                @Override
-                public void onShortcutSelected(String shortcut, String name, ShortcutIcon icon) {
-                    // Create the component
-                    ShortcutItem item = new ShortcutItem();
-                    item.setShortcut(shortcut);
-                    item.setTitle(name);
-
-                    // If an icon is specified, save the id
-                    if (icon != null) {
-                        item.setIconID(icon.getId());
-                    }
-
-                    Component component = new Component();
-                    component.setItem(item);
-                    component.setX(row);
-                    component.setY(col);
-
-                    componentMatrix[col][row] = component;
-
-                    // Notify the listener
-                    if (onComponentSelectedListener != null) {
-                        onComponentSelectedListener.onNewComponentRequested(component);
-                    }
-
-                    render();
-                }
-
-                @Override
-                public void onCanceled() {
-
-                }
-            });
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void requestFolderSelect(int col, int row) {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Choose the Folder");
-        File selectedDirectory = chooser.showDialog(null);
-
-        if (selectedDirectory != null) {
-            // Create the component
-            FolderItem item = new FolderItem();
-            item.setPath(selectedDirectory.getAbsolutePath());
-            item.setTitle(selectedDirectory.getName());
-
-            Component component = new Component();
-            component.setItem(item);
-            component.setX(row);
-            component.setY(col);
-
-            componentMatrix[col][row] = component;
-
-            // Notify the listener
-            if (onComponentSelectedListener != null) {
-                onComponentSelectedListener.onNewComponentRequested(component);
-            }
-
-            render();
-        }
-    }
-
-    private void requestWebLinkSelect(int col, int row) {
-        try {
-            WebLinkDialogStage stage = new WebLinkDialogStage(new WebLinkDialogStage.OnWebLinkListener() {
-                @Override
-                public void onWebLinkSelected(String url, String title, String imageUrl) {
-                    // Create the component
-                    WebLinkItem item = new WebLinkItem();
-                    item.setUrl(url);
-                    item.setTitle(title);
-                    item.setIconID(imageUrl);
-
-                    Component component = new Component();
-                    component.setItem(item);
-                    component.setX(row);
-                    component.setY(col);
-
-                    componentMatrix[col][row] = component;
-
-                    // Notify the listener
-                    if (onComponentSelectedListener != null) {
-                        onComponentSelectedListener.onNewComponentRequested(component);
-                    }
-
-                    render();
-                }
-
-                @Override
-                public void onCanceled() {
-
-                }
-            });
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void requestSystemSelect(int col, int row) {
-        try {
-            SystemDialogStage stage = new SystemDialogStage(new SystemDialogStage.OnSystemItemListener() {
-                @Override
-                public void onSystemItemSelected(SystemItem item) {
-                    // Create the component
-                    Component component = new Component();
-                    component.setItem(item);
-                    component.setX(row);
-                    component.setY(col);
-
-                    componentMatrix[col][row] = component;
-
-                    // Notify the listener
-                    if (onComponentSelectedListener != null) {
-                        onComponentSelectedListener.onNewComponentRequested(component);
-                    }
-
-                    render();
-                }
-
-                @Override
-                public void onCanceled() {
-
-                }
-            });
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
+    /**
+     * Show a Dialog to ask for delete confirmation.
+     *
+     * @return true if accepted, false otherwise.
+     */
     private boolean requestOverrideComponentsDialog() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
         stage.getIcons().add(new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/icon.png")));
-        alert.setTitle("Overwrite Button(s)");
-        alert.setHeaderText("Are you sure you want to overwrite these buttons?");
+        alert.setTitle("Overwrite Button");
+        alert.setHeaderText("Are you sure you want to overwrite this button?");
         alert.setContentText("If you proceed, a button will be deleted.");
 
         Optional<ButtonType> result = alert.showAndWait();
@@ -485,29 +381,13 @@ public class ComponentGrid extends GridPane {
         }
     }
 
-    public void setShortcutIconManager(ShortcutIconManager shortcutIconManager) {
-        this.shortcutIconManager = shortcutIconManager;
-    }
-
-    public interface OnComponentSelectedListener {
-        void onNewComponentRequested(Component component);
-
-        void onDeleteComponentRequested(Component component);
-
-        void onEditComponentRequested(Component component);
-    }
-
-    private void requestDeleteComponent(Component component) {
-        // Delete the component from the matrix
-        componentMatrix[component.getY()][component.getX()] = null;
-
-        // Notify the listener
-        if (onComponentSelectedListener != null) {
-            onComponentSelectedListener.onDeleteComponentRequested(component);
-        }
-    }
-
-    private DragButton getButtonForComponent(Component component) {
+    /**
+     * Get the Button associated with the given component.
+     *
+     * @param component the component.
+     * @return the Button associated with the given component, null in case of errors.
+     */
+    private ComponentButton getButtonForComponent(Component component) {
         if (component == null)
             return null;
 
@@ -516,7 +396,7 @@ public class ComponentGrid extends GridPane {
             try {
                 // Generate a DragButton instance based on the type
                 return itemTypeClassMap.get(component.getItem().getItemType())
-                        .getConstructor(ComponentGrid.class).newInstance(this, component);
+                        .getConstructor(ComponentGrid.class, Component.class).newInstance(this, component);
             } catch (InstantiationException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
@@ -552,11 +432,23 @@ public class ComponentGrid extends GridPane {
         this.onComponentSelectedListener = onComponentSelectedListener;
     }
 
+    public interface OnComponentSelectedListener {
+        void onNewComponentRequested(Component component);
+
+        void onDeleteComponentRequested(Component component);
+
+        void onEditComponentRequested(Component component);
+    }
+
     public ApplicationManager getApplicationManager() {
         return applicationManager;
     }
 
     public ShortcutIconManager getShortcutIconManager() {
         return shortcutIconManager;
+    }
+
+    public void setShortcutIconManager(ShortcutIconManager shortcutIconManager) {
+        this.shortcutIconManager = shortcutIconManager;
     }
 }

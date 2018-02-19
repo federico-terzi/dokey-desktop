@@ -9,6 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import section.model.Component;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class ComponentButton extends DragButton {
         super(componentGrid);
         this.associatedComponent = associatedComponent;
 
+        // Add the style
         getStyleClass().add("component-btn");
 
         // Set the button properties
@@ -49,7 +51,6 @@ public class ComponentButton extends DragButton {
                 }
             }
         });
-
         setOnDragDone(new EventHandler<DragEvent>() {
             public void handle(DragEvent event) {
                 if (event.getTransferMode() == TransferMode.MOVE) {
@@ -71,7 +72,9 @@ public class ComponentButton extends DragButton {
         edit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                showEditDialog();
+                if (onComponentActionListener != null) {
+                    onComponentActionListener.onComponentEdit();
+                }
             }
         });
         Image editImage = new Image(ComponentButton.class.getResourceAsStream("/assets/edit.png"));
@@ -99,33 +102,13 @@ public class ComponentButton extends DragButton {
         items.add(delete);
     }
 
+
     public OnComponentActionListener getOnComponentActionListener() {
         return onComponentActionListener;
     }
 
     public void setOnComponentActionListener(OnComponentActionListener onComponentActionListener) {
         this.onComponentActionListener = onComponentActionListener;
-    }
-
-    public void setAssociatedComponent(Component associatedComponent) {
-        this.associatedComponent = associatedComponent;
-    }
-
-    public boolean isSelected() {
-        return isSelected;
-    }
-
-    public void setSelected(boolean selected) {
-        isSelected = selected;
-        if (isSelected) {
-            getStyleClass().add("selected");
-        }else{
-            getStyleClass().remove("selected");
-        }
-    }
-
-    public void showEditDialog() {
-        // Implement in subclasses
     }
 
     public interface OnComponentActionListener {

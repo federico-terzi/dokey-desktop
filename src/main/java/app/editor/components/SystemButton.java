@@ -41,28 +41,4 @@ public class SystemButton extends ComponentButton {
         tooltip.setText(item.getTitle());
         setTooltip(tooltip);
     }
-
-    @Override
-    public void showEditDialog() {
-        try {
-            SystemDialogStage stage = new SystemDialogStage(new SystemDialogStage.OnSystemItemListener() {
-                @Override
-                public void onSystemItemSelected(SystemItem item) {
-                    associatedComponent.setItem(item);
-                    if (getOnComponentActionListener() != null) {
-                        getOnComponentActionListener().onComponentEdit();
-                    }
-                }
-
-                @Override
-                public void onCanceled() {
-
-                }
-            });
-            stage.setSystemItem(item);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

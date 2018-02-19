@@ -80,34 +80,4 @@ public class WebLinkButton extends ComponentButton {
         setContentDisplay(ContentDisplay.TOP);
         setGraphic(imageView);
     }
-
-    @Override
-    public void showEditDialog() {
-        try {
-            WebLinkDialogStage stage = new WebLinkDialogStage(new WebLinkDialogStage.OnWebLinkListener() {
-                @Override
-                public void onWebLinkSelected(String url, String title, String imageUrl) {
-                    // Create the component
-                    WebLinkItem item = new WebLinkItem();
-                    item.setUrl(url);
-                    item.setTitle(title);
-                    item.setIconID(imageUrl);
-
-                    associatedComponent.setItem(item);
-                    if (getOnComponentActionListener() != null) {
-                        getOnComponentActionListener().onComponentEdit();
-                    }
-                }
-
-                @Override
-                public void onCanceled() {
-
-                }
-            });
-            stage.setWebLinkItem(item);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

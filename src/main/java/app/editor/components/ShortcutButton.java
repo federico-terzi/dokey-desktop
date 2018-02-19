@@ -65,38 +65,4 @@ public class ShortcutButton extends ComponentButton {
         tooltip.setText(item.getTitle() + "\n" + item.getShortcut());
         setTooltip(tooltip);
     }
-
-    @Override
-    public void showEditDialog() {
-        try {
-            ShortcutDialogStage stage = new ShortcutDialogStage(componentGrid.getShortcutIconManager(), new ShortcutDialogStage.OnShortcutListener() {
-                @Override
-                public void onShortcutSelected(String shortcut, String name, ShortcutIcon icon) {
-                    // Create the component
-                    ShortcutItem item = new ShortcutItem();
-                    item.setShortcut(shortcut);
-                    item.setTitle(name);
-
-                    // If an icon is specified, save the id
-                    if (icon != null) {
-                        item.setIconID(icon.getId());
-                    }
-
-                    associatedComponent.setItem(item);
-                    if (getOnComponentActionListener() != null) {
-                        getOnComponentActionListener().onComponentEdit();
-                    }
-                }
-
-                @Override
-                public void onCanceled() {
-
-                }
-            });
-            stage.setShortcutItem(item);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

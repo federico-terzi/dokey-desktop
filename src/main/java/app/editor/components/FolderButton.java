@@ -42,22 +42,4 @@ public class FolderButton extends ComponentButton {
         tooltip.setText(item.getTitle()+"\n"+item.getPath());
         setTooltip(tooltip);
     }
-
-    @Override
-    public void showEditDialog() {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Choose the Folder");
-        File selectedDirectory = chooser.showDialog(null);
-
-        if (selectedDirectory != null) {
-            // Create the component
-            item.setPath(selectedDirectory.getAbsolutePath());
-            item.setTitle(selectedDirectory.getName());
-
-            // Notify the edit
-            if (getOnComponentActionListener() != null) {
-                getOnComponentActionListener().onComponentEdit();
-            }
-        }
-    }
 }

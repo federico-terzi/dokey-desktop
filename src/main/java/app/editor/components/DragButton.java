@@ -13,7 +13,6 @@ public class DragButton extends Button {
     private OnComponentDragListener onComponentDragListener;
 
     private boolean isDragDestination = false;
-
     protected ComponentGrid componentGrid;
 
     public DragButton(ComponentGrid componentGrid) {
@@ -59,6 +58,8 @@ public class DragButton extends Button {
                 if (event.getGestureSource() != DragButton.this &&
                         event.getDragboard().hasString() && event.getDragboard().getString().startsWith(DRAG_PREFIX)) {
                 }
+
+                setDragDestination(false, false);
 
                 event.consume();
             }

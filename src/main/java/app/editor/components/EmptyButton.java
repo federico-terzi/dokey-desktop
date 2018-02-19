@@ -1,5 +1,6 @@
 package app.editor.components;
 
+import app.editor.model.item_actions.ItemAction;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
@@ -8,20 +9,26 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import section.model.Component;
+import section.model.ItemType;
 import system.model.Application;
 
 import java.io.File;
+import java.util.Map;
 
 public class EmptyButton extends DragButton {
-    private OnEmptyBtnActionListener onEmptyBtnActionListener;
+    private OnEmptyBtnActionListener listener;
 
-    public EmptyButton(ComponentGrid componentGrid) {
+    public EmptyButton(ComponentGrid componentGrid, Map<ItemType, ItemAction> itemTypeActions,
+                       OnEmptyBtnActionListener listener) {
         super(componentGrid);
+        this.listener = listener;
 
         // Set the button properties
         setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        getStyleClass().add("empty-btn");
 
+        // Set up the button design
+        getStyleClass().add("empty-btn");
         Image image = new Image(EmptyButton.class.getResourceAsStream("/assets/add_clean.png"), 24, 24, true, true);
         ImageView imageView = new ImageView(image);
         setGraphic(imageView);
@@ -29,72 +36,18 @@ public class EmptyButton extends DragButton {
 
         // Set up the context menu
         final ContextMenu contextMenu = new ContextMenu();
-        MenuItem appLauncherItem = new MenuItem("Add Application");
-        appLauncherItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if (onEmptyBtnActionListener != null) {
-                    onEmptyBtnActionListener.onAddApplication();
+        for (ItemAction itemAction : itemTypeActions.values()) {
+            MenuItem item = itemAction.getContextMenuItem();
+            item.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    if (listener != null) {
+                        listener.onActionSelected(itemAction);
+                    }
                 }
-            }
-        });
-        Image appLauncherImage = new Image(ComponentButton.class.getResourceAsStream("/assets/launcher.png"), 32, 32, true, true);
-        ImageView appLauncherImageView = new ImageView(appLauncherImage);
-        appLauncherItem.setGraphic(appLauncherImageView);
-
-        MenuItem shortcutItem = new MenuItem("Add Shortcut");
-        shortcutItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if (onEmptyBtnActionListener != null) {
-                    onEmptyBtnActionListener.onAddShortcut();
-                }
-            }
-        });
-        Image shortcutImage = new Image(ComponentButton.class.getResourceAsStream("/assets/keyboard.png"), 32, 32, true, true);
-        ImageView shortcutTmageView = new ImageView(shortcutImage);
-        shortcutItem.setGraphic(shortcutTmageView);
-
-        MenuItem folderItem = new MenuItem("Add Folder");
-        folderItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if (onEmptyBtnActionListener != null) {
-                    onEmptyBtnActionListener.onAddFolder();
-                }
-            }
-        });
-        Image folderImage = new Image(ComponentButton.class.getResourceAsStream("/assets/folder.png"), 32, 32, true, true);
-        ImageView folderImageView = new ImageView(folderImage);
-        folderItem.setGraphic(folderImageView);
-
-        MenuItem internetItem = new MenuItem("Add Web Link");
-        internetItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if (onEmptyBtnActionListener != null) {
-                    onEmptyBtnActionListener.onAddWebLink();
-                }
-            }
-        });
-        Image internetImage = new Image(ComponentButton.class.getResourceAsStream("/assets/world.png"), 32, 32, true, true);
-        ImageView internetImageView = new ImageView(internetImage);
-        internetItem.setGraphic(internetImageView);
-
-        MenuItem systemItem = new MenuItem("Add System Control");
-        systemItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if (onEmptyBtnActionListener != null) {
-                    onEmptyBtnActionListener.onAddSystem();
-                }
-            }
-        });
-        Image systemImage = new Image(ComponentButton.class.getResourceAsStream("/assets/shutdown.png"), 32, 32, true, true);
-        ImageView systemImageView = new ImageView(systemImage);
-        systemItem.setGraphic(systemImageView);
-
-        contextMenu.getItems().addAll(appLauncherItem, shortcutItem, folderItem, internetItem, systemItem);
+            });
+            contextMenu.getItems().add(item);
+        }
         setContextMenu(contextMenu);
 
         // Open the context menu with the right click
@@ -106,15 +59,7 @@ public class EmptyButton extends DragButton {
         });
     }
 
-    public void setOnEmptyBtnActionListener(OnEmptyBtnActionListener onEmptyBtnActionListener) {
-        this.onEmptyBtnActionListener = onEmptyBtnActionListener;
-    }
-
     public interface OnEmptyBtnActionListener {
-        void onAddApplication();
-        void onAddShortcut();
-        void onAddFolder();
-        void onAddWebLink();
-        void onAddSystem();
+        void onActionSelected(ItemAction action);
     }
 }

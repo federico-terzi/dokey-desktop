@@ -54,35 +54,6 @@ public class AppButton extends ComponentButton {
     }
 
     @Override
-    public void showEditDialog() {
-        try {
-            AppSelectDialogStage appSelectDialogStage = new AppSelectDialogStage(componentGrid.getApplicationManager(), new AppSelectDialogStage.OnApplicationListener() {
-                @Override
-                public void onApplicationSelected(Application application) {
-                    // Create the component
-                    AppItem appItem = new AppItem();
-                    appItem.setAppID(application.getExecutablePath());
-                    appItem.setTitle(application.getName());
-                    appItem.setItemType(ItemType.APP);
-
-                    associatedComponent.setItem(appItem);
-                    if (getOnComponentActionListener() != null) {
-                        getOnComponentActionListener().onComponentEdit();
-                    }
-                }
-
-                @Override
-                public void onCanceled() {
-
-                }
-            });
-            appSelectDialogStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     protected void getContextMenu(List<MenuItem> items) {
         super.getContextMenu(items);
 
