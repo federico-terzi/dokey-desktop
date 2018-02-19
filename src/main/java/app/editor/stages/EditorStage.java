@@ -823,14 +823,13 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                         index++;
                     }
 
-
-
                     loadSection(section);
 
                     // Select the correct entry in the list view
                     for (Section sec : controller.getSectionsListView().getItems()) {
                         if (sec.getStringID().equals(section.getStringID())) {
                             controller.getSectionsListView().getSelectionModel().select(sec);
+                            break;
                         }
                     }
                 }
