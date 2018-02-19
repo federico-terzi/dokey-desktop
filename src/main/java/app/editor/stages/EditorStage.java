@@ -7,6 +7,11 @@ import app.editor.comparators.SectionComparator;
 import app.editor.controllers.EditorController;
 import app.editor.listcells.SectionListCell;
 import app.editor.model.ScreenOrientation;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.subjects.PublishSubject;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -25,7 +30,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.DragEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -36,6 +40,7 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 import javafx.util.Pair;
 import json.JSONObject;
+import org.reactivestreams.Subscription;
 import section.model.Component;
 import section.model.Page;
 import section.model.Section;
@@ -51,6 +56,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class EditorStage extends Stage implements OnSectionModifiedListener {
@@ -64,7 +70,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     public static final double SECTION_LIST_VIEW_OPEN_POSITION = 0.3;
     private static final double ENTER_SECTION_FADE_DURATION = 0.2;
     private static final double ROTATE_SECTION_DURATION = 0.2;
-
 
     // Limits in value
     private static final int MAX_ROWS = 6;
@@ -80,14 +85,15 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     private List<Section> sections;
     private String sectionQuery = null;
 
-    private List<ComponentGrid> grids;
-
     private Section activeSection = null;
     private Page activePage = null;
     private ScreenOrientation screenOrientation = ScreenOrientation.PORTRAIT;
     private Node activePane = null;
 
     private boolean areAppsShown = true;  // If true, the lateral list view is shown.
+
+    // Used to debaunce modify network requests.
+    private PublishSubject<Section> modifySectionPublisher = PublishSubject.create();
 
     public EditorStage(ApplicationManager applicationManager, OnEditorEventListener onEditorEventListener) throws IOException {
         this.applicationManager = applicationManager;
@@ -142,6 +148,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             }
         });
 
+        // Action listener for the close window event
         setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
@@ -237,12 +244,19 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         // Register broadcast listeners
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.PHONE_MODIFIED_SECTION_EVENT, phoneSectionModifiedListener);
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_SHORTCUT_PAGE_FOR_APPLICATION_EVENT, openShortcutPageForAppListener);
+
+        // Set up the Observer that will notify a section change to the device
+        setupNotifySectionModifiedSubscription();
     }
 
     public interface OnEditorEventListener {
         void onEditorClosed();
     }
 
+    /**
+     * Request asynchronously the section list.
+     * @param targetSectionID The target SectionID that will be selected in the list
+     */
     private void requestSectionList(String targetSectionID) {
         // Reset the list view
         controller.getSectionsListView().getItems().clear();
@@ -264,8 +278,10 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
+                        // Fill the list view
                         populateSectionListView();
 
+                        // Select the list view item if present
                         if (targetSectionID != null) {
                             // Select the correct entry in the list view
                             for (Section sec : controller.getSectionsListView().getItems()) {
@@ -284,10 +300,16 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         new Thread(sectionTask).start();
     }
 
+    /**
+     * Request asynchronously the section list.
+     */
     private void requestSectionList() {
         requestSectionList(null);
     }
 
+    /**
+     * Fill the section list view.
+     */
     private void populateSectionListView() {
         List<Section> input = this.sections;
 
@@ -308,6 +330,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             }).collect(Collectors.toList());
         }
 
+        // Create custom list cells
         ObservableList<Section> sections = FXCollections.observableArrayList(input);
         Collections.sort(sections, new SectionComparator(applicationManager));
         controller.getSectionsListView().setCellFactory(new Callback<ListView<Section>, ListCell<Section>>() {
@@ -372,26 +395,34 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         controller.toggleAppsBtn.setTooltip(tooltip);
     }
 
+    /**
+     * Display the given section in the editor.
+     * @param section the Section to load.
+     * @param animationType the Animation the section will display.
+     */
     private void loadSection(Section section, SectionAnimationType animationType) {
-        // Clear the previous grids
-        grids = new ArrayList<>();
+        // Select the list view entry
+        controller.getSectionsListView().getSelectionModel().select(section);
+        activeSection = section;  // Update the active section
 
         // Create the tabpane for the pages and set it up
         TabPane tabPane = new TabPane();
         tabPane.setMinWidth(getWidth(screenOrientation));
         tabPane.setPrefWidth(getWidth(screenOrientation));
         tabPane.setMaxWidth(getWidth(screenOrientation));
-        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
+        // This map will hold the tabPane contents for each tab.
+        // used for the slide animation when changing tab
         Map<Tab, Node> tabContent = new HashMap<>();
 
         // Add the pages
         for (Page page : section.getPages()) {
+            // Create the page grid
             PageGrid pageGrid = new PageGrid(applicationManager, shortcutIconManager, page, section, screenOrientation);
             pageGrid.setSectionModifiedListener(this);
             pageGrid.setShortcutIconManager(shortcutIconManager);
-            grids.add(pageGrid);
 
+            // Create the tab and add the page grid
             Tab tab = new Tab();
             Label tabTitle = new Label(page.getTitle());
             tab.setGraphic(tabTitle);
@@ -468,6 +499,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             contextMenu.getItems().addAll(changeSize, new SeparatorMenuItem(), moveLeft, moveRight, new SeparatorMenuItem(), delete);
             tab.setContextMenu(contextMenu);
 
+            // Add the tab
             tabPane.getTabs().add(tab);
 
             // Select active tab
@@ -479,8 +511,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         // Add the bottom bar
         BottomBarGrid bottomBarGrid = new BottomBarGrid(applicationManager, shortcutIconManager, BOTTOM_BAR_DEFAULT_COLS, section, screenOrientation);
         bottomBarGrid.setSectionModifiedListener(this);
-        grids.add(bottomBarGrid);
 
+        // This listener is used by the tab pane controller to select/add tabs
         TabPaneController.OnTabListener onTabListener = new TabPaneController.OnTabListener() {
             @Override
             public void onTabSelected(int index) {
@@ -494,43 +526,43 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             }
         };
 
-        Node currentPane = null;
+        Node currentPane;  // Used in the animation
 
         // Add the elements based on the orientation
         if (screenOrientation == ScreenOrientation.PORTRAIT) {
+            // Page Grid
             VBox box = new VBox();
             box.setAlignment(Pos.CENTER);
             // Add the elements
             box.getChildren().add(tabPane);
 
+            // Tab Pane Controller
             HBox container = new HBox();
             TabPaneController tabPaneDotController = new TabPaneController(tabPane, tabContent, container, onTabListener);
             box.getChildren().add(container);
             container.setMaxWidth(PORTRAIT_WIDTH);
 
+            // Bottom bar
             box.getChildren().add(bottomBarGrid);
-            box.getStyleClass().add("vertical-container");
+
             currentPane = box;
         }else{
+            // Page grid
             HBox box = new HBox();
             box.setAlignment(Pos.BOTTOM_CENTER);
-
-            // Add the elements
             box.getChildren().add(tabPane);
 
+            // Tab pane controller
             VBox container = new VBox();
             TabPaneController tabPaneDotController = new TabPaneController(tabPane, tabContent, container, onTabListener);
             box.getChildren().add(container);
             container.setMaxHeight(LANDSCAPE_HEIGHT);
+
+            // Bottom bar
             box.getChildren().add(bottomBarGrid);
 
             currentPane = box;
         }
-
-        // Select the list view entry
-        controller.getSectionsListView().getSelectionModel().select(section);
-
-        activeSection = section;
 
         // If the active page is contained in the current section, select the tab
         if (section.getPages().contains(activePage)) {
@@ -545,6 +577,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             Node oldContent = activePane;
             Node newContent = currentPane;
 
+            // When the transition is completed, load the new pane in the editor
             EventHandler<ActionEvent> onTransitionCompleted = event -> {
                 // Clear the previous section
                 controller.getContentBox().getChildren().clear();
@@ -552,7 +585,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             };
 
             Transition crossFade = null;
-
             if (animationType == SectionAnimationType.CROSSFADE) {
                 FadeTransition fadeOut = new FadeTransition(
                         Duration.seconds(ENTER_SECTION_FADE_DURATION), oldContent);
@@ -602,22 +634,111 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             controller.getContentBox().getChildren().add(currentPane);
         }
 
+        // Update the active pane
         activePane = currentPane;
     }
 
+    /**
+     * Types of animation when loading a section
+     */
     enum SectionAnimationType {
         NONE,
         CROSSFADE,
         ROTATION
     }
 
+    /**
+     * Add an empty page in a section.
+     * @param section the section that will receive a new page.
+     */
+    private void addPageToSection(Section section) {
+        // Make sure to not exceed the limit
+        if (section.getPages().size() >= MAX_PAGES)
+            return;
+
+        // Create a new page
+        Page page = new Page();
+        page.setRowCount(SectionManager.DEFAULT_PAGE_ROWS);
+        page.setColCount(SectionManager.DEFAULT_PAGE_COLS);
+        page.setTitle("Page " + (section.getPages().size() + 1));
+
+        // Add the page
+        section.addPage(page);
+
+        // Save the section
+        onSectionModified(section);
+
+        // Reload the section
+        loadSection(section, SectionAnimationType.NONE);
+    }
+
+    /**
+     * Create a section for the specified application, if not already present.
+     * @param executablePath the path of the application.
+     */
+    private void requestSectionForApplication(String executablePath) {
+        // Create the section
+        sectionManager.getShortcutSection(executablePath);
+
+        // Refresh the list
+        requestSectionList(executablePath);
+    }
+
+    /**
+     * Add a dialog to select an application and create the corresponding section.
+     */
+    private void addSection() {
+        try {
+            AppSelectDialogStage appSelectDialogStage = new AppSelectDialogStage(applicationManager, new AppSelectDialogStage.OnApplicationListener() {
+                @Override
+                public void onApplicationSelected(Application application) {
+                    requestSectionForApplication(application.getExecutablePath());
+                }
+
+                @Override
+                public void onCanceled() {
+
+                }
+            });
+            appSelectDialogStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Display a file-chooser dialog and export the given section.
+     * @param section the Section to Export
+     */
+    private void exportSection(Section section) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export Section...");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Section layout JSON (*.json)", "*.json");
+        fileChooser.getExtensionFilters().add(extFilter);
+        File destFile = fileChooser.showSaveDialog(EditorStage.this);
+        if (destFile != null) {
+            boolean res = sectionManager.writeSectionToFile(section, destFile);
+            if (!res) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("There was an error saving the file");
+                alert.show();
+            }
+        }
+    }
+
+    /**
+     * Request to change the side of a page.
+     * @param page the page to resize.
+     * @param section the section that contains the page.
+     */
     private void requestChangePageSize(Page page, Section section) {
         // Ask for the new size based on the orientation
         int res[] = null;
         if (screenOrientation == ScreenOrientation.PORTRAIT) {
-            res = showPageDialog(page.getRowCount(), page.getColCount());
+            res = showChangeGridSizeDialog(page.getRowCount(), page.getColCount());
         }else{
-            res = showPageDialog(page.getColCount(), page.getRowCount());
+            res = showChangeGridSizeDialog(page.getColCount(), page.getRowCount());
         }
 
         // If the size is valid, change it
@@ -668,71 +789,13 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         }
     }
 
-    private void addPageToSection(Section section) {
-        if (section.getPages().size() >= MAX_PAGES)
-            return;
-
-        // Create a new page
-        Page page = new Page();
-        page.setRowCount(SectionManager.DEFAULT_PAGE_ROWS);
-        page.setColCount(SectionManager.DEFAULT_PAGE_COLS);
-        page.setTitle("Page " + (section.getPages().size() + 1));
-
-        // Add the page
-        section.addPage(page);
-
-        // Save the section
-        onSectionModified(section);
-
-        // Reload the section
-        loadSection(section, SectionAnimationType.NONE);
-    }
-
-    private void addSection() {
-        try {
-            AppSelectDialogStage appSelectDialogStage = new AppSelectDialogStage(applicationManager, new AppSelectDialogStage.OnApplicationListener() {
-                @Override
-                public void onApplicationSelected(Application application) {
-                    requestSectionForApplication(application.getExecutablePath());
-                }
-
-                @Override
-                public void onCanceled() {
-
-                }
-            });
-            appSelectDialogStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void exportSection(Section section) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Export Section...");
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Section layout JSON (*.json)", "*.json");
-        fileChooser.getExtensionFilters().add(extFilter);
-        File destFile = fileChooser.showSaveDialog(EditorStage.this);
-        if (destFile != null) {
-            boolean res = sectionManager.writeSectionToFile(section, destFile);
-            if (!res) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("There was an error saving the file");
-                alert.show();
-            }
-        }
-    }
-
-    private void requestSectionForApplication(String executablePath) {
-        // Create the section
-        sectionManager.getShortcutSection(executablePath);
-
-        // Refresh the list
-        requestSectionList(executablePath);
-    }
-
-    private int[] showPageDialog(int rows, int cols) {
+    /**
+     * Show a dialog where the user can specify a new grid size.
+     * @param rows previous rows
+     * @param cols previous cols
+     * @return an int array containing the [ newRow, newCol ], or null if an error occurred.
+     */
+    private int[] showChangeGridSizeDialog(int rows, int cols) {
         // Create the custom dialog.
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
@@ -819,28 +882,50 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         return null;
     }
 
-    public EditorController getController() {
-        return controller;
-    }
+    // EVENTS
 
+    /**
+     * Called when the user modify a section in the desktop editor.
+     * @param section
+     */
     @Override
     public void onSectionModified(Section section) {
-        System.out.println("Modificata "+System.currentTimeMillis());
+        // Publish the section modified event
+        modifySectionPublisher.onNext(section);
+    }
 
-        Task saveTask = new Task() {
+    /**
+     *  Set up the Observer that will notify a section change to the device
+     *  with a Debaunce mechanism
+     */
+    private void setupNotifySectionModifiedSubscription() {
+        modifySectionPublisher.debounce(200, TimeUnit.MILLISECONDS)
+                .subscribe(new Observer<Section>() {
             @Override
-            protected Object call() throws Exception {
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(Section section) {
                 // Save the section
                 sectionManager.saveSection(section);
 
                 // Notify the modified section
                 String sectionJson = section.json().toString();
                 BroadcastManager.getInstance().sendBroadcast(BroadcastManager.EDITOR_MODIFIED_SECTION_EVENT, sectionJson);
-
-                return null;
             }
-        };
-        new Thread(saveTask).start();
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 
     /**

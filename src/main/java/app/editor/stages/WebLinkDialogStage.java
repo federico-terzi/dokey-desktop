@@ -1,6 +1,9 @@
 package app.editor.stages;
 
 import app.editor.controllers.WebLinkDialogController;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.subjects.PublishSubject;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -25,6 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
 public class WebLinkDialogStage extends Stage {
     private WebLinkDialogController controller;
@@ -33,7 +37,9 @@ public class WebLinkDialogStage extends Stage {
     private String imageUrl = null;
 
     private static int SEARCH_AFTER = 500; // milliseconds
-    private Thread searchThread = null;
+
+    private PublishSubject<String> urlSubject = PublishSubject.create();
+
     private boolean isEdit = false;  // False when creating a new item, true when editing
 
     public WebLinkDialogStage(OnWebLinkListener onWebLinkListener) throws IOException {
@@ -63,7 +69,8 @@ public class WebLinkDialogStage extends Stage {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 if (!isEdit) {
-                    performSearch(newValue);
+                    urlSubject.onNext(newValue);
+
                     isEdit = false;
                 }
             }
@@ -113,6 +120,29 @@ public class WebLinkDialogStage extends Stage {
 
         // Hide the progress bar
         controller.progressBar.setVisible(false);
+
+        // Search subscription with debaunce
+        urlSubject.debounce(500, TimeUnit.MILLISECONDS).subscribe(new Observer<String>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(String url) {
+                performSearch(url);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 
     private void performSearch(String urlQuery) {
@@ -129,33 +159,12 @@ public class WebLinkDialogStage extends Stage {
             URL u = new URL(url);
             u.toURI();
 
-            // Stop the previous thread if running
-            // NOTE: it acts like a debouncing mechanism.
-            if (searchThread != null) {
-                searchThread.stop();
-            }
-
-            // Start a new thread to check the attributes
-            searchThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    // Request the attributes
-                    getAttributes(url);
-                }
-            });
-            searchThread.start();
-
+            // Request the attributes
+            getAttributes(url);
         } catch (Exception e) {}
     }
 
     private void getAttributes(String url) {
-        // Sleep for a bit. NOTE: part of the debouncing mechanism.
-        try {
-            Thread.sleep(SEARCH_AFTER);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         // Run the progress bar
         Platform.runLater(new Runnable() {
             @Override

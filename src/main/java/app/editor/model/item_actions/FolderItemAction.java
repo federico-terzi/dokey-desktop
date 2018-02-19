@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class FolderItemAction extends ItemAction {
     public FolderItemAction(ComponentGrid componentGrid) {
-        super("Folder", "Add Folder", "/assets/folder.png", componentGrid);
+        super(2,"Folder", "Add Folder", "/assets/folder.png", componentGrid);
     }
 
     @Override

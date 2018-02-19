@@ -14,12 +14,14 @@ import section.model.Component;
  * This class represents an action associated with an Item.
  */
 public abstract class ItemAction {
+    private int contextMenuOrder;
     protected String title;
     protected String message;
     protected String iconPath;
     protected ComponentGrid componentGrid;
 
-    public ItemAction(String title, String message, String iconPath, ComponentGrid componentGrid) {
+    public ItemAction(int contextMenuOrder, String title, String message, String iconPath, ComponentGrid componentGrid) {
+        this.contextMenuOrder = contextMenuOrder;
         this.title = title;
         this.message = message;
         this.iconPath = iconPath;
@@ -42,6 +44,10 @@ public abstract class ItemAction {
 
     public interface OnActionCompletedListener {
         void onActionCompleted(Component component);
+    }
+
+    public int getContextMenuOrder() {
+        return contextMenuOrder;
     }
 
     public String getTitle() {

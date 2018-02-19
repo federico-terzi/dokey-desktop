@@ -24,9 +24,7 @@ import system.sicons.ShortcutIconManager;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class ComponentGrid extends GridPane {
 
@@ -42,6 +40,7 @@ public class ComponentGrid extends GridPane {
 
     // This mapp will hold the association between the item type and the corresponding actions
     protected Map<ItemType, ItemAction> itemTypeActions = new HashMap<>();
+    private List<ItemAction> orderedTypeActions;  // Generated automatically, do not touch
 
     public ComponentGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, Component[][] componentMatrix, ScreenOrientation screenOrientation) {
         super();
@@ -79,6 +78,15 @@ public class ComponentGrid extends GridPane {
         itemTypeActions.put(ItemType.FOLDER, new FolderItemAction(this));
         itemTypeActions.put(ItemType.SYSTEM, new SystemItemAction(this));
         itemTypeActions.put(ItemType.WEB_LINK, new WebLinkItemAction(this));
+
+        // Create the ordered list
+        orderedTypeActions = new ArrayList<>(itemTypeActions.values());
+        Collections.sort(orderedTypeActions, new Comparator<ItemAction>() {
+            @Override
+            public int compare(ItemAction o1, ItemAction o2) {
+                return Integer.compare(o1.getContextMenuOrder(), o2.getContextMenuOrder());
+            }
+        });
     }
 
     /**
@@ -183,7 +191,7 @@ public class ComponentGrid extends GridPane {
      * @param row the row index in the component matrix.
      */
     private void addEmptyButtonToGridPane(int col, int row) {
-        EmptyButton emptyButton = new EmptyButton(this, itemTypeActions, new EmptyButton.OnEmptyBtnActionListener() {
+        EmptyButton emptyButton = new EmptyButton(this, orderedTypeActions, new EmptyButton.OnEmptyBtnActionListener() {
             @Override
             public void onActionSelected(ItemAction action) {
                 // Request to add the item

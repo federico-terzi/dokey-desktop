@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class ShortcutItemAction extends ItemAction {
     public ShortcutItemAction(ComponentGrid componentGrid) {
-        super("Shortcut", "Add Shortcut", "/assets/keyboard.png", componentGrid);
+        super(1, "Shortcut", "Add Shortcut", "/assets/keyboard.png", componentGrid);
     }
 
     @Override

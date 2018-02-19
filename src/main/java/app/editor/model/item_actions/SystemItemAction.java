@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class SystemItemAction extends ItemAction {
     public SystemItemAction(ComponentGrid componentGrid) {
-        super("System", "Add System Control", "/assets/shutdown.png", componentGrid);
+        super(4,"System", "Add System Control", "/assets/shutdown.png", componentGrid);
     }
 
     @Override

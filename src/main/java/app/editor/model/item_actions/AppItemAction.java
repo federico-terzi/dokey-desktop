@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class AppItemAction extends ItemAction {
     public AppItemAction(ComponentGrid componentGrid) {
-        super("Application", "Add Application", "/assets/launcher.png", componentGrid);
+        super(0,"Application", "Add Application", "/assets/launcher.png", componentGrid);
     }
 
     @Override

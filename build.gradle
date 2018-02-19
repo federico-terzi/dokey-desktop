@@ -40,6 +40,7 @@ dependencies {
     compile 'net.java.dev.jna:jna:4.5.0'
     compile 'net.java.dev.jna:jna-platform:4.5.0'
     compile 'org.jsoup:jsoup:1.11.2'
+    compile "io.reactivex.rxjava2:rxjava:2.1.9"
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
     compile group: 'commons-codec', name: 'commons-codec', version: '1.10'

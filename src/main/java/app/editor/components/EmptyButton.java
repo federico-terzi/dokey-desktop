@@ -14,12 +14,13 @@ import section.model.ItemType;
 import system.model.Application;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 public class EmptyButton extends DragButton {
     private OnEmptyBtnActionListener listener;
 
-    public EmptyButton(ComponentGrid componentGrid, Map<ItemType, ItemAction> itemTypeActions,
+    public EmptyButton(ComponentGrid componentGrid, List<ItemAction> itemActions,
                        OnEmptyBtnActionListener listener) {
         super(componentGrid);
         this.listener = listener;
@@ -36,7 +37,7 @@ public class EmptyButton extends DragButton {
 
         // Set up the context menu
         final ContextMenu contextMenu = new ContextMenu();
-        for (ItemAction itemAction : itemTypeActions.values()) {
+        for (ItemAction itemAction : itemActions) {
             MenuItem item = itemAction.getContextMenuItem();
             item.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
