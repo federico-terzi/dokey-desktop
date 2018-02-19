@@ -8,9 +8,7 @@ import app.editor.comparators.SectionComparator;
 import app.editor.controllers.EditorController;
 import app.editor.listcells.SectionListCell;
 import app.editor.model.ScreenOrientation;
-import javafx.animation.FadeTransition;
-import javafx.animation.SequentialTransition;
-import javafx.animation.TranslateTransition;
+import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -65,7 +63,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     public static final int LANDSCAPE_BOTTOM_BAR_WIDTH = 100;
     private static final int BOTTOM_BAR_DEFAULT_COLS = 4;
     public static final double SECTION_LIST_VIEW_OPEN_POSITION = 0.3;
-    private static final double ENTER_SECTION_SLIDE_DURATION = 0.1;
+    private static final double ENTER_SECTION_FADE_DURATION = 0.2;
+    private static final double ROTATE_SECTION_DURATION = 0.2;
 
 
     // Limits in value
@@ -139,7 +138,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 Section selectedSection = controller.getSectionsListView().getSelectionModel().getSelectedItem();
                 if (selectedSection != null && selectedSection != activeSection) {
-                    loadSection(selectedSection);
+                    loadSection(selectedSection, SectionAnimationType.CROSSFADE);
                 }
             }
         });
@@ -178,7 +177,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
                 // Make sure an active section exists
                 if (activeSection != null) {
-                    loadSection(activeSection);
+                    loadSection(activeSection, SectionAnimationType.ROTATION);
                 }
             }
         });
@@ -346,17 +345,17 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
         // If no active section is specified, load the first section
         if (activeSection == null) {
-            loadSection(sections.get(0));
+            loadSection(sections.get(0), SectionAnimationType.NONE);
         } else {   // Load the active section
             // Calculate if the activeSection is present in the new list
             Optional<Section> newActiveSection = sections.stream().filter(section -> section.getRelatedAppId() != null && section.getRelatedAppId().equals(activeSection.getRelatedAppId())).
                     findFirst();
 
             if (newActiveSection.isPresent()) {
-                loadSection(activeSection);
+                loadSection(activeSection, SectionAnimationType.CROSSFADE);
                 controller.getSectionsListView().getSelectionModel().select(newActiveSection.get());
             } else {
-                loadSection(sections.get(0));  // Load the first
+                loadSection(sections.get(0), SectionAnimationType.NONE);  // Load the first
             }
         }
 
@@ -382,7 +381,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         controller.toggleAppsBtn.setTooltip(tooltip);
     }
 
-    private void loadSection(Section section) {
+    private void loadSection(Section section, SectionAnimationType animationType) {
         // Clear the previous grids
         grids = new ArrayList<>();
 
@@ -438,7 +437,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                         onSectionModified(section);
 
                         // Reload the section
-                        loadSection(section);
+                        loadSection(section, SectionAnimationType.NONE);
                     }
                 }
             });
@@ -455,7 +454,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                         onSectionModified(section);
 
                         // Reload the section
-                        loadSection(section);
+                        loadSection(section, SectionAnimationType.NONE);
                     }
                 }
             });
@@ -478,7 +477,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                         onSectionModified(section);
 
                         // Reload the section
-                        loadSection(section);
+                        loadSection(section, SectionAnimationType.NONE);
                     }
                 }
             });
@@ -538,15 +537,16 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         }else{
             HBox box = new HBox();
             box.setAlignment(Pos.BOTTOM_CENTER);
+
             // Add the elements
-            box.getChildren().add(bottomBarGrid);
+            box.getChildren().add(tabPane);
 
             VBox container = new VBox();
             TabPaneController tabPaneDotController = new TabPaneController(tabPane, tabContent, container, onTabListener);
             box.getChildren().add(container);
             container.setMaxHeight(LANDSCAPE_HEIGHT);
+            box.getChildren().add(bottomBarGrid);
 
-            box.getChildren().add(tabPane);
             currentPane = box;
         }
 
@@ -564,32 +564,74 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         }
 
         // Animation
-        if (activePane != null) {
+        if (activePane != null && animationType != SectionAnimationType.NONE) {
             Node oldContent = activePane;
             Node newContent = currentPane;
 
-            FadeTransition fadeOut = new FadeTransition(
-                    Duration.seconds(ENTER_SECTION_SLIDE_DURATION), oldContent);
-            fadeOut.setFromValue(1);
-            fadeOut.setToValue(0);
-
-            FadeTransition fadeIn = new FadeTransition(
-                    Duration.seconds(ENTER_SECTION_SLIDE_DURATION), newContent);
-            fadeIn.setFromValue(0);
-            fadeIn.setToValue(1);
-
-            fadeOut.setOnFinished(event -> {
+            EventHandler<ActionEvent> onTransitionCompleted = event -> {
                 // Clear the previous section
                 controller.getContentBox().getChildren().clear();
                 controller.getContentBox().getChildren().add(activePane);
-            });
+            };
 
-            SequentialTransition crossFade = new SequentialTransition(
-                    fadeOut, fadeIn);
+            Transition crossFade = null;
+
+            if (animationType == SectionAnimationType.CROSSFADE) {
+                FadeTransition fadeOut = new FadeTransition(
+                        Duration.seconds(ENTER_SECTION_FADE_DURATION), oldContent);
+                fadeOut.setFromValue(1);
+                fadeOut.setToValue(0);
+
+                fadeOut.setOnFinished(onTransitionCompleted);
+
+                FadeTransition fadeIn = new FadeTransition(
+                        Duration.seconds(ENTER_SECTION_FADE_DURATION), newContent);
+                fadeIn.setFromValue(0);
+                fadeIn.setToValue(1);
+
+                crossFade = new SequentialTransition(
+                        fadeOut, fadeIn);
+            }else if (animationType == SectionAnimationType.ROTATION) {
+                RotateTransition rotate = new RotateTransition(
+                        Duration.seconds(ROTATE_SECTION_DURATION), oldContent);
+
+                int angle;
+                if (screenOrientation == ScreenOrientation.PORTRAIT) {
+                    angle = 90;
+                }else{
+                    angle = -90;
+                }
+                rotate.setToAngle(angle);
+                rotate.setOnFinished(onTransitionCompleted);
+
+                FadeTransition fadeOut = new FadeTransition(
+                        Duration.seconds(ENTER_SECTION_FADE_DURATION), oldContent);
+                fadeOut.setFromValue(1);
+                fadeOut.setToValue(0.5);
+
+                FadeTransition fadeIn = new FadeTransition(
+                        Duration.seconds(ENTER_SECTION_FADE_DURATION), newContent);
+                fadeIn.setFromValue(0.5);
+                fadeIn.setToValue(1);
+
+                crossFade = new SequentialTransition(
+                        new ParallelTransition(rotate, fadeOut), fadeIn);
+            }
+
             crossFade.play();
+        }else{
+            // Clear the previous section and add the new one
+            controller.getContentBox().getChildren().clear();
+            controller.getContentBox().getChildren().add(currentPane);
         }
 
         activePane = currentPane;
+    }
+
+    enum SectionAnimationType {
+        NONE,
+        CROSSFADE,
+        ROTATION
     }
 
     private void requestChangePageSize(Page page, Section section) {
@@ -645,7 +687,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             onSectionModified(section);
 
             // Reload the section
-            loadSection(section);
+            loadSection(section, SectionAnimationType.CROSSFADE);
         }
     }
 
@@ -666,7 +708,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         onSectionModified(section);
 
         // Reload the section
-        loadSection(section);
+        loadSection(section, SectionAnimationType.NONE);
     }
 
     private void addSection() {
@@ -806,6 +848,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
     @Override
     public void onSectionModified(Section section) {
+        System.out.println("Modificata "+System.currentTimeMillis());
+
         Task saveTask = new Task() {
             @Override
             protected Object call() throws Exception {
@@ -855,7 +899,13 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                         index++;
                     }
 
-                    loadSection(section);
+                    // Determine the animation type
+                    SectionAnimationType animationType = SectionAnimationType.CROSSFADE;
+                    if (activeSection != null && activeSection.getStringID().equals(section.getStringID())) {
+                        animationType = SectionAnimationType.NONE;
+                    }
+
+                    loadSection(section, animationType);
 
                     // Select the correct entry in the list view
                     for (Section sec : controller.getSectionsListView().getItems()) {
