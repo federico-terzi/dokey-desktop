@@ -817,6 +817,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
                             // Replace the in-memory section with the new one
                             controller.getSectionsListView().getItems().set(index, section);
+                            break;
                         }
 
                         index++;
