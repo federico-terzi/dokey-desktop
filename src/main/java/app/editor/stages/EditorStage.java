@@ -8,6 +8,9 @@ import app.editor.comparators.SectionComparator;
 import app.editor.controllers.EditorController;
 import app.editor.listcells.SectionListCell;
 import app.editor.model.ScreenOrientation;
+import javafx.animation.FadeTransition;
+import javafx.animation.SequentialTransition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -28,12 +31,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
+import javafx.util.Duration;
 import javafx.util.Pair;
 import json.JSONObject;
 import section.model.Component;
@@ -62,6 +65,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     public static final int LANDSCAPE_BOTTOM_BAR_WIDTH = 100;
     private static final int BOTTOM_BAR_DEFAULT_COLS = 4;
     public static final double SECTION_LIST_VIEW_OPEN_POSITION = 0.3;
+    private static final double ENTER_SECTION_SLIDE_DURATION = 0.1;
 
 
     // Limits in value
@@ -83,6 +87,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     private Section activeSection = null;
     private Page activePage = null;
     private ScreenOrientation screenOrientation = ScreenOrientation.PORTRAIT;
+    private Node activePane = null;
 
     private boolean areAppsShown = true;  // If true, the lateral list view is shown.
 
@@ -381,9 +386,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         // Clear the previous grids
         grids = new ArrayList<>();
 
-        // Clear the previous section
-        controller.getContentBox().getChildren().clear();
-
         // Create the tabpane for the pages and set it up
         TabPane tabPane = new TabPane();
         tabPane.setMinWidth(getWidth(screenOrientation));
@@ -516,6 +518,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             }
         };
 
+        Node currentPane = null;
+
         // Add the elements based on the orientation
         if (screenOrientation == ScreenOrientation.PORTRAIT) {
             VBox box = new VBox();
@@ -530,7 +534,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
             box.getChildren().add(bottomBarGrid);
             box.getStyleClass().add("vertical-container");
-            controller.getContentBox().getChildren().add(box);
+            currentPane = box;
         }else{
             HBox box = new HBox();
             box.setAlignment(Pos.BOTTOM_CENTER);
@@ -543,7 +547,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             container.setMaxHeight(LANDSCAPE_HEIGHT);
 
             box.getChildren().add(tabPane);
-            controller.getContentBox().getChildren().add(box);
+            currentPane = box;
         }
 
         // Select the list view entry
@@ -558,6 +562,34 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         } else {  // Read the currently active page
             activePage = section.getPages().get(tabPane.getSelectionModel().getSelectedIndex());
         }
+
+        // Animation
+        if (activePane != null) {
+            Node oldContent = activePane;
+            Node newContent = currentPane;
+
+            FadeTransition fadeOut = new FadeTransition(
+                    Duration.seconds(ENTER_SECTION_SLIDE_DURATION), oldContent);
+            fadeOut.setFromValue(1);
+            fadeOut.setToValue(0);
+
+            FadeTransition fadeIn = new FadeTransition(
+                    Duration.seconds(ENTER_SECTION_SLIDE_DURATION), newContent);
+            fadeIn.setFromValue(0);
+            fadeIn.setToValue(1);
+
+            fadeOut.setOnFinished(event -> {
+                // Clear the previous section
+                controller.getContentBox().getChildren().clear();
+                controller.getContentBox().getChildren().add(activePane);
+            });
+
+            SequentialTransition crossFade = new SequentialTransition(
+                    fadeOut, fadeIn);
+            crossFade.play();
+        }
+
+        activePane = currentPane;
     }
 
     private void requestChangePageSize(Page page, Section section) {
