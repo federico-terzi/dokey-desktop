@@ -13,6 +13,7 @@ import javafx.scene.input.*;
 import javafx.scene.paint.Color;
 import section.model.Component;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import utils.OSValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,16 @@ public class ComponentButton extends DragButton {
                     SnapshotParameters sp = new SnapshotParameters();
                     sp.setFill(Color.TRANSPARENT);
                     Image snapshot = snapshot(sp, null);
-                    db.setDragView(snapshot, snapshot.getWidth()/2, snapshot.getHeight()/2);
+
+                    double offsetX = 0;
+                    double offsetY = 0;
+
+                    if (OSValidator.isWindows()) {
+                        offsetX = snapshot.getWidth()/2;
+                        offsetY = snapshot.getHeight()/2;
+                    }
+
+                    db.setDragView(snapshot, offsetX, offsetY);
 
                     ClipboardContent content = new ClipboardContent();
                     content.putString(DragButton.DRAG_PREFIX+associatedComponent.json().toString());
