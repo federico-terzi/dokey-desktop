@@ -18,6 +18,8 @@ public class StartupTestMain {
 
         startupManager.disableAutomaticStartup();
 
+        boolean isEnabled2 = startupManager.isAutomaticStartupEnabled();
+
         System.exit(0);
     }
 }
