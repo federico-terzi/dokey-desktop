@@ -348,6 +348,16 @@ public class MSApplicationManager extends ApplicationManager {
     }
 
     /**
+     * Used to get the executable path for the given pid
+     */
+    public interface PsApi extends StdCallLibrary {
+
+        int GetModuleFileNameExA(WinNT.HANDLE process, WinNT.HANDLE module ,
+                                 byte[] name, int i);
+
+    }
+
+    /**
      * Return the executable path for the given PID. Return null if not found.
      * It uses a kernel call to obtain it.
      *
@@ -550,16 +560,6 @@ public class MSApplicationManager extends ApplicationManager {
         }, null);
 
         return windowList;
-    }
-
-    /**
-     * Used to get the executable path for the given pid
-     */
-    public interface PsApi extends StdCallLibrary {
-
-        int GetModuleFileNameExA(WinNT.HANDLE process, WinNT.HANDLE module ,
-                                 byte[] name, int i);
-
     }
 
     /**
