@@ -1,5 +1,6 @@
 package system;
 
+import system.MAC.MACStartupManager;
 import system.MS.MSStartupManager;
 import utils.OSValidator;
 
@@ -63,7 +64,7 @@ public abstract class StartupManager {
             if (OSValidator.isWindows()) {  // WINDOWS
                 instance = new MSStartupManager();
             }else if (OSValidator.isMac()) {  // MAC OSX
-                // TODO instance = new MACSystemManager();
+                instance = new MACStartupManager();
             }
         }
         return instance;
