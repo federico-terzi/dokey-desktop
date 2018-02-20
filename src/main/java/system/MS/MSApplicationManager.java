@@ -44,6 +44,9 @@ public class MSApplicationManager extends ApplicationManager {
     // This map will hold the applications, associated with their executable path
     private Map<String, Application> applicationMap = new HashMap<>();
 
+    // Used to focus the explorer window after a folder request.
+    private Application explorerApp = null;
+
     private boolean isPowerShellEnabled;
 
     // Create the logger
@@ -173,6 +176,11 @@ public class MSApplicationManager extends ApplicationManager {
             // Execute the process
             Process proc = runtime.exec(new String[]{"explorer", folderPath});
             proc.waitFor();
+
+            // Also focus the explorer.exe application to bring it to front.
+            if (explorerApp != null) {
+                openApplication(explorerApp.getExecutablePath());
+            }
 
             return true;
         } catch (IOException e) {
@@ -790,6 +798,13 @@ public class MSApplicationManager extends ApplicationManager {
 
             // Create the application
             Application application = new MSApplication(applicationName, executablePath, iconPath);
+
+            // Populate the explorer app if not yet present.
+            // A reference to the explorer app is needed later in the
+            // request folder.
+            if (explorerApp == null && executablePath.endsWith("explorer.exe")){
+                explorerApp = application;
+            }
 
             // Add it to the map
             applicationMap.put(executablePath, application);
