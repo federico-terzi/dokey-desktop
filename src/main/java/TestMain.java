@@ -1,3 +1,5 @@
+import com.sun.jna.Library;
+import com.sun.jna.Native;
 import system.MAC.MACApplicationManager;
 import system.model.Application;
 import system.model.ApplicationManager;
@@ -9,29 +11,13 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 public class TestMain {
+    private interface CLibrary extends Library {
+        CLibrary INSTANCE = (CLibrary) Native.loadLibrary("c", CLibrary.class);
+        int getpid ();
+    }
+
     public static void main(String[] args) {
-        ApplicationManager wm = ApplicationManagerFactory.getInstance();
-        //window.focusWindow();
-        System.out.println("Loading applications...");
-        // powershell "[System.Reflection.Assembly]::LoadWithPartialName('System.Drawing')  | Out-Null ; [System.Drawing.Icon]::ExtractAssociatedIcon('C:\Users\Federico\Documents\Skype.exe').ToBitmap().Save('C:\Users\Federico\s.png')"
-        wm.loadApplications(new ApplicationManager.OnLoadApplicationsListener() {
-            @Override
-            public void onPreloadUpdate(String applicationName, int current, int total) {
-                System.out.println("Loading: "+applicationName+" "+current+"/"+total);
-            }
-
-            @Override
-            public void onProgressUpdate(String applicationName,String iconPath, int current, int total) {
-                System.out.println("Loading: "+applicationName+" "+current+"/"+total);
-            }
-
-            @Override
-            public void onApplicationsLoaded() {
-                System.out.println("loaded!");
-            }
-        });
-
-        List<Application> apps = wm.getActiveApplications();
+        int pid = CLibrary.INSTANCE.getpid();
 
         System.exit(0);
     }
