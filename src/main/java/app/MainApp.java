@@ -205,8 +205,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         // Register the global event listeners
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_EDITOR_REQUEST_EVENT, openEditorRequestListener);
 
-        openEditor();
-        //openSettings();
+        //openEditor();
+        openSettings();
     }
 
     /**

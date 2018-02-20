@@ -23,6 +23,7 @@ import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import system.CacheManager;
 import system.ResourceUtils;
+import system.StartupManager;
 import system.model.Application;
 import system.model.ApplicationManager;
 import utils.OSValidator;
@@ -97,6 +98,45 @@ public class SettingsStage extends Stage {
             }
         });
 
+        // AUTOMATIC STARTUP
+        controller.startupCheckbox.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Task startupTask = new Task() {
+                    @Override
+                    protected Object call() throws Exception {
+                        StartupManager startupManager = StartupManager.getInstance();
+
+                        boolean result;
+                        if (startupManager.isAutomaticStartupEnabled()) {
+                            result = startupManager.disableAutomaticStartup();
+                        }else{
+                            result = startupManager.enableAutomaticStartup();
+                        }
+
+                        // Update the checkbox
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                controller.startupCheckbox.setSelected(startupManager.isAutomaticStartupEnabled());
+                            }
+                        });
+
+                        if (!result) {  // An error occurred
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle("Error!");
+                            alert.setHeaderText("Unfortunately, Dokey cannot be started on system startup!");
+
+                            Optional<ButtonType> alertResult = alert.showAndWait();
+                        }
+
+                        return null;
+                    }
+                };
+                new Thread(startupTask).start();
+            }
+        });
+
         // CLEAR CACHE
         controller.clearCacheBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -132,6 +172,9 @@ public class SettingsStage extends Stage {
 
         // Load the external applications
         loadExternalApplications();
+
+        // Load start on startup status
+        controller.startupCheckbox.setSelected(StartupManager.getInstance().isAutomaticStartupEnabled());
     }
 
     private void loadExternalApplications() {

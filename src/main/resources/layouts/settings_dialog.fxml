@@ -11,9 +11,42 @@
         <TabPane tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
             <tabs>
                 <Tab text="General">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" />
-                    </content>
+                   <content>
+                       <VBox prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                               <TitledPane animated="false" collapsible="false" text="System">
+                                   <content>
+                                       <HBox alignment="CENTER_LEFT">
+                                 <children>
+                                    <CheckBox fx:id="startupCheckbox" mnemonicParsing="false" text="Start Dokey at system startup." />
+                                 </children>
+                                       </HBox>
+                                   </content>
+                           <VBox.margin>
+                              <Insets bottom="10.0" />
+                           </VBox.margin>
+                               </TitledPane>
+                               <TitledPane animated="false" collapsible="false" text="Cache and Data">
+                                   <content>
+                                       <HBox alignment="CENTER_LEFT">
+                                           <children>
+                                               <Label text="Clear the application cache. NOTE: the app must be restarted afterwards." />
+                                               <Pane HBox.hgrow="ALWAYS" />
+                                               <Button fx:id="clearCacheBtn" mnemonicParsing="false" text="Clear Cache" textAlignment="CENTER">
+                                                   <HBox.margin>
+                                                       <Insets left="20.0" />
+                                                   </HBox.margin>
+                                               </Button>
+                                           </children>
+                                       </HBox>
+                                   </content>
+                               </TitledPane>
+                           </children>
+                           <padding>
+                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                       </VBox>
+                   </content>
                 </Tab>
                 <Tab text="Applications">
                     <content>
@@ -21,53 +54,30 @@
                             <center>
                                 <ListView fx:id="externalAppListView" BorderPane.alignment="CENTER">
                                     <BorderPane.margin>
-                                        <Insets bottom="6.0" left="6.0" right="6.0" top="6.0" />
+                                        <Insets top="6.0" />
                                     </BorderPane.margin>
                                 </ListView>
                             </center>
                             <top>
                                 <Label text="External Applications" BorderPane.alignment="TOP_LEFT">
                                     <BorderPane.margin>
-                                        <Insets left="6.0" right="6.0" top="6.0" />
+                                        <Insets />
                                     </BorderPane.margin>
                                 </Label>
                             </top>
                             <bottom>
                                 <Button fx:id="addApplicationBtn" mnemonicParsing="false" text="Add Application..." BorderPane.alignment="TOP_RIGHT">
                                     <BorderPane.margin>
-                                        <Insets bottom="6.0" right="6.0" />
+                                        <Insets top="6.0" />
                                     </BorderPane.margin>
                                 </Button>
                             </bottom>
-                        </BorderPane>
-                    </content>
-                </Tab>
-            <Tab text="Advanced">
-               <content>
-                  <VBox prefHeight="200.0" prefWidth="100.0">
-                     <children>
-                        <TitledPane animated="false" collapsible="false" text="Cache and Data">
-                           <content>
-                              <HBox alignment="CENTER_LEFT">
-                                 <children>
-                                    <Label text="Clear the application cache. NOTE: the app must be restarted afterwards." />
-                                    <Pane HBox.hgrow="ALWAYS" />
-                                    <Button fx:id="clearCacheBtn" mnemonicParsing="false" text="Clear Cache" textAlignment="CENTER">
-                                       <HBox.margin>
-                                          <Insets left="20.0" />
-                                       </HBox.margin>
-                                    </Button>
-                                 </children>
-                              </HBox>
-                           </content>
-                        </TitledPane>
-                     </children>
                      <padding>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </padding>
-                  </VBox>
-               </content>
-            </Tab>
+                        </BorderPane>
+                    </content>
+                </Tab>
             </tabs>
         </TabPane>
     </center>
