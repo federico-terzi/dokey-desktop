@@ -46,6 +46,9 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
 
+    private static boolean isFirstStartup = true;  // If true, it means that the app is opened for the first time.
+    private static boolean isAutomaticStartup = false;  // If true, it means that the app is started automatically by the system.
+
     public static void main(String[] args) {
         // Set the logging level
         Level level = Level.FINE;
@@ -54,6 +57,13 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         LOG.setUseParentHandlers( false );
         LOG.setLevel(level);
         LOG.addHandler(consoleHandler);
+
+        // Check the arguments
+        for (String arg : args) {
+            if (arg.equals("-startup")) {
+                isAutomaticStartup = true;
+            }
+        }
 
         launch(args);
     }
@@ -73,6 +83,9 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
         // Initialize the application manager
         appManager = ApplicationManagerFactory.getInstance();
+
+        // If the apps are not yet initialized, it means that this is the first startup.
+        isFirstStartup = !appManager.isInitialized();
 
         // Initialize the application switch daemon
         applicationSwitchDaemon = new ApplicationSwitchDaemon(appManager);
@@ -103,9 +116,11 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
      * Start the application loading process
      */
     private void loadApplications() throws IOException {
-        // Create and show the initialization stage
-        initializationStage = new InitializationStage();
-        initializationStage.show();
+        // Create and show the initialization stage if first startup
+        if (isFirstStartup) {
+            initializationStage = new InitializationStage();
+            initializationStage.show();
+        }
 
         // Task for loading the applications
         Task<Void> task = new Task<Void>() {
@@ -119,13 +134,16 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
                         // Calculate the percentage
                         double percentage = (current / (double) total) * 0.5;
 
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                // Update the initialization stage
-                                initializationStage.updateAppStatus(applicationName, percentage);
-                            }
-                        });
+                        // Update the intro if visible
+                        if (initializationStage != null) {
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    // Update the initialization stage
+                                    initializationStage.updateAppStatus(applicationName, percentage);
+                                }
+                            });
+                        }
                     }
 
                     @Override
@@ -134,14 +152,16 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
                         // Calculate the percentage
                         double percentage = (current / (double) total) * 0.5 + 0.5;
 
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                // Update the initialization stage
-                                initializationStage.updateAppStatus(applicationName, percentage);
-                            }
-                        });
-
+                        // Update the intro if visible
+                        if (initializationStage != null) {
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    // Update the initialization stage
+                                    initializationStage.updateAppStatus(applicationName, percentage);
+                                }
+                            });
+                        }
                     }
 
                     @Override
@@ -153,6 +173,16 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
                                 MainApp.this.onApplicationsLoaded();
                             }
                         });
+
+                        // Set up automatic startup if checked
+                        if (initializationStage != null && initializationStage.isStartupBoxChecked()) {
+                            if (StartupManager.getInstance().isBundledInstance()) {
+                                StartupManager.getInstance().enableAutomaticStartup();
+                                LOG.warning("AUTOMATIC STARTUP ENABLED");
+                            }else{
+                                LOG.warning("CANNOT ENABLE STARTUP FROM JAVA INSTANCE");
+                            }
+                        }
                     }
                 });
                 return null;
@@ -206,7 +236,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_EDITOR_REQUEST_EVENT, openEditorRequestListener);
 
         //openEditor();
-        openSettings();
+        //openSettings();
     }
 
     /**

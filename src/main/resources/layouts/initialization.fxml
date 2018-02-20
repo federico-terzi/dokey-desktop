@@ -9,13 +9,21 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="CENTER" prefHeight="300.0" prefWidth="400.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.UIControllers.InitializationController">
+<VBox alignment="TOP_CENTER" prefHeight="300.0" prefWidth="300.0" styleClass="intro-container" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.UIControllers.InitializationController">
   <children>
-    <ProgressBar fx:id="appProgressBar" maxHeight="10.0" prefHeight="10.0" prefWidth="250.0" progress="-1.0">
+    <ProgressBar fx:id="appProgressBar" maxHeight="10.0" prefHeight="10.0" prefWidth="120.0" progress="-1.0">
       <VBox.margin>
-        <Insets bottom="10.0" top="10.0" />
+        <Insets bottom="10.0" top="160.0" />
       </VBox.margin>
     </ProgressBar>
-    <Label fx:id="appNameLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="-1.0" prefWidth="277.0" text="Loading..." textAlignment="CENTER" textFill="WHITE" textOverrun="ELLIPSIS" wrapText="false" />
+    <Label fx:id="statusLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="-1.0" prefWidth="277.0" text="Grab a coffee, it may take a while :)" textAlignment="CENTER" textOverrun="ELLIPSIS" wrapText="false">
+         <VBox.margin>
+            <Insets top="20.0" />
+         </VBox.margin></Label>
+      <CheckBox fx:id="startCheckbox" mnemonicParsing="false" selected="true" text="Start Dokey at system startup.">
+         <VBox.margin>
+            <Insets bottom="20.0" top="50.0" />
+         </VBox.margin>
+      </CheckBox>
   </children>
 </VBox>

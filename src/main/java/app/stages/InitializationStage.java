@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import system.ResourceUtils;
@@ -19,11 +20,12 @@ public class InitializationStage extends Stage {
     public InitializationStage() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/initialization.fxml").toURI().toURL());
         Parent root = fxmlLoader.load();
-        Scene scene = new Scene(root, 400, 300);
+        Scene scene = new Scene(root);
         scene.getStylesheets().add(ResourceUtils.getResource("/css/initialization.css").toURI().toString());
-        this.setTitle("Remote Key Initialization");
+        this.setTitle("Dokey Initialization");
         this.setScene(scene);
-        this.initStyle(StageStyle.UNDECORATED);
+        initStyle(StageStyle.TRANSPARENT);
+        scene.setFill(Color.TRANSPARENT);
         this.getIcons().add(new Image(InitializationStage.class.getResourceAsStream("/assets/icon.png")));
 
         controller = (InitializationController) fxmlLoader.getController();
@@ -39,7 +41,10 @@ public class InitializationStage extends Stage {
      * @param percentage
      */
     public void updateAppStatus(String applicationName, double percentage) {
-        controller.setAppNameLabel(applicationName);
         controller.setAppProgressBar(percentage);
+    }
+
+    public boolean isStartupBoxChecked() {
+        return controller.startCheckbox.isSelected();
     }
 }

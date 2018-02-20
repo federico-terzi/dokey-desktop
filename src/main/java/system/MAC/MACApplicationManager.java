@@ -469,6 +469,9 @@ public class MACApplicationManager extends ApplicationManager {
         if (listener != null) {
             listener.onApplicationsLoaded();
         }
+
+        // Mark the apps as initialized
+        setInitialized();
     }
 
     /**

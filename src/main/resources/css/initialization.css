@@ -1,6 +1,25 @@
+@import "colors.css";
+
 .root {
-    -fx-background-image: url("/assets/background.png");
+    -fx-background-color: transparent;
+}
+
+.intro-container {
+    -fx-background-image: url("../assets/intro.png");
     -fx-background-size: stretch;
+}
+
+.intro-container .label {
+    -fx-text-fill: -primaryColor;
+}
+
+.intro-container .check-box {
+    -fx-scale-x: 0.9;
+    -fx-scale-y: 0.9;
+}
+
+.intro-container .check-box .label{
+    -fx-text-fill: -primaryColor;
 }
 
 .progress-bar {
@@ -8,11 +27,12 @@
 }
 
 .progress-bar > .track {
-    -fx-background-color: black;
+    -fx-background-color: -primaryTextColor;
 
 }
 
 .progress-bar > .bar {
+    -fx-background-color: -primaryColor;
     -fx-padding: 0px;
     -fx-background-insets: 0px;
 }

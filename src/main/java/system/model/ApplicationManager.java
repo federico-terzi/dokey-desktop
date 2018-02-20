@@ -12,6 +12,7 @@ public abstract class ApplicationManager {
     public static final String CACHE_DIRECTORY_NAME = ".dokey";
     public static final String ICON_CACHE_DIRECTORY_NAME = "icons";
     public static final String EXTERNAL_APP_LIST_FILENAME = "externalapps.txt";
+    public static final String INITIALIZED_CHECK_FILENAME = "initialized.txt";
 
     /**
      * @return the Window object of the active system.window.
@@ -200,6 +201,39 @@ public abstract class ApplicationManager {
             return true;
         }
 
+        return false;
+    }
+
+    /**
+     * Check if the applications have already been initialized.
+     * @return true if initialized, false otherwise.
+     */
+    public boolean isInitialized() {
+        File cacheDir = CacheManager.getInstance().getCacheDir();
+        File initializedFile = new File(cacheDir, INITIALIZED_CHECK_FILENAME);
+        return initializedFile.isFile();
+    }
+
+    /**
+     * Create a file, that acts as a "check" and, if present, means
+     * that the apps are initialized.
+     * @return true if succeeded, false otherwise.
+     */
+    public boolean setInitialized() {
+        File cacheDir = CacheManager.getInstance().getCacheDir();
+        File initializedFile = new File(cacheDir, INITIALIZED_CHECK_FILENAME);
+
+        // If already present
+        if (initializedFile.isFile())
+            return true;
+
+        // Create the empty file
+        try {
+            initializedFile.createNewFile();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 }

@@ -89,7 +89,7 @@ public class MSStartupManager extends StartupManager {
 
         try {
             // Execute the process
-            Process proc = runtime.exec(new String[]{"cscript", "/nologo", scriptPath, startupLinkFile.getAbsolutePath(), executablePath});
+            Process proc = runtime.exec(new String[]{"cscript", "/nologo", scriptPath, startupLinkFile.getAbsolutePath(), executablePath, "-startup"});
 
             proc.waitFor();
 

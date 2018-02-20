@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import static system.MS.MSApplicationManager.APP_CACHE_FILENAME;
 import static system.MS.MSApplicationManager.START_MENU_CACHE_FILENAME;
+import static system.model.ApplicationManager.INITIALIZED_CHECK_FILENAME;
 
 /**
  * Used to manage cache files and folders
@@ -152,6 +153,12 @@ public class CacheManager {
                 result = result && startMenuCache.delete();
             }
 
+        }
+
+        // Delete the initialized check
+        File initializedFile = new File(cacheDir, INITIALIZED_CHECK_FILENAME);
+        if (initializedFile.isFile()) {
+            result = result & initializedFile.delete();
         }
 
         return result;
