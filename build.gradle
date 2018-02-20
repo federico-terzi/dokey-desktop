@@ -84,8 +84,12 @@ task updateRemoteConnectDependency() {
 jfx {
     verbose = true
     mainClass = "app.MainApp"
+
     appName = "Dokey"
     vendor = "Rocket Guys"
+    nativeReleaseVersion = "0.1"
+    identifier = "com.rocketguys.dokey"
+
     updateExistingJar = true
     additionalAppResources = "src/main/resources/"
     copyAdditionalAppResourcesToJar = true
