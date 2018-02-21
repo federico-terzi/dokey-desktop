@@ -3,12 +3,15 @@ package system.adb;
 import engine.EngineServer;
 import net.model.DeviceInfo;
 import net.model.ServerInfo;
+import system.ResourceUtils;
+import utils.OSValidator;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
 public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
-    public static final String ADB_PATH = "adb";  // path to the adb executable
+    public String adbPath = "adb";  // path to the adb executable
 
     public static final int REMOTE_PORT = 34729;  // Port used for the forwarding
     public static final int DISCOVERY_PORT = 34730;  // Port used to detect a usb connection from the phone
@@ -27,9 +30,34 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
         this.listener = listener;
         this.serverInfo = serverInfo;
 
-        // Make sure ADB is enabled
+        boolean adbFound = false;
+
+        // Check if ADB is included in system path
         if (checkIfADBIsEnabled()) {
-            daemon = new ADBDaemon(this);
+            LOG.info("ADB was found in system PATH: "+adbPath);
+            adbFound = true;
+        }else{
+            // Use the built in ADB version
+            // Construct the path based on the OS.
+            String OSSuffix = null;
+            if (OSValidator.isWindows()) {
+                OSSuffix=".exe";
+            }else if (OSValidator.isMac()) {
+                OSSuffix="";
+            }
+            File adbExecutable = ResourceUtils.getResource("/adb/adb"+OSSuffix);
+            if (adbExecutable != null) {
+                adbPath = adbExecutable.getAbsolutePath();
+                if (checkIfADBIsEnabled()) {  // Check if it works
+                    LOG.info("ADB: using built in version: "+adbPath);
+                    adbFound = true;
+                }
+            }
+        }
+
+        // Make sure ADB is enabled
+        if (adbFound) {
+            daemon = new ADBDaemon(adbPath, this);
             adbDiscoveryServer = new ADBDiscoveryServer(serverInfo);
         }else{
             LOG.warning("ADB can't be executed!");
@@ -44,7 +72,7 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
     public void onDeviceConnected(DeviceInfo device) {
         createPortConnection(device);
         createDiscoveryConnection(device);
-        LOG.fine("USB CON "+device);
+        LOG.info("USB CON "+device);
         listener.onUSBDeviceConnected(device);
     }
 
@@ -54,7 +82,7 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
      */
     @Override
     public void onDeviceDisconnected(DeviceInfo device) {
-        LOG.fine("USB DIS "+device);
+        LOG.info("USB DIS "+device);
         listener.onUSBDeviceDisconnected(device);
     }
 
@@ -90,7 +118,7 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
         Runtime runtime = Runtime.getRuntime();
         try {
             // Execute the adb process
-            Process proc = runtime.exec(new String[]{ADB_PATH, "-s", device.getID(),
+            Process proc = runtime.exec(new String[]{adbPath, "-s", device.getID(),
                     "reverse", "tcp:"+REMOTE_PORT, "tcp:"+LOCAL_PORT});
 
             proc.waitFor();
@@ -110,7 +138,7 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
         Runtime runtime = Runtime.getRuntime();
         try {
             // Execute the adb process
-            Process proc = runtime.exec(new String[]{ADB_PATH, "-s", device.getID(),
+            Process proc = runtime.exec(new String[]{adbPath, "-s", device.getID(),
                     "reverse", "tcp:"+DISCOVERY_PORT, "tcp:"+DISCOVERY_PORT});
 
             proc.waitFor();
@@ -129,7 +157,7 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
         Runtime runtime = Runtime.getRuntime();
         try {
             // Execute the adb process
-            Process proc = runtime.exec(new String[]{ADB_PATH});
+            Process proc = runtime.exec(new String[]{adbPath});
 
             return true;
         } catch (IOException e) {

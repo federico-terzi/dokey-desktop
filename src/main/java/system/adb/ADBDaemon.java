@@ -1,19 +1,9 @@
 package system.adb;
 
-import json.JSONObject;
-import net.discovery.DiscoveryManager;
 import net.model.DeviceInfo;
-import net.model.ServerInfo;
 
 import java.io.*;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.SocketException;
-import java.nio.charset.Charset;
 import java.util.*;
-
-import static system.adb.ADBManager.ADB_PATH;
 
 /**
  * Daemon used to discover new devices connected using usb.
@@ -26,9 +16,11 @@ public class ADBDaemon extends Thread{
 
     private volatile boolean shouldStop = false;
 
+    private String adbPath;
     private OnDiscoveryUpdatedListener listener = null;
 
-    public ADBDaemon(OnDiscoveryUpdatedListener listener) {
+    public ADBDaemon(String adbPath, OnDiscoveryUpdatedListener listener) {
+        this.adbPath = adbPath;
         this.listener = listener;
 
         setName("ADB Daemon");
@@ -36,6 +28,9 @@ public class ADBDaemon extends Thread{
 
     @Override
     public void run() {
+        // Initially kill the server if already present
+        killAdbServer();
+
         devices = new ArrayList<>();
 
         while (!shouldStop) {
@@ -107,6 +102,24 @@ public class ADBDaemon extends Thread{
     }
 
     /**
+     * Kill the adb server.
+     */
+    private void killAdbServer() {
+
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            // Execute the adb process
+            Process proc = runtime.exec(new String[]{adbPath, "kill-server"});
+
+            proc.waitFor();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * @return List of devices currently connected using ADB command.
      */
     private List<DeviceInfo> getCurrentDevices() {
@@ -115,7 +128,7 @@ public class ADBDaemon extends Thread{
         Runtime runtime = Runtime.getRuntime();
         try {
             // Execute the adb process
-            Process proc = runtime.exec(new String[]{ADB_PATH, "devices", "-l"});
+            Process proc = runtime.exec(new String[]{adbPath, "devices", "-l"});
 
             // Get the output
             BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
@@ -128,7 +141,8 @@ public class ADBDaemon extends Thread{
             while ((line = br.readLine()) != null) {
                 line = line.trim();
                 // Avoid control messages and empty lines
-                if (!line.isEmpty() && !line.startsWith("*")) {
+                if (!line.isEmpty() && !line.startsWith("*") && !line.startsWith("adb") && !line.startsWith("could") &&
+                        !line.startsWith("error")) {
                     StringTokenizer st = new StringTokenizer(line);
                     String id = st.nextToken();
                     String model = null;

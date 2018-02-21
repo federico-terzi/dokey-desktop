@@ -1,6 +1,8 @@
 import java.nio.channels.Channels
 import java.nio.channels.ReadableByteChannel
 import java.nio.file.Files
+import java.nio.file.Path
+import org.apache.commons.lang3.SystemUtils
 import java.nio.file.StandardCopyOption
 
 group 'com.freddyt_studio.remotekey_desktop'
@@ -15,6 +17,7 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
         classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
     }
 }
@@ -79,6 +82,48 @@ task updateRemoteConnectDependency() {
     }
 }
 
+private <T> T osSpecific(T win, T mac) {
+    if (SystemUtils.IS_OS_WINDOWS)
+    {
+        return win
+    }
+    if (SystemUtils.IS_OS_MAC)
+    {
+        return mac
+    }
+    throw new RuntimeException('Unknown OS')
+}
+
+task('copyAdditionalFiles', type: Sync) {
+    Path outProduction = projectDir.toPath().resolve("out/production/resources")
+
+    Path additionalFilesSources = projectDir.toPath()
+            .resolve('src/main/os-resources/')
+
+    from additionalFilesSources.resolve(osSpecific('win', 'mac'))
+    into outProduction
+
+    from projectDir.toPath().resolve("src/main/resources/")
+    into outProduction
+}
+
+build.dependsOn copyAdditionalFiles
+
+// NATIVE COPY OS SPECIFIC FILES
+Path additionalFilesBuildDir = buildDir.toPath().resolve('jfx-additional-files')
+task('copyAdditionalFilesNative', type: Sync) {
+    Path additionalFilesSources = projectDir.toPath()
+            .resolve('src/main/os-resources/')
+
+    from additionalFilesSources.resolve(osSpecific('win', 'mac'))
+    into additionalFilesBuildDir
+
+    from projectDir.toPath().resolve("src/main/resources/")
+    into additionalFilesBuildDir
+}
+jfxNative.dependsOn copyAdditionalFilesNative
+jfxRun.dependsOn copyAdditionalFilesNative
+
 // configure javafx-gradle-plugin
 // for all available settings please look at the class "JavaFXGradlePluginExtension"
 jfx {
@@ -91,7 +136,7 @@ jfx {
     identifier = "com.rocketguys.dokey"
 
     updateExistingJar = true
-    additionalAppResources = "src/main/resources/"
+    additionalAppResources = additionalFilesBuildDir.toAbsolutePath().toString()
     copyAdditionalAppResourcesToJar = true
 }
 
