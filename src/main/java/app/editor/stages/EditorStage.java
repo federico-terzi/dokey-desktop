@@ -588,9 +588,9 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             openBtn.setMaxWidth(PORTRAIT_WIDTH);
             Image openBtnImage;
             if (!isBottomBarVisible) {
-                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/down.png"), 24, 24, true, true);
+                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/down_arrow.png"), 24, 24, true, true);
             }else{
-                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/up.png"), 24, 24, true, true);
+                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/up_arrow.png"), 24, 24, true, true);
             }
             ImageView imageView = new ImageView(openBtnImage);
             openBtn.setGraphic(imageView);
@@ -603,16 +603,37 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             box.setAlignment(Pos.BOTTOM_CENTER);
             box.getChildren().add(tabPane);
 
+            HBox contentBox = new HBox();
+            contentBox.setAlignment(Pos.CENTER);
+            contentBox.setMaxHeight(LANDSCAPE_HEIGHT);
+            contentBox.getStyleClass().add("section-box");
+            box.getChildren().add(contentBox);
+
             // Tab pane controller
             VBox container = new VBox();
             TabPaneController tabPaneDotController = new TabPaneController(tabPane, tabContent, container, onTabListener);
-            box.getChildren().add(container);
+            contentBox.getChildren().add(container);
             container.setMaxHeight(LANDSCAPE_HEIGHT);
 
             // Bottom bar
-            if (isBottomBarVisible) {
+            if (!isBottomBarVisible) {
+                bottomBarGrid.setScaleX(0);
+            }else{
                 box.getChildren().add(bottomBarGrid);
             }
+
+            // Bottom bar open button
+            openBtn.getStyleClass().add("expand-btn");
+            openBtn.setMaxHeight(LANDSCAPE_HEIGHT);
+            Image openBtnImage;
+            if (!isBottomBarVisible) {
+                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/right_arrow.png"), 24, 24, true, true);
+            }else{
+                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/left_arrow.png"), 24, 24, true, true);
+            }
+            ImageView imageView = new ImageView(openBtnImage);
+            openBtn.setGraphic(imageView);
+            box.getChildren().add(openBtn);
 
             currentPane = box;
         }
@@ -684,52 +705,95 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
                 TranslateTransition translateUp = new TranslateTransition(
                         Duration.seconds(BUTTON_BAR_DURATION), newContent);
-                translateUp.setFromY(PORTRAIT_BOTTOM_BAR_HEIGHT/2);
-                translateUp.setToY(0);
                 translateUp.setInterpolator(Interpolator.EASE_OUT);
+                if (screenOrientation == ScreenOrientation.PORTRAIT) {
+                    translateUp.setFromY(PORTRAIT_BOTTOM_BAR_HEIGHT/2);
+                    translateUp.setToY(0);
+                }else{
+                    translateUp.setFromX(LANDSCAPE_BOTTOM_BAR_WIDTH/2);
+                    translateUp.setToX(0);
+                }
 
                 ScaleTransition scaleTransition = new ScaleTransition(Duration.seconds(BUTTON_BAR_DURATION), bottomBarGrid);
                 scaleTransition.setInterpolator(Interpolator.EASE_OUT);
-                scaleTransition.setFromY(0);
-                scaleTransition.setToY(1);
+                if (screenOrientation == ScreenOrientation.PORTRAIT) {
+                    scaleTransition.setFromY(0);
+                    scaleTransition.setToY(1);
+                }else{
+                    scaleTransition.setFromX(0);
+                    scaleTransition.setToX(1);
+                }
 
                 TranslateTransition translateDown = new TranslateTransition(
                         Duration.seconds(BUTTON_BAR_DURATION), bottomBarGrid);
-                translateDown.setFromY(-PORTRAIT_BOTTOM_BAR_HEIGHT/2);
-                translateDown.setToY(0);
                 translateDown.setInterpolator(Interpolator.EASE_OUT);
+                if (screenOrientation == ScreenOrientation.PORTRAIT) {
+                    translateDown.setFromY(-PORTRAIT_BOTTOM_BAR_HEIGHT/2);
+                    translateDown.setToY(0);
+                }else{
+                    translateDown.setFromX(-LANDSCAPE_BOTTOM_BAR_WIDTH/2);
+                    translateDown.setToX(0);
+                }
 
                 TranslateTransition buttonDown = new TranslateTransition(
                         Duration.seconds(BUTTON_BAR_DURATION), openBtn);
-                buttonDown.setFromY(-PORTRAIT_BOTTOM_BAR_HEIGHT);
-                buttonDown.setToY(0);
+
+                if (screenOrientation == ScreenOrientation.PORTRAIT) {
+                    buttonDown.setFromY(-PORTRAIT_BOTTOM_BAR_HEIGHT);
+                    buttonDown.setToY(0);
+                }else{
+                    buttonDown.setFromX(-PORTRAIT_BOTTOM_BAR_HEIGHT);
+                    buttonDown.setToX(0);
+                }
 
                 crossFade = new SequentialTransition(
                         new ParallelTransition(translateUp, scaleTransition, translateDown, buttonDown));
             }else if (animationType == SectionAnimationType.CLOSE_BOTTOMBAR && activeBottomBar != null && activeOpenBtn != null) {
                     ScaleTransition scaleTransition = new ScaleTransition(Duration.seconds(BUTTON_BAR_DURATION), activeBottomBar);
                     scaleTransition.setInterpolator(Interpolator.EASE_OUT);
-                    scaleTransition.setFromY(1);
-                    scaleTransition.setToY(0);
+
+                    if (screenOrientation == ScreenOrientation.PORTRAIT) {
+                        scaleTransition.setFromY(1);
+                        scaleTransition.setToY(0);
+                    }else {
+                        scaleTransition.setFromX(1);
+                        scaleTransition.setToX(0);
+                    }
 
                     TranslateTransition translateDown = new TranslateTransition(
                             Duration.seconds(BUTTON_BAR_DURATION), activeBottomBar);
-                    translateDown.setFromY(0);
-                    translateDown.setToY(-PORTRAIT_BOTTOM_BAR_HEIGHT/2);
                     translateDown.setInterpolator(Interpolator.EASE_OUT);
+                    if (screenOrientation == ScreenOrientation.PORTRAIT) {
+                        translateDown.setFromY(0);
+                        translateDown.setToY(-PORTRAIT_BOTTOM_BAR_HEIGHT/2);
+                    }else{
+                        translateDown.setFromX(0);
+                        translateDown.setToX(-LANDSCAPE_BOTTOM_BAR_WIDTH/2);
+                    }
 
                     TranslateTransition buttonDown = new TranslateTransition(
                             Duration.seconds(BUTTON_BAR_DURATION), activeOpenBtn);
-                    buttonDown.setFromY(0);
-                    buttonDown.setToY(-PORTRAIT_BOTTOM_BAR_HEIGHT/2);
+                    if (screenOrientation == ScreenOrientation.PORTRAIT) {
+                        buttonDown.setFromY(0);
+                        buttonDown.setToY(-PORTRAIT_BOTTOM_BAR_HEIGHT/2);
+                    }else{
+                        buttonDown.setFromX(0);
+                        buttonDown.setToX(-LANDSCAPE_BOTTOM_BAR_WIDTH/2);
+                    }
 
                     buttonDown.setOnFinished(onTransitionCompleted);
 
                     TranslateTransition translateUp = new TranslateTransition(
                             Duration.seconds(BUTTON_BAR_DURATION), newContent);
-                    translateUp.setFromY(-PORTRAIT_BOTTOM_BAR_HEIGHT/2);
-                    translateUp.setToY(0);
                     translateUp.setInterpolator(Interpolator.EASE_OUT);
+
+                    if (screenOrientation == ScreenOrientation.PORTRAIT) {
+                        translateUp.setFromY(-PORTRAIT_BOTTOM_BAR_HEIGHT/2);
+                        translateUp.setToY(0);
+                    }else {
+                        translateUp.setFromX(-LANDSCAPE_BOTTOM_BAR_WIDTH / 2);
+                        translateUp.setToX(0);
+                    }
 
                     crossFade = new SequentialTransition(
                             new ParallelTransition(scaleTransition, translateDown, buttonDown), translateUp);
