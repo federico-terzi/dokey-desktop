@@ -561,6 +561,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             VBox box = new VBox();
             box.setAlignment(Pos.CENTER);
 
+            // Used to contain the components and avoid line bugs in transitions
+            // by setting the background color to the same.
             VBox contentBox = new VBox();
             contentBox.setAlignment(Pos.CENTER);
             contentBox.setMaxWidth(PORTRAIT_WIDTH);
@@ -603,6 +605,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             box.setAlignment(Pos.BOTTOM_CENTER);
             box.getChildren().add(tabPane);
 
+            // Used to contain the components and avoid line bugs in transitions
+            // by setting the background color to the same.
             HBox contentBox = new HBox();
             contentBox.setAlignment(Pos.CENTER);
             contentBox.setMaxHeight(LANDSCAPE_HEIGHT);
