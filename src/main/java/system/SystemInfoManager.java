@@ -54,7 +54,7 @@ public class SystemInfoManager {
 
         try {
             // Execute the process
-            Process proc = runtime.exec(new String[]{"hostname"});
+            Process proc = runtime.exec(new String[]{"scutil", "--get", "ComputerName"});
 
             // Get the output
             BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
