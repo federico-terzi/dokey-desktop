@@ -208,7 +208,7 @@ public class ShortcutDialogStage extends Stage {
         }
 
         if (item.getIconID() != null) {
-            ShortcutIcon icon = shortcutIconManager.getIcon(item.getIconID(), IconTheme.DARK);
+            ShortcutIcon icon = shortcutIconManager.getIcon(item.getIconID(), IconTheme.LIGHT);
             if (icon != null) {
                 this.icon = icon;
                 renderIcon();
