@@ -219,7 +219,12 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     @Nullable
     @Override
     public File onAppIconRequestReceived(String path) {
-        return appManager.getApplicationIcon(path);
+        File icon = appManager.getApplicationIcon(path);
+        if (icon.isFile()) {
+            return icon;
+        }else{
+            return null;
+        }
     }
 
     /**
@@ -234,7 +239,12 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         ShortcutIcon shortcutIcon = shortcutIconManager.getIcon(id, theme);
 
         if (shortcutIcon != null) {
-            return shortcutIcon.getFile();
+            File icon = shortcutIcon.getFile();
+            if (icon.isFile()) {
+                return icon;
+            }else{
+                return null;
+            }
         }
 
         return null;
@@ -257,9 +267,11 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
             }else{
                 return null;
             }
-        }else{
+        }else if (imageFile.isFile()){
             return imageFile;
         }
+
+        return null;
     }
 
     @NotNull
