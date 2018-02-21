@@ -49,6 +49,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private static boolean isFirstStartup = true;  // If true, it means that the app is opened for the first time.
     private static boolean isAutomaticStartup = false;  // If true, it means that the app is started automatically by the system.
     private static boolean openEditor = false;  // If true, at startup the editor is open;
+    private static boolean openSettings = false;  // If true, at startup the settings is open;
 
     public static void main(String[] args) {
         // Set the logging level
@@ -65,6 +66,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
                 isAutomaticStartup = true;
             }else if (arg.equals("-editor")) {
                 openEditor = true;
+            }else if (arg.equals("-settings")) {
+                openSettings = true;
             }
         }
 
@@ -241,7 +244,9 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         if (openEditor) {
             openEditor();
         }
-        //openSettings();
+        if (openSettings) {
+            openSettings();
+        }
     }
 
     /**
