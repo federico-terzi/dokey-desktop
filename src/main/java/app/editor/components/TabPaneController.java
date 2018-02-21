@@ -104,6 +104,7 @@ public class TabPaneController {
         addBtn.setGraphic(imageView);
         masterPane.getChildren().add(addBtn);
 
+        // Transition animation
         tabPane.getSelectionModel()
                 .selectedItemProperty()
                 .addListener(
@@ -138,7 +139,6 @@ public class TabPaneController {
                                     fadeOut, fadeIn);
                             crossFade.play();
                         });
-
     }
 
     public interface OnTabListener {

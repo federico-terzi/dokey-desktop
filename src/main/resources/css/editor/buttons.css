@@ -85,3 +85,8 @@
     -fx-background-color: -primaryLightColor;
     -fx-background-radius: 2px;
 }
+
+.expand-btn {
+    -fx-background-color: transparent;
+    -fx-effect: innershadow( gaussian , -primaryColor , 70 , 1 , 1 , 1 );
+}

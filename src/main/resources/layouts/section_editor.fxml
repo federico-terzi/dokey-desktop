@@ -20,7 +20,7 @@
             <ListView fx:id="sectionsListView" />
           </center>
         </BorderPane>
-        <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="AS_NEEDED" styleClass="content-scrollpane">
+        <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="AS_NEEDED" styleClass="content-scrollpane" fx:id="scrollPane">
           <content>
             <VBox fx:id="contentBox" alignment="CENTER" fillWidth="true" styleClass="editor-container">
 

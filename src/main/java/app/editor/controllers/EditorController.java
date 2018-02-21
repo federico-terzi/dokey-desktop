@@ -19,6 +19,7 @@ public class EditorController {
     public Button searchBtn;
     public Button toggleAppsBtn;
     public SplitPane splitPane;
+    public ScrollPane scrollPane;
     @FXML
     private ResourceBundle resources;
 
@@ -35,6 +36,8 @@ public class EditorController {
     void initialize() {
         // Initially hide the search bar
         searchSectionTextField.setManaged(false);
+        sectionsListView.setFocusTraversable(true);
+        scrollPane.setFocusTraversable(true);
     }
 
     public ListView<Section> getSectionsListView() {

@@ -7,13 +7,13 @@
 }
 
 .bottombar-portrait {
-    -fx-padding: 20 20 20 20;
+    -fx-padding: 0 20 20 20;
     -fx-background-color: -primaryColor;
     -fx-background-radius: 2px;
 }
 
 .bottombar-landscape {
-    -fx-padding: 20 20 20 15;
+    -fx-padding: 20 20 20 0;
     -fx-background-color: -primaryColor;
     -fx-background-radius: 2px;
 }
@@ -103,11 +103,11 @@
 }
 
 .portrait {
-    -fx-padding: 0px;
+    -fx-padding: 0 20 20 20;
 }
 
 .landscape {
-    -fx-padding: 0px;
+    -fx-padding: 20 20 20 0;
 }
 
 .tab-pane-controller .button .image-view{
@@ -120,4 +120,8 @@
 
 .tab-pane-controller .button:hover{
     -fx-opacity: 1;
+}
+
+.section-box {
+    -fx-background-color: -primaryColor;
 }
