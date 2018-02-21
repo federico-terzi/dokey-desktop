@@ -154,6 +154,11 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
      * @return true if succeeded, false otherwise.
      */
     private boolean checkIfADBIsEnabled() {
+        // Make the executable runnable if the platform is mac
+        if (OSValidator.isMac()) {
+            enableADBExecutablePermissions();
+        }
+
         Runtime runtime = Runtime.getRuntime();
         try {
             // Execute the adb process
@@ -161,6 +166,25 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
 
             return true;
         } catch (IOException e) {
+        }
+        return false;
+    }
+
+    /**
+     * Make the executable file runnable.
+     * @return true if succeeded, false otherwise.
+     */
+    private boolean enableADBExecutablePermissions() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            // Execute the adb process
+            Process proc = runtime.exec(new String[]{"chmod", "u+x", adbPath});
+
+            proc.waitFor();
+            return true;
+        } catch (IOException e) {
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         return false;
     }
