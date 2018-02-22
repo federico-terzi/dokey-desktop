@@ -20,6 +20,8 @@ public class EditorController {
     public Button toggleAppsBtn;
     public SplitPane splitPane;
     public ScrollPane scrollPane;
+    public Button importBtn;
+    public Button helpBtn;
     @FXML
     private ResourceBundle resources;
 

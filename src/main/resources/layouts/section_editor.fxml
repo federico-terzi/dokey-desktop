@@ -55,7 +55,17 @@
                 </ImageView>
               </graphic>
               <tooltip>
-                <Tooltip text="Export Application Layout"/>
+                <Tooltip text="Export Layout"/>
+              </tooltip>
+            </Button>
+            <Button mnemonicParsing="false" fx:id="importBtn">
+              <graphic>
+                <ImageView fitHeight="20" fitWidth="20">
+                  <Image url="/assets/toolbar_icons/import.png" />
+                </ImageView>
+              </graphic>
+              <tooltip>
+                <Tooltip text="Import Layout"/>
               </tooltip>
             </Button>
             <Button mnemonicParsing="false" fx:id="searchBtn">
@@ -87,6 +97,16 @@
               </graphic>
               <tooltip>
                 <Tooltip text="Change Grid Size"/>
+              </tooltip>
+            </Button>
+            <Button mnemonicParsing="false" fx:id="helpBtn">
+              <graphic>
+                <ImageView fitHeight="20" fitWidth="20">
+                  <Image url="/assets/toolbar_icons/help.png" />
+                </ImageView>
+              </graphic>
+              <tooltip>
+                <Tooltip text="Get Help"/>
               </tooltip>
             </Button>
           </items>

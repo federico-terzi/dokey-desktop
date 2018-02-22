@@ -180,6 +180,12 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 }
             }
         });
+        controller.importBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+            }
+        });
         controller.addApplicationBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
