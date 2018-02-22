@@ -43,6 +43,9 @@ dependencies {
     compile 'net.java.dev.jna:jna:4.5.0'
     compile 'net.java.dev.jna:jna-platform:4.5.0'
     compile 'org.jsoup:jsoup:1.11.2'
+    compile 'com.github.tulskiy:jkeymaster:1.2'
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
+    testCompile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
     compile "io.reactivex.rxjava2:rxjava:2.1.9"
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
     compile group: 'commons-io', name: 'commons-io', version: '2.6'

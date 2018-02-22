@@ -3,6 +3,9 @@ package app;
 import app.editor.stages.EditorStage;
 import app.stages.SettingsStage;
 import app.stages.InitializationStage;
+import com.tulskiy.keymaster.common.HotKey;
+import com.tulskiy.keymaster.common.HotKeyListener;
+import com.tulskiy.keymaster.common.Provider;
 import engine.EngineServer;
 import engine.EngineWorker;
 import javafx.application.Application;
@@ -16,6 +19,7 @@ import system.*;
 import system.adb.ADBManager;
 import system.model.ApplicationManager;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Timer;
@@ -50,6 +54,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private static boolean isAutomaticStartup = false;  // If true, it means that the app is started automatically by the system.
     private static boolean openEditor = false;  // If true, at startup the editor is open;
     private static boolean openSettings = false;  // If true, at startup the settings is open;
+    private Provider provider;
 
     public static void main(String[] args) {
         // Set the logging level
@@ -116,6 +121,13 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
         // load the applications
         loadApplications();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                provider = Provider.getCurrentProvider(true);
+            }
+        }).start();
     }
 
     /**
@@ -247,6 +259,13 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         if (openSettings) {
             openSettings();
         }
+
+//        provider.register(KeyStroke.getKeyStroke("alt SPACE"), new HotKeyListener() {
+//            @Override
+//            public void onHotKey(HotKey hotKey) {
+//                openSettings();
+//            }
+//        });
     }
 
     /**
