@@ -540,6 +540,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Export Layout...");
 
+        // Generate the suggested filename based on the section type
         String filename = "";
         switch (section.getSectionType()) {
             case SHORTCUTS:
@@ -556,8 +557,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 filename = "SystemCommands";
                 break;
         }
-
         fileChooser.setInitialFileName(filename);
+
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Section layout JSON (*.json)", "*.json");
         fileChooser.getExtensionFilters().add(extFilter);
         File destFile = fileChooser.showSaveDialog(EditorStage.this);
