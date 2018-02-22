@@ -12,10 +12,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import net.model.IconTheme;
 import system.ResourceUtils;
 import system.model.Application;
 import system.sicons.ShortcutIcon;
 import system.sicons.ShortcutIconManager;
+import utils.IconManager;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -60,7 +62,9 @@ public class ShortcutIconDialogStage extends Stage {
                 ShortcutIcon icon = (ShortcutIcon) controller.shortcutListView.getSelectionModel().getSelectedItem();
 
                 if (icon != null) {
-                    listener.onIconSelected(icon);
+                    // Workaround to get the light icon
+                    ShortcutIcon lightIcon = shortcutIconManager.getIcon(icon.getId(), IconTheme.LIGHT);
+                    listener.onIconSelected(lightIcon);
                     close();
                 }
             }
