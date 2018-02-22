@@ -10,7 +10,6 @@ import app.editor.model.ScreenOrientation;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.PublishSubject;
-import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -21,7 +20,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -30,13 +28,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
-import javafx.util.Duration;
 import javafx.util.Pair;
 import json.JSONObject;
 import section.model.Component;
@@ -49,6 +44,7 @@ import system.SectionManager;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.sicons.ShortcutIconManager;
+import app.editor.components.SectionGridController.SectionAnimationType;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,17 +54,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class EditorStage extends Stage implements OnSectionModifiedListener {
-    public static final int PORTRAIT_HEIGHT = 450;
-    public static final int PORTRAIT_WIDTH = 350;
-    public static final int PORTRAIT_BOTTOM_BAR_HEIGHT = 100;
-    public static final int LANDSCAPE_HEIGHT = 350;
-    public static final int LANDSCAPE_WIDTH = 450;
-    public static final int LANDSCAPE_BOTTOM_BAR_WIDTH = 100;
-    private static final int BOTTOM_BAR_DEFAULT_COLS = 4;
     public static final double SECTION_LIST_VIEW_OPEN_POSITION = 0.3;
-    private static final double ENTER_SECTION_FADE_DURATION = 0.2;
-    private static final double ROTATE_SECTION_DURATION = 0.2;
-    private static final double BUTTON_BAR_DURATION = 0.1;
 
     // Limits in value
     private static final int MAX_ROWS = 6;
@@ -85,12 +71,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     private String sectionQuery = null;
 
     private Section activeSection = null;
-    private Page activePage = null;
     private ScreenOrientation screenOrientation = ScreenOrientation.PORTRAIT;
-    private Node activePane = null;
-    private Node activeBottomBar = null;
-    private Node activeOpenBtn = null;
-    private boolean isBottomBarVisible = false;
+    private SectionGridController sectionGridController = null;
 
     private boolean areAppsShown = true;  // If true, the lateral list view is shown.
 
@@ -145,7 +127,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 Section selectedSection = controller.getSectionsListView().getSelectionModel().getSelectedItem();
                 if (selectedSection != null && selectedSection != activeSection) {
-                    loadSection(selectedSection, SectionAnimationType.CROSSFADE);
+                    loadSection(selectedSection);
                 }
             }
         });
@@ -168,8 +150,9 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         controller.changeSizeBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (activePage != null && activeSection != null) {
-                    requestChangePageSize(activePage, activeSection);
+                if (activeSection != null && sectionGridController != null && sectionGridController.getActivePage() != null) {
+                    requestChangePageSize(sectionGridController.getActivePage(), activeSection);
+                    sectionGridController.invalidate();
                 }
             }
         });
@@ -184,8 +167,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 }
 
                 // Make sure an active section exists
-                if (activeSection != null) {
-                    loadSection(activeSection, SectionAnimationType.ROTATION);
+                if (sectionGridController != null) {
+                    sectionGridController.setScreenOrientation(screenOrientation);
                 }
             }
         });
@@ -370,17 +353,17 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
         // If no active section is specified, load the first section
         if (activeSection == null) {
-            loadSection(sections.get(0), SectionAnimationType.NONE);
+            loadSection(sections.get(0));
         } else {   // Load the active section
             // Calculate if the activeSection is present in the new list
             Optional<Section> newActiveSection = sections.stream().filter(section -> section.getRelatedAppId() != null && section.getRelatedAppId().equals(activeSection.getRelatedAppId())).
                     findFirst();
 
             if (newActiveSection.isPresent()) {
-                loadSection(activeSection, SectionAnimationType.CROSSFADE);
+                loadSection(activeSection);
                 controller.getSectionsListView().getSelectionModel().select(newActiveSection.get());
             } else {
-                loadSection(sections.get(0), SectionAnimationType.NONE);  // Load the first
+                loadSection(sections.get(0));  // Load the first
             }
         }
 
@@ -408,424 +391,80 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
     /**
      * Display the given section in the editor.
+     *  @param section       the Section to load.
      *
-     * @param section       the Section to load.
-     * @param animationType the Animation the section will display.
      */
-    private void loadSection(Section section, SectionAnimationType animationType) {
+    private void loadSection(Section section) {
         // Select the list view entry
         controller.getSectionsListView().getSelectionModel().select(section);
         activeSection = section;  // Update the active section
 
-        // Create the tabpane for the pages and set it up
-        TabPane tabPane = new TabPane();
-        tabPane.setMinWidth(getWidth(screenOrientation));
-        tabPane.setPrefWidth(getWidth(screenOrientation));
-        tabPane.setMaxWidth(getWidth(screenOrientation));
-
-        // This map will hold the tabPane contents for each tab.
-        // used for the slide animation when changing tab
-        Map<Tab, Node> tabContent = new HashMap<>();
-
-        // Add the pages
-        for (Page page : section.getPages()) {
-            // Create the page grid
-            PageGrid pageGrid = new PageGrid(applicationManager, shortcutIconManager, page, section, screenOrientation);
-            pageGrid.setSectionModifiedListener(this);
-            pageGrid.setShortcutIconManager(shortcutIconManager);
-
-            // Create the tab and add the page grid
-            Tab tab = new Tab();
-            Label tabTitle = new Label(page.getTitle());
-            tab.setGraphic(tabTitle);
-            tab.setContent(pageGrid);
-            tabContent.put(tab, pageGrid);
-
-            // Add the tab context menu
-            final ContextMenu contextMenu = new ContextMenu();
-            MenuItem changeSize = new MenuItem("Change Grid Size...");
-            changeSize.setStyle("-fx-text-fill: black;");
-            changeSize.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    requestChangePageSize(page, section);
-                }
-            });
-            MenuItem moveLeft = new MenuItem("Move Left");
-            moveLeft.setStyle("-fx-text-fill: black;");
-            moveLeft.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    int index = section.getPages().indexOf(page);
-                    if (index > 0) {
-                        Collections.swap(section.getPages(), index, index - 1);
-
-                        // Save the section
-                        onSectionModified(section);
-
-                        // Reload the section
-                        loadSection(section, SectionAnimationType.NONE);
-                    }
-                }
-            });
-            MenuItem moveRight = new MenuItem("Move Right");
-            moveRight.setStyle("-fx-text-fill: black;");
-            moveRight.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    int index = section.getPages().indexOf(page);
-                    if (index >= 0 && index < (section.getPages().size() - 1)) {
-                        Collections.swap(section.getPages(), index, index + 1);
-
-                        // Save the section
-                        onSectionModified(section);
-
-                        // Reload the section
-                        loadSection(section, SectionAnimationType.NONE);
-                    }
-                }
-            });
-            MenuItem delete = new MenuItem("Delete");
-            delete.setStyle("-fx-text-fill: black;");
-            delete.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                    Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-                    stage.getIcons().add(new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/icon.png")));
-                    alert.setTitle("Delete Confirmation");
-                    alert.setHeaderText("Do you really want to delete the page?");
-
-                    Optional<ButtonType> result = alert.showAndWait();
-                    if (result.get() == ButtonType.OK) {
-                        section.getPages().remove(page);
-
-                        // Save the section
-                        onSectionModified(section);
-
-                        // Reload the section
-                        loadSection(section, SectionAnimationType.NONE);
-                    }
-                }
-            });
-            contextMenu.getItems().addAll(changeSize, new SeparatorMenuItem(), moveLeft, moveRight, new SeparatorMenuItem(), delete);
-            tab.setContextMenu(contextMenu);
-
-            // Add the tab
-            tabPane.getTabs().add(tab);
-
-            // Select active tab
-            if (page.equals(activePage)) {
-                tabPane.getSelectionModel().select(tab);
-            }
-        }
-
-        // Add the bottom bar
-        BottomBarGrid bottomBarGrid = new BottomBarGrid(applicationManager, shortcutIconManager, BOTTOM_BAR_DEFAULT_COLS, section, screenOrientation);
-        bottomBarGrid.setSectionModifiedListener(this);
-
-        // This listener is used by the tab pane controller to select/add tabs
-        TabPaneController.OnTabListener onTabListener = new TabPaneController.OnTabListener() {
+        sectionGridController = new SectionGridController(section, controller.getContentBox(),
+                screenOrientation, applicationManager, shortcutIconManager, this,
+                new SectionGridController.OnSectionGridEventListener() {
             @Override
-            public void onTabSelected(int index) {
-                tabPane.getSelectionModel().select(index);
+            public void onRequestChangePageSize(Page page, Section section) {
+                requestChangePageSize(page, section);
+                sectionGridController.invalidate();
             }
 
             @Override
-            public void onAddTab() {
-                activePage = section.getPages().get(tabPane.getSelectionModel().getSelectedIndex());
+            public void onRequestDeletePage(Page page, Section section) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                stage.getIcons().add(new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/icon.png")));
+                alert.setTitle("Delete Confirmation");
+                alert.setHeaderText("Do you really want to delete the page?");
+
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == ButtonType.OK) {
+                    section.getPages().remove(page);
+
+                    // Save the section
+                    onSectionModified(section);
+
+                    // Re-render the grid
+                    sectionGridController.invalidate();
+                }
+            }
+
+            @Override
+            public void onMovePageLeft(Page page, Section section) {
+                int index = section.getPages().indexOf(page);
+                if (index > 0) {
+                    Collections.swap(section.getPages(), index, index - 1);
+
+                    // Save the section
+                    onSectionModified(section);
+
+                    // Re-render the grid
+                    sectionGridController.invalidate();
+                }
+            }
+
+            @Override
+            public void onMovePageRight(Page page, Section section) {
+                int index = section.getPages().indexOf(page);
+                if (index >= 0 && index < (section.getPages().size() - 1)) {
+                    Collections.swap(section.getPages(), index, index + 1);
+
+                    // Save the section
+                    onSectionModified(section);
+
+                    // Re-render the grid
+                    sectionGridController.invalidate();
+                }
+            }
+
+            @Override
+            public void onRequestAddPage(Section section) {
+                Page activePage = sectionGridController.getActivePage();
                 addPageToSection(section);
+                // Re-render the grid
+                sectionGridController.setActivePage(activePage);
+                sectionGridController.invalidate();
             }
-        };
-
-        // This listener is used to control the bottom bar opening mechanism
-        EventHandler openBtnClickEvent = new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                isBottomBarVisible = !isBottomBarVisible;
-                if (isBottomBarVisible) {
-                    loadSection(section, SectionAnimationType.OPEN_BOTTOMBAR);
-                }else{
-                    loadSection(section, SectionAnimationType.CLOSE_BOTTOMBAR);
-                }
-            }
-        };
-
-        Node currentPane;  // Used in the animation
-        Button openBtn = new Button();  // Used to display the bottombar
-        openBtn.setOnAction(openBtnClickEvent);
-
-        // Add the elements based on the orientation
-        if (screenOrientation == ScreenOrientation.PORTRAIT) {
-            // Page Grid
-            VBox box = new VBox();
-            box.setAlignment(Pos.CENTER);
-
-            // Used to contain the components and avoid line bugs in transitions
-            // by setting the background color to the same.
-            VBox contentBox = new VBox();
-            contentBox.setAlignment(Pos.CENTER);
-            contentBox.setMaxWidth(PORTRAIT_WIDTH);
-            contentBox.getStyleClass().add("section-box");
-            box.getChildren().add(contentBox);
-
-            // Add the elements
-            contentBox.getChildren().add(tabPane);
-
-            // Tab Pane Controller
-            HBox container = new HBox();
-            TabPaneController tabPaneDotController = new TabPaneController(tabPane, tabContent, container, onTabListener);
-            contentBox.getChildren().add(container);
-            container.setMaxWidth(PORTRAIT_WIDTH);
-
-            // Bottom bar
-            if (!isBottomBarVisible) {
-                bottomBarGrid.setScaleY(0);
-            }else{
-                box.getChildren().add(bottomBarGrid);
-            }
-
-            // Bottom bar open button
-            openBtn.getStyleClass().add("expand-btn");
-            openBtn.setMaxWidth(PORTRAIT_WIDTH);
-            Image openBtnImage;
-            if (!isBottomBarVisible) {
-                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/down_arrow.png"), 24, 24, true, true);
-            }else{
-                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/up_arrow.png"), 24, 24, true, true);
-            }
-            ImageView imageView = new ImageView(openBtnImage);
-            openBtn.setGraphic(imageView);
-            box.getChildren().add(openBtn);
-
-            currentPane = box;
-        } else {
-            // Page grid
-            HBox box = new HBox();
-            box.setAlignment(Pos.BOTTOM_CENTER);
-            box.getChildren().add(tabPane);
-
-            // Used to contain the components and avoid line bugs in transitions
-            // by setting the background color to the same.
-            HBox contentBox = new HBox();
-            contentBox.setAlignment(Pos.CENTER);
-            contentBox.setMaxHeight(LANDSCAPE_HEIGHT);
-            contentBox.getStyleClass().add("section-box");
-            box.getChildren().add(contentBox);
-
-            // Tab pane controller
-            VBox container = new VBox();
-            TabPaneController tabPaneDotController = new TabPaneController(tabPane, tabContent, container, onTabListener);
-            contentBox.getChildren().add(container);
-            container.setMaxHeight(LANDSCAPE_HEIGHT);
-
-            // Bottom bar
-            if (!isBottomBarVisible) {
-                bottomBarGrid.setScaleX(0);
-            }else{
-                box.getChildren().add(bottomBarGrid);
-            }
-
-            // Bottom bar open button
-            openBtn.getStyleClass().add("expand-btn");
-            openBtn.setMaxHeight(LANDSCAPE_HEIGHT);
-            Image openBtnImage;
-            if (!isBottomBarVisible) {
-                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/right_arrow.png"), 24, 24, true, true);
-            }else{
-                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/left_arrow.png"), 24, 24, true, true);
-            }
-            ImageView imageView = new ImageView(openBtnImage);
-            openBtn.setGraphic(imageView);
-            box.getChildren().add(openBtn);
-
-            currentPane = box;
-        }
-
-        // If the active page is contained in the current section, select the tab
-        if (section.getPages().contains(activePage)) {
-            int tabIndex = section.getPages().indexOf(activePage);
-            tabPane.getSelectionModel().select(tabIndex);
-        } else {  // Read the currently active page
-            activePage = section.getPages().get(tabPane.getSelectionModel().getSelectedIndex());
-        }
-
-        // Animation
-        if (activePane != null && animationType != SectionAnimationType.NONE) {
-            Node oldContent = activePane;
-            Node newContent = currentPane;
-
-            // When the transition is completed, load the new pane in the editor
-            EventHandler<ActionEvent> onTransitionCompleted = event -> {
-                // Clear the previous section
-                controller.getContentBox().getChildren().clear();
-                controller.getContentBox().getChildren().add(activePane);
-            };
-
-            Transition crossFade = null;
-            if (animationType == SectionAnimationType.CROSSFADE) {
-                FadeTransition fadeOut = new FadeTransition(
-                        Duration.seconds(ENTER_SECTION_FADE_DURATION), oldContent);
-                fadeOut.setFromValue(1);
-                fadeOut.setToValue(0);
-
-                fadeOut.setOnFinished(onTransitionCompleted);
-
-                FadeTransition fadeIn = new FadeTransition(
-                        Duration.seconds(ENTER_SECTION_FADE_DURATION), newContent);
-                fadeIn.setFromValue(0);
-                fadeIn.setToValue(1);
-
-                crossFade = new SequentialTransition(
-                        fadeOut, fadeIn);
-            } else if (animationType == SectionAnimationType.ROTATION) {
-                RotateTransition rotate = new RotateTransition(
-                        Duration.seconds(ROTATE_SECTION_DURATION), oldContent);
-
-                int angle;
-                if (screenOrientation == ScreenOrientation.PORTRAIT) {
-                    angle = 90;
-                } else {
-                    angle = -90;
-                }
-                rotate.setToAngle(angle);
-                rotate.setOnFinished(onTransitionCompleted);
-
-                FadeTransition fadeOut = new FadeTransition(
-                        Duration.seconds(ENTER_SECTION_FADE_DURATION), oldContent);
-                fadeOut.setFromValue(1);
-                fadeOut.setToValue(0.5);
-
-                FadeTransition fadeIn = new FadeTransition(
-                        Duration.seconds(ENTER_SECTION_FADE_DURATION), newContent);
-                fadeIn.setFromValue(0.5);
-                fadeIn.setToValue(1);
-
-                crossFade = new SequentialTransition(
-                        new ParallelTransition(rotate, fadeOut), fadeIn);
-            }else if (animationType == SectionAnimationType.OPEN_BOTTOMBAR) {
-                controller.getContentBox().getChildren().clear();
-                controller.getContentBox().getChildren().add(currentPane);
-
-                TranslateTransition translateUp = new TranslateTransition(
-                        Duration.seconds(BUTTON_BAR_DURATION), newContent);
-                translateUp.setInterpolator(Interpolator.EASE_OUT);
-                if (screenOrientation == ScreenOrientation.PORTRAIT) {
-                    translateUp.setFromY(PORTRAIT_BOTTOM_BAR_HEIGHT/2);
-                    translateUp.setToY(0);
-                }else{
-                    translateUp.setFromX(LANDSCAPE_BOTTOM_BAR_WIDTH/2);
-                    translateUp.setToX(0);
-                }
-
-                ScaleTransition scaleTransition = new ScaleTransition(Duration.seconds(BUTTON_BAR_DURATION), bottomBarGrid);
-                scaleTransition.setInterpolator(Interpolator.EASE_OUT);
-                if (screenOrientation == ScreenOrientation.PORTRAIT) {
-                    scaleTransition.setFromY(0);
-                    scaleTransition.setToY(1);
-                }else{
-                    scaleTransition.setFromX(0);
-                    scaleTransition.setToX(1);
-                }
-
-                TranslateTransition translateDown = new TranslateTransition(
-                        Duration.seconds(BUTTON_BAR_DURATION), bottomBarGrid);
-                translateDown.setInterpolator(Interpolator.EASE_OUT);
-                if (screenOrientation == ScreenOrientation.PORTRAIT) {
-                    translateDown.setFromY(-PORTRAIT_BOTTOM_BAR_HEIGHT/2);
-                    translateDown.setToY(0);
-                }else{
-                    translateDown.setFromX(-LANDSCAPE_BOTTOM_BAR_WIDTH/2);
-                    translateDown.setToX(0);
-                }
-
-                TranslateTransition buttonDown = new TranslateTransition(
-                        Duration.seconds(BUTTON_BAR_DURATION), openBtn);
-
-                if (screenOrientation == ScreenOrientation.PORTRAIT) {
-                    buttonDown.setFromY(-PORTRAIT_BOTTOM_BAR_HEIGHT);
-                    buttonDown.setToY(0);
-                }else{
-                    buttonDown.setFromX(-PORTRAIT_BOTTOM_BAR_HEIGHT);
-                    buttonDown.setToX(0);
-                }
-
-                crossFade = new SequentialTransition(
-                        new ParallelTransition(translateUp, scaleTransition, translateDown, buttonDown));
-            }else if (animationType == SectionAnimationType.CLOSE_BOTTOMBAR && activeBottomBar != null && activeOpenBtn != null) {
-                    ScaleTransition scaleTransition = new ScaleTransition(Duration.seconds(BUTTON_BAR_DURATION), activeBottomBar);
-                    scaleTransition.setInterpolator(Interpolator.EASE_OUT);
-
-                    if (screenOrientation == ScreenOrientation.PORTRAIT) {
-                        scaleTransition.setFromY(1);
-                        scaleTransition.setToY(0);
-                    }else {
-                        scaleTransition.setFromX(1);
-                        scaleTransition.setToX(0);
-                    }
-
-                    TranslateTransition translateDown = new TranslateTransition(
-                            Duration.seconds(BUTTON_BAR_DURATION), activeBottomBar);
-                    translateDown.setInterpolator(Interpolator.EASE_OUT);
-                    if (screenOrientation == ScreenOrientation.PORTRAIT) {
-                        translateDown.setFromY(0);
-                        translateDown.setToY(-PORTRAIT_BOTTOM_BAR_HEIGHT/2);
-                    }else{
-                        translateDown.setFromX(0);
-                        translateDown.setToX(-LANDSCAPE_BOTTOM_BAR_WIDTH/2);
-                    }
-
-                    TranslateTransition buttonDown = new TranslateTransition(
-                            Duration.seconds(BUTTON_BAR_DURATION), activeOpenBtn);
-                    if (screenOrientation == ScreenOrientation.PORTRAIT) {
-                        buttonDown.setFromY(0);
-                        buttonDown.setToY(-PORTRAIT_BOTTOM_BAR_HEIGHT/2);
-                    }else{
-                        buttonDown.setFromX(0);
-                        buttonDown.setToX(-LANDSCAPE_BOTTOM_BAR_WIDTH/2);
-                    }
-
-                    buttonDown.setOnFinished(onTransitionCompleted);
-
-                    TranslateTransition translateUp = new TranslateTransition(
-                            Duration.seconds(BUTTON_BAR_DURATION), newContent);
-                    translateUp.setInterpolator(Interpolator.EASE_OUT);
-
-                    if (screenOrientation == ScreenOrientation.PORTRAIT) {
-                        translateUp.setFromY(-PORTRAIT_BOTTOM_BAR_HEIGHT/2);
-                        translateUp.setToY(0);
-                    }else {
-                        translateUp.setFromX(-LANDSCAPE_BOTTOM_BAR_WIDTH / 2);
-                        translateUp.setToX(0);
-                    }
-
-                    crossFade = new SequentialTransition(
-                            new ParallelTransition(scaleTransition, translateDown, buttonDown), translateUp);
-            }
-            if (crossFade != null) {
-                crossFade.play();
-            }
-        } else {
-            // Clear the previous section and add the new one
-            controller.getContentBox().getChildren().clear();
-            controller.getContentBox().getChildren().add(currentPane);
-        }
-
-        // Update the active pane
-        activePane = currentPane;
-        activeBottomBar = bottomBarGrid;
-        activeOpenBtn = openBtn;
-    }
-
-    /**
-     * Types of animation when loading a section
-     */
-    enum SectionAnimationType {
-        NONE,
-        CROSSFADE,
-        ROTATION,
-        OPEN_BOTTOMBAR,
-        CLOSE_BOTTOMBAR
+        });
     }
 
     /**
@@ -849,9 +488,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
         // Save the section
         onSectionModified(section);
-
-        // Reload the section
-        loadSection(section, SectionAnimationType.NONE);
     }
 
     /**
@@ -968,9 +604,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
             // Save the section
             onSectionModified(section);
-
-            // Reload the section
-            loadSection(section, SectionAnimationType.CROSSFADE);
         }
     }
 
@@ -1125,6 +758,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
+                    Page modifiedPage = null;
 
                     int index = 0;
                     // Determine which page has been modified to stay focused on that one
@@ -1134,7 +768,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                                 if (sec.getPages().size() > i && section.getPages().size() > i) {
                                     // Compare the pages based on the number of components
                                     if (sec.getPages().get(i).getComponents().size() != section.getPages().get(i).getComponents().size()) {
-                                        activePage = section.getPages().get(i);
+                                        modifiedPage = section.getPages().get(i);
                                         break;
                                     }
                                 }
@@ -1154,7 +788,11 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                         animationType = SectionAnimationType.NONE;
                     }
 
-                    loadSection(section, animationType);
+                    loadSection(section);
+                    if (sectionGridController != null) {
+                        sectionGridController.setActivePage(modifiedPage);
+                        sectionGridController.invalidate();
+                    }
 
                     // Select the correct entry in the list view
                     for (Section sec : controller.getSectionsListView().getItems()) {
@@ -1183,20 +821,4 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             });
         }
     };
-
-    public static int getWidth(ScreenOrientation screenOrientation) {
-        if (screenOrientation == ScreenOrientation.PORTRAIT) {
-            return PORTRAIT_WIDTH;
-        } else {
-            return LANDSCAPE_WIDTH;
-        }
-    }
-
-    public static int getHeight(ScreenOrientation screenOrientation) {
-        if (screenOrientation == ScreenOrientation.PORTRAIT) {
-            return PORTRAIT_HEIGHT;
-        } else {
-            return LANDSCAPE_HEIGHT;
-        }
-    }
 }

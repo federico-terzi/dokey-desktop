@@ -125,11 +125,11 @@ public class TabPaneController {
                             newTab.setContent(oldContent);
                             TranslateTransition fadeOut = new TranslateTransition(
                                     Duration.seconds(SLIDE_DURATION), oldContent);
-                            fadeOut.setByX(direction*EditorStage.PORTRAIT_WIDTH);
+                            fadeOut.setByX(direction*SectionGridController.PORTRAIT_WIDTH);
 
                             TranslateTransition fadeIn = new TranslateTransition(
                                     Duration.seconds(SLIDE_DURATION), newContent);
-                            fadeIn.setFromX(-direction*EditorStage.PORTRAIT_WIDTH);
+                            fadeIn.setFromX(-direction*SectionGridController.PORTRAIT_WIDTH);
                             fadeIn.setToX(0);
                             fadeOut.setOnFinished(event -> {
                                 newTab.setContent(newContent);

@@ -22,18 +22,16 @@ public class BottomBarGrid extends ComponentGrid implements ComponentGrid.OnComp
         this.colCount = colCount;
         this.section = section;
 
-
-
         setOnComponentSelectedListener(this);
 
         // Customize the size based on the orientation
         if (screenOrientation == ScreenOrientation.PORTRAIT) {
-            setHeight(EditorStage.PORTRAIT_BOTTOM_BAR_HEIGHT);
-            setWidth(EditorStage.PORTRAIT_WIDTH);
+            setHeight(SectionGridController.PORTRAIT_BOTTOM_BAR_HEIGHT);
+            setWidth(SectionGridController.PORTRAIT_WIDTH);
             getStyleClass().add("bottombar-portrait");
         }else{
-            setHeight(EditorStage.LANDSCAPE_HEIGHT);
-            setWidth(EditorStage.LANDSCAPE_BOTTOM_BAR_WIDTH);
+            setHeight(SectionGridController.LANDSCAPE_HEIGHT);
+            setWidth(SectionGridController.LANDSCAPE_BOTTOM_BAR_WIDTH);
             getStyleClass().add("bottombar-landscape");
         }
     }

@@ -27,8 +27,8 @@ public class PageGrid extends ComponentGrid implements ComponentGrid.OnComponent
         }
 
         // Customize the size based on the orientation
-        setHeight(EditorStage.getHeight(screenOrientation));
-        setWidth(EditorStage.getWidth(screenOrientation));
+        setHeight(SectionGridController.getHeight(screenOrientation));
+        setWidth(SectionGridController.getWidth(screenOrientation));
     }
 
     private static Component[][] generateMatrix(Page page) {
