@@ -538,7 +538,26 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
      */
     private void exportSection(Section section) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Export Section...");
+        fileChooser.setTitle("Export Layout...");
+
+        String filename = "";
+        switch (section.getSectionType()) {
+            case SHORTCUTS:
+                // Get the application to extrapolate the name
+                Application application = applicationManager.getApplication(section.getRelatedAppId());
+                if (application != null) {
+                    filename = application.getName().replaceAll("[^A-Za-z0-9]", ""); // Remove all non alphanumeric chars
+                }
+                break;
+            case LAUNCHPAD:
+                filename = "Launchpad";
+                break;
+            case SYSTEM:
+                filename = "SystemCommands";
+                break;
+        }
+
+        fileChooser.setInitialFileName(filename);
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Section layout JSON (*.json)", "*.json");
         fileChooser.getExtensionFilters().add(extFilter);
         File destFile = fileChooser.showSaveDialog(EditorStage.this);
