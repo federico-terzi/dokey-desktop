@@ -12,9 +12,8 @@ import java.util.List;
 /**
  * This class is used to import a section.
  */
-public class SectionImporter {
+public class SectionImporter extends Importer {
     private File sectionFile;
-    private ApplicationManager appManager;
 
     private Section section = null;  // This will hold the loaded section
 
@@ -22,17 +21,12 @@ public class SectionImporter {
     // For example, an app that couldn't be found or a folder that doesn't exist.
     private List<Item> invalidItems;
 
-    // If this is true, the "compatibility mode" check will be set to true by default
-    // This happens for example when a section with CMD shortcuts is given to a Windows host
-    // the compatibility mode will replace all the CMD with CONTROL.
-    private boolean shouldRequireCompatibilityMode = false;
-
     private SectionManager sectionManager = new SectionManager();
     private HashMap<ItemType, ImportAgent> importAgents = new HashMap<>();
 
     public SectionImporter(File sectionFile, ApplicationManager appManager) {
+        super(appManager);
         this.sectionFile = sectionFile;
-        this.appManager = appManager;
     }
 
     /**
@@ -76,6 +70,8 @@ public class SectionImporter {
                 if (!result) {  // Invalid item
                     item.setValid(false);
                     invalidItems.add(item);
+                }else{
+                    item.setValid(true);
                 }
             }else{  // Item type not found, throw an exception
                 throw new SectionImportException("The section contains an invalid item type.");
@@ -89,6 +85,10 @@ public class SectionImporter {
     private void registerImportAgents() {
         // Register the import agents
         importAgents.put(ItemType.APP, new AppImportAgent(this));
+        importAgents.put(ItemType.SHORTCUT, new ShortcutImportAgent(this));
+        importAgents.put(ItemType.FOLDER, new FolderImportAgent(this));
+        importAgents.put(ItemType.WEB_LINK, new WebLinkImportAgent(this));
+        importAgents.put(ItemType.SYSTEM, new SystemImportAgent(this));
     }
 
     public Section getSection() {
@@ -97,10 +97,6 @@ public class SectionImporter {
 
     public List<Item> getInvalidItems() {
         return invalidItems;
-    }
-
-    public ApplicationManager getAppManager() {
-        return appManager;
     }
 
     /**

@@ -7,9 +7,9 @@ import section.model.Item;
  * and converting an item.
  */
 public abstract class ImportAgent {
-    protected SectionImporter importer;
+    protected Importer importer;
 
-    protected ImportAgent(SectionImporter importer) {
+    protected ImportAgent(Importer importer) {
         this.importer = importer;
     }
 
@@ -21,4 +21,10 @@ public abstract class ImportAgent {
      * @return true if the item is valid, false otherwise.
      */
     public abstract boolean analyzeItem(Item item);
+
+    /**
+     * Convert the given item based on the settings specified in the Importer.
+     * @param item the item to convert.
+     */
+    public abstract void convertItem(Item item);
 }

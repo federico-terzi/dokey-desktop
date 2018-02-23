@@ -24,7 +24,7 @@ public class AppImportAgent extends ImportAgent {
     // This set will contain the application executable paths
     private Set<String> applicationPathSet = new HashSet<>();
 
-    protected AppImportAgent(SectionImporter importer) {
+    protected AppImportAgent(Importer importer) {
         super(importer);
 
         appManager = importer.getAppManager();
@@ -61,5 +61,10 @@ public class AppImportAgent extends ImportAgent {
 
         // Not found, mark it as invalid
         return false;
+    }
+
+    @Override
+    public void convertItem(Item item) {
+        // No actions needed
     }
 }
