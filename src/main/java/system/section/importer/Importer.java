@@ -7,15 +7,15 @@ import system.model.ApplicationManager;
  * and also set up some options.
  */
 public abstract class Importer {
-    private ApplicationManager appManager;
+    protected ApplicationPathResolver applicationPathResolver;
 
     // If this is true, the "compatibility mode" check will be set to true by default
     // This happens for example when a section with CMD shortcuts is given to a Windows host
     // the compatibility mode will replace all the CMD with CONTROL.
-    private boolean shouldRequireCompatibilityMode = false;
+    protected boolean shouldRequireCompatibilityMode = false;
 
-    protected Importer(ApplicationManager appManager) {
-        this.appManager = appManager;
+    protected Importer(ApplicationPathResolver applicationPathResolver) {
+        this.applicationPathResolver = applicationPathResolver;
     }
 
     public boolean isShouldRequireCompatibilityMode() {
@@ -26,11 +26,11 @@ public abstract class Importer {
         this.shouldRequireCompatibilityMode = shouldRequireCompatibilityMode;
     }
 
-    public ApplicationManager getAppManager() {
-        return appManager;
+    public ApplicationPathResolver getApplicationPathResolver() {
+        return applicationPathResolver;
     }
 
-    public void setAppManager(ApplicationManager appManager) {
-        this.appManager = appManager;
+    public void setApplicationPathResolver(ApplicationPathResolver applicationPathResolver) {
+        this.applicationPathResolver = applicationPathResolver;
     }
 }

@@ -21,11 +21,17 @@ public class SectionImporter extends Importer {
     // For example, an app that couldn't be found or a folder that doesn't exist.
     private List<Item> invalidItems;
 
+    // This list will hold all the items
+    private List<Item> items;
+
+    // If this is set, when importing the section the related app id will be replaced with this one.
+    private String overrideRelatedAppID = null;
+
     private SectionManager sectionManager = new SectionManager();
     private HashMap<ItemType, ImportAgent> importAgents = new HashMap<>();
 
     public SectionImporter(File sectionFile, ApplicationManager appManager) {
-        super(appManager);
+        super(new ApplicationPathResolver(appManager));
         this.sectionFile = sectionFile;
     }
 
@@ -34,21 +40,35 @@ public class SectionImporter extends Importer {
      * @throws SectionImportException if an error occurred while analyzing.
      */
     public void analyze() throws SectionImportException{
-        // Reset the invalidItems array
-        invalidItems = new ArrayList<>(100);
-
-        // Register the importAgents ( done here because initializing them can have an overhead,
-        // and analyze() is usually run from another thread anyways ).
-        registerImportAgents();
-
         // Load the section from file
         section = sectionManager.getSectionFromFile(sectionFile);
         if (section == null) {
             throw new SectionImportException("Can't decode section from given file.");
         }
 
-        // This list will hold the items
-        List<Item> items = new ArrayList<>(100);
+        // Reset the invalidItems list
+        invalidItems = new ArrayList<>(100);
+
+        // Initialize the items list
+        items = new ArrayList<>(100);
+
+        // Register the importAgents ( done here because initializing them can have an overhead,
+        // and analyze() is usually run from another thread anyways ).
+        registerImportAgents();
+
+        // Load the application path resolver
+        applicationPathResolver.load();
+
+        // If the section is of type SHORTCUTS, the new path of the RelatedAppID must be found
+        if (section.getSectionType() == SectionType.SHORTCUTS) {
+            // Search for the new path
+            String newRelatedAppID = applicationPathResolver.searchApp(section.getRelatedAppId());
+
+            // If found, mark it as overrideable.
+            if (newRelatedAppID != null) {
+                overrideRelatedAppID = newRelatedAppID;
+            }
+        }
 
         // Add all the items of the section to the list
         // Cycle through all pages
@@ -77,6 +97,28 @@ public class SectionImporter extends Importer {
                 throw new SectionImportException("The section contains an invalid item type.");
             }
         }
+    }
+
+    /**
+     * Converts all the items and saves the section to file
+     */
+    public void importSection() {
+        // Convert all the items
+        for (Item item : items) {
+            // Convert the item based on the type
+            // Make sure the item type is valid
+            if (importAgents.containsKey(item.getItemType())) {
+               importAgents.get(item.getItemType()).convertItem(item);
+            }
+        }
+
+        // Override the related app id if needed.
+        if (overrideRelatedAppID != null) {
+            section.setRelatedAppId(overrideRelatedAppID);
+        }
+
+        // Save the section
+        sectionManager.saveSection(section);
     }
 
     /**
