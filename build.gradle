@@ -28,7 +28,7 @@ apply plugin: 'javafx-gradle-plugin'
 
 sourceCompatibility = 1.8
 
-// Remove the icons and sicons directory from the JAR, because they will
+// Remove the image directories from the JAR, because they will
 // be included outside the jar
 sourceSets.main.resources.excludes = ["/icons", "/sicons", "/sysicons", "/webicons"]
 

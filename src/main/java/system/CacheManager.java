@@ -3,6 +3,7 @@ package system;
 
 import org.apache.commons.io.FileUtils;
 import system.model.ApplicationManager;
+import system.section.SectionManager;
 import utils.OSValidator;
 
 import java.io.File;

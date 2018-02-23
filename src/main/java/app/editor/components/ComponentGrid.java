@@ -3,9 +3,6 @@ package app.editor.components;
 import app.editor.model.ScreenOrientation;
 import app.editor.model.item_actions.*;
 import app.editor.stages.ShortcutDialogStage;
-import app.editor.stages.AppSelectDialogStage;
-import app.editor.stages.SystemDialogStage;
-import app.editor.stages.WebLinkDialogStage;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
@@ -13,16 +10,11 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import section.model.*;
-import system.model.Application;
 import system.model.ApplicationManager;
-import system.sicons.ShortcutIcon;
-import system.sicons.ShortcutIconManager;
+import system.section.ShortcutIconManager;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 

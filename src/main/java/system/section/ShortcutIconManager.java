@@ -1,4 +1,4 @@
-package system.sicons;
+package system.section;
 
 import net.model.IconTheme;
 import org.apache.commons.lang3.text.WordUtils;

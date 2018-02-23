@@ -1,14 +1,10 @@
 package app.editor.model.item_actions;
 
 import app.editor.components.ComponentGrid;
-import app.editor.stages.AppSelectDialogStage;
 import app.editor.stages.ShortcutDialogStage;
-import section.model.AppItem;
 import section.model.Component;
-import section.model.ItemType;
 import section.model.ShortcutItem;
-import system.model.Application;
-import system.sicons.ShortcutIcon;
+import system.section.ShortcutIcon;
 
 import java.io.IOException;
 

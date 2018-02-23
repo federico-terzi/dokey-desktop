@@ -1,10 +1,12 @@
-package system;
+package system.section;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import json.JSONObject;
 import json.JSONTokener;
 import org.apache.commons.io.FileUtils;
 import section.model.*;
+import system.CacheManager;
+import system.ResourceUtils;
 
 import java.io.*;
 import java.util.*;
@@ -106,7 +108,7 @@ public class SectionManager {
      * @param sectionFile the section File
      * @return the Section read from the file
      */
-    private Section getSectionFromFile(File sectionFile) {
+    public Section getSectionFromFile(File sectionFile) {
         // Read the content
         try {
             FileInputStream fis = new FileInputStream(sectionFile);

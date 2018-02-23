@@ -2,12 +2,11 @@ package app.editor.components;
 
 import app.editor.listeners.OnSectionModifiedListener;
 import app.editor.model.ScreenOrientation;
-import app.editor.stages.EditorStage;
 import section.model.Component;
 import section.model.Item;
 import section.model.Section;
 import system.model.ApplicationManager;
-import system.sicons.ShortcutIconManager;
+import system.section.ShortcutIconManager;
 
 import java.util.ArrayList;
 import java.util.List;

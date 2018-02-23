@@ -1,6 +1,5 @@
 package app.editor.stages;
 
-import app.editor.controllers.AppListController;
 import app.editor.controllers.ShortcutIconListController;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -14,10 +13,8 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import net.model.IconTheme;
 import system.ResourceUtils;
-import system.model.Application;
-import system.sicons.ShortcutIcon;
-import system.sicons.ShortcutIconManager;
-import utils.IconManager;
+import system.section.ShortcutIcon;
+import system.section.ShortcutIconManager;
 
 import java.io.IOException;
 import java.util.Collections;

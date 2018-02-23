@@ -1,12 +1,9 @@
 package app.editor.model.item_actions;
 
 import app.editor.components.ComponentGrid;
-import app.editor.stages.ShortcutDialogStage;
 import app.editor.stages.WebLinkDialogStage;
 import section.model.Component;
-import section.model.ShortcutItem;
 import section.model.WebLinkItem;
-import system.sicons.ShortcutIcon;
 
 import java.io.IOException;
 

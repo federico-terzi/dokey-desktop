@@ -2,12 +2,11 @@ package app.editor.components;
 
 import app.editor.listeners.OnSectionModifiedListener;
 import app.editor.model.ScreenOrientation;
-import app.editor.stages.EditorStage;
 import section.model.Component;
 import section.model.Page;
 import section.model.Section;
 import system.model.ApplicationManager;
-import system.sicons.ShortcutIconManager;
+import system.section.ShortcutIconManager;
 
 public class PageGrid extends ComponentGrid implements ComponentGrid.OnComponentSelectedListener {
     private Page page;

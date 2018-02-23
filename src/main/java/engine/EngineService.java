@@ -16,8 +16,9 @@ import section.model.SystemCommands;
 import system.*;
 import system.model.Application;
 import system.model.ApplicationManager;
-import system.sicons.ShortcutIcon;
-import system.sicons.ShortcutIconManager;
+import system.section.SectionManager;
+import system.section.ShortcutIcon;
+import system.section.ShortcutIconManager;
 
 import java.awt.*;
 import java.io.File;

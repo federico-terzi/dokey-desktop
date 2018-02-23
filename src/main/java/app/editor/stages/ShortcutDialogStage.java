@@ -2,8 +2,6 @@ package app.editor.stages;
 
 import app.editor.controllers.ShortcutDialogController;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -20,8 +18,8 @@ import net.model.IconTheme;
 import net.model.KeyboardKeys;
 import section.model.ShortcutItem;
 import system.ResourceUtils;
-import system.sicons.ShortcutIcon;
-import system.sicons.ShortcutIconManager;
+import system.section.ShortcutIcon;
+import system.section.ShortcutIconManager;
 import utils.OSValidator;
 
 import java.io.IOException;

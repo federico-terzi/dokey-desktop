@@ -1,15 +1,12 @@
 package app.editor.controllers;
 
-import app.editor.listcells.ApplicationListCell;
 import app.editor.listcells.ShortcutIconListCell;
-import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.util.Callback;
-import system.model.Application;
-import system.sicons.ShortcutIcon;
+import system.section.ShortcutIcon;
 
 public class ShortcutIconListController {
     public TextField searchTextField;

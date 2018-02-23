@@ -16,7 +16,7 @@ import javafx.util.Duration;
 import section.model.Page;
 import section.model.Section;
 import system.model.ApplicationManager;
-import system.sicons.ShortcutIconManager;
+import system.section.ShortcutIconManager;
 
 import java.util.HashMap;
 import java.util.Map;

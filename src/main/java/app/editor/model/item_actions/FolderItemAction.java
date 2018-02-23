@@ -1,15 +1,11 @@
 package app.editor.model.item_actions;
 
 import app.editor.components.ComponentGrid;
-import app.editor.stages.ShortcutDialogStage;
 import javafx.stage.DirectoryChooser;
 import section.model.Component;
 import section.model.FolderItem;
-import section.model.ShortcutItem;
-import system.sicons.ShortcutIcon;
 
 import java.io.File;
-import java.io.IOException;
 
 public class FolderItemAction extends ItemAction {
     public FolderItemAction(ComponentGrid componentGrid) {

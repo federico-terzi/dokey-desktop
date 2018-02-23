@@ -40,10 +40,10 @@ import section.model.Section;
 import section.model.SectionType;
 import system.BroadcastManager;
 import system.ResourceUtils;
-import system.SectionManager;
+import system.section.SectionManager;
 import system.model.Application;
 import system.model.ApplicationManager;
-import system.sicons.ShortcutIconManager;
+import system.section.ShortcutIconManager;
 import app.editor.components.SectionGridController.SectionAnimationType;
 
 import java.io.File;

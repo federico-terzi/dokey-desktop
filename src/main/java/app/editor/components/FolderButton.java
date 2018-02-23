@@ -1,23 +1,11 @@
 package app.editor.components;
 
-import app.editor.stages.ShortcutDialogStage;
-import javafx.geometry.Pos;
 import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.TextAlignment;
-import javafx.stage.DirectoryChooser;
 import section.model.Component;
 import section.model.FolderItem;
-import section.model.ShortcutItem;
-import system.sicons.ShortcutIcon;
-import system.sicons.ShortcutIconManager;
-
-import java.io.File;
-import java.io.IOException;
 
 public class FolderButton extends ComponentButton {
     private FolderItem item;
