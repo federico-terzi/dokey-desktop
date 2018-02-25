@@ -141,6 +141,10 @@ public class SectionImporter extends Importer {
         return invalidItems;
     }
 
+    public String getOverrideRelatedAppID() {
+        return overrideRelatedAppID;
+    }
+
     /**
      * If an exception occurs while importing the section, this error will be thrown.
      */

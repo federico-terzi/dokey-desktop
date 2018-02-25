@@ -18,7 +18,7 @@ public abstract class Importer {
         this.applicationPathResolver = applicationPathResolver;
     }
 
-    public boolean isShouldRequireCompatibilityMode() {
+    public boolean shouldRequireCompatibilityMode() {
         return shouldRequireCompatibilityMode;
     }
 

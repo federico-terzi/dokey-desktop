@@ -183,7 +183,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         controller.importBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-
+                importSection();
             }
         });
         controller.addApplicationBtn.setOnAction(new EventHandler<ActionEvent>() {
@@ -538,7 +538,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
      */
     private void exportSection(Section section) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Export Layout...");
+        fileChooser.setTitle("Export Layout");
 
         // Generate the suggested filename based on the section type
         String filename = "";
@@ -569,6 +569,27 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 alert.setTitle("Error");
                 alert.setHeaderText("There was an error saving the file");
                 alert.show();
+            }
+        }
+    }
+
+    /**
+     * Display a file chooser dialog and begin the importing mechanism.
+     */
+    private void importSection() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Import Layout");
+
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Section layout JSON (*.json)", "*.json");
+        fileChooser.getExtensionFilters().add(extFilter);
+        File importFile = fileChooser.showOpenDialog(EditorStage.this);
+
+        if (importFile != null) {
+            try {
+                Stage importStage = new ImportDialogStage(importFile, applicationManager);
+                importStage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }

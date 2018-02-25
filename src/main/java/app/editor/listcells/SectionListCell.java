@@ -11,6 +11,7 @@ import section.model.Section;
 import section.model.SectionType;
 import system.model.Application;
 import system.model.ApplicationManager;
+import system.section.SectionInfoResolver;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -19,6 +20,7 @@ import java.util.Optional;
 public class SectionListCell extends ListCell<Section> {
 
     private ApplicationManager appManager;
+    private SectionInfoResolver sectionInfoResolver;
     private OnContextMenuListener onContextMenuListener;
 
     private GridPane grid = new GridPane();
@@ -29,6 +31,7 @@ public class SectionListCell extends ListCell<Section> {
     public SectionListCell(ApplicationManager appManager, OnContextMenuListener onContextMenuListener) {
         this.appManager = appManager;
         this.onContextMenuListener = onContextMenuListener;
+        sectionInfoResolver = new SectionInfoResolver(appManager);
 
         configureGrid();
         addControlsToGrid();
@@ -55,30 +58,17 @@ public class SectionListCell extends ListCell<Section> {
     private void addContent(Section section) {
         setText(null);
 
+        SectionInfoResolver.SectionInfo sectionInfo = sectionInfoResolver.getSectionInfo(section);
+
+        if (sectionInfo != null) {
+            image.setImage(sectionInfo.image);
+            name.setText(sectionInfo.name);
+            path.setText(sectionInfo.description);
+        }
+
         if (section.getSectionType() == SectionType.SHORTCUTS) {
-            Application application = appManager.getApplication(section.getRelatedAppId());
-
-            if (application != null && application.getIconPath() != null) {
-                Image appImage = new Image(new File(application.getIconPath()).toURI().toString(), 32, 32, true, true);
-                image.setImage(appImage);
-
-                name.setText(application.getName());
-                path.setText(application.getExecutablePath());
-            }
             image.getStyleClass().remove("style-icon");
-        }else if (section.getSectionType() == SectionType.LAUNCHPAD){
-            Image appImage = null;
-            appImage = new Image(SectionListCell.class.getResourceAsStream("/assets/apps.png"), 32, 32, true, true);
-            image.setImage(appImage);
-            name.setText("Launchpad");
-            path.setText("The main application launcher");
-            image.getStyleClass().add("style-icon");
-        }else if (section.getSectionType() == SectionType.SYSTEM){
-            Image appImage = null;
-            appImage = new Image(SectionListCell.class.getResourceAsStream("/assets/shutdown.png"), 32, 32, true, true);
-            image.setImage(appImage);
-            name.setText("System");
-            path.setText("The system control launchpad");
+        }else if (section.getSectionType() == SectionType.LAUNCHPAD || section.getSectionType() == SectionType.SYSTEM){
             image.getStyleClass().add("style-icon");
         }
 
