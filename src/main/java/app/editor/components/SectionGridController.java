@@ -244,14 +244,9 @@ public class SectionGridController {
             // Bottom bar open button
             showHideBottomBarButton.getStyleClass().add("expand-btn");
             showHideBottomBarButton.setMaxWidth(PORTRAIT_WIDTH);
-            Image openBtnImage;
-            if (!isBottomBarVisible) {
-                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/down_arrow.png"), 24, 24, true, true);
-            } else {
-                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/up_arrow.png"), 24, 24, true, true);
-            }
-            ImageView imageView = new ImageView(openBtnImage);
-            showHideBottomBarButton.setGraphic(imageView);
+
+            renderShowHideBtn();
+
             box.getChildren().add(showHideBottomBarButton);
 
             currentPane = box;
@@ -285,14 +280,9 @@ public class SectionGridController {
             // Bottom bar open button
             showHideBottomBarButton.getStyleClass().add("expand-btn");
             showHideBottomBarButton.setMaxHeight(LANDSCAPE_HEIGHT);
-            Image openBtnImage;
-            if (!isBottomBarVisible) {
-                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/right_arrow.png"), 24, 24, true, true);
-            } else {
-                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/left_arrow.png"), 24, 24, true, true);
-            }
-            ImageView imageView = new ImageView(openBtnImage);
-            showHideBottomBarButton.setGraphic(imageView);
+
+            renderShowHideBtn();
+
             box.getChildren().add(showHideBottomBarButton);
 
             currentPane = box;
@@ -318,6 +308,28 @@ public class SectionGridController {
         ROTATION,
         OPEN_BOTTOMBAR,
         CLOSE_BOTTOMBAR
+    }
+
+    private void renderShowHideBtn() {
+        if (screenOrientation == ScreenOrientation.PORTRAIT) {
+            Image openBtnImage;
+            if (!isBottomBarVisible) {
+                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/down_arrow.png"), 24, 24, true, true);
+            } else {
+                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/up_arrow.png"), 24, 24, true, true);
+            }
+            ImageView imageView = new ImageView(openBtnImage);
+            showHideBottomBarButton.setGraphic(imageView);
+        } else {
+            Image openBtnImage;
+            if (!isBottomBarVisible) {
+                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/right_arrow.png"), 24, 24, true, true);
+            } else {
+                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/left_arrow.png"), 24, 24, true, true);
+            }
+            ImageView imageView = new ImageView(openBtnImage);
+            showHideBottomBarButton.setGraphic(imageView);
+        }
     }
 
     private void showBottomBar() {
@@ -367,6 +379,12 @@ public class SectionGridController {
         }
 
         Transition transition = new ParallelTransition(translateUp, scaleTransition, translateDown, buttonDown);
+
+        transition.setOnFinished(event -> {
+            isBottomBarVisible = true;
+            renderShowHideBtn();
+        });
+
         transition.play();
     }
 
@@ -423,6 +441,8 @@ public class SectionGridController {
             showHideBottomBarButton.setTranslateX(0);
             activePane.setTranslateY(0);
             activePane.setTranslateX(0);
+            isBottomBarVisible = false;
+            renderShowHideBtn();
         });
 
         transition.play();
