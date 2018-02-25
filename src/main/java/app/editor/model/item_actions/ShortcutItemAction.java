@@ -4,7 +4,7 @@ import app.editor.components.ComponentGrid;
 import app.editor.stages.ShortcutDialogStage;
 import section.model.Component;
 import section.model.ShortcutItem;
-import system.section.ShortcutIcon;
+import system.ShortcutIcon;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package system.section;
+package system;
 
 import org.jetbrains.annotations.NotNull;
 

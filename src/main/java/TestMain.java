@@ -4,7 +4,6 @@ import system.MAC.MACApplicationManager;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.model.Window;
-import system.ApplicationManagerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

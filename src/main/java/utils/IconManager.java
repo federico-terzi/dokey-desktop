@@ -20,19 +20,9 @@ public class IconManager {
     // Contains the association between the domain and the high res icon file
     public Map<String, File> webIconMap;
 
-    private static IconManager instance = null;
-
-    private IconManager() {
+    public IconManager() {
         loadHighResIconMap();
         loadWebIconMap();
-    }
-
-    public static IconManager getInstance() {
-        if (instance == null) {
-            instance = new IconManager();
-        }
-
-        return instance;
     }
 
     /**

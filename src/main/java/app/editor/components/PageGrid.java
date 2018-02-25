@@ -5,16 +5,18 @@ import app.editor.model.ScreenOrientation;
 import section.model.Component;
 import section.model.Page;
 import section.model.Section;
+import system.WebLinkResolver;
 import system.model.ApplicationManager;
-import system.section.ShortcutIconManager;
+import system.ShortcutIconManager;
 
 public class PageGrid extends ComponentGrid implements ComponentGrid.OnComponentSelectedListener {
     private Page page;
     private Section section;
     private OnSectionModifiedListener sectionModifiedListener;
 
-    public PageGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, Page page, Section section, ScreenOrientation screenOrientation) {
-        super(applicationManager, shortcutIconManager, generateMatrix(page), screenOrientation);
+    public PageGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, WebLinkResolver webLinkResolver,
+                    Page page, Section section, ScreenOrientation screenOrientation) {
+        super(applicationManager, shortcutIconManager, webLinkResolver, generateMatrix(page), screenOrientation);
         this.page = page;
         this.section = section;
         setOnComponentSelectedListener(this);

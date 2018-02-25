@@ -1,9 +1,4 @@
-import system.ApplicationManagerFactory;
 import system.MS.MSIconExtractor;
-import system.model.ApplicationManager;
-import system.model.Window;
-
-import java.util.List;
 
 public class IconTestMain {
     public static void main(String[] args) {

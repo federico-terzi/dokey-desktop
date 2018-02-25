@@ -52,7 +52,10 @@ public class MSApplicationManager extends ApplicationManager {
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
 
-    public MSApplicationManager() {
+    private IconManager iconManager;
+
+    public MSApplicationManager(IconManager iconManager) {
+        this.iconManager = iconManager;
         // Check if powershell is enabled in this machine
         isPowerShellEnabled = checkPowerShellEnabled();
     }
@@ -883,8 +886,8 @@ public class MSApplicationManager extends ApplicationManager {
         File executableFile = new File(executablePath);
 
         // Check if an high res version is available
-        if (IconManager.getInstance().highResIconMap.containsKey(executableFile.getName())) {
-            iconFile = IconManager.getInstance().highResIconMap.get(executableFile.getName());
+        if (iconManager.highResIconMap.containsKey(executableFile.getName())) {
+            iconFile = iconManager.highResIconMap.get(executableFile.getName());
             LOG.fine("ICON FROM HIGH RES CACHE: "+executablePath);
         }else{
             // Generate the icon file

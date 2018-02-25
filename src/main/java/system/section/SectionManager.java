@@ -71,7 +71,7 @@ public class SectionManager {
         return getSectionFromFile(sectionFile);
     }
 
-    public boolean saveSection(Section section) {
+    public synchronized boolean saveSection(Section section) {
         File sectionFile = null;
 
         // Get the appropriate destination file
@@ -90,7 +90,7 @@ public class SectionManager {
         return writeSectionToFile(section, sectionFile);
     }
 
-    public boolean deleteSection(Section section) {
+    public synchronized boolean deleteSection(Section section) {
         File sectionFile = null;
 
         // Get the appropriate destination file and delete it
@@ -307,7 +307,7 @@ public class SectionManager {
      * @param dest    the destination File.
      * @return true if succeeded, false otherwise.
      */
-    public boolean writeSectionToFile(Section section, File dest) {
+    public synchronized boolean writeSectionToFile(Section section, File dest) {
         try {
             // Write the json section to the file
             FileOutputStream fos = new FileOutputStream(dest);

@@ -12,8 +12,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 import section.model.*;
+import system.WebLinkResolver;
 import system.model.ApplicationManager;
-import system.section.ShortcutIconManager;
+import system.ShortcutIconManager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -22,6 +23,7 @@ public class ComponentGrid extends GridPane {
 
     private ApplicationManager applicationManager;
     private ShortcutIconManager shortcutIconManager;
+    private WebLinkResolver webLinkResolver;
     protected ScreenOrientation screenOrientation;
     private OnComponentSelectedListener onComponentSelectedListener;
 
@@ -34,10 +36,11 @@ public class ComponentGrid extends GridPane {
     protected Map<ItemType, ItemAction> itemTypeActions = new HashMap<>();
     private List<ItemAction> orderedTypeActions;  // Generated automatically, do not touch
 
-    public ComponentGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, Component[][] componentMatrix, ScreenOrientation screenOrientation) {
+    public ComponentGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, WebLinkResolver webLinkResolver, Component[][] componentMatrix, ScreenOrientation screenOrientation) {
         super();
         this.applicationManager = applicationManager;
         this.shortcutIconManager = shortcutIconManager;
+        this.webLinkResolver = webLinkResolver;
         this.componentMatrix = componentMatrix;
         this.screenOrientation = screenOrientation;
 
@@ -438,6 +441,10 @@ public class ComponentGrid extends GridPane {
         void onDeleteComponentRequested(Component component);
 
         void onEditComponentRequested(Component component);
+    }
+
+    public WebLinkResolver getWebLinkResolver() {
+        return webLinkResolver;
     }
 
     public ApplicationManager getApplicationManager() {

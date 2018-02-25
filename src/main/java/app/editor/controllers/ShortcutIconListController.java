@@ -6,7 +6,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.util.Callback;
-import system.section.ShortcutIcon;
+import system.ShortcutIcon;
 
 public class ShortcutIconListController {
     public TextField searchTextField;

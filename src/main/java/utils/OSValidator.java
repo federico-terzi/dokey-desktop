@@ -2,6 +2,9 @@ package utils;
 
 import net.model.DeviceInfo;
 
+/**
+ * Used to determine which operating system is in use.
+ */
 public class OSValidator {
     private static String OS = System.getProperty("os.name").toLowerCase();
 
@@ -29,6 +32,9 @@ public class OSValidator {
 
     }
 
+    /**
+     * @return the correct DeviceInfo.OS based on the current operating system.
+     */
     public static DeviceInfo.OS getOS() {
         if (isWindows()) {
             return DeviceInfo.OS.WIN;

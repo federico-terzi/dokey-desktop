@@ -1,5 +1,4 @@
 import engine.EngineService;
-import system.ApplicationManagerFactory;
 import system.ApplicationSwitchDaemon;
 import system.model.ApplicationManager;
 
@@ -11,7 +10,8 @@ import java.net.Socket;
 public class ServerMain {
     public static void main(String[] args) {
         // Get the application manager
-        ApplicationManager wm = ApplicationManagerFactory.getInstance();
+        //ApplicationManager wm = ApplicationManagerFactory.getInstance();
+        ApplicationManager wm = null;
         // Load the applications
         wm.loadApplications(new ApplicationManager.OnLoadApplicationsListener() {
             @Override
@@ -52,7 +52,7 @@ public class ServerMain {
 
                 System.out.println("Connected with: "+socket.getInetAddress().toString());
 
-                EngineService engineService = new EngineService(socket, wm, applicationSwitchDaemon, null, null);
+                EngineService engineService = new EngineService(socket, wm, applicationSwitchDaemon, null, null, null);
                 engineService.start();
 
             } catch (IOException e) {

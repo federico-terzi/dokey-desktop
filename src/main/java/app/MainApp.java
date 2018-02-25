@@ -12,6 +12,14 @@ import javafx.stage.Stage;
 import net.discovery.ServerDiscoveryDaemon;
 import net.model.DeviceInfo;
 import net.model.ServerInfo;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Service;
 import system.*;
 import system.adb.ADBManager;
 import system.model.ApplicationManager;
@@ -25,15 +33,16 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class MainApp extends Application implements EngineWorker.OnDeviceConnectionListener, ADBManager.OnUSBDeviceConnectedListener, TrayIconManager.OnTrayActionListener {
-    // a timer allowing the tray icon to provide a periodic notification event.
-    private Timer notificationTimer = new Timer();
-
+@Service
+public class MainApp extends Application implements EngineWorker.OnDeviceConnectionListener, ADBManager.OnUSBDeviceConnectedListener,
+        TrayIconManager.OnTrayActionListener{
     private boolean isEditorOpen = false;
     private boolean isSettingsOpen = false;
 
-    private TrayIconManager trayIconManager = new TrayIconManager();
+    private ApplicationContext context;
+
     private ApplicationManager appManager;
+    private TrayIconManager trayIconManager;
     private ApplicationSwitchDaemon applicationSwitchDaemon;
     private ServerDiscoveryDaemon serverDiscoveryDaemon;
     private ActiveApplicationsDaemon activeApplicationsDaemon;
@@ -41,7 +50,6 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private ADBManager adbManager;
     private SystemManager systemManager;
 
-    private Stage primaryStage;
     private InitializationStage initializationStage;
 
     // Create the logger
@@ -77,7 +85,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        this.primaryStage = primaryStage;
+        // Setup spring
+        context = new AnnotationConfigApplicationContext(AppConfig.class);
 
         // Set the MODENA theme
         setUserAgentStylesheet(STYLESHEET_MODENA);
@@ -85,17 +94,18 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         // instructs the javafx system not to exit implicitly when the last application window is shut.
         Platform.setImplicitExit(false);
 
-        // sets up the tray icon
+        // sets up the tray icon manager
+        trayIconManager = context.getBean(TrayIconManager.class);
         javax.swing.SwingUtilities.invokeLater(() -> trayIconManager.initialize(MainApp.this));
 
         // Initialize the application manager
-        appManager = ApplicationManagerFactory.getInstance();
+        appManager = context.getBean(ApplicationManager.class);
 
         // If the apps are not yet initialized, it means that this is the first startup.
         isFirstStartup = !appManager.isInitialized();
 
         // Initialize the application switch daemon
-        applicationSwitchDaemon = new ApplicationSwitchDaemon(appManager);
+        applicationSwitchDaemon = context.getBean(ApplicationSwitchDaemon.class);
 
         // Initialize the discovery daemon
         ServerInfo serverInfo = SystemInfoManager.getServerInfo(EngineServer.SERVER_PORT);
@@ -105,15 +115,15 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         adbManager = new ADBManager(this, serverInfo);
 
         // Initialize the sections
-        SectionManager sectionManager = new SectionManager();
+        SectionManager sectionManager = context.getBean(SectionManager.class);
         sectionManager.getLaunchpadSection();
         sectionManager.getSystemSection();
 
         // Initialize the system manager
-        systemManager = SystemManagerFactory.getInstance();
+        systemManager = context.getBean(SystemManager.class);
 
         // Initialize the active applications daemon
-        activeApplicationsDaemon = new ActiveApplicationsDaemon(appManager);
+        activeApplicationsDaemon = context.getBean(ActiveApplicationsDaemon.class);
 
         // load the applications
         loadApplications();
@@ -231,7 +241,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         // Start the active apps daemon
         activeApplicationsDaemon.start();
 
-        engineServer = new EngineServer(appManager, applicationSwitchDaemon, systemManager, activeApplicationsDaemon);
+        // Start the engine server
+        engineServer = context.getBean(EngineServer.class);
         engineServer.setDeviceConnectionListener(this);
         engineServer.start();
 
@@ -266,18 +277,10 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
             return;
         }
 
-        try {
-            isEditorOpen = true;
-            EditorStage editorStage = new EditorStage(appManager, new EditorStage.OnEditorEventListener() {
-                @Override
-                public void onEditorClosed() {
-                    isEditorOpen = false;
-                }
-            });
-            editorStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        isEditorOpen = true;
+        EditorStage editorStage = context.getBean(EditorStage.class,
+                (EditorStage.OnEditorEventListener) () -> isEditorOpen = false);
+        editorStage.show();
     }
 
     @Override
@@ -290,18 +293,10 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
             return;
         }
 
-        try {
-            isSettingsOpen = true;
-            SettingsStage settingsStage = new SettingsStage(appManager, new SettingsStage.OnSettingsCloseListener() {
-                @Override
-                public void onSettingsClosed() {
-                    isSettingsOpen = false;
-                }
-            });
-            settingsStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        isSettingsOpen = true;
+        SettingsStage settingsStage = context.getBean(SettingsStage.class,
+                (SettingsStage.OnSettingsCloseListener) () -> isSettingsOpen = false);
+        settingsStage.show();
     }
 
     @Override
@@ -363,12 +358,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private BroadcastManager.BroadcastListener openEditorRequestListener = new BroadcastManager.BroadcastListener() {
         @Override
         public void onBroadcastReceived(Serializable param) {
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    openEditor();
-                }
-            });
+            Platform.runLater(() -> openEditor());
         }
     };
 }

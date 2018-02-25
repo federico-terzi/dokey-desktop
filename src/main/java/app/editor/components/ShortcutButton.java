@@ -8,7 +8,7 @@ import javafx.scene.layout.VBox;
 import net.model.IconTheme;
 import section.model.Component;
 import section.model.ShortcutItem;
-import system.section.ShortcutIcon;
+import system.ShortcutIcon;
 
 public class ShortcutButton extends ComponentButton {
     private ShortcutItem item;

@@ -18,8 +18,8 @@ import net.model.IconTheme;
 import net.model.KeyboardKeys;
 import section.model.ShortcutItem;
 import system.ResourceUtils;
-import system.section.ShortcutIcon;
-import system.section.ShortcutIconManager;
+import system.ShortcutIcon;
+import system.ShortcutIconManager;
 import utils.OSValidator;
 
 import java.io.IOException;

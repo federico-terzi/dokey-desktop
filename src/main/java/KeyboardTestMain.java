@@ -1,5 +1,4 @@
 import net.model.KeyboardKeys;
-import system.ApplicationManagerFactory;
 import system.KeyboardManager;
 import system.model.ApplicationManager;
 import system.model.Window;

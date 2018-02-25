@@ -40,10 +40,11 @@ import section.model.Section;
 import section.model.SectionType;
 import system.BroadcastManager;
 import system.ResourceUtils;
+import system.WebLinkResolver;
 import system.section.SectionManager;
 import system.model.Application;
 import system.model.ApplicationManager;
-import system.section.ShortcutIconManager;
+import system.ShortcutIconManager;
 import app.editor.components.SectionGridController.SectionAnimationType;
 
 import java.io.File;
@@ -64,6 +65,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     private EditorController controller;
     private ApplicationManager applicationManager;
     private SectionManager sectionManager;
+    private WebLinkResolver webLinkResolver;
     private ShortcutIconManager shortcutIconManager;
     private OnEditorEventListener onEditorEventListener;
 
@@ -79,8 +81,12 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     // Used to debaunce modify network requests.
     private PublishSubject<Section> modifySectionPublisher = PublishSubject.create();
 
-    public EditorStage(ApplicationManager applicationManager, OnEditorEventListener onEditorEventListener) throws IOException {
+    public EditorStage(ApplicationManager applicationManager, SectionManager sectionManager, ShortcutIconManager shortcutIconManager,
+                       WebLinkResolver webLinkResolver, OnEditorEventListener onEditorEventListener) throws IOException {
         this.applicationManager = applicationManager;
+        this.shortcutIconManager = shortcutIconManager;
+        this.sectionManager = sectionManager;
+        this.webLinkResolver = webLinkResolver;
         this.onEditorEventListener = onEditorEventListener;
 
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/section_editor.fxml").toURI().toURL());
@@ -93,12 +99,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         this.getIcons().add(new Image(EditorStage.class.getResourceAsStream("/assets/icon.png")));
 
         controller = (EditorController) fxmlLoader.getController();
-
-        // Create the section manager
-        sectionManager = new SectionManager();
-
-        // Create the shortcut icon manager
-        shortcutIconManager = new ShortcutIconManager();
 
         // Create the listview context menu
         ContextMenu contextMenu = new ContextMenu();
@@ -406,7 +406,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         activeSection = section;  // Update the active section
 
         sectionGridController = new SectionGridController(section, controller.getContentBox(),
-                screenOrientation, applicationManager, shortcutIconManager, this,
+                screenOrientation, applicationManager, shortcutIconManager, webLinkResolver, this,
                 new SectionGridController.OnSectionGridEventListener() {
             @Override
             public void onRequestChangePageSize(Page page, Section section) {

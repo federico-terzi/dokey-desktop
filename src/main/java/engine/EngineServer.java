@@ -1,10 +1,14 @@
 package engine;
 
 import app.MainApp;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import section.model.Section;
 import system.ActiveApplicationsDaemon;
 import system.ApplicationSwitchDaemon;
 import system.SystemManager;
+import system.WebLinkResolver;
 import system.model.ApplicationManager;
 
 import java.io.IOException;
@@ -14,16 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class EngineServer extends Thread {
+public class EngineServer extends Thread implements ApplicationContextAware {
 
     public static final int SERVER_PORT = 1234;
 
     private ServerSocket serverSocket = null;
 
-    private ApplicationManager appManager;
-    private ApplicationSwitchDaemon applicationSwitchDaemon;
-    private SystemManager systemManager;
-    private ActiveApplicationsDaemon activeApplicationsDaemon;
     private EngineWorker.OnDeviceConnectionListener deviceConnectionListener;
 
     private volatile boolean shouldStop = false;
@@ -31,13 +31,15 @@ public class EngineServer extends Thread {
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
 
-    public EngineServer(ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon, SystemManager systemManager, ActiveApplicationsDaemon activeApplicationsDaemon) {
-        this.appManager = appManager;
-        this.applicationSwitchDaemon = applicationSwitchDaemon;
-        this.systemManager = systemManager;
-        this.activeApplicationsDaemon = activeApplicationsDaemon;
+    private ApplicationContext context;
 
+    public EngineServer() {
         setName("Engine Server");
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.context = applicationContext;
     }
 
     @Override
@@ -58,7 +60,7 @@ public class EngineServer extends Thread {
             try {
                 Socket socket = serverSocket.accept();
 
-                EngineWorker worker = new EngineWorker(socket, appManager, applicationSwitchDaemon, systemManager, activeApplicationsDaemon);
+                EngineWorker worker = context.getBean(EngineWorker.class, socket);
                 worker.setDeviceConnectionListener(deviceConnectionListener);
                 worker.start();
 

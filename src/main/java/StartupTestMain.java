@@ -1,6 +1,5 @@
 import system.StartupManager;
 import system.SystemManager;
-import system.SystemManagerFactory;
 
 public class StartupTestMain {
     public static void main(String[] args) {

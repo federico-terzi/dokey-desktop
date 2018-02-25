@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 public class WebLinkDialogStage extends Stage {
     private WebLinkDialogController controller;
+    private WebLinkResolver webLinkResolver;
     private OnWebLinkListener onWebLinkListener;
 
     private String imageUrl = null;
@@ -42,7 +43,8 @@ public class WebLinkDialogStage extends Stage {
 
     private boolean isEdit = false;  // False when creating a new item, true when editing
 
-    public WebLinkDialogStage(OnWebLinkListener onWebLinkListener) throws IOException {
+    public WebLinkDialogStage(WebLinkResolver webLinkResolver,OnWebLinkListener onWebLinkListener) throws IOException {
+        this.webLinkResolver = webLinkResolver;
         this.onWebLinkListener = onWebLinkListener;
 
         // Load the layout
@@ -176,7 +178,7 @@ public class WebLinkDialogStage extends Stage {
             @Override
             protected Object call() throws Exception {
                 // Get the attributes
-                WebLinkResolver.Result res = WebLinkResolver.getAttributes(url);
+                WebLinkResolver.Result res = webLinkResolver.getAttributes(url);
 
                 // Update the fields
                 Platform.runLater(new Runnable() {
@@ -195,7 +197,7 @@ public class WebLinkDialogStage extends Stage {
                             // Populate the image
                             if (res.imageUrl != null) {
                                 // Get the image from the cache
-                                File imageFile = WebLinkResolver.getImage(res.imageUrl);
+                                File imageFile = webLinkResolver.getImage(res.imageUrl);
 
                                 if (imageFile != null) {
                                     // Setup the image
@@ -242,7 +244,7 @@ public class WebLinkDialogStage extends Stage {
         // Set the image
         if (item.getIconID() != null) {
             imageUrl = item.getIconID();
-            File imageFile = WebLinkResolver.getImage(item.getIconID());
+            File imageFile = webLinkResolver.getImage(item.getIconID());
             if (imageFile != null) {
                 try {
                     FileInputStream fis = new FileInputStream(imageFile);

@@ -15,8 +15,9 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import section.model.Page;
 import section.model.Section;
+import system.WebLinkResolver;
 import system.model.ApplicationManager;
-import system.section.ShortcutIconManager;
+import system.ShortcutIconManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +43,7 @@ public class SectionGridController {
     private ScreenOrientation screenOrientation;
     private ApplicationManager applicationManager;
     private ShortcutIconManager shortcutIconManager;
+    private WebLinkResolver webLinkResolver;
     private OnSectionModifiedListener sectionModifiedListener;
     private OnSectionGridEventListener sectionGridEventListener;
 
@@ -56,13 +58,14 @@ public class SectionGridController {
 
     public SectionGridController(Section section, VBox container, ScreenOrientation screenOrientation,
                                  ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager,
-                                 OnSectionModifiedListener onSectionModifiedListener,
+                                 WebLinkResolver webLinkResolver, OnSectionModifiedListener onSectionModifiedListener,
                                  OnSectionGridEventListener sectionGridEventListener) {
         this.section = section;
         this.container = container;
         this.screenOrientation = screenOrientation;
         this.applicationManager = applicationManager;
         this.shortcutIconManager = shortcutIconManager;
+        this.webLinkResolver = webLinkResolver;
         this.sectionGridEventListener = sectionGridEventListener;
         this.sectionModifiedListener = onSectionModifiedListener;
 
@@ -115,7 +118,8 @@ public class SectionGridController {
         // Add the pages
         for (Page page : section.getPages()) {
             // Create the page grid
-            PageGrid pageGrid = new PageGrid(applicationManager, shortcutIconManager, page, section, screenOrientation);
+            PageGrid pageGrid = new PageGrid(applicationManager, shortcutIconManager, webLinkResolver,
+                    page, section, screenOrientation);
             pageGrid.setSectionModifiedListener(sectionModifiedListener);
             pageGrid.setShortcutIconManager(shortcutIconManager);
 
@@ -168,7 +172,8 @@ public class SectionGridController {
                     }
                 }
             });
-            contextMenu.getItems().addAll(changeSize, new SeparatorMenuItem(), moveLeft, moveRight, new SeparatorMenuItem(), delete);
+            contextMenu.getItems().addAll(changeSize, new SeparatorMenuItem(), moveLeft, moveRight,
+                    new SeparatorMenuItem(), delete);
             tab.setContextMenu(contextMenu);
 
             // Add the tab
@@ -181,7 +186,8 @@ public class SectionGridController {
         }
 
         // Add the bottom bar
-        bottomBarGrid = new BottomBarGrid(applicationManager, shortcutIconManager, BOTTOM_BAR_DEFAULT_COLS, section, screenOrientation);
+        bottomBarGrid = new BottomBarGrid(applicationManager, shortcutIconManager, webLinkResolver,
+                BOTTOM_BAR_DEFAULT_COLS, section, screenOrientation);
         bottomBarGrid.setSectionModifiedListener(sectionModifiedListener);
 
         // This listener is used by the tab pane controller to select/add tabs

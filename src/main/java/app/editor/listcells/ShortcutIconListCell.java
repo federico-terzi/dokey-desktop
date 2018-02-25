@@ -6,7 +6,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import system.section.ShortcutIcon;
+import system.ShortcutIcon;
 
 public class ShortcutIconListCell extends ListCell<ShortcutIcon> {
 

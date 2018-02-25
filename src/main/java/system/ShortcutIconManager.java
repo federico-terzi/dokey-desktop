@@ -1,8 +1,7 @@
-package system.section;
+package system;
 
 import net.model.IconTheme;
 import org.apache.commons.lang3.text.WordUtils;
-import system.ResourceUtils;
 
 import java.io.File;
 import java.util.*;

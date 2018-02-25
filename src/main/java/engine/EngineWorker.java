@@ -1,47 +1,47 @@
 package engine;
 
-import app.MainApp;
 import net.DEDaemon;
-import section.model.Section;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import system.ActiveApplicationsDaemon;
 import system.ApplicationSwitchDaemon;
 import system.SystemManager;
+import system.WebLinkResolver;
 import system.model.ApplicationManager;
 
 import java.awt.*;
 import java.net.Socket;
 import java.util.logging.Logger;
 
-public class EngineWorker extends Thread {
+public class EngineWorker extends Thread implements ApplicationContextAware{
     private Socket socket;
-    private ApplicationManager appManager;
-    private ApplicationSwitchDaemon applicationSwitchDaemon;
-    private SystemManager systemManager;
-    private ActiveApplicationsDaemon activeApplicationsDaemon;
     private OnDeviceConnectionListener deviceConnectionListener;
     private EngineService service = null;
+
+    private ApplicationContext context;
 
     private volatile boolean shouldTerminate = false;
 
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
 
-    public EngineWorker(Socket socket, ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon,
-                        SystemManager systemManager, ActiveApplicationsDaemon activeApplicationsDaemon) {
+    public EngineWorker(Socket socket) {
         this.socket = socket;
-        this.appManager = appManager;
-        this.applicationSwitchDaemon = applicationSwitchDaemon;
-        this.systemManager = systemManager;
-        this.activeApplicationsDaemon = activeApplicationsDaemon;
 
         setName("Engine Worker");
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.context = applicationContext;
     }
 
     @Override
     public void run() {
         try {
             // Create the engine service
-            service = new EngineService(socket, appManager, applicationSwitchDaemon, systemManager, activeApplicationsDaemon);
+            service = context.getBean(EngineService.class, socket);
 
             // Set up the connection closed listener
             service.setOnConnectionClosedListener(new DEDaemon.OnConnectionClosedListener() {
@@ -63,8 +63,6 @@ public class EngineWorker extends Thread {
             while(!shouldTerminate) {
                 Thread.sleep(1000);
             }
-        } catch (AWTException e) {
-            e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -89,7 +87,6 @@ public class EngineWorker extends Thread {
     public void setDeviceConnectionListener(OnDeviceConnectionListener deviceConnectionListener) {
         this.deviceConnectionListener = deviceConnectionListener;
     }
-
     /**
      * Used to notify when a device connects or disconnects from the server
      */

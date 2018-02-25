@@ -30,18 +30,18 @@ public class WebLinkButton extends ComponentButton {
 
         // Get the image if present in the cache
         if (item.getIconID() != null) {
-            File imageFile = WebLinkResolver.getImage(item.getIconID());
+            File imageFile = componentGrid.getWebLinkResolver().getImage(item.getIconID());
             if (imageFile != null) {
                 loadWebImage(imageFile);
             }else{ // Image not available, request it
                 new Thread(new Runnable(){
                     @Override
                     public void run() {
-                        if (WebLinkResolver.requestImage(item.getIconID())) {
+                        if (componentGrid.getWebLinkResolver().requestImage(item.getIconID())) {
                             Platform.runLater(new Runnable() {
                                 @Override
                                 public void run() {
-                                    File imageFile = WebLinkResolver.getImage(item.getIconID());
+                                    File imageFile = componentGrid.getWebLinkResolver().getImage(item.getIconID());
                                     loadWebImage(imageFile);
                                 }
                             });

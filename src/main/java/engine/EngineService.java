@@ -11,14 +11,16 @@ import net.packets.CommandPacket;
 import net.packets.SectionPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import section.model.Section;
 import section.model.SystemCommands;
 import system.*;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.section.SectionManager;
-import system.section.ShortcutIcon;
-import system.section.ShortcutIconManager;
+import system.ShortcutIcon;
+import system.ShortcutIconManager;
 
 import java.awt.*;
 import java.io.File;
@@ -32,7 +34,7 @@ import java.util.logging.Logger;
 /**
  * Represents the background worker that executes all the actions in the server.
  */
-public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnImageRequestListener, LinkManager.OnAppOpenRequestReceivedListener, LinkManager.OnSectionRequestListener, LinkManager.OnFolderOpenRequestReceivedListener, LinkManager.OnWebLinkRequestReceivedListener, LinkManager.OnCommandRequestReceivedListener, LinkManager.OnAppInfoRequestReceivedListener, LinkManager.OnModifiedSectionEventListener {
+public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnImageRequestListener, LinkManager.OnAppOpenRequestReceivedListener, LinkManager.OnSectionRequestListener, LinkManager.OnFolderOpenRequestReceivedListener, LinkManager.OnWebLinkRequestReceivedListener, LinkManager.OnCommandRequestReceivedListener, LinkManager.OnAppInfoRequestReceivedListener, LinkManager.OnModifiedSectionEventListener{
     public static final int DELAY_FROM_FOCUS_TO_KEYSTROKE = 300;  // In milliseconds
 
     private LinkManager linkManager;
@@ -43,18 +45,21 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     private SystemManager systemManager;
     private ActiveApplicationsDaemon activeApplicationsDaemon;
     private ShortcutIconManager shortcutIconManager;
+    private WebLinkResolver webLinkResolver;
 
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
 
     public EngineService(Socket socket, ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon,
-                         SystemManager systemManager, ActiveApplicationsDaemon activeApplicationsDaemon) throws AWTException {
+                         SystemManager systemManager, ActiveApplicationsDaemon activeApplicationsDaemon,
+                         WebLinkResolver webLinkResolver) throws AWTException {
         // Create a link manager
         this.linkManager = new LinkManager(socket);
         this.appManager = appManager;
         this.applicationSwitchDaemon = applicationSwitchDaemon;
         this.systemManager = systemManager;
         this.activeApplicationsDaemon = activeApplicationsDaemon;
+        this.webLinkResolver = webLinkResolver;
         this.keyboardManager = new KeyboardManager();
         this.sectionManager = new SectionManager();
         this.shortcutIconManager = new ShortcutIconManager();
@@ -259,12 +264,12 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     @Nullable
     @Override
     public File onWebLinkIconRequestReceived(String url) {
-        File imageFile = WebLinkResolver.getImage(url);
+        File imageFile = webLinkResolver.getImage(url);
 
         // If not present, try to request it
         if (imageFile == null) {
-            if (WebLinkResolver.requestImage(url)) {
-                return WebLinkResolver.getImage(url);
+            if (webLinkResolver.requestImage(url)) {
+                return webLinkResolver.getImage(url);
             }else{
                 return null;
             }

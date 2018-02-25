@@ -5,8 +5,9 @@ import app.editor.model.ScreenOrientation;
 import section.model.Component;
 import section.model.Item;
 import section.model.Section;
+import system.WebLinkResolver;
 import system.model.ApplicationManager;
-import system.section.ShortcutIconManager;
+import system.ShortcutIconManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +17,9 @@ public class BottomBarGrid extends ComponentGrid implements ComponentGrid.OnComp
     private Section section;
     private OnSectionModifiedListener sectionModifiedListener;
 
-    public BottomBarGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, int colCount, Section section, ScreenOrientation screenOrientation) {
-        super(applicationManager, shortcutIconManager, generateMatrix(section.getBottomBarItems(), colCount), screenOrientation);
+    public BottomBarGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, WebLinkResolver webLinkResolver,
+                         int colCount, Section section, ScreenOrientation screenOrientation) {
+        super(applicationManager, shortcutIconManager, webLinkResolver, generateMatrix(section.getBottomBarItems(), colCount), screenOrientation);
         this.colCount = colCount;
         this.section = section;
 

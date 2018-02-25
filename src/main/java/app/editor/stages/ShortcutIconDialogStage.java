@@ -13,8 +13,8 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import net.model.IconTheme;
 import system.ResourceUtils;
-import system.section.ShortcutIcon;
-import system.section.ShortcutIconManager;
+import system.ShortcutIcon;
+import system.ShortcutIconManager;
 
 import java.io.IOException;
 import java.util.Collections;

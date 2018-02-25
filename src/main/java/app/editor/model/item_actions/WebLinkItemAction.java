@@ -15,7 +15,7 @@ public class WebLinkItemAction extends ItemAction {
     @Override
     public void requestAddItem(int col, int row, OnActionCompletedListener listener) {
         try {
-            WebLinkDialogStage stage = new WebLinkDialogStage(new WebLinkDialogStage.OnWebLinkListener() {
+            WebLinkDialogStage stage = new WebLinkDialogStage(componentGrid.getWebLinkResolver(), new WebLinkDialogStage.OnWebLinkListener() {
                 @Override
                 public void onWebLinkSelected(String url, String title, String imageUrl) {
                     // Create the component
@@ -48,7 +48,7 @@ public class WebLinkItemAction extends ItemAction {
     @Override
     public void requestEditItem(Component component, OnActionCompletedListener listener) {
         try {
-            WebLinkDialogStage stage = new WebLinkDialogStage(new WebLinkDialogStage.OnWebLinkListener() {
+            WebLinkDialogStage stage = new WebLinkDialogStage(componentGrid.getWebLinkResolver(), new WebLinkDialogStage.OnWebLinkListener() {
                 @Override
                 public void onWebLinkSelected(String url, String title, String imageUrl) {
                     // Create the component

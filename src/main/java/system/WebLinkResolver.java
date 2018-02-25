@@ -28,13 +28,19 @@ public class WebLinkResolver {
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
 
+    private IconManager iconManager;
+
+    public WebLinkResolver(IconManager iconManager) {
+        this.iconManager = iconManager;
+    }
+
     /**
      * Request the attributes ( title and image url ) for the specified link.
      *
      * @param url the URL to parse.
      * @return the Result if succeeded, null otherwise.
      */
-    public static Result getAttributes(String url) {
+    public Result getAttributes(String url) {
         return getAttributes(url, true);
     }
 
@@ -45,7 +51,7 @@ public class WebLinkResolver {
      * @param searchRecoursively if true, the algorithm will also search the subdomain for the image
      * @return the Result if succeeded, null otherwise.
      */
-    public static Result getAttributes(String url, boolean searchRecoursively) {
+    public Result getAttributes(String url, boolean searchRecoursively) {
         // Download and parse the web page
         Document doc = null;
         try {
@@ -79,7 +85,7 @@ public class WebLinkResolver {
         }
 
         // Check if a local high res icon is available
-        String highResLocalIcon = IconManager.getInstance().resolveHighResWebIcon(url);
+        String highResLocalIcon = iconManager.resolveHighResWebIcon(url);
         if (highResLocalIcon != null) {
             result.imageUrl = highResLocalIcon;
         }else{
@@ -188,14 +194,14 @@ public class WebLinkResolver {
      * @param imageUrl the URL of the image.
      * @return the image File if present, null otherwise.
      */
-    public static File getImage(String imageUrl) {
+    public File getImage(String imageUrl) {
         if (imageUrl.startsWith("http")) {  // Remote website icon
             File imageFile = getImageFromCache(imageUrl);
             if (imageFile.isFile()) {
                 return imageFile;
             }
         }else{  // Local high res image
-            return IconManager.getInstance().webIconMap.get(imageUrl);
+            return iconManager.webIconMap.get(imageUrl);
         }
         return null;
     }
@@ -206,7 +212,7 @@ public class WebLinkResolver {
      * @param imageUrl the URL of the image to save.
      * @return true if succeeded, false otherwise.
      */
-    public static boolean requestImage(String imageUrl) {
+    public boolean requestImage(String imageUrl) {
         File imageFile = getImageFromCache(imageUrl);
 
         // If it doesn't already exist, create it
@@ -253,7 +259,7 @@ public class WebLinkResolver {
      * @param imageUrl the URL of the image.
      * @return the image File
      */
-    private static File getImageFromCache(String imageUrl) {
+    private File getImageFromCache(String imageUrl) {
         // Get the web cache folder
         File webCacheDir = CacheManager.getInstance().getWebCacheDir();
 
