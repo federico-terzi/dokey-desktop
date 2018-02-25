@@ -124,7 +124,12 @@ public class SectionListCell extends ListCell<Section> {
         deleteImageView.setSmooth(true);
         deleteItem.setGraphic(deleteImageView);
 
-        contextMenu.getItems().addAll(reloadItem, exportItem, new SeparatorMenuItem(), deleteItem);
+        contextMenu.getItems().addAll(reloadItem, exportItem);
+
+        if (section.getSectionType() == SectionType.SHORTCUTS) {  // Delete item is available only to shortcut sections
+            contextMenu.getItems().addAll(new SeparatorMenuItem(), deleteItem);
+        }
+
         setContextMenu(contextMenu);
 
         setGraphic(grid);
