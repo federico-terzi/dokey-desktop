@@ -17,10 +17,12 @@ public class ADBDaemon extends Thread{
     private volatile boolean shouldStop = false;
 
     private String adbPath;
+    private boolean isSystemPathADB;
     private OnDiscoveryUpdatedListener listener = null;
 
-    public ADBDaemon(String adbPath, OnDiscoveryUpdatedListener listener) {
+    public ADBDaemon(String adbPath, boolean isSystemPathADB, OnDiscoveryUpdatedListener listener) {
         this.adbPath = adbPath;
+        this.isSystemPathADB = isSystemPathADB;
         this.listener = listener;
 
         setName("ADB Daemon");
@@ -28,8 +30,10 @@ public class ADBDaemon extends Thread{
 
     @Override
     public void run() {
-        // Initially kill the server if already present
-        killAdbServer();
+        // Initially kill the server if not in the system path
+        if (!isSystemPathADB) {
+            killAdbServer();
+        }
 
         devices = new ArrayList<>();
 

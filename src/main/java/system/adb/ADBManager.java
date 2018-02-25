@@ -17,11 +17,12 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
     public static final int DISCOVERY_PORT = 34730;  // Port used to detect a usb connection from the phone
     public static final int LOCAL_PORT = EngineServer.SERVER_PORT;  // The local port is the one used by the server
 
-
     private ADBDaemon daemon;
     private ADBDiscoveryServer adbDiscoveryServer;
     private OnUSBDeviceConnectedListener listener;
     private ServerInfo serverInfo;
+
+    private boolean isSystemPathADB = false;  // If true, it means that the found ADB was already present in the system.
 
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
@@ -36,6 +37,7 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
         if (checkIfADBIsEnabled()) {
             LOG.info("ADB was found in system PATH: "+adbPath);
             adbFound = true;
+            isSystemPathADB = true;
         }else{
             // Use the built in ADB version
             // Construct the path based on the OS.
@@ -57,7 +59,7 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
 
         // Make sure ADB is enabled
         if (adbFound) {
-            daemon = new ADBDaemon(adbPath, this);
+            daemon = new ADBDaemon(adbPath, isSystemPathADB, this);
             adbDiscoveryServer = new ADBDiscoveryServer(serverInfo);
         }else{
             LOG.warning("ADB can't be executed!");
