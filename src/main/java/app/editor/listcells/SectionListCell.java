@@ -81,7 +81,7 @@ public class SectionListCell extends ListCell<Section> {
                 onContextMenuListener.onReloadSection(section);
             }
         });
-        Image reloadImage = new Image(SectionListCell.class.getResourceAsStream("/assets/refresh.png"));
+        Image reloadImage = new Image(SectionListCell.class.getResourceAsStream("/assets/refresh_black.png"));
         ImageView reloadImageView = new ImageView(reloadImage);
         reloadImageView.setFitWidth(16);
         reloadImageView.setFitHeight(16);
