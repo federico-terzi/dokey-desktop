@@ -38,7 +38,7 @@ public class SystemButton extends ComponentButton {
 
         // Create the tooltip
         final Tooltip tooltip = new Tooltip();
-        tooltip.setText(item.getTitle());
+        tooltip.setText(getParentTooltip() + item.getTitle());
         setTooltip(tooltip);
     }
 }

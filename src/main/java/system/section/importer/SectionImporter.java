@@ -27,6 +27,17 @@ public class SectionImporter extends Importer {
     // If this is set, when importing the section the related app id will be replaced with this one.
     private String overrideRelatedAppID = null;
 
+    // This is set to false if the target app can't be found.
+    private boolean hasTargetBeenFound = true;
+
+    // PARAMETERS
+
+    // If true, when importing the section all the invalid items will be deleted.
+    private boolean deleteInvalidItems = true;
+
+    // If true, when importing the section the items will be converted.
+    private boolean compatibilityMode = false;
+
     private SectionManager sectionManager = new SectionManager();
     private HashMap<ItemType, ImportAgent> importAgents = new HashMap<>();
 
@@ -64,9 +75,11 @@ public class SectionImporter extends Importer {
             // Search for the new path
             String newRelatedAppID = applicationPathResolver.searchApp(section.getRelatedAppId());
 
-            // If found, mark it as overrideable.
+            // If found, update the section related app id.
             if (newRelatedAppID != null) {
-                overrideRelatedAppID = newRelatedAppID;
+                section.setRelatedAppId(newRelatedAppID);
+            }else{
+                hasTargetBeenFound = false;
             }
         }
 
@@ -104,11 +117,26 @@ public class SectionImporter extends Importer {
      */
     public void importSection() {
         // Convert all the items
-        for (Item item : items) {
-            // Convert the item based on the type
-            // Make sure the item type is valid
-            if (importAgents.containsKey(item.getItemType())) {
-               importAgents.get(item.getItemType()).convertItem(item);
+        if (compatibilityMode) {
+            for (Item item : items) {
+                // Convert the item based on the type
+                // Make sure the item type is valid
+                if (importAgents.containsKey(item.getItemType())) {
+                    importAgents.get(item.getItemType()).convertItem(item);
+                }
+            }
+        }
+
+        // Delete all the invalid items
+        if (deleteInvalidItems) {
+            for (Page page : section.getPages()) {
+                List<Component> toBeDeleted = new ArrayList<>();
+                for (Component component : page.getComponents()) {
+                    if (invalidItems.contains(component.getItem())) {
+                        toBeDeleted.add(component);
+                    }
+                }
+                page.getComponents().removeAll(toBeDeleted);
             }
         }
 
@@ -143,6 +171,30 @@ public class SectionImporter extends Importer {
 
     public String getOverrideRelatedAppID() {
         return overrideRelatedAppID;
+    }
+
+    public void setOverrideRelatedAppID(String overrideRelatedAppID) {
+        this.overrideRelatedAppID = overrideRelatedAppID;
+    }
+
+    public boolean isDeleteInvalidItems() {
+        return deleteInvalidItems;
+    }
+
+    public void setDeleteInvalidItems(boolean deleteInvalidItems) {
+        this.deleteInvalidItems = deleteInvalidItems;
+    }
+
+    public boolean isCompatibilityMode() {
+        return compatibilityMode;
+    }
+
+    public void setCompatibilityMode(boolean compatibilityMode) {
+        this.compatibilityMode = compatibilityMode;
+    }
+
+    public boolean hasTargetBeenFound() {
+        return hasTargetBeenFound;
     }
 
     /**

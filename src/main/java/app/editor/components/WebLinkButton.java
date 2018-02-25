@@ -55,7 +55,7 @@ public class WebLinkButton extends ComponentButton {
 
         // Create the tooltip
         final Tooltip tooltip = new Tooltip();
-        tooltip.setText(item.getTitle() + "\n" + item.getUrl());
+        tooltip.setText(getParentTooltip() + item.getTitle() + "\n" + item.getUrl());
         setTooltip(tooltip);
     }
 

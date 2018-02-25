@@ -30,25 +30,36 @@ public class AppButton extends ComponentButton {
 
         // Get the application
         application = componentGrid.getApplicationManager().getApplication(item.getAppID());
-        // TODO: with null application, throw exception
+
+        String title = null;
+        Image image = null;
+
+        if (application != null) {
+            title = application.getName();
+            if (application.getIconPath() != null) {
+                File iconFile = new File(application.getIconPath());
+                if (iconFile.isFile()) {
+                    image = new Image(iconFile.toURI().toString(), 48, 48, true, true);
+                }
+            }
+        }else{  // Fallback
+            title = item.getTitle();
+            image = new Image(ComponentButton.class.getResourceAsStream("/assets/image.png"), 48, 48, true, true);
+        }
 
         // Set the button properties
-        setText(application.getName());
+        setText(title);
 
         // Create the tooltip
         final Tooltip tooltip = new Tooltip();
-        tooltip.setText(application.getName());
+        tooltip.setText(getParentTooltip() + title + "\n" + item.getAppID());
         setTooltip(tooltip);
 
-        // If there is an image, set it.
-        if (application.getIconPath() != null) {
-            File iconFile = new File(application.getIconPath());
-            if (iconFile.isFile()) {
-                Image image = new Image(iconFile.toURI().toString(), 48, 48, true, true);
-                ImageView imageView = new ImageView(image);
-                setGraphic(imageView);
-                setContentDisplay(ContentDisplay.TOP);
-            }
+        // Set up the image
+        if (image != null) {
+            ImageView imageView = new ImageView(image);
+            setGraphic(imageView);
+            setContentDisplay(ContentDisplay.TOP);
         }
 
     }

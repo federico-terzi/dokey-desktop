@@ -52,7 +52,7 @@ public class ShortcutButton extends ComponentButton {
 
         // Create the tooltip
         final Tooltip tooltip = new Tooltip();
-        tooltip.setText(item.getTitle() + "\n" + item.getShortcut());
+        tooltip.setText(getParentTooltip() + item.getTitle() + "\n" + item.getShortcut());
         setTooltip(tooltip);
     }
 }

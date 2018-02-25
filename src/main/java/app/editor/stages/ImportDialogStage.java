@@ -14,6 +14,7 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import section.model.Item;
+import section.model.Section;
 import section.model.SectionType;
 import system.ResourceUtils;
 import system.model.Application;
@@ -28,6 +29,7 @@ import java.util.Collections;
 public class ImportDialogStage extends Stage {
     private final ImportDialogController controller;
     private File importedFile;
+    private OnImportEventListener listener;
     private ApplicationManager applicationManager;
 
     private SectionImporter sectionImporter;
@@ -35,8 +37,9 @@ public class ImportDialogStage extends Stage {
 
     private Application applicationTarget = null;  // If this is different than null, the section will be loaded for that app.
 
-    public ImportDialogStage(File importedFile, ApplicationManager applicationManager) throws IOException {
+    public ImportDialogStage(File importedFile, OnImportEventListener listener, ApplicationManager applicationManager) throws IOException {
         this.importedFile = importedFile;
+        this.listener = listener;
         this.applicationManager = applicationManager;
         sectionInfoResolver = new SectionInfoResolver(applicationManager);
 
@@ -49,6 +52,9 @@ public class ImportDialogStage extends Stage {
 
         controller = (ImportDialogController) fxmlLoader.getController();
 
+        // Create the section importer
+        sectionImporter = new SectionImporter(importedFile, applicationManager);
+
         // Set the event listeners
         controller.cancelBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -56,12 +62,33 @@ public class ImportDialogStage extends Stage {
                 close();
             }
         });
+        controller.importBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                finishImport();
+            }
+        });
+        controller.changeTargetBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                changeTarget();
+            }
+        });
+        controller.avoidInvalidItemsCheckBox.selectedProperty().addListener((observable, oldValue, newValue) ->
+                sectionImporter.setDeleteInvalidItems(newValue)
+        );
+        controller.compatibilityModeCheckBox.selectedProperty().addListener((observable, oldValue, newValue) ->
+                sectionImporter.setCompatibilityMode(newValue)
+        );
 
         controller.progressBar.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
 
-        // Create the section importer and start the analysis in another thread
-        sectionImporter = new SectionImporter(importedFile, applicationManager);
+        // Start the analysis in another thread
         startAnalysis();
+    }
+
+    public interface OnImportEventListener {
+        void onImportCompleted(Section section);
     }
 
     /**
@@ -129,7 +156,7 @@ public class ImportDialogStage extends Stage {
 
         if (sectionImporter.getSection().getSectionType() == SectionType.SHORTCUTS) {
             // If no application target is found, disable the import.
-            if (sectionImporter.getOverrideRelatedAppID() == null && applicationTarget == null) {
+            if (!sectionImporter.hasTargetBeenFound() && applicationTarget == null) {
                 canImport = false;
             }
         }
@@ -143,10 +170,15 @@ public class ImportDialogStage extends Stage {
     private void renderTargetPanel() {
         // Get the section info and render them
         SectionInfoResolver.SectionInfo sectionInfo = sectionInfoResolver.getSectionInfo(sectionImporter.getSection(), 64, applicationTarget);
-        if (sectionInfo != null) {
+        if (sectionInfo != null && sectionInfo.name != null) {
             controller.targetImageView.setImage(sectionInfo.image);
             controller.sectionTitleLabel.setText(sectionInfo.name);
             controller.sectionDescriptionLabel.setText(sectionInfo.description);
+        }else{
+            Image notFoundImage = new Image(SectionInfoResolver.class.getResourceAsStream("/assets/help.png"), 64, 64, true, true);
+            controller.targetImageView.setImage(notFoundImage);
+            controller.sectionTitleLabel.setText("Not Found");
+            controller.sectionDescriptionLabel.setText("Can't find the target application, please select it manually.");
         }
 
         // If the section has type SHORTCUTS enable the change target button
@@ -154,5 +186,50 @@ public class ImportDialogStage extends Stage {
         if (sectionImporter.getSection().getSectionType() == SectionType.SHORTCUTS) {
             controller.changeTargetBtn.setDisable(false);
         }
+    }
+
+    /**
+     * Prompt a dialog to select a new application target
+     */
+    private void changeTarget() {
+        try {
+            AppSelectDialogStage appSelectDialogStage = new AppSelectDialogStage(applicationManager,
+                new AppSelectDialogStage.OnApplicationListener() {
+                    @Override
+                    public void onApplicationSelected(Application application) {
+                        applicationTarget = application;
+                        sectionImporter.setOverrideRelatedAppID(applicationTarget.getExecutablePath());
+
+                        renderTargetPanel();
+                        validateImport();
+                    }
+
+                    @Override
+                    public void onCanceled() {
+
+                    }
+                });
+            appSelectDialogStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Save the imported file and notify the listener
+     */
+    private void finishImport() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                sectionImporter.importSection();
+
+                if (listener != null) {
+                    listener.onImportCompleted(sectionImporter.getSection());
+                }
+
+                Platform.runLater(() -> close());
+            }
+        }).start();
     }
 }

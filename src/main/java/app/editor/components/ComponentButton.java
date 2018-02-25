@@ -29,6 +29,9 @@ public class ComponentButton extends DragButton {
 
         // Add the style
         getStyleClass().add("component-btn");
+        if (!associatedComponent.getItem().isValid()) {  // Invalid item rendering
+            getStyleClass().add("invalid-btn");
+        }
 
         // Set the button properties
         setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -123,6 +126,13 @@ public class ComponentButton extends DragButton {
         items.add(delete);
     }
 
+    protected String getParentTooltip() {
+        if (associatedComponent.getItem().isValid()) {
+            return "";
+        }else{
+            return "INVALID ITEM\n";
+        }
+    }
 
     public OnComponentActionListener getOnComponentActionListener() {
         return onComponentActionListener;
