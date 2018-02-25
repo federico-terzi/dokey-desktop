@@ -127,6 +127,13 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
         // load the applications
         loadApplications();
+
+        // Add the shutdown hook
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            LOG.info("Stopping all services...");
+            stopAllServices();
+            LOG.info("Goodbye Dokey");
+        }));
     }
 
     /**
