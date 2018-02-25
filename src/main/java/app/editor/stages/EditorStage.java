@@ -820,7 +820,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                             for (int i = 0; i < section.getPages().size(); i++) {
                                 if (sec.getPages().size() > i && section.getPages().size() > i) {
                                     // Compare the pages based on the number of components
-                                    if (sec.getPages().get(i).getComponents().size() != section.getPages().get(i).getComponents().size()) {
+                                    if (!sec.getPages().get(i).equals(section.getPages().get(i))) {
                                         modifiedPage = section.getPages().get(i);
                                         break;
                                     }
