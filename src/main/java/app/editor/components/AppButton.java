@@ -68,8 +68,6 @@ public class AppButton extends ComponentButton {
     protected void getContextMenu(List<MenuItem> items) {
         super.getContextMenu(items);
 
-        items.add(new SeparatorMenuItem());
-
         MenuItem openShortcutPage = new MenuItem("Open Shortcuts...");
         openShortcutPage.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -83,6 +81,9 @@ public class AppButton extends ComponentButton {
         pageImageView.setFitHeight(16);
         openShortcutPage.setGraphic(pageImageView);
 
-        items.add(openShortcutPage);
+        if (associatedComponent.getItem().isValid()) {  // Add this option only if the item is valid
+            items.add(new SeparatorMenuItem());
+            items.add(openShortcutPage);
+        }
     }
 }
