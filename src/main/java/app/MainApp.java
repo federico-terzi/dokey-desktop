@@ -25,13 +25,11 @@ import system.adb.ADBManager;
 import system.model.ApplicationManager;
 import system.section.SectionManager;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Timer;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 
 @Service
 public class MainApp extends Application implements EngineWorker.OnDeviceConnectionListener, ADBManager.OnUSBDeviceConnectedListener,
@@ -54,6 +52,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
+    public final static String LOG_FILENAME = "log.txt";
 
     private static boolean isFirstStartup = true;  // If true, it means that the app is opened for the first time.
     private static boolean isAutomaticStartup = false;  // If true, it means that the app is started automatically by the system.
@@ -68,6 +67,17 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         LOG.setUseParentHandlers( false );
         LOG.setLevel(level);
         LOG.addHandler(consoleHandler);
+
+        // Configure the file handler
+        File logFile = new File(CacheManager.getInstance().getCacheDir(), LOG_FILENAME);
+        try {
+            FileHandler fileHandler = new FileHandler(logFile.getAbsolutePath());
+            LOG.addHandler(fileHandler);
+            SimpleFormatter formatter = new SimpleFormatter();
+            fileHandler.setFormatter(formatter);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // Check the arguments
         for (String arg : args) {
