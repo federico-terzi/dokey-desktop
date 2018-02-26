@@ -26,11 +26,6 @@ public class ShortcutImportAgent extends ImportAgent {
         // Cast the item
         ShortcutItem shortcutItem = (ShortcutItem) item;
 
-        // If the OS is windows and the shortcut has "CMD" in it, set the compatibility mode.
-        if (OSValidator.isWindows() && shortcutItem.getShortcut().contains("CMD")) {
-            importer.setShouldRequireCompatibilityMode(true);
-        }
-
         return true;
     }
 
@@ -39,9 +34,12 @@ public class ShortcutImportAgent extends ImportAgent {
         // Cast the item
         ShortcutItem shortcutItem = (ShortcutItem) item;
 
-        // If the compatibility mode is true and the OS is windows, convert all the CMD to CTRL
+        // If the OS is windows, convert all the CMD to CTRL
         if (OSValidator.isWindows() && shortcutItem.getShortcut().contains("CMD")) {
             String newShortcut = shortcutItem.getShortcut().replace("CMD", "CTRL");
+            shortcutItem.setShortcut(newShortcut);
+        }else if (OSValidator.isMac() && shortcutItem.getShortcut().contains("CTRL")) { // If the OS is mac, convert all the CTRL to CMD
+            String newShortcut = shortcutItem.getShortcut().replace("CTRL", "CMD");
             shortcutItem.setShortcut(newShortcut);
         }
     }

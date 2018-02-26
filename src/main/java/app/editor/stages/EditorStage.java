@@ -46,6 +46,8 @@ import system.model.Application;
 import system.model.ApplicationManager;
 import system.ShortcutIconManager;
 import app.editor.components.SectionGridController.SectionAnimationType;
+import system.section.importer.SectionWrapper;
+import utils.OSValidator;
 
 import java.io.File;
 import java.io.IOException;
@@ -563,7 +565,12 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         fileChooser.getExtensionFilters().add(extFilter);
         File destFile = fileChooser.showSaveDialog(EditorStage.this);
         if (destFile != null) {
-            boolean res = sectionManager.writeSectionToFile(section, destFile);
+            // Create the output section
+            SectionWrapper importedSection = new SectionWrapper();
+            importedSection.setSection(section);
+            importedSection.setOs(OSValidator.getOS());
+
+            boolean res = sectionManager.exportSectionToFile(importedSection, destFile);
             if (!res) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
@@ -642,6 +649,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Delete Confirmation");
                 alert.setHeaderText("Some buttons will be deleted if you resize the page, are you sure?");
+                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                stage.getIcons().add(new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/icon.png")));
 
                 Optional<ButtonType> result = alert.showAndWait();
                 if (result.get() != ButtonType.OK) {

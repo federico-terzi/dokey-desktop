@@ -10,6 +10,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -25,6 +27,7 @@ import system.section.importer.SectionImporter;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Optional;
 
 public class ImportDialogStage extends Stage {
     private final ImportDialogController controller;
@@ -104,6 +107,11 @@ public class ImportDialogStage extends Stage {
                     @Override
                     public void run() {
                         renderInterface();
+
+                        // If the section was created with another OS, warn the user about possible problems.
+                        if (sectionImporter.isCreatedWithAnotherOS()) {
+                            displayIncompatibleOSWarning();
+                        }
                     }
                 });
                 return null;
@@ -185,6 +193,25 @@ public class ImportDialogStage extends Stage {
         // That is because a user cannot change a section target if is a launcher or system.
         if (sectionImporter.getSection().getSectionType() == SectionType.SHORTCUTS) {
             controller.changeTargetBtn.setDisable(false);
+        }
+    }
+
+    /**
+     * Display a dialog to warn the user about possible problems in the importing
+     * due to the section created with another OS.
+     */
+    private void displayIncompatibleOSWarning() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("OS Incompatibility Detected");
+        alert.setHeaderText("This layout was created with another Operating System.");
+        alert.setContentText("You can still import it with the Compatibility Mode, " +
+                "but it may not work as expected.\nDo you want to proceed anyway?");
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/icon.png")));
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() != ButtonType.OK) {  // Close the dialog
+            close();
         }
     }
 

@@ -7,6 +7,7 @@ import org.apache.commons.io.FileUtils;
 import section.model.*;
 import system.CacheManager;
 import system.ResourceUtils;
+import system.section.importer.SectionWrapper;
 
 import java.io.*;
 import java.util.*;
@@ -121,6 +122,33 @@ public class SectionManager {
             fis.close();
 
             return section;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
+     * Read a section from the given file with the optional import parameters.
+     * @param sectionFile the section File
+     * @return the SectionWrapper read from the file
+     */
+    public SectionWrapper importSectionFromFile(File sectionFile) {
+        // Read the content
+        try {
+            FileInputStream fis = new FileInputStream(sectionFile);
+            JSONTokener tokener = new JSONTokener(fis);
+            JSONObject jsonContent = new JSONObject(tokener);
+
+            // Create the section by de-serialization
+            SectionWrapper importedSection = SectionWrapper.fromJson(jsonContent);
+
+            fis.close();
+
+            return importedSection;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -312,7 +340,34 @@ public class SectionManager {
             // Write the json section to the file
             FileOutputStream fos = new FileOutputStream(dest);
             PrintWriter pw = new PrintWriter(fos);
-            pw.write(section.json().toString());
+            JSONObject sectionJson = section.json();  // Get the section json
+            pw.write(sectionJson.toString());
+            pw.close();
+
+            return true;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    /**
+     * Write the given sectionWrapper to the given file.
+     *
+     * @param sectionWrapper the SectionWrapper to save.
+     * @param dest    the destination File.
+     * @return true if succeeded, false otherwise.
+     */
+    public synchronized boolean exportSectionToFile(SectionWrapper sectionWrapper, File dest) {
+        try {
+            // Write the json sectionWrapper to the file
+            FileOutputStream fos = new FileOutputStream(dest);
+            PrintWriter pw = new PrintWriter(fos);
+            JSONObject sectionJson = sectionWrapper.json();
+            pw.write(sectionJson.toString());
             pw.close();
 
             return true;

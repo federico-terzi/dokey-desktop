@@ -3,6 +3,7 @@ package system.section.importer;
 import section.model.*;
 import system.model.ApplicationManager;
 import system.section.SectionManager;
+import utils.OSValidator;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -30,6 +31,10 @@ public class SectionImporter extends Importer {
     // This is set to false if the target app can't be found.
     private boolean hasTargetBeenFound = true;
 
+    // If this is true, it means that the section has been created with another os.
+    // Warn the user about possible problems.
+    private boolean isCreatedWithAnotherOS = false;
+
     // PARAMETERS
 
     // If true, when importing the section all the invalid items will be deleted.
@@ -51,10 +56,19 @@ public class SectionImporter extends Importer {
      * @throws SectionImportException if an error occurred while analyzing.
      */
     public void analyze() throws SectionImportException{
-        // Load the section from file
-        section = sectionManager.getSectionFromFile(sectionFile);
-        if (section == null) {
+        // Load the sectionWrapper from file
+        SectionWrapper sectionWrapper = sectionManager.importSectionFromFile(sectionFile);
+        if (sectionWrapper == null) {
             throw new SectionImportException("Can't decode section from given file.");
+        }
+
+        // Get the section
+        section = sectionWrapper.getSection();
+
+        // Check if has been created with another os
+        if (sectionWrapper.getOs() != null && !OSValidator.getOS().equals(sectionWrapper.getOs())) {
+            isCreatedWithAnotherOS = true;
+            shouldRequireCompatibilityMode = true;
         }
 
         // Reset the invalidItems list
@@ -195,6 +209,10 @@ public class SectionImporter extends Importer {
 
     public boolean hasTargetBeenFound() {
         return hasTargetBeenFound;
+    }
+
+    public boolean isCreatedWithAnotherOS() {
+        return isCreatedWithAnotherOS;
     }
 
     /**
