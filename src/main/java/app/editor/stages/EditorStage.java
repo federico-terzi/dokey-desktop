@@ -596,7 +596,13 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 Stage importStage = new ImportDialogStage(importFile, new ImportDialogStage.OnImportEventListener() {
                     @Override
                     public void onImportCompleted(Section section) {
-                        Platform.runLater(() -> requestSectionList(section.getStringID()));
+                        Platform.runLater(() -> {
+                            // Notify the modified section
+                            onSectionModified(section);
+
+                            // Refresh the section list
+                            requestSectionList(section.getStringID());
+                        });
                     }
 
                 }, applicationManager);
