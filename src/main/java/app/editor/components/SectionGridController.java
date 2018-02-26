@@ -69,6 +69,11 @@ public class SectionGridController {
         this.sectionGridEventListener = sectionGridEventListener;
         this.sectionModifiedListener = onSectionModifiedListener;
 
+        // If there are bottom bar elements, show the bar
+        if (section.getBottomBarItems().size() > 0) {
+            isBottomBarVisible = true;
+        }
+
         render(createView());
     }
 
