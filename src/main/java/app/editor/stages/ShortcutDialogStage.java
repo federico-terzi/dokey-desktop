@@ -59,6 +59,9 @@ public class ShortcutDialogStage extends Stage {
         controller.iconBtn.setGraphic(iconImageView);
         controller.iconBtn.setContentDisplay(ContentDisplay.TOP);
 
+        // Setup the meta button based on the os
+        controller.metaBtn.setText(OSValidator.isWindows() ? "WIN" : "CMD");
+
         // Set the event listeners
         controller.getCancelBtn().setOnAction(new EventHandler<ActionEvent>() {
             @Override
