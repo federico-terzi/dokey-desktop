@@ -72,6 +72,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     private WebLinkResolver webLinkResolver;
     private ShortcutIconManager shortcutIconManager;
     private OnEditorEventListener onEditorEventListener;
+    private ResourceBundle resourceBundle;
 
     private List<Section> sections;
     private String sectionQuery = null;
@@ -86,12 +87,13 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     private PublishSubject<Section> modifySectionPublisher = PublishSubject.create();
 
     public EditorStage(ApplicationManager applicationManager, SectionManager sectionManager, ShortcutIconManager shortcutIconManager,
-                       WebLinkResolver webLinkResolver, OnEditorEventListener onEditorEventListener) throws IOException {
+                       WebLinkResolver webLinkResolver, OnEditorEventListener onEditorEventListener, ResourceBundle resourceBundle) throws IOException {
         this.applicationManager = applicationManager;
         this.shortcutIconManager = shortcutIconManager;
         this.sectionManager = sectionManager;
         this.webLinkResolver = webLinkResolver;
         this.onEditorEventListener = onEditorEventListener;
+        this.resourceBundle = resourceBundle;
 
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/section_editor.fxml").toURI().toURL());
         Parent root = fxmlLoader.load();
@@ -106,14 +108,14 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
         // Create the listview context menu
         ContextMenu contextMenu = new ContextMenu();
-        MenuItem reloadItem = new MenuItem("Reload");
+        MenuItem reloadItem = new MenuItem(resourceBundle.getString("reload"));
         reloadItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 requestSectionList();
             }
         });
-        MenuItem addApplicationItem = new MenuItem("Add Application...");
+        MenuItem addApplicationItem = new MenuItem(resourceBundle.getString("add_application"));
         addApplicationItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -411,9 +413,9 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         String message = null;
         if (!areAppsShown) {
             image = new Image(EditorStage.class.getResourceAsStream("/assets/toolbar_icons/menu.png"), 20, 20, true, true);
-            message = "Show Applications";
+            message = resourceBundle.getString("show_applications");
         } else {
-            message = "Hide Applications";
+            message = resourceBundle.getString("hide_applications");
             image = new Image(EditorStage.class.getResourceAsStream("/assets/toolbar_icons/back.png"), 20, 20, true, true);
         }
         ImageView buttonImageView = new ImageView(image);
@@ -447,8 +449,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
                 stage.getIcons().add(new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/icon.png")));
-                alert.setTitle("Delete Confirmation");
-                alert.setHeaderText("Do you really want to delete the page?");
+                alert.setTitle(resourceBundle.getString("delete_confirmation"));
+                alert.setHeaderText(resourceBundle.getString("delete_confirmation_msg"));
 
                 Optional<ButtonType> result = alert.showAndWait();
                 if (result.get() == ButtonType.OK) {
@@ -566,7 +568,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
      */
     private void exportSection(Section section) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Export Layout");
+        fileChooser.setTitle(resourceBundle.getString("export_layout"));
 
         // Generate the suggested filename based on the section type
         String filename = "";
@@ -599,8 +601,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             boolean res = sectionManager.exportSectionToFile(importedSection, destFile);
             if (!res) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("There was an error saving the file");
+                alert.setTitle(resourceBundle.getString("save_error"));
+                alert.setHeaderText(resourceBundle.getString("save_error_msg"));
                 alert.show();
             }
         }
@@ -611,7 +613,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
      */
     private void displayImportFileChooser() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Import Layout");
+        fileChooser.setTitle(resourceBundle.getString("import_layout"));
 
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Dokey Section Layout Format (*.dslf)", "*.dslf");
         fileChooser.getExtensionFilters().add(extFilter);
@@ -687,8 +689,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             // ask for the confirmation
             if (toBeDeleted.size() > 0) {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Delete Confirmation");
-                alert.setHeaderText("Some buttons will be deleted if you resize the page, are you sure?");
+                alert.setTitle(resourceBundle.getString("buttons_delete_confirmation"));
+                alert.setHeaderText(resourceBundle.getString("buttons_delete_confirmation_msg"));
                 Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
                 stage.getIcons().add(new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/icon.png")));
 
@@ -721,11 +723,11 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
         stage.getIcons().add(new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/icon.png")));
-        dialog.setTitle("Change Grid Size");
-        dialog.setHeaderText("Specify the grid size below.\nThe rows and the columns must be a number greater than 0");
+        dialog.setTitle(resourceBundle.getString("change_grid_size"));
+        dialog.setHeaderText(resourceBundle.getString("change_grid_size_msg"));
 
         // Set the button types.
-        ButtonType changeSizeType = new ButtonType("Change Size", ButtonBar.ButtonData.OK_DONE);
+        ButtonType changeSizeType = new ButtonType(resourceBundle.getString("change_grid_size"), ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(changeSizeType, ButtonType.CANCEL);
 
         // Create the rows and password labels and fields.
@@ -760,9 +762,9 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         colField.textProperty().addListener(validator);
 
 
-        grid.add(new Label("Rows:"), 0, 0);
+        grid.add(new Label(resourceBundle.getString("rows")), 0, 0);
         grid.add(rowField, 1, 0);
-        grid.add(new Label("Columns:"), 0, 1);
+        grid.add(new Label(resourceBundle.getString("columns")), 0, 1);
         grid.add(colField, 1, 1);
 
 
@@ -795,9 +797,9 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
             // Errore di input
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("The size must be a valid number!");
-            alert.setContentText("The rows and the columns must be a number greater than 0.");
+            alert.setTitle(resourceBundle.getString("change_grid_size_error"));
+            alert.setHeaderText(resourceBundle.getString("change_grid_size_error_msg"));
+            alert.setContentText(resourceBundle.getString("change_grid_size_error_msg2"));
             alert.show();
         }
         return null;

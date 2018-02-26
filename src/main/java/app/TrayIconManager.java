@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Logger;
@@ -38,9 +39,14 @@ public class TrayIconManager {
     private boolean isLoading = true;  // If true, set the tray icon as rotating
 
     private int trayIconWidth;  // Internal usage
+    private ResourceBundle resourceBundle;
 
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
+
+    public TrayIconManager(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
+    }
 
     /**
      * Initialize the tray icon
@@ -69,9 +75,9 @@ public class TrayIconManager {
             // Set the trayicon as loading
             setLoading(true);
 
-            setTrayIconStatus("Initializing...");
+            setTrayIconStatus(resourceBundle.getString("initializing"));
 
-            java.awt.MenuItem openEditor = new java.awt.MenuItem("Open Editor");
+            java.awt.MenuItem openEditor = new java.awt.MenuItem(resourceBundle.getString("open_editor"));
             openEditor.addActionListener(event -> Platform.runLater(() -> {
                 if (listener != null) {
                     listener.onEditorOpenRequest();
@@ -82,14 +88,14 @@ public class TrayIconManager {
             java.awt.Font boldFont = defaultFont.deriveFont(java.awt.Font.BOLD);
             openEditor.setFont(boldFont);
 
-            java.awt.MenuItem settingsItem = new java.awt.MenuItem("Settings");
+            java.awt.MenuItem settingsItem = new java.awt.MenuItem(resourceBundle.getString("settings"));
             settingsItem.addActionListener(event -> Platform.runLater(() -> {
                 if (listener != null) {
                     listener.onSettingsOpenRequest();
                 }
             }));
 
-            java.awt.MenuItem exitItem = new java.awt.MenuItem("Exit");
+            java.awt.MenuItem exitItem = new java.awt.MenuItem(resourceBundle.getString("exit"));
             exitItem.addActionListener(event -> {
                 //notificationTimer.cancel();
                 tray.remove(trayIcon);

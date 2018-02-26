@@ -13,16 +13,17 @@ import system.ResourceUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 public class InitializationStage extends Stage {
     private InitializationController controller;
 
-    public InitializationStage() throws IOException {
+    public InitializationStage(ResourceBundle resourceBundle) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/initialization.fxml").toURI().toURL());
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         scene.getStylesheets().add(ResourceUtils.getResource("/css/initialization.css").toURI().toString());
-        this.setTitle("Dokey Initialization");
+        this.setTitle(resourceBundle.getString("dokey_init"));
         this.setScene(scene);
         initStyle(StageStyle.TRANSPARENT);
         scene.setFill(Color.TRANSPARENT);

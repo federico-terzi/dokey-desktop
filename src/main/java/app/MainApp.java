@@ -28,6 +28,8 @@ import system.section.SectionManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.logging.*;
 
@@ -50,6 +52,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
     private InitializationStage initializationStage;
 
+    private ResourceBundle resourceBundle;
+
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
     public final static String LOG_FILENAME = "log.txt";
@@ -58,6 +62,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private static boolean isAutomaticStartup = false;  // If true, it means that the app is started automatically by the system.
     private static boolean openEditor = false;  // If true, at startup the editor is open;
     private static boolean openSettings = false;  // If true, at startup the settings is open;
+
+    public static Locale locale = Locale.ENGLISH;  // Current locale
 
     public static void main(String[] args) {
         // Set the logging level
@@ -90,6 +96,9 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
             }
         }
 
+        // Set up the correct Locale
+        //locale = Locale.getDefault();
+
         launch(args);
     }
 
@@ -97,7 +106,10 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     public void start(Stage primaryStage) throws IOException {
         // Setup spring
         context = new AnnotationConfigApplicationContext(AppConfig.class);
-
+        
+        // Get the resource bundle
+        resourceBundle = context.getBean(ResourceBundle.class);
+        
         // Set the MODENA theme
         setUserAgentStylesheet(STYLESHEET_MODENA);
 
@@ -152,7 +164,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private void loadApplications() throws IOException {
         // Create and show the initialization stage if first startup
         if (isFirstStartup) {
-            initializationStage = new InitializationStage();
+            initializationStage = new InitializationStage(resourceBundle);
             initializationStage.show();
         }
 
@@ -236,7 +248,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         }
 
         // Update the tray icon status
-        trayIconManager.setTrayIconStatus("Starting service...");
+        trayIconManager.setTrayIconStatus(resourceBundle.getString("starting_service"));
 
         // Start the engine server
         startEngineServer();
@@ -264,7 +276,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         engineServer.start();
 
         // Update the tray icon status
-        trayIconManager.setTrayIconStatus("Not connected");
+        trayIconManager.setTrayIconStatus(resourceBundle.getString("not_connected"));
         trayIconManager.setLoading(false);
 
         // Register the global event listeners
@@ -333,7 +345,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
         // Set the tray icon as running
         trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_CONNECTED);
-        trayIconManager.setTrayIconStatus("Connected");
+        trayIconManager.setTrayIconStatus(resourceBundle.getString("connected"));
     }
 
     /**
@@ -347,7 +359,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
         // Set the tray icon as ready
         trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_READY);
-        trayIconManager.setTrayIconStatus("Not connected");
+        trayIconManager.setTrayIconStatus(resourceBundle.getString("not_connected"));
     }
 
 

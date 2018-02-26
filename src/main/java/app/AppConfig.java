@@ -14,6 +14,8 @@ import system.model.ApplicationManager;
 import system.section.SectionManager;
 
 import java.io.IOException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * Spring configuration class
@@ -28,13 +30,19 @@ public class AppConfig {
 
     @Bean
     public TrayIconManager trayIconManager() {
-        return new TrayIconManager();
+        return new TrayIconManager(resourceBundle());
+    }
+
+    @Bean
+    public ResourceBundle resourceBundle() {
+        return ResourceBundle.getBundle("lang.dokey", MainApp.locale);
     }
 
     @Bean
     @Scope("prototype")
     public EditorStage editorStage(EditorStage.OnEditorEventListener onEditorEventListener) throws IOException {
-        return new EditorStage(applicationManager, sectionManager, shortcutIconManager, webLinkResolver, onEditorEventListener);
+        return new EditorStage(applicationManager, sectionManager, shortcutIconManager, webLinkResolver,
+                onEditorEventListener, resourceBundle());
     }
 
     @Bean
