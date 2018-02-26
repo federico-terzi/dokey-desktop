@@ -36,6 +36,10 @@ public class ComponentGrid extends GridPane {
     protected Map<ItemType, ItemAction> itemTypeActions = new HashMap<>();
     private List<ItemAction> orderedTypeActions;  // Generated automatically, do not touch
 
+    // When opening an ADD/EDIT dialog, this is set to true. When the dialog is closed, this return false.
+    // Used to avoid double opening of dialogs.
+    private boolean isDialogOpen = false;
+
     public ComponentGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, WebLinkResolver webLinkResolver, Component[][] componentMatrix, ScreenOrientation screenOrientation) {
         super();
         this.applicationManager = applicationManager;
@@ -189,6 +193,12 @@ public class ComponentGrid extends GridPane {
         EmptyButton emptyButton = new EmptyButton(this, orderedTypeActions, new EmptyButton.OnEmptyBtnActionListener() {
             @Override
             public void onActionSelected(ItemAction action) {
+                // If a dialog is already open, cancel the request
+                if (isDialogOpen)
+                    return;
+
+                isDialogOpen = true;
+
                 // Request to add the item
                 action.requestAddItem(col, row, new ItemAction.OnActionCompletedListener() {
                     @Override
@@ -202,6 +212,13 @@ public class ComponentGrid extends GridPane {
                         }
 
                         render();
+
+                        isDialogOpen = false;
+                    }
+
+                    @Override
+                    public void onActionCanceled() {
+                        isDialogOpen = false;
                     }
                 });
             }
@@ -241,6 +258,12 @@ public class ComponentGrid extends GridPane {
                 if (action == null)
                     return;
 
+                // If a dialog is already open, cancel the request
+                if (isDialogOpen)
+                    return;
+
+                isDialogOpen = true;
+
                 // Request to add the item
                 action.requestEditItem(component, new ItemAction.OnActionCompletedListener() {
                     @Override
@@ -254,6 +277,13 @@ public class ComponentGrid extends GridPane {
                         }
 
                         render();
+
+                        isDialogOpen = false;
+                    }
+
+                    @Override
+                    public void onActionCanceled() {
+                        isDialogOpen = false;
                     }
                 });
             }

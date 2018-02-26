@@ -38,6 +38,7 @@ public class AppSelectDialogStage extends Stage {
         this.setTitle("Applications");
         this.setScene(scene);
         this.getIcons().add(new Image(AppSelectDialogStage.class.getResourceAsStream("/assets/icon.png")));
+        setAlwaysOnTop(true);
 
         controller = (AppListController) fxmlLoader.getController();
 

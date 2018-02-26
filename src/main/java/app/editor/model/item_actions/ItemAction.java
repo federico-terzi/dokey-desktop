@@ -44,6 +44,7 @@ public abstract class ItemAction {
 
     public interface OnActionCompletedListener {
         void onActionCompleted(Component component);
+        void onActionCanceled();
     }
 
     public int getContextMenuOrder() {

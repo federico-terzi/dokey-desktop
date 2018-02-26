@@ -33,7 +33,9 @@ public class SystemItemAction extends ItemAction {
 
                 @Override
                 public void onCanceled() {
-
+                    if (listener != null) {
+                        listener.onActionCanceled();
+                    }
                 }
             });
             stage.show();
@@ -57,7 +59,9 @@ public class SystemItemAction extends ItemAction {
 
                 @Override
                 public void onCanceled() {
-
+                    if (listener != null) {
+                        listener.onActionCanceled();
+                    }
                 }
             });
             stage.setSystemItem((SystemItem) component.getItem());

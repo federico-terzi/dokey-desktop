@@ -38,7 +38,9 @@ public class AppItemAction extends ItemAction {
 
                 @Override
                 public void onCanceled() {
-
+                    if (listener != null) {
+                        listener.onActionCanceled();
+                    }
                 }
             });
             appSelectDialogStage.show();
@@ -68,7 +70,9 @@ public class AppItemAction extends ItemAction {
 
                 @Override
                 public void onCanceled() {
-
+                    if (listener != null) {
+                        listener.onActionCanceled();
+                    }
                 }
             });
             appSelectDialogStage.show();

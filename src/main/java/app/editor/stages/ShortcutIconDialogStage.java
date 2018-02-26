@@ -39,6 +39,7 @@ public class ShortcutIconDialogStage extends Stage {
         this.setTitle("Select the Icon");
         this.setScene(scene);
         this.getIcons().add(new Image(ShortcutIconDialogStage.class.getResourceAsStream("/assets/icon.png")));
+        setAlwaysOnTop(true);
 
         controller = (ShortcutIconListController) fxmlLoader.getController();
 

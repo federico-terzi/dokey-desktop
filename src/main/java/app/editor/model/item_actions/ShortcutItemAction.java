@@ -41,7 +41,9 @@ public class ShortcutItemAction extends ItemAction {
 
                 @Override
                 public void onCanceled() {
-
+                    if (listener != null) {
+                        listener.onActionCanceled();
+                    }
                 }
             });
             stage.show();
@@ -75,7 +77,9 @@ public class ShortcutItemAction extends ItemAction {
 
                 @Override
                 public void onCanceled() {
-
+                    if (listener != null) {
+                        listener.onActionCanceled();
+                    }
                 }
             });
             stage.setShortcutItem((ShortcutItem) component.getItem());

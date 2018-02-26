@@ -45,6 +45,7 @@ public class ShortcutDialogStage extends Stage {
         this.getIcons().add(new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/icon.png")));
         scene.getStylesheets().add(ResourceUtils.getResource("/css/main.css").toURI().toString());
         setResizable(false);
+        setAlwaysOnTop(true);
 
         controller = (ShortcutDialogController) fxmlLoader.getController();
 

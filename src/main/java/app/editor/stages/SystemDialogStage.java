@@ -35,6 +35,7 @@ public class SystemDialogStage extends Stage {
         this.setTitle("System Controls");
         this.setScene(scene);
         this.getIcons().add(new Image(SystemDialogStage.class.getResourceAsStream("/assets/icon.png")));
+        setAlwaysOnTop(true);
 
         controller = (SystemDialogController) fxmlLoader.getController();
 

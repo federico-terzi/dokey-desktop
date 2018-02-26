@@ -56,6 +56,7 @@ public class WebLinkDialogStage extends Stage {
         this.getIcons().add(new Image(WebLinkDialogStage.class.getResourceAsStream("/assets/icon.png")));
         scene.getStylesheets().add(ResourceUtils.getResource("/css/main.css").toURI().toString());
         setResizable(false);
+        setAlwaysOnTop(true);
 
         controller = (WebLinkDialogController) fxmlLoader.getController();
 

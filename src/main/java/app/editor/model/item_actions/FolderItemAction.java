@@ -32,6 +32,10 @@ public class FolderItemAction extends ItemAction {
             if (listener != null) {
                 listener.onActionCompleted(component);
             }
+        }else{
+            if (listener != null) {
+                listener.onActionCanceled();
+            }
         }
     }
 
@@ -51,6 +55,10 @@ public class FolderItemAction extends ItemAction {
             // Notify the edit
             if (listener != null) {
                 listener.onActionCompleted(component);
+            }
+        }else{
+            if (listener != null) {
+                listener.onActionCanceled();
             }
         }
     }

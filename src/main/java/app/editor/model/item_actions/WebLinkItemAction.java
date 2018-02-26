@@ -36,7 +36,9 @@ public class WebLinkItemAction extends ItemAction {
 
                 @Override
                 public void onCanceled() {
-
+                    if (listener != null) {
+                        listener.onActionCanceled();
+                    }
                 }
             });
             stage.show();
@@ -66,7 +68,9 @@ public class WebLinkItemAction extends ItemAction {
 
                 @Override
                 public void onCanceled() {
-
+                    if (listener != null) {
+                        listener.onActionCanceled();
+                    }
                 }
             });
             stage.setWebLinkItem((WebLinkItem) component.getItem());
