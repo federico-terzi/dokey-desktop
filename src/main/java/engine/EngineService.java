@@ -226,7 +226,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
     @Override
     public File onAppIconRequestReceived(String path) {
         File icon = appManager.getApplicationIcon(path);
-        if (icon.isFile()) {
+        if (icon != null && icon.isFile()) {
             return icon;
         }else{
             return null;
