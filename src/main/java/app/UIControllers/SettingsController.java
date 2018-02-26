@@ -2,10 +2,7 @@ package app.UIControllers;
 
 import app.editor.listcells.ApplicationListCell;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.util.Callback;
 import system.model.Application;
 
@@ -18,6 +15,7 @@ public class SettingsController {
     public ListView externalAppListView;
     public Button clearCacheBtn;
     public CheckBox startupCheckbox;
+    public TextArea licensesTextArea;
 
     @FXML
     private ResourceBundle resources;
