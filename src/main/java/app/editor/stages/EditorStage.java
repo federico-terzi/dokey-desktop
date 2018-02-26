@@ -26,7 +26,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -185,7 +187,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         controller.importBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                importSection();
+                displayImportFileChooser();
             }
         });
         controller.addApplicationBtn.setOnAction(new EventHandler<ActionEvent>() {
@@ -236,6 +238,30 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         controller.searchSectionTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             sectionQuery = newValue;
             populateSectionListView();
+        });
+
+        // Drag layout files listener for importing
+        controller.getContentBox().setOnDragOver(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event) {
+                // Make sure the file is a dokey layout file.
+                if (event.getGestureSource() != controller.getContentBox() && event.getDragboard().hasFiles()) {
+                    if (event.getDragboard().getFiles().size() > 0 && event.getDragboard().getFiles().get(0).getName().endsWith(".dslf")) {
+                        event.acceptTransferModes(TransferMode.COPY);
+                    }
+                }
+                event.consume();
+            }
+        });
+        controller.getContentBox().setOnDragDropped(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event) {
+                // Make sure the file is a dokey layout file.
+                if (event.getDragboard().getFiles().size() > 0 && event.getDragboard().getFiles().get(0).getName().endsWith(".dslf")) {
+                    File importFile = event.getDragboard().getFiles().get(0);
+                    importSection(importFile);
+                }
+            }
         });
 
         requestSectionList();
@@ -561,7 +587,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         }
         fileChooser.setInitialFileName(filename);
 
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Section layout JSON (*.json)", "*.json");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Dokey Section Layout Format (*.dslf)", "*.dslf");
         fileChooser.getExtensionFilters().add(extFilter);
         File destFile = fileChooser.showSaveDialog(EditorStage.this);
         if (destFile != null) {
@@ -583,33 +609,41 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     /**
      * Display a file chooser dialog and begin the importing mechanism.
      */
-    private void importSection() {
+    private void displayImportFileChooser() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Import Layout");
 
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Section layout JSON (*.json)", "*.json");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Dokey Section Layout Format (*.dslf)", "*.dslf");
         fileChooser.getExtensionFilters().add(extFilter);
         File importFile = fileChooser.showOpenDialog(EditorStage.this);
 
         if (importFile != null) {
-            try {
-                Stage importStage = new ImportDialogStage(importFile, new ImportDialogStage.OnImportEventListener() {
-                    @Override
-                    public void onImportCompleted(Section section) {
-                        Platform.runLater(() -> {
-                            // Notify the modified section
-                            onSectionModified(section);
+            importSection(importFile);
+        }
+    }
 
-                            // Refresh the section list
-                            requestSectionList(section.getStringID());
-                        });
-                    }
+    /**
+     * Show the import dialog stage and start the importing process.
+     * @param importFile the file to import.
+     */
+    public void importSection(File importFile) {
+        try {
+            Stage importStage = new ImportDialogStage(importFile, new ImportDialogStage.OnImportEventListener() {
+                @Override
+                public void onImportCompleted(Section section) {
+                    Platform.runLater(() -> {
+                        // Notify the modified section
+                        onSectionModified(section);
 
-                }, applicationManager);
-                importStage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                        // Refresh the section list
+                        requestSectionList(section.getStringID());
+                    });
+                }
+
+            }, applicationManager);
+            importStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
