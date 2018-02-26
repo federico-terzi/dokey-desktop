@@ -22,6 +22,15 @@ public class KeyboardManager {
     }
 
     /**
+     * @param keyCode the keyCode
+     * @return true if the given key has to be patched on windows.
+     */
+    private static boolean isPatchedKey(int keyCode) {
+        return (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT ||
+                keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_DOWN);
+    }
+
+    /**
      * Used to simulate keyboard presses to complete the keystroke
      * @param keys list of KeyboardKeys to press
      */
@@ -32,8 +41,7 @@ public class KeyboardManager {
             int keyCode = key.getKeyCode(OSValidator.getOS());
 
             // Workaround on windows for arrow keys
-            if (OSValidator.isWindows() && (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT ||
-                keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_DOWN)) {
+            if (OSValidator.isWindows() && isPatchedKey(keyCode)) {
                 MSKeyboardTyper.keyPress(keyCode);
             }else{
                 robot.keyPress(keyCode);
@@ -47,8 +55,7 @@ public class KeyboardManager {
             int keyCode = key.getKeyCode(OSValidator.getOS());
 
             // Workaround on windows for arrow keys
-            if (OSValidator.isWindows() && (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT ||
-                    keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_DOWN)) {
+            if (OSValidator.isWindows() && isPatchedKey(keyCode)) {
                 MSKeyboardTyper.keyRelease(keyCode);
             }else{
                 robot.keyRelease(keyCode);

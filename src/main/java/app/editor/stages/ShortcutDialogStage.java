@@ -142,11 +142,19 @@ public class ShortcutDialogStage extends Stage {
         for (int i = 0; i<controller.specialKeys.length; i++) {
             Button btn = controller.getSpecialBtns()[i];
             KeyboardKeys key = controller.specialKeys[i];
+
+            // Convert the meta key to the corresponding key based on the OS.
+            if (key == KeyboardKeys.VK_META) {
+                key = (OSValidator.isWindows() ? KeyboardKeys.VK_WINDOWS : KeyboardKeys.VK_COMMAND);
+            }
+
+            final KeyboardKeys finalKey = key;
+
             btn.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    if (!keys.contains(key)) {
-                        keys.add(key);
+                    if (!keys.contains(finalKey)) {
+                        keys.add(finalKey);
                         renderKeys();
                     }
                 }

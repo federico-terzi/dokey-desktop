@@ -1,17 +1,8 @@
 package system.section.importer;
 
-import section.model.AppItem;
 import section.model.Item;
 import section.model.ShortcutItem;
-import system.model.Application;
-import system.model.ApplicationManager;
 import utils.OSValidator;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * This class analyzes the ShortcutItem to make sure it is valid.
@@ -25,6 +16,12 @@ public class ShortcutImportAgent extends ImportAgent {
     public boolean analyzeItem(Item item) {
         // Cast the item
         ShortcutItem shortcutItem = (ShortcutItem) item;
+
+        // If a shortcut received in Mac contains the WIN key it is invalid and
+        // cannot be converted.
+        if (OSValidator.isMac() && shortcutItem.getShortcut().contains("WIN")) {
+            return false;
+        }
 
         return true;
     }
