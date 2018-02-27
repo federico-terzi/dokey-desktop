@@ -135,7 +135,7 @@ public class ShortcutDialogStage extends Stage {
 
         // Setup the keyboard keys onShortcutListener
         controller.getShortcutTextField().addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
-            KeyboardKeys keyboardKey = KeyboardKeys.findFromName(key.getCode().getName().toUpperCase());
+            KeyboardKeys keyboardKey = KeyboardKeys.findFromConvertedName(key.getCode().getName().toUpperCase());
             if (keyboardKey != null && !keys.contains(keyboardKey)) {
                 keys.add(keyboardKey);
                 renderKeys();
