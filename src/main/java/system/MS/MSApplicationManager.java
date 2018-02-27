@@ -209,7 +209,9 @@ public class MSApplicationManager extends ApplicationManager {
 
         try {
             // Execute the process
-            Process proc = runtime.exec(new String[]{"explorer", url});
+            // Add the ending space as a workaround because if the url has parameters, explorer interprets it wrong
+            // unless there are quotes and the space force the quotes to appear.
+            Process proc = runtime.exec(new String[]{"explorer", url + " "});
             proc.waitFor();
 
             return true;
