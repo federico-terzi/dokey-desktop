@@ -48,6 +48,6 @@ public class AppConfig {
     @Bean
     @Scope("prototype")
     public SettingsStage settingsStage(SettingsStage.OnSettingsCloseListener onSettingsCloseListener) throws IOException {
-        return new SettingsStage(applicationManager, onSettingsCloseListener);
+        return new SettingsStage(applicationManager, resourceBundle(), onSettingsCloseListener);
     }
 }

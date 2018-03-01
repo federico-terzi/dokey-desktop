@@ -29,10 +29,7 @@ import system.model.ApplicationManager;
 import utils.OSValidator;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class SettingsStage extends Stage {
     private ApplicationManager applicationManager;
@@ -40,7 +37,8 @@ public class SettingsStage extends Stage {
 
     private SettingsController controller;
 
-    public SettingsStage(ApplicationManager applicationManager, OnSettingsCloseListener onSettingsCloseListener) throws IOException {
+    public SettingsStage(ApplicationManager applicationManager, ResourceBundle resourceBundle,
+                         OnSettingsCloseListener onSettingsCloseListener) throws IOException {
         this.applicationManager = applicationManager;
         this.onSettingsCloseListener = onSettingsCloseListener;
 
@@ -48,7 +46,7 @@ public class SettingsStage extends Stage {
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         scene.getStylesheets().add(ResourceUtils.getResource("/css/applistcell.css").toURI().toString());
-        this.setTitle("Settings");
+        this.setTitle(resourceBundle.getString("settings"));
         this.setResizable(false);
         this.setScene(scene);
         this.getIcons().add(new Image(SettingsStage.class.getResourceAsStream("/assets/icon.png")));
@@ -60,7 +58,7 @@ public class SettingsStage extends Stage {
             @Override
             public void handle(ActionEvent event) {
                 FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Select external application...");
+                fileChooser.setTitle(resourceBundle.getString("select_external_app"));
                 if (OSValidator.isWindows()) {
                     fileChooser.getExtensionFilters().addAll(
                             new FileChooser.ExtensionFilter("Application EXE", "*.exe")
@@ -85,7 +83,7 @@ public class SettingsStage extends Stage {
         controller.externalAppListView.setCellFactory(new Callback<ListView<Application>, ListCell<Application>>() {
             @Override
             public ListCell<Application> call(ListView<Application> param) {
-                ApplicationListCell applicationListCell = new ApplicationListCell();
+                ApplicationListCell applicationListCell = new ApplicationListCell(resourceBundle);
                 applicationListCell.setOnContextMenuListener(new ApplicationListCell.OnContextMenuListener() {
                     @Override
                     public void onDeleteApplication(Application application) {
@@ -123,8 +121,8 @@ public class SettingsStage extends Stage {
 
                         if (!result) {  // An error occurred
                             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                            alert.setTitle("Error!");
-                            alert.setHeaderText("Unfortunately, Dokey cannot be started on system startup!");
+                            alert.setTitle(resourceBundle.getString("error"));
+                            alert.setHeaderText(resourceBundle.getString("cannot_start_automatically"));
 
                             Optional<ButtonType> alertResult = alert.showAndWait();
                         }
@@ -145,8 +143,8 @@ public class SettingsStage extends Stage {
                 boolean result = cacheManager.clearCache();
                 if (result) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Cache Deleted!");
-                    alert.setHeaderText("Cache have been successfully deleted, now the app will close...");
+                    alert.setTitle(resourceBundle.getString("cache_deleted"));
+                    alert.setHeaderText(resourceBundle.getString("cache_deleted_msg"));
 
                     Optional<ButtonType> alertResult = alert.showAndWait();
                     System.exit(0);

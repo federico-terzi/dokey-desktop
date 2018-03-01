@@ -16,11 +16,13 @@ import system.section.SectionInfoResolver;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 public class SectionListCell extends ListCell<Section> {
 
     private ApplicationManager appManager;
     private SectionInfoResolver sectionInfoResolver;
+    private ResourceBundle resourceBundle;
     private OnContextMenuListener onContextMenuListener;
 
     private GridPane grid = new GridPane();
@@ -28,10 +30,11 @@ public class SectionListCell extends ListCell<Section> {
     private Label name = new Label();
     private Label path = new Label();
 
-    public SectionListCell(ApplicationManager appManager, OnContextMenuListener onContextMenuListener) {
+    public SectionListCell(ApplicationManager appManager, ResourceBundle resourceBundle, OnContextMenuListener onContextMenuListener) {
         this.appManager = appManager;
+        this.resourceBundle = resourceBundle;
         this.onContextMenuListener = onContextMenuListener;
-        sectionInfoResolver = new SectionInfoResolver(appManager);
+        sectionInfoResolver = new SectionInfoResolver(appManager, resourceBundle);
 
         configureGrid();
         addControlsToGrid();
@@ -74,7 +77,7 @@ public class SectionListCell extends ListCell<Section> {
 
         // Set up the context menu
         ContextMenu contextMenu = new ContextMenu();
-        MenuItem reloadItem = new MenuItem("Reload");
+        MenuItem reloadItem = new MenuItem(resourceBundle.getString("reload"));
         reloadItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -88,7 +91,7 @@ public class SectionListCell extends ListCell<Section> {
         reloadImageView.setSmooth(true);
         reloadItem.setGraphic(reloadImageView);
 
-        MenuItem exportItem = new MenuItem("Export...");
+        MenuItem exportItem = new MenuItem(resourceBundle.getString("export"));
         exportItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -102,14 +105,14 @@ public class SectionListCell extends ListCell<Section> {
         exportImageView.setSmooth(true);
         exportItem.setGraphic(exportImageView);
 
-        MenuItem deleteItem = new MenuItem("Delete");
+        MenuItem deleteItem = new MenuItem(resourceBundle.getString("delete"));
         deleteItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Delete Confirmation");
-                alert.setHeaderText("Are you sure you want to delete this section?");
-                alert.setContentText("If you proceed, the section will be deleted.");
+                alert.setTitle(resourceBundle.getString("delete_confirmation"));
+                alert.setHeaderText(resourceBundle.getString("delete_section_msg"));
+                alert.setContentText(resourceBundle.getString("delete_section_msg2"));
 
                 Optional<ButtonType> result = alert.showAndWait();
                 if (result.get() == ButtonType.OK) {  // OK DELETE

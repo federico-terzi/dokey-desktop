@@ -28,19 +28,21 @@ import java.util.*;
 public class ShortcutDialogStage extends Stage {
     private ShortcutIconManager shortcutIconManager;
     private ShortcutDialogController controller;
+    private ResourceBundle resourceBundle;
     private OnShortcutListener onShortcutListener;
 
     private List<KeyboardKeys> keys = new ArrayList<>();
     private ShortcutIcon icon = null;
 
-    public ShortcutDialogStage(ShortcutIconManager shortcutIconManager, OnShortcutListener onShortcutListener) throws IOException {
+    public ShortcutDialogStage(ShortcutIconManager shortcutIconManager, ResourceBundle resourceBundle, OnShortcutListener onShortcutListener) throws IOException {
         this.shortcutIconManager = shortcutIconManager;
+        this.resourceBundle = resourceBundle;
         this.onShortcutListener = onShortcutListener;
 
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/shortcut_dialog.fxml").toURI().toURL());
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
-        this.setTitle("Shortcut");
+        this.setTitle(resourceBundle.getString("shortcut"));
         this.setScene(scene);
         this.getIcons().add(new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/icon.png")));
         scene.getStylesheets().add(ResourceUtils.getResource("/css/main.css").toURI().toString());
@@ -84,9 +86,9 @@ public class ShortcutDialogStage extends Stage {
                     close();
                 }else {
                     Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("Shortcut Not Specified");
-                    alert.setHeaderText("You haven't selected any shortcut yet!");
-                    alert.setContentText("Please go back and type the keyboard keys or Cancel...");
+                    alert.setTitle(resourceBundle.getString("shortcut_not_specified"));
+                    alert.setHeaderText(resourceBundle.getString("shortcut_not_specified_msg"));
+                    alert.setContentText(resourceBundle.getString("shortcut_not_specified_msg2"));
 
                     alert.showAndWait();
                 }
@@ -98,7 +100,7 @@ public class ShortcutDialogStage extends Stage {
             public void handle(ActionEvent event) {
                 ShortcutIconDialogStage shortcutIconDialogStage = null;
                 try {
-                    shortcutIconDialogStage = new ShortcutIconDialogStage(shortcutIconManager, new ShortcutIconDialogStage.OnIconSelectListener() {
+                    shortcutIconDialogStage = new ShortcutIconDialogStage(shortcutIconManager, resourceBundle, new ShortcutIconDialogStage.OnIconSelectListener() {
                         @Override
                         public void onIconSelected(ShortcutIcon icon) {
                             ShortcutDialogStage.this.icon = icon;
@@ -189,10 +191,10 @@ public class ShortcutDialogStage extends Stage {
             Image image = new Image(icon.getFile().toURI().toString(), 32, 32, true, true);
             ImageView imageView = new ImageView(image);
             controller.iconBtn.setGraphic(imageView);
-            controller.iconBtn.setText("Change icon...");
+            controller.iconBtn.setText(resourceBundle.getString("change_icon_btn"));
         }else{
             controller.iconBtn.setGraphic(null);
-            controller.iconBtn.setText("Select icon...");
+            controller.iconBtn.setText(resourceBundle.getString("select_icon_btn"));
         }
 
     }

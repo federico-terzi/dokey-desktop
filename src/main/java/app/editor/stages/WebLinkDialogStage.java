@@ -27,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
@@ -43,7 +44,8 @@ public class WebLinkDialogStage extends Stage {
 
     private boolean isEdit = false;  // False when creating a new item, true when editing
 
-    public WebLinkDialogStage(WebLinkResolver webLinkResolver,OnWebLinkListener onWebLinkListener) throws IOException {
+    public WebLinkDialogStage(WebLinkResolver webLinkResolver, ResourceBundle resourceBundle,
+                              OnWebLinkListener onWebLinkListener) throws IOException {
         this.webLinkResolver = webLinkResolver;
         this.onWebLinkListener = onWebLinkListener;
 
@@ -51,7 +53,7 @@ public class WebLinkDialogStage extends Stage {
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/web_link_dialog.fxml").toURI().toURL());
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
-        this.setTitle("Web Link");
+        this.setTitle(resourceBundle.getString("web_link"));
         this.setScene(scene);
         this.getIcons().add(new Image(WebLinkDialogStage.class.getResourceAsStream("/assets/icon.png")));
         scene.getStylesheets().add(ResourceUtils.getResource("/css/main.css").toURI().toString());

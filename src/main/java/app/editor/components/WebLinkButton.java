@@ -1,27 +1,24 @@
 package app.editor.components;
 
-import app.editor.stages.WebLinkDialogStage;
 import javafx.application.Platform;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.DirectoryChooser;
 import section.model.Component;
-import section.model.FolderItem;
 import section.model.WebLinkItem;
-import system.WebLinkResolver;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 public class WebLinkButton extends ComponentButton {
     private WebLinkItem item;
 
-    public WebLinkButton(ComponentGrid componentGrid, Component component) {
-        super(componentGrid, component);
+    public WebLinkButton(ComponentGrid componentGrid, Component component, ResourceBundle resourceBundle) {
+        super(componentGrid, component, resourceBundle);
 
         item = (WebLinkItem) associatedComponent.getItem();
 

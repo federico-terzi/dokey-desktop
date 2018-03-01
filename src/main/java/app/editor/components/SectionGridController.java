@@ -21,6 +21,7 @@ import system.ShortcutIconManager;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * This component will createView a Section into a Grid with button bar and animations.
@@ -45,6 +46,7 @@ public class SectionGridController {
     private ShortcutIconManager shortcutIconManager;
     private WebLinkResolver webLinkResolver;
     private OnSectionModifiedListener sectionModifiedListener;
+    private ResourceBundle resourceBundle;
     private OnSectionGridEventListener sectionGridEventListener;
 
     private boolean isBottomBarVisible = false;
@@ -59,7 +61,7 @@ public class SectionGridController {
     public SectionGridController(Section section, VBox container, ScreenOrientation screenOrientation,
                                  ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager,
                                  WebLinkResolver webLinkResolver, OnSectionModifiedListener onSectionModifiedListener,
-                                 OnSectionGridEventListener sectionGridEventListener) {
+                                 ResourceBundle resourceBundle, OnSectionGridEventListener sectionGridEventListener) {
         this.section = section;
         this.container = container;
         this.screenOrientation = screenOrientation;
@@ -68,6 +70,7 @@ public class SectionGridController {
         this.webLinkResolver = webLinkResolver;
         this.sectionGridEventListener = sectionGridEventListener;
         this.sectionModifiedListener = onSectionModifiedListener;
+        this.resourceBundle = resourceBundle;
 
         // If there are bottom bar elements, show the bar
         if (section.getBottomBarItems().size() > 0) {
@@ -124,7 +127,7 @@ public class SectionGridController {
         for (Page page : section.getPages()) {
             // Create the page grid
             PageGrid pageGrid = new PageGrid(applicationManager, shortcutIconManager, webLinkResolver,
-                    page, section, screenOrientation);
+                    page, section, screenOrientation, resourceBundle);
             pageGrid.setSectionModifiedListener(sectionModifiedListener);
             pageGrid.setShortcutIconManager(shortcutIconManager);
 
@@ -137,7 +140,7 @@ public class SectionGridController {
 
             // Add the tab context menu
             final ContextMenu contextMenu = new ContextMenu();
-            MenuItem changeSize = new MenuItem("Change Grid Size...");
+            MenuItem changeSize = new MenuItem(resourceBundle.getString("change_grid_size"));
             changeSize.setStyle("-fx-text-fill: black;");
             changeSize.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
@@ -147,7 +150,7 @@ public class SectionGridController {
                     }
                 }
             });
-            MenuItem moveLeft = new MenuItem("Move Left");
+            MenuItem moveLeft = new MenuItem(resourceBundle.getString("move_left"));
             moveLeft.setStyle("-fx-text-fill: black;");
             moveLeft.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
@@ -157,7 +160,7 @@ public class SectionGridController {
                     }
                 }
             });
-            MenuItem moveRight = new MenuItem("Move Right");
+            MenuItem moveRight = new MenuItem(resourceBundle.getString("move_right"));
             moveRight.setStyle("-fx-text-fill: black;");
             moveRight.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
@@ -167,7 +170,7 @@ public class SectionGridController {
                     }
                 }
             });
-            MenuItem delete = new MenuItem("Delete");
+            MenuItem delete = new MenuItem(resourceBundle.getString("delete"));
             delete.setStyle("-fx-text-fill: black;");
             delete.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
@@ -192,7 +195,7 @@ public class SectionGridController {
 
         // Add the bottom bar
         bottomBarGrid = new BottomBarGrid(applicationManager, shortcutIconManager, webLinkResolver,
-                BOTTOM_BAR_DEFAULT_COLS, section, screenOrientation);
+                BOTTOM_BAR_DEFAULT_COLS, section, screenOrientation, resourceBundle);
         bottomBarGrid.setSectionModifiedListener(sectionModifiedListener);
 
         // This listener is used by the tab pane controller to select/add tabs

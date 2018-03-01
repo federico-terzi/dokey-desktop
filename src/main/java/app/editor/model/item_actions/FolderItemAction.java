@@ -6,16 +6,18 @@ import section.model.Component;
 import section.model.FolderItem;
 
 import java.io.File;
+import java.util.ResourceBundle;
 
 public class FolderItemAction extends ItemAction {
-    public FolderItemAction(ComponentGrid componentGrid) {
-        super(2,"Folder", "Add Folder", "/assets/folder.png", componentGrid);
+    public FolderItemAction(ComponentGrid componentGrid, ResourceBundle resourceBundle) {
+        super(2, resourceBundle.getString("folder"),
+                resourceBundle.getString("add_folder"), "/assets/folder.png", componentGrid, resourceBundle);
     }
 
     @Override
     public void requestAddItem(int col, int row, OnActionCompletedListener listener) {
         DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Choose the Folder");
+        chooser.setTitle(resourceBundle.getString("choose_the_folder"));
         File selectedDirectory = chooser.showDialog(null);
 
         if (selectedDirectory != null) {
@@ -42,7 +44,7 @@ public class FolderItemAction extends ItemAction {
     @Override
     public void requestEditItem(Component component, OnActionCompletedListener listener) {
         DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Choose the Folder");
+        chooser.setTitle(resourceBundle.getString("choose_the_folder"));
         File selectedDirectory = chooser.showDialog(null);
 
         FolderItem item = (FolderItem) component.getItem();

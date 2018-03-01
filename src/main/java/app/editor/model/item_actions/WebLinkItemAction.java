@@ -6,16 +6,19 @@ import section.model.Component;
 import section.model.WebLinkItem;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 public class WebLinkItemAction extends ItemAction {
-    public WebLinkItemAction(ComponentGrid componentGrid) {
-        super(3,"Web Link", "Add Web Link", "/assets/world_black.png", componentGrid);
+    public WebLinkItemAction(ComponentGrid componentGrid, ResourceBundle resourceBundle) {
+        super(3,resourceBundle.getString("web_link"),
+                resourceBundle.getString("add_web_link"), "/assets/world_black.png", componentGrid, resourceBundle);
     }
 
     @Override
     public void requestAddItem(int col, int row, OnActionCompletedListener listener) {
         try {
-            WebLinkDialogStage stage = new WebLinkDialogStage(componentGrid.getWebLinkResolver(), new WebLinkDialogStage.OnWebLinkListener() {
+            WebLinkDialogStage stage = new WebLinkDialogStage(componentGrid.getWebLinkResolver(), resourceBundle,
+                    new WebLinkDialogStage.OnWebLinkListener() {
                 @Override
                 public void onWebLinkSelected(String url, String title, String imageUrl) {
                     // Create the component
@@ -50,7 +53,8 @@ public class WebLinkItemAction extends ItemAction {
     @Override
     public void requestEditItem(Component component, OnActionCompletedListener listener) {
         try {
-            WebLinkDialogStage stage = new WebLinkDialogStage(componentGrid.getWebLinkResolver(), new WebLinkDialogStage.OnWebLinkListener() {
+            WebLinkDialogStage stage = new WebLinkDialogStage(componentGrid.getWebLinkResolver(),
+                    resourceBundle, new WebLinkDialogStage.OnWebLinkListener() {
                 @Override
                 public void onWebLinkSelected(String url, String title, String imageUrl) {
                     // Create the component

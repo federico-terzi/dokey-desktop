@@ -25,6 +25,7 @@ public class ComponentGrid extends GridPane {
     private ShortcutIconManager shortcutIconManager;
     private WebLinkResolver webLinkResolver;
     protected ScreenOrientation screenOrientation;
+    private ResourceBundle resourceBundle;
     private OnComponentSelectedListener onComponentSelectedListener;
 
     protected Component[][] componentMatrix;
@@ -40,13 +41,16 @@ public class ComponentGrid extends GridPane {
     // Used to avoid double opening of dialogs.
     private boolean isDialogOpen = false;
 
-    public ComponentGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, WebLinkResolver webLinkResolver, Component[][] componentMatrix, ScreenOrientation screenOrientation) {
+    public ComponentGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager,
+                         WebLinkResolver webLinkResolver, Component[][] componentMatrix,
+                         ScreenOrientation screenOrientation, ResourceBundle resourceBundle) {
         super();
         this.applicationManager = applicationManager;
         this.shortcutIconManager = shortcutIconManager;
         this.webLinkResolver = webLinkResolver;
         this.componentMatrix = componentMatrix;
         this.screenOrientation = screenOrientation;
+        this.resourceBundle = resourceBundle;
 
         setupItemTypeClasses();
         setupItemTypeActions();
@@ -72,11 +76,11 @@ public class ComponentGrid extends GridPane {
      * Populate the map that will hold the association between an item and the corresponding actions.
      */
     private void setupItemTypeActions() {
-        itemTypeActions.put(ItemType.APP, new AppItemAction(this));
-        itemTypeActions.put(ItemType.SHORTCUT, new ShortcutItemAction(this));
-        itemTypeActions.put(ItemType.FOLDER, new FolderItemAction(this));
-        itemTypeActions.put(ItemType.SYSTEM, new SystemItemAction(this));
-        itemTypeActions.put(ItemType.WEB_LINK, new WebLinkItemAction(this));
+        itemTypeActions.put(ItemType.APP, new AppItemAction(this, resourceBundle));
+        itemTypeActions.put(ItemType.SHORTCUT, new ShortcutItemAction(this, resourceBundle));
+        itemTypeActions.put(ItemType.FOLDER, new FolderItemAction(this, resourceBundle));
+        itemTypeActions.put(ItemType.SYSTEM, new SystemItemAction(this, resourceBundle));
+        itemTypeActions.put(ItemType.WEB_LINK, new WebLinkItemAction(this, resourceBundle));
 
         // Create the ordered list
         orderedTypeActions = new ArrayList<>(itemTypeActions.values());
@@ -402,9 +406,9 @@ public class ComponentGrid extends GridPane {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
         stage.getIcons().add(new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/icon.png")));
-        alert.setTitle("Overwrite Button");
-        alert.setHeaderText("Are you sure you want to overwrite this button?");
-        alert.setContentText("If you proceed, a button will be deleted.");
+        alert.setTitle(resourceBundle.getString("overwrite_button"));
+        alert.setHeaderText(resourceBundle.getString("overwrite_button_msg"));
+        alert.setContentText(resourceBundle.getString("overwrite_button_msg2"));
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK) {  // Overwrite
@@ -429,7 +433,8 @@ public class ComponentGrid extends GridPane {
             try {
                 // Generate a DragButton instance based on the type
                 return itemTypeClassMap.get(component.getItem().getItemType())
-                        .getConstructor(ComponentGrid.class, Component.class).newInstance(this, component);
+                        .getConstructor(ComponentGrid.class, Component.class, ResourceBundle.class)
+                        .newInstance(this, component, resourceBundle);
             } catch (InstantiationException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {

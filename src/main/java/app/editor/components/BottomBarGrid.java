@@ -11,6 +11,7 @@ import system.ShortcutIconManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class BottomBarGrid extends ComponentGrid implements ComponentGrid.OnComponentSelectedListener {
     private int colCount;
@@ -18,8 +19,8 @@ public class BottomBarGrid extends ComponentGrid implements ComponentGrid.OnComp
     private OnSectionModifiedListener sectionModifiedListener;
 
     public BottomBarGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, WebLinkResolver webLinkResolver,
-                         int colCount, Section section, ScreenOrientation screenOrientation) {
-        super(applicationManager, shortcutIconManager, webLinkResolver, generateMatrix(section.getBottomBarItems(), colCount), screenOrientation);
+                         int colCount, Section section, ScreenOrientation screenOrientation, ResourceBundle resourceBundle) {
+        super(applicationManager, shortcutIconManager, webLinkResolver, generateMatrix(section.getBottomBarItems(), colCount), screenOrientation, resourceBundle);
         this.colCount = colCount;
         this.section = section;
 

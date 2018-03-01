@@ -10,6 +10,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import section.model.Component;
 
+import java.util.ResourceBundle;
+
 /**
  * This class represents an action associated with an Item.
  */
@@ -19,13 +21,15 @@ public abstract class ItemAction {
     protected String message;
     protected String iconPath;
     protected ComponentGrid componentGrid;
+    protected ResourceBundle resourceBundle;
 
-    public ItemAction(int contextMenuOrder, String title, String message, String iconPath, ComponentGrid componentGrid) {
+    public ItemAction(int contextMenuOrder, String title, String message, String iconPath, ComponentGrid componentGrid, ResourceBundle resourceBundle) {
         this.contextMenuOrder = contextMenuOrder;
         this.title = title;
         this.message = message;
         this.iconPath = iconPath;
         this.componentGrid = componentGrid;
+        this.resourceBundle = resourceBundle;
     }
 
     /**

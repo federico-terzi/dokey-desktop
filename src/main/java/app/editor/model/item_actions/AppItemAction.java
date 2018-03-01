@@ -8,16 +8,19 @@ import section.model.ItemType;
 import system.model.Application;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 public class AppItemAction extends ItemAction {
-    public AppItemAction(ComponentGrid componentGrid) {
-        super(0,"Application", "Add Application", "/assets/launcher.png", componentGrid);
+    public AppItemAction(ComponentGrid componentGrid, ResourceBundle resourceBundle) {
+        super(0,resourceBundle.getString("application"),
+                resourceBundle.getString("add_app"), "/assets/launcher.png", componentGrid, resourceBundle);
     }
 
     @Override
     public void requestAddItem(int col, int row, OnActionCompletedListener listener) {
         try {
             AppSelectDialogStage appSelectDialogStage = new AppSelectDialogStage(componentGrid.getApplicationManager(),
+                    resourceBundle,
                     new AppSelectDialogStage.OnApplicationListener() {
                 @Override
                 public void onApplicationSelected(Application application) {
@@ -52,7 +55,9 @@ public class AppItemAction extends ItemAction {
     @Override
     public void requestEditItem(Component component, OnActionCompletedListener listener) {
         try {
-            AppSelectDialogStage appSelectDialogStage = new AppSelectDialogStage(componentGrid.getApplicationManager(), new AppSelectDialogStage.OnApplicationListener() {
+            AppSelectDialogStage appSelectDialogStage = new AppSelectDialogStage(componentGrid.getApplicationManager(),
+                    resourceBundle,
+                    new AppSelectDialogStage.OnApplicationListener() {
                 @Override
                 public void onApplicationSelected(Application application) {
                     // Create the component

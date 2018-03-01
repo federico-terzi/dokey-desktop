@@ -7,16 +7,20 @@ import section.model.ShortcutItem;
 import system.ShortcutIcon;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 public class ShortcutItemAction extends ItemAction {
-    public ShortcutItemAction(ComponentGrid componentGrid) {
-        super(1, "Shortcut", "Add Shortcut", "/assets/keyboard.png", componentGrid);
+    public ShortcutItemAction(ComponentGrid componentGrid, ResourceBundle resourceBundle) {
+        super(1, resourceBundle.getString("shortcut"),
+                resourceBundle.getString("add_shortcut"), "/assets/keyboard.png",
+                componentGrid, resourceBundle);
     }
 
     @Override
     public void requestAddItem(int col, int row, OnActionCompletedListener listener) {
         try {
-            ShortcutDialogStage stage = new ShortcutDialogStage(componentGrid.getShortcutIconManager(), new ShortcutDialogStage.OnShortcutListener() {
+            ShortcutDialogStage stage = new ShortcutDialogStage(componentGrid.getShortcutIconManager(), resourceBundle,
+                    new ShortcutDialogStage.OnShortcutListener() {
                 @Override
                 public void onShortcutSelected(String shortcut, String name, ShortcutIcon icon) {
                     // Create the component
@@ -55,7 +59,9 @@ public class ShortcutItemAction extends ItemAction {
     @Override
     public void requestEditItem(Component component, OnActionCompletedListener listener) {
         try {
-            ShortcutDialogStage stage = new ShortcutDialogStage(componentGrid.getShortcutIconManager(), new ShortcutDialogStage.OnShortcutListener() {
+            ShortcutDialogStage stage = new ShortcutDialogStage(componentGrid.getShortcutIconManager(),
+                    resourceBundle,
+                    new ShortcutDialogStage.OnShortcutListener() {
                 @Override
                 public void onShortcutSelected(String shortcut, String name, ShortcutIcon icon) {
                     // Create the component

@@ -20,19 +20,20 @@ import utils.SystemItemManager;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.ResourceBundle;
 
 public class SystemDialogStage extends Stage {
     private final SystemDialogController controller;
     private OnSystemItemListener listener;
 
-    public SystemDialogStage(OnSystemItemListener listener) throws IOException {
+    public SystemDialogStage(ResourceBundle resourceBundle, OnSystemItemListener listener) throws IOException {
         this.listener = listener;
 
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/system_dialog.fxml").toURI().toURL());
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         //scene.getStylesheets().add(ResourceUtils.getResource("/css/applistcell.css").toURI().toString());
-        this.setTitle("System Controls");
+        this.setTitle(resourceBundle.getString("system_controls"));
         this.setScene(scene);
         this.getIcons().add(new Image(SystemDialogStage.class.getResourceAsStream("/assets/icon.png")));
         setAlwaysOnTop(true);

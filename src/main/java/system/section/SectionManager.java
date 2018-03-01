@@ -291,6 +291,8 @@ public class SectionManager {
         firstPage.setColCount(4);
         firstPage.setRowCount(4);
 
+        // TODO Add default elements
+
         section.addPage(firstPage);
         return section;
     }

@@ -38,13 +38,6 @@ public class AppListController {
     private TextField searchTextField;
 
     public void initialize() {
-        appListView.setCellFactory(new Callback<ListView<Application>, ListCell<Application>>() {
-            @Override
-            public ListCell<Application> call(ListView<Application> param) {
-                return new ApplicationListCell();
-            }
-        });
-
         Platform.runLater(new Runnable() {
             @Override
             public void run() {

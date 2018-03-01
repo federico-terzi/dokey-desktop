@@ -9,14 +9,16 @@ import system.WebLinkResolver;
 import system.model.ApplicationManager;
 import system.ShortcutIconManager;
 
+import java.util.ResourceBundle;
+
 public class PageGrid extends ComponentGrid implements ComponentGrid.OnComponentSelectedListener {
     private Page page;
     private Section section;
     private OnSectionModifiedListener sectionModifiedListener;
 
     public PageGrid(ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager, WebLinkResolver webLinkResolver,
-                    Page page, Section section, ScreenOrientation screenOrientation) {
-        super(applicationManager, shortcutIconManager, webLinkResolver, generateMatrix(page), screenOrientation);
+                    Page page, Section section, ScreenOrientation screenOrientation, ResourceBundle resourceBundle) {
+        super(applicationManager, shortcutIconManager, webLinkResolver, generateMatrix(page), screenOrientation, resourceBundle);
         this.page = page;
         this.section = section;
         setOnComponentSelectedListener(this);

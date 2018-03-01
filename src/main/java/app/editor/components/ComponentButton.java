@@ -6,26 +6,27 @@ import javafx.scene.Cursor;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.paint.Color;
 import section.model.Component;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import utils.OSValidator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class ComponentButton extends DragButton {
     private OnComponentActionListener onComponentActionListener;
     protected Component associatedComponent;
+    protected ResourceBundle resourceBundle;
     private boolean isSelected = false;
 
-    public ComponentButton(ComponentGrid componentGrid, Component associatedComponent) {
+    public ComponentButton(ComponentGrid componentGrid, Component associatedComponent, ResourceBundle resourceBundle) {
         super(componentGrid);
         this.associatedComponent = associatedComponent;
+        this.resourceBundle = resourceBundle;
 
         // Add the style
         getStyleClass().add("component-btn");
@@ -92,7 +93,7 @@ public class ComponentButton extends DragButton {
      * @param items
      */
     protected void getContextMenu(List<MenuItem> items) {
-        MenuItem edit = new MenuItem("Edit");
+        MenuItem edit = new MenuItem(resourceBundle.getString("edit"));
         edit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -107,7 +108,7 @@ public class ComponentButton extends DragButton {
         editImageView.setFitHeight(16);
         edit.setGraphic(editImageView);
 
-        MenuItem delete = new MenuItem("Delete");
+        MenuItem delete = new MenuItem(resourceBundle.getString("delete"));
         delete.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {

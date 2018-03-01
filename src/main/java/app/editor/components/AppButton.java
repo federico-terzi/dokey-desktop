@@ -1,29 +1,24 @@
 package app.editor.components;
 
-import app.editor.stages.AppSelectDialogStage;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
 import section.model.AppItem;
 import section.model.Component;
-import section.model.ItemType;
 import system.BroadcastManager;
 import system.model.Application;
-import system.model.ApplicationManager;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class AppButton extends ComponentButton {
     private Application application;
 
-    public AppButton(ComponentGrid componentGrid, Component component) {
-        super(componentGrid, component);
+    public AppButton(ComponentGrid componentGrid, Component component, ResourceBundle resourceBundle) {
+        super(componentGrid, component, resourceBundle);
 
         // Get the item
         AppItem item = (AppItem) component.getItem();
@@ -68,7 +63,7 @@ public class AppButton extends ComponentButton {
     protected void getContextMenu(List<MenuItem> items) {
         super.getContextMenu(items);
 
-        MenuItem openShortcutPage = new MenuItem("Open Shortcuts...");
+        MenuItem openShortcutPage = new MenuItem(resourceBundle.getString("open_layout"));
         openShortcutPage.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {

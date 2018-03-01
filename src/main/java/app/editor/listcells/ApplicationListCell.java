@@ -13,6 +13,7 @@ import javafx.scene.layout.GridPane;
 import system.model.Application;
 
 import java.io.File;
+import java.util.ResourceBundle;
 
 public class ApplicationListCell extends ListCell<Application> {
 
@@ -22,8 +23,10 @@ public class ApplicationListCell extends ListCell<Application> {
     private Label path = new Label();
 
     private OnContextMenuListener onContextMenuListener;
+    private ResourceBundle resourceBundle;
 
-    public ApplicationListCell() {
+    public ApplicationListCell(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
         configureGrid();
         addControlsToGrid();
     }
@@ -60,7 +63,7 @@ public class ApplicationListCell extends ListCell<Application> {
 
         // Set up the context menu
         ContextMenu contextMenu = new ContextMenu();
-        MenuItem deleteItem = new MenuItem("Delete");
+        MenuItem deleteItem = new MenuItem(resourceBundle.getString("delete"));
         deleteItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {

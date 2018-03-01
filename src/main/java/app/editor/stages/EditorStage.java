@@ -366,7 +366,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         controller.getSectionsListView().setCellFactory(new Callback<ListView<Section>, ListCell<Section>>() {
             @Override
             public ListCell<Section> call(ListView<Section> param) {
-                return new SectionListCell(applicationManager, new SectionListCell.OnContextMenuListener() {
+                return new SectionListCell(applicationManager, resourceBundle, new SectionListCell.OnContextMenuListener() {
                     @Override
                     public void onDeleteSection(Section section) {
                         sectionManager.deleteSection(section);
@@ -437,7 +437,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
 
         sectionGridController = new SectionGridController(section, controller.getContentBox(),
                 screenOrientation, applicationManager, shortcutIconManager, webLinkResolver, this,
-                new SectionGridController.OnSectionGridEventListener() {
+                resourceBundle, new SectionGridController.OnSectionGridEventListener() {
             @Override
             public void onRequestChangePageSize(Page page, Section section) {
                 requestChangePageSize(page, section);
@@ -544,7 +544,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
      */
     private void addSection() {
         try {
-            AppSelectDialogStage appSelectDialogStage = new AppSelectDialogStage(applicationManager, new AppSelectDialogStage.OnApplicationListener() {
+            AppSelectDialogStage appSelectDialogStage = new AppSelectDialogStage(applicationManager, resourceBundle,
+                    new AppSelectDialogStage.OnApplicationListener() {
                 @Override
                 public void onApplicationSelected(Application application) {
                     requestSectionForApplication(application.getExecutablePath());
@@ -642,7 +643,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                     });
                 }
 
-            }, applicationManager);
+            }, applicationManager, resourceBundle);
             importStage.show();
         } catch (IOException e) {
             e.printStackTrace();

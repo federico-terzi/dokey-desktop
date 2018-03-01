@@ -1,25 +1,21 @@
 package app.editor.components;
 
-import app.editor.stages.SystemDialogStage;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import section.model.Component;
 import section.model.SystemItem;
-import system.WebLinkResolver;
 import utils.SystemItemManager;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.util.ResourceBundle;
 
 public class SystemButton extends ComponentButton {
     private SystemItem item;
 
-    public SystemButton(ComponentGrid componentGrid, Component component) {
-        super(componentGrid, component);
+    public SystemButton(ComponentGrid componentGrid, Component component, ResourceBundle resourceBundle) {
+        super(componentGrid, component, resourceBundle);
 
         item = (SystemItem) associatedComponent.getItem();
 

@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 public class ImportDialogStage extends Stage {
     private final ImportDialogController controller;
@@ -37,19 +38,22 @@ public class ImportDialogStage extends Stage {
 
     private SectionImporter sectionImporter;
     private SectionInfoResolver sectionInfoResolver;
+    private ResourceBundle resourceBundle;
 
     private Application applicationTarget = null;  // If this is different than null, the section will be loaded for that app.
 
-    public ImportDialogStage(File importedFile, OnImportEventListener listener, ApplicationManager applicationManager) throws IOException {
+    public ImportDialogStage(File importedFile, OnImportEventListener listener, ApplicationManager applicationManager,
+                             ResourceBundle resourceBundle) throws IOException {
         this.importedFile = importedFile;
         this.listener = listener;
         this.applicationManager = applicationManager;
-        sectionInfoResolver = new SectionInfoResolver(applicationManager);
+        sectionInfoResolver = new SectionInfoResolver(applicationManager, resourceBundle);
+        this.resourceBundle = resourceBundle;
 
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/import_dialog.fxml").toURI().toURL());
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
-        this.setTitle("Import Layout");
+        this.setTitle(resourceBundle.getString("import_layout"));
         this.setScene(scene);
         this.getIcons().add(new Image(ImportDialogStage.class.getResourceAsStream("/assets/icon.png")));
 
@@ -185,8 +189,8 @@ public class ImportDialogStage extends Stage {
         }else{
             Image notFoundImage = new Image(SectionInfoResolver.class.getResourceAsStream("/assets/help.png"), 64, 64, true, true);
             controller.targetImageView.setImage(notFoundImage);
-            controller.sectionTitleLabel.setText("Not Found");
-            controller.sectionDescriptionLabel.setText("Can't find the target application, please select it manually.");
+            controller.sectionTitleLabel.setText(resourceBundle.getString("target_not_found"));
+            controller.sectionDescriptionLabel.setText(resourceBundle.getString("target_not_found_msg"));
         }
 
         // If the section has type SHORTCUTS enable the change target button
@@ -202,10 +206,9 @@ public class ImportDialogStage extends Stage {
      */
     private void displayIncompatibleOSWarning() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("OS Incompatibility Detected");
-        alert.setHeaderText("This layout was created with another Operating System.");
-        alert.setContentText("You can still import it with the Compatibility Mode, " +
-                "but it may not work as expected.\nDo you want to proceed anyway?");
+        alert.setTitle(resourceBundle.getString("os_incompatibility"));
+        alert.setHeaderText(resourceBundle.getString("os_incompatibility_msg"));
+        alert.setContentText(resourceBundle.getString("os_incompatibility_msg2"));
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
         stage.getIcons().add(new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/icon.png")));
 
@@ -220,7 +223,7 @@ public class ImportDialogStage extends Stage {
      */
     private void changeTarget() {
         try {
-            AppSelectDialogStage appSelectDialogStage = new AppSelectDialogStage(applicationManager,
+            AppSelectDialogStage appSelectDialogStage = new AppSelectDialogStage(applicationManager, resourceBundle,
                 new AppSelectDialogStage.OnApplicationListener() {
                     @Override
                     public void onApplicationSelected(Application application) {

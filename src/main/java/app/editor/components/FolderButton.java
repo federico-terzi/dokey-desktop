@@ -7,11 +7,13 @@ import javafx.scene.image.ImageView;
 import section.model.Component;
 import section.model.FolderItem;
 
+import java.util.ResourceBundle;
+
 public class FolderButton extends ComponentButton {
     private FolderItem item;
 
-    public FolderButton(ComponentGrid componentGrid, Component component) {
-        super(componentGrid, component);
+    public FolderButton(ComponentGrid componentGrid, Component component, ResourceBundle resourceBundle) {
+        super(componentGrid, component, resourceBundle);
 
         item = (FolderItem) associatedComponent.getItem();
 

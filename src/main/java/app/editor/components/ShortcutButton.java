@@ -10,11 +10,13 @@ import section.model.Component;
 import section.model.ShortcutItem;
 import system.ShortcutIcon;
 
+import java.util.ResourceBundle;
+
 public class ShortcutButton extends ComponentButton {
     private ShortcutItem item;
 
-    public ShortcutButton(ComponentGrid componentGrid, Component component) {
-        super(componentGrid, component);
+    public ShortcutButton(ComponentGrid componentGrid, Component component, ResourceBundle resourceBundle) {
+        super(componentGrid, component, resourceBundle);
 
         // Add the style
         getStyleClass().add("shortcut-button");

@@ -19,6 +19,7 @@ import system.ShortcutIconManager;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class ShortcutIconDialogStage extends Stage {
@@ -28,7 +29,8 @@ public class ShortcutIconDialogStage extends Stage {
 
     private String searchQuery = null;
 
-    public ShortcutIconDialogStage(ShortcutIconManager shortcutIconManager, OnIconSelectListener listener) throws IOException {
+    public ShortcutIconDialogStage(ShortcutIconManager shortcutIconManager, ResourceBundle resourceBundle,
+                                   OnIconSelectListener listener) throws IOException {
         this.listener = listener;
         this.shortcutIconManager = shortcutIconManager;
 
@@ -36,7 +38,7 @@ public class ShortcutIconDialogStage extends Stage {
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         scene.getStylesheets().add(ResourceUtils.getResource("/css/shortcutlistcell.css").toURI().toString());
-        this.setTitle("Select the Icon");
+        this.setTitle(resourceBundle.getString("select_icon"));
         this.setScene(scene);
         this.getIcons().add(new Image(ShortcutIconDialogStage.class.getResourceAsStream("/assets/icon.png")));
         setAlwaysOnTop(true);
@@ -98,6 +100,7 @@ public class ShortcutIconDialogStage extends Stage {
 
     public interface OnIconSelectListener {
         void onIconSelected(ShortcutIcon icon);
+
         void onCanceled();
     }
 }

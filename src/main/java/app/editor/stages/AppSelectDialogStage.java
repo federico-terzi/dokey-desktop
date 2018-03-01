@@ -1,6 +1,7 @@
 package app.editor.stages;
 
 import app.editor.controllers.AppListController;
+import app.editor.listcells.ApplicationListCell;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,8 +10,11 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import system.ResourceUtils;
 import system.model.Application;
 import system.model.ApplicationManager;
@@ -18,6 +22,7 @@ import system.model.ApplicationManager;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class AppSelectDialogStage extends Stage {
@@ -27,7 +32,7 @@ public class AppSelectDialogStage extends Stage {
 
     private String searchQuery = null;
 
-    public AppSelectDialogStage(ApplicationManager applicationManager, OnApplicationListener listener) throws IOException {
+    public AppSelectDialogStage(ApplicationManager applicationManager, ResourceBundle resourceBundle, OnApplicationListener listener) throws IOException {
         this.applicationManager = applicationManager;
         this.listener = listener;
 
@@ -35,7 +40,7 @@ public class AppSelectDialogStage extends Stage {
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root, 350, 550);
         scene.getStylesheets().add(ResourceUtils.getResource("/css/applistcell.css").toURI().toString());
-        this.setTitle("Applications");
+        this.setTitle(resourceBundle.getString("applications"));
         this.setScene(scene);
         this.getIcons().add(new Image(AppSelectDialogStage.class.getResourceAsStream("/assets/icon.png")));
         setAlwaysOnTop(true);
@@ -68,6 +73,14 @@ public class AppSelectDialogStage extends Stage {
         controller.getSearchTextField().textProperty().addListener((observable, oldValue, newValue) -> {
             searchQuery = newValue;
             populateAppListView();
+        });
+
+        // Setup the list cells
+        controller.getAppListView().setCellFactory(new Callback<ListView<Application>, ListCell<Application>>() {
+            @Override
+            public ListCell<Application> call(ListView<Application> param) {
+                return new ApplicationListCell(resourceBundle);
+            }
         });
 
         // Focus the text field
