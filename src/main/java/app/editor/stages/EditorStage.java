@@ -96,6 +96,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         this.resourceBundle = resourceBundle;
 
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/section_editor.fxml").toURI().toURL());
+        fxmlLoader.setResources(resourceBundle);
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         scene.getStylesheets().add(ResourceUtils.getResource("/css/sectionlistcell.css").toURI().toString());

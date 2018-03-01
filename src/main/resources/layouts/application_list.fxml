@@ -9,15 +9,15 @@
 
 <BorderPane prefHeight="550" prefWidth="350" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="app.editor.controllers.AppListController">
   <top>
-    <TextField fx:id="searchTextField" promptText="Search Application..." />
+    <TextField fx:id="searchTextField" promptText="%search_application" />
   </top>
   <bottom>
     <ToolBar>
       <items>
         <!--<Button fx:id="addExternalAppBtn" mnemonicParsing="false" text="Add External App..." textAlignment="CENTER" />-->
         <Pane HBox.hgrow="ALWAYS"/>
-        <Button fx:id="cancelBtn" alignment="CENTER" text="Cancel" textAlignment="CENTER" />
-        <Button fx:id="selectBtn" alignment="CENTER" text="Select" textAlignment="CENTER" />
+        <Button fx:id="cancelBtn" alignment="CENTER" text="%cancel" textAlignment="CENTER" />
+        <Button fx:id="selectBtn" alignment="CENTER" text="%select" textAlignment="CENTER" />
       </items>
     </ToolBar>
   </bottom>

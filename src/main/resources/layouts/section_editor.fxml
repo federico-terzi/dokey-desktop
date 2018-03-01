@@ -14,7 +14,7 @@
       <items>
         <BorderPane>
           <top>
-            <TextField fx:id="searchSectionTextField" promptText="Search Application..." />
+            <TextField fx:id="searchSectionTextField" promptText="%search_application" />
           </top>
           <center>
             <ListView fx:id="sectionsListView" />
@@ -45,7 +45,7 @@
                 </ImageView>
               </graphic>
               <tooltip>
-                <Tooltip text="Add Application"/>
+                <Tooltip text="%add_app"/>
               </tooltip>
             </Button>
             <Button mnemonicParsing="false" fx:id="exportBtn">
@@ -55,7 +55,7 @@
                 </ImageView>
               </graphic>
               <tooltip>
-                <Tooltip text="Export Layout"/>
+                <Tooltip text="%export_layout"/>
               </tooltip>
             </Button>
             <Button mnemonicParsing="false" fx:id="importBtn">
@@ -65,7 +65,7 @@
                 </ImageView>
               </graphic>
               <tooltip>
-                <Tooltip text="Import Layout"/>
+                <Tooltip text="%import_layout"/>
               </tooltip>
             </Button>
             <Button mnemonicParsing="false" fx:id="searchBtn">
@@ -75,7 +75,7 @@
                 </ImageView>
               </graphic>
               <tooltip>
-                <Tooltip text="Search Application"/>
+                <Tooltip text="%search_application"/>
               </tooltip>
             </Button>
             <Pane HBox.hgrow="ALWAYS" />
@@ -86,7 +86,7 @@
                 </ImageView>
               </graphic>
               <tooltip>
-                <Tooltip text="Rotate View "/>
+                <Tooltip text="%rotate_view"/>
               </tooltip>
             </Button>
             <Button mnemonicParsing="false" fx:id="changeSizeBtn">
@@ -96,7 +96,7 @@
                 </ImageView>
               </graphic>
               <tooltip>
-                <Tooltip text="Change Grid Size"/>
+                <Tooltip text="%change_grid_size"/>
               </tooltip>
             </Button>
             <Button mnemonicParsing="false" fx:id="helpBtn">
@@ -106,7 +106,7 @@
                 </ImageView>
               </graphic>
               <tooltip>
-                <Tooltip text="Get Help"/>
+                <Tooltip text="%get_help"/>
               </tooltip>
             </Button>
           </items>

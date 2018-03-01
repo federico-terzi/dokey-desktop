@@ -16,7 +16,7 @@
                   <Insets bottom="8.0" />
                </VBox.margin>
             </ProgressBar>
-            <TitledPane fx:id="targetPanel" animated="false" collapsible="false" text="Target">
+            <TitledPane fx:id="targetPanel" animated="false" collapsible="false" text="%target">
                <content>
                   <BorderPane>
                      <left>
@@ -43,7 +43,7 @@
                         </VBox>
                      </center>
                      <right>
-                        <Button fx:id="changeTargetBtn" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="50.0" mnemonicParsing="false" text="Change..." BorderPane.alignment="CENTER" />
+                        <Button fx:id="changeTargetBtn" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="50.0" mnemonicParsing="false" text="%change" BorderPane.alignment="CENTER" />
                      </right>
                   </BorderPane>
                </content>
@@ -51,11 +51,11 @@
                   <Insets />
                </VBox.margin>
             </TitledPane>
-            <TitledPane fx:id="invalidItemsPanel" animated="false" collapsible="false" text="Invalid Items">
+            <TitledPane fx:id="invalidItemsPanel" animated="false" collapsible="false" text="%invalid_items">
                <content>
                   <BorderPane>
                      <top>
-                        <Label prefWidth="450.0" text="Some items can't be imported because they require resources not present in this system:" textAlignment="JUSTIFY" wrapText="true" BorderPane.alignment="CENTER">
+                        <Label prefWidth="450.0" text="%invalid_items_msg" textAlignment="JUSTIFY" wrapText="true" BorderPane.alignment="CENTER">
                            <BorderPane.margin>
                               <Insets />
                            </BorderPane.margin></Label>
@@ -68,7 +68,7 @@
                         </ListView>
                      </center>
                      <bottom>
-                        <CheckBox fx:id="avoidInvalidItemsCheckBox" mnemonicParsing="false" text="Avoid importing invalid items in the layout" BorderPane.alignment="TOP_LEFT" />
+                        <CheckBox fx:id="avoidInvalidItemsCheckBox" mnemonicParsing="false" text="%avoid_importing_invalid_items" BorderPane.alignment="TOP_LEFT" />
                      </bottom>
                   </BorderPane>
                </content>
@@ -76,14 +76,14 @@
                   <Insets top="8.0" />
                </VBox.margin>
             </TitledPane>
-            <TitledPane fx:id="optionsPanel" animated="false" collapsible="false" text="Options">
+            <TitledPane fx:id="optionsPanel" animated="false" collapsible="false" text="%options">
                <VBox.margin>
                   <Insets top="8.0" />
                </VBox.margin>
                <content>
                   <VBox>
                      <children>
-                        <CheckBox fx:id="compatibilityModeCheckBox" mnemonicParsing="false" text="Use Compatibility Mode" />
+                        <CheckBox fx:id="compatibilityModeCheckBox" mnemonicParsing="false" text="%compatibility_mode" />
                      </children>
                   </VBox>
                </content>
@@ -97,12 +97,12 @@
    <bottom>
       <HBox BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="cancelBtn" mnemonicParsing="false" text="Cancel" />
+            <Button fx:id="cancelBtn" mnemonicParsing="false" text="%cancel" />
             <HBox HBox.hgrow="ALWAYS">
                <HBox.margin>
                   <Insets top="8.0" />
                </HBox.margin></HBox>
-            <Button fx:id="importBtn" mnemonicParsing="false" text="Import Layout" />
+            <Button fx:id="importBtn" mnemonicParsing="false" text="%import_layout" />
          </children>
          <BorderPane.margin>
             <Insets top="8.0" />

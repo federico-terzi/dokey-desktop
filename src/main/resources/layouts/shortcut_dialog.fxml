@@ -11,12 +11,12 @@
    <center>
       <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="iconBtn" minHeight="80.0" mnemonicParsing="false" prefHeight="80.0" styleClass="icon-button" text="Select Icon...">
+            <Button fx:id="iconBtn" minHeight="80.0" mnemonicParsing="false" prefHeight="80.0" styleClass="icon-button" text="%select_icon_btn">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin>
             </Button>
-            <Label text="Click on the field below and press the keys to record a shortcut">
+            <Label text="%click_on_the_field_below">
                <VBox.margin>
                   <Insets bottom="5.0" />
                </VBox.margin>
@@ -37,7 +37,7 @@
                         <Insets left="8.0" />
                      </GridPane.margin>
                   </Button>
-                  <TextField fx:id="shortcutTextField" alignment="CENTER" editable="false" prefHeight="51.0" prefWidth="346.0" styleClass="shortcut-text-field" promptText="Click here to enter the shortcut">
+                  <TextField fx:id="shortcutTextField" alignment="CENTER" editable="false" prefHeight="51.0" prefWidth="346.0" styleClass="shortcut-text-field" promptText="%click_here_to_enter_the_shortcut">
                   </TextField>
                </children>
                <VBox.margin>
@@ -61,12 +61,12 @@
             </ToolBar>
             <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <Label text="Enter the shortcut name below ( optional ):" textAlignment="CENTER">
+                  <Label text="%enter_shortcut_name" textAlignment="CENTER">
                      <VBox.margin>
                         <Insets bottom="4.0" />
                      </VBox.margin>
                   </Label>
-                  <TextField fx:id="nameTextField" maxWidth="1.7976931348623157E308" promptText="Shortcut name" styleClass="title-text-field" />
+                  <TextField fx:id="nameTextField" maxWidth="1.7976931348623157E308" promptText="%shortcut_name" styleClass="title-text-field" />
                </children>
                <VBox.margin>
                   <Insets top="5.0" />

@@ -35,6 +35,7 @@ public class ShortcutIconDialogStage extends Stage {
         this.shortcutIconManager = shortcutIconManager;
 
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/shortcut_icon_list.fxml").toURI().toURL());
+        fxmlLoader.setResources(resourceBundle);
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         scene.getStylesheets().add(ResourceUtils.getResource("/css/shortcutlistcell.css").toURI().toString());

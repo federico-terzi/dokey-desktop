@@ -30,6 +30,7 @@ public class SystemDialogStage extends Stage {
         this.listener = listener;
 
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/system_dialog.fxml").toURI().toURL());
+        fxmlLoader.setResources(resourceBundle);
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         //scene.getStylesheets().add(ResourceUtils.getResource("/css/applistcell.css").toURI().toString());

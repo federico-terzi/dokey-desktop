@@ -51,6 +51,7 @@ public class WebLinkDialogStage extends Stage {
 
         // Load the layout
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/web_link_dialog.fxml").toURI().toURL());
+        fxmlLoader.setResources(resourceBundle);
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         this.setTitle(resourceBundle.getString("web_link"));

@@ -40,6 +40,7 @@ public class ShortcutDialogStage extends Stage {
         this.onShortcutListener = onShortcutListener;
 
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/shortcut_dialog.fxml").toURI().toURL());
+        fxmlLoader.setResources(resourceBundle);
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         this.setTitle(resourceBundle.getString("shortcut"));

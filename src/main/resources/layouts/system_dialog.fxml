@@ -11,10 +11,10 @@
   <bottom>
     <ToolBar>
       <items>
-            <CheckBox fx:id="confirmCheckBox" mnemonicParsing="false" text="Ask for confirmation" />
+            <CheckBox fx:id="confirmCheckBox" mnemonicParsing="false" text="%ask_for_confirmation" />
         <Pane HBox.hgrow="ALWAYS" />
-        <Button fx:id="cancelBtn" alignment="CENTER" text="Cancel" textAlignment="CENTER" />
-        <Button fx:id="selectBtn" alignment="CENTER" text="Select" textAlignment="CENTER" />
+        <Button fx:id="cancelBtn" alignment="CENTER" text="%cancel" textAlignment="CENTER" />
+        <Button fx:id="selectBtn" alignment="CENTER" text="%select" textAlignment="CENTER" />
       </items>
     </ToolBar>
   </bottom>

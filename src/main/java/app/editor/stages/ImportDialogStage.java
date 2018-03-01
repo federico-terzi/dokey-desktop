@@ -51,6 +51,7 @@ public class ImportDialogStage extends Stage {
         this.resourceBundle = resourceBundle;
 
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/import_dialog.fxml").toURI().toURL());
+        fxmlLoader.setResources(resourceBundle);
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         this.setTitle(resourceBundle.getString("import_layout"));

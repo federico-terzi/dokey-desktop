@@ -43,6 +43,7 @@ public class SettingsStage extends Stage {
         this.onSettingsCloseListener = onSettingsCloseListener;
 
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/settings_dialog.fxml").toURI().toURL());
+        fxmlLoader.setResources(resourceBundle);
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         scene.getStylesheets().add(ResourceUtils.getResource("/css/applistcell.css").toURI().toString());

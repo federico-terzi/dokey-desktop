@@ -20,6 +20,7 @@ public class InitializationStage extends Stage {
 
     public InitializationStage(ResourceBundle resourceBundle) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/initialization.fxml").toURI().toURL());
+        fxmlLoader.setResources(resourceBundle);
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         scene.getStylesheets().add(ResourceUtils.getResource("/css/initialization.css").toURI().toString());

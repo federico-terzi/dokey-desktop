@@ -37,6 +37,7 @@ public class AppSelectDialogStage extends Stage {
         this.listener = listener;
 
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/application_list.fxml").toURI().toURL());
+        fxmlLoader.setResources(resourceBundle);
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root, 350, 550);
         scene.getStylesheets().add(ResourceUtils.getResource("/css/applistcell.css").toURI().toString());
