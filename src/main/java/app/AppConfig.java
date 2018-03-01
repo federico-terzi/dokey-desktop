@@ -15,6 +15,7 @@ import system.section.SectionManager;
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
@@ -35,7 +36,12 @@ public class AppConfig {
 
     @Bean
     public ResourceBundle resourceBundle() {
-        return ResourceBundle.getBundle("lang.dokey", MainApp.locale);
+        // Try to load the correct locale, if not found, fallback to English.
+        try {
+            return ResourceBundle.getBundle("lang.dokey", MainApp.locale);
+        }catch (MissingResourceException e) {
+            return ResourceBundle.getBundle("lang.dokey", Locale.ENGLISH); // Default fallback
+        }
     }
 
     @Bean

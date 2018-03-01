@@ -62,6 +62,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private static boolean isAutomaticStartup = false;  // If true, it means that the app is started automatically by the system.
     private static boolean openEditor = false;  // If true, at startup the editor is open;
     private static boolean openSettings = false;  // If true, at startup the settings is open;
+    private static boolean ignoreLanguage = false;  // If true, force the language to be english.
 
     public static Locale locale = Locale.ENGLISH;  // Current locale
 
@@ -93,11 +94,15 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
                 openEditor = true;
             }else if (arg.equals("-settings")) {
                 openSettings = true;
+            }else if (arg.equals("-ignorelang")) {
+                ignoreLanguage = true;
             }
         }
 
-        // Set up the correct Locale
-        //locale = Locale.getDefault();
+        if (!ignoreLanguage) {
+            // Set up the correct Locale
+            locale = Locale.getDefault();
+        }
 
         launch(args);
     }
