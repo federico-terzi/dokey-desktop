@@ -15,7 +15,6 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
 
     public static final int REMOTE_PORT = 34729;  // Port used for the forwarding
     public static final int DISCOVERY_PORT = 34730;  // Port used to detect a usb connection from the phone
-    public static final int LOCAL_PORT = EngineServer.SERVER_PORT;  // The local port is the one used by the server
 
     private ADBDaemon daemon;
     private ADBDiscoveryServer adbDiscoveryServer;
@@ -121,7 +120,7 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
         try {
             // Execute the adb process
             Process proc = runtime.exec(new String[]{adbPath, "-s", device.getID(),
-                    "reverse", "tcp:"+REMOTE_PORT, "tcp:"+LOCAL_PORT});
+                    "reverse", "tcp:"+REMOTE_PORT, "tcp:"+serverInfo.getPort()});
 
             proc.waitFor();
         } catch (InterruptedException e) {

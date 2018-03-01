@@ -10,13 +10,12 @@ import java.io.IOException;
  * Windows system manager.
  */
 public class MSSystemManager implements SystemManager {
-
     @Override
-    public boolean shutdown() {
+    public boolean restart() {
         Runtime runtime = Runtime.getRuntime();
         try {
             // Execute the process
-            Process proc = runtime.exec(new String[]{"Shutdown.exe", "-s", "-t", "00"});
+            Process proc = runtime.exec(new String[]{"Shutdown.exe", "-r", "-t", "00"});
             proc.waitFor();
             return true;
         } catch (IOException e) {
@@ -28,11 +27,11 @@ public class MSSystemManager implements SystemManager {
     }
 
     @Override
-    public boolean restart() {
+    public boolean shutdownPC() {
         Runtime runtime = Runtime.getRuntime();
         try {
             // Execute the process
-            Process proc = runtime.exec(new String[]{"Shutdown.exe", "-r", "-t", "00"});
+            Process proc = runtime.exec(new String[]{"Shutdown.exe", "-s", "-t", "00"});
             proc.waitFor();
             return true;
         } catch (IOException e) {

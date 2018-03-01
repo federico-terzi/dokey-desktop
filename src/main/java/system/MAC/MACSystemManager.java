@@ -9,7 +9,7 @@ public class MACSystemManager implements SystemManager {
     private static final int VOLUME_STEP = 20;
 
     @Override
-    public boolean shutdown() {
+    public boolean shutdownPC() {
         Runtime runtime = Runtime.getRuntime();
         try {
             // Execute the process

@@ -5,6 +5,7 @@ import engine.EngineService;
 import engine.EngineWorker;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import system.MAC.MACApplicationManager;
 import system.MAC.MACSystemManager;
@@ -17,6 +18,7 @@ import utils.IconManager;
 import utils.OSValidator;
 
 import java.awt.*;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
@@ -68,8 +70,9 @@ public class SystemConfig {
     }
 
     @Bean
-    public EngineServer engineServer(){
-        return new EngineServer();
+    @Lazy
+    public EngineServer engineServer(ServerSocket serverSocket){
+        return new EngineServer(serverSocket);
     }
 
     @Bean

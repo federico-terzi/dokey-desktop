@@ -11,8 +11,6 @@ import net.packets.CommandPacket;
 import net.packets.SectionPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
 import section.model.Section;
 import section.model.SystemCommands;
 import system.*;
@@ -374,7 +372,7 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         }else if (command.equals(SystemCommands.PREV_TRACK.getCommand())) {
             systemManager.previousTrack();
         }else if (command.equals(SystemCommands.SHUTDOWN.getCommand())) {
-            systemManager.shutdown();
+            systemManager.shutdownPC();
         }else if (command.equals(SystemCommands.SUSPEND.getCommand())) {
             systemManager.suspend();
         }else if (command.equals(SystemCommands.LOGOUT.getCommand())) {

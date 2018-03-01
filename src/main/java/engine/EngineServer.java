@@ -19,9 +19,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class EngineServer extends Thread implements ApplicationContextAware {
-
-    public static final int SERVER_PORT = 1234;
-
     private ServerSocket serverSocket = null;
 
     private EngineWorker.OnDeviceConnectionListener deviceConnectionListener;
@@ -33,7 +30,8 @@ public class EngineServer extends Thread implements ApplicationContextAware {
 
     private ApplicationContext context;
 
-    public EngineServer() {
+    public EngineServer(ServerSocket serverSocket) {
+        this.serverSocket = serverSocket;
         setName("Engine Server");
     }
 
@@ -44,15 +42,6 @@ public class EngineServer extends Thread implements ApplicationContextAware {
 
     @Override
     public void run() {
-        // Open server socket
-        try {
-            serverSocket = new ServerSocket(SERVER_PORT);
-        } catch (IOException e1) {
-            e1.printStackTrace();
-            LOG.severe("Error opening socket. "+e1.toString());
-            System.exit(4);
-        }
-
         LOG.fine("Server started!");
 
         // Endless request loop

@@ -2,36 +2,9 @@ package system;
 
 /**
  * This interface can be used to dispatch some system specific commands
- * like shutdown, volume, ecc.
+ * like shutdownPC, volume, ecc.
  */
 public interface SystemManager {
-
-    // SYSTEM COMMANDS
-
-    /**
-     * Shutdown the computer.
-     * @return true if succeeded, false if an error occurred.
-     */
-    boolean shutdown();
-
-    /**
-     * Restart the computer.
-     * @return true if succeeded, false if an error occurred.
-     */
-    boolean restart();
-
-    /**
-     * Log out the user from the computer.
-     * @return true if succeeded, false if an error occurred.
-     */
-    boolean logout();
-
-    /**
-     * Suspend the computer.
-     * @return true if succeeded, false if an error occurred.
-     */
-    boolean suspend();
-
     // MEDIA COMMANDS
 
     /**
@@ -69,4 +42,30 @@ public interface SystemManager {
      * @return true if succeeded, false if an error occurred.
      */
     boolean previousTrack();
+
+    // SYSTEM COMMANDS
+
+    /**
+     * Shutdown the computer.
+     * @return true if succeeded, false if an error occurred.
+     */
+    boolean shutdownPC();
+
+    /**
+     * Restart the computer.
+     * @return true if succeeded, false if an error occurred.
+     */
+    boolean restart();
+
+    /**
+     * Log out the user from the computer.
+     * @return true if succeeded, false if an error occurred.
+     */
+    boolean logout();
+
+    /**
+     * Suspend the computer.
+     * @return true if succeeded, false if an error occurred.
+     */
+    boolean suspend();
 }

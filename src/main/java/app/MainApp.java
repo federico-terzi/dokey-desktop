@@ -28,6 +28,7 @@ import system.section.SectionManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.ServerSocket;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Timer;
@@ -50,6 +51,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private ADBManager adbManager;
     private SystemManager systemManager;
 
+    private ServerSocket serverSocket;  // This is the server socket later used by the EngineServer
+
     private InitializationStage initializationStage;
 
     private ResourceBundle resourceBundle;
@@ -67,8 +70,29 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     public static Locale locale = Locale.ENGLISH;  // Current locale
 
     public static void main(String[] args) {
+        Level level = Level.INFO;  // logging level
+
+        // Check the arguments
+        for (String arg : args) {
+            if (arg.equals("-startup")) {
+                isAutomaticStartup = true;
+            }else if (arg.equals("-editor")) {
+                openEditor = true;
+            }else if (arg.equals("-settings")) {
+                openSettings = true;
+            }else if (arg.equals("-ignorelang")) {
+                ignoreLanguage = true;
+            }else if (arg.startsWith("-log:")) {  // Log level, for example -log:fine
+                String lLevel = arg.split(":")[1];
+                if (lLevel.equalsIgnoreCase("fine")) {
+                    level = Level.FINE;
+                }else if (lLevel.equalsIgnoreCase("finest")) {
+                    level = Level.FINEST;
+                }
+            }
+        }
+
         // Set the logging level
-        Level level = Level.INFO;
         Handler consoleHandler = new ConsoleHandler();
         consoleHandler.setLevel(level);
         LOG.setUseParentHandlers( false );
@@ -86,19 +110,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
             e.printStackTrace();
         }
 
-        // Check the arguments
-        for (String arg : args) {
-            if (arg.equals("-startup")) {
-                isAutomaticStartup = true;
-            }else if (arg.equals("-editor")) {
-                openEditor = true;
-            }else if (arg.equals("-settings")) {
-                openSettings = true;
-            }else if (arg.equals("-ignorelang")) {
-                ignoreLanguage = true;
-            }
-        }
-
+        // Set up the language resources
         if (!ignoreLanguage) {
             // Set up the correct Locale
             locale = Locale.getDefault();
@@ -109,6 +121,16 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+        // Initialize the server socket
+        try {
+            serverSocket = new ServerSocket(0);  // Let the OS choose the port.
+            LOG.info("Server socket started with port: "+serverSocket.getLocalPort());
+        } catch (IOException e1) {
+            e1.printStackTrace();
+            LOG.severe("Error opening socket. "+e1.toString());
+            System.exit(4);
+        }
+
         // Setup spring
         context = new AnnotationConfigApplicationContext(AppConfig.class);
         
@@ -135,7 +157,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         applicationSwitchDaemon = context.getBean(ApplicationSwitchDaemon.class);
 
         // Initialize the discovery daemon
-        ServerInfo serverInfo = SystemInfoManager.getServerInfo(EngineServer.SERVER_PORT);
+        ServerInfo serverInfo = SystemInfoManager.getServerInfo(serverSocket.getLocalPort());
         serverDiscoveryDaemon = new ServerDiscoveryDaemon(serverInfo);
 
         // Initialize the ADB manager
@@ -155,7 +177,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         // load the applications
         loadApplications();
 
-        // Add the shutdown hook
+        // Add the shutdownPC hook
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             LOG.info("Stopping all services...");
             stopAllServices();
@@ -276,7 +298,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         activeApplicationsDaemon.start();
 
         // Start the engine server
-        engineServer = context.getBean(EngineServer.class);
+        engineServer = context.getBean(EngineServer.class, serverSocket);
         engineServer.setDeviceConnectionListener(this);
         engineServer.start();
 

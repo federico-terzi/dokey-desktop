@@ -30,7 +30,8 @@ public class AppConfig {
     @Autowired private WebLinkResolver webLinkResolver;
 
     @Bean
-    public TrayIconManager trayIconManager() {
+    public TrayIconManager trayIconManager()
+    {
         return new TrayIconManager(resourceBundle());
     }
 
