@@ -33,9 +33,9 @@ public class SystemConfig {
     @Bean
     public ApplicationManager applicationManager() throws UnsupportedOperatingSystemException {
         if (OSValidator.isWindows()) {  // WINDOWS
-            return new MSApplicationManager(iconManager());
+            return new MSApplicationManager(iconManager(), StartupManager.getInstance());
         }else if (OSValidator.isMac()) {  // MAC OSX
-            return new MACApplicationManager();
+            return new MACApplicationManager(StartupManager.getInstance());
         }
         throw new UnsupportedOperatingSystemException("This Operating system is not supported by Dokey");
     }

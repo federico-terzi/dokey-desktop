@@ -69,4 +69,11 @@ public abstract class StartupManager {
         }
         return instance;
     }
+
+    /**
+     * @return the executable path of the current dokey instance.
+     */
+    public String getCurrentExecutablePath() {
+        return executablePath;
+    }
 }

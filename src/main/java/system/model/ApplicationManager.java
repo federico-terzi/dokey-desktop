@@ -85,6 +85,12 @@ public abstract class ApplicationManager {
     public abstract boolean openWebLink(String url);
 
     /**
+     * Focus Dokey if open.
+     * @return true if succeeded, false otherwise.
+     */
+    public abstract boolean focusDokey();
+
+    /**
      * Interface used to update the status of the "loadApplications" operation.
      */
     public interface OnLoadApplicationsListener {

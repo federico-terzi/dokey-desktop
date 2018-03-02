@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import system.CacheManager;
 import system.KeyboardManager;
 import system.ResourceUtils;
+import system.StartupManager;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.model.Window;
@@ -53,9 +54,12 @@ public class MSApplicationManager extends ApplicationManager {
     private final static Logger LOG = Logger.getGlobal();
 
     private IconManager iconManager;
+    private StartupManager startupManager;
 
-    public MSApplicationManager(IconManager iconManager) {
+    public MSApplicationManager(IconManager iconManager, StartupManager startupManager) {
         this.iconManager = iconManager;
+        this.startupManager = startupManager;
+
         // Check if powershell is enabled in this machine
         isPowerShellEnabled = checkPowerShellEnabled();
     }
@@ -64,10 +68,13 @@ public class MSApplicationManager extends ApplicationManager {
      * Focus an application if already open or start it if not.
      *
      * @param executablePath path to the application.
+     * @param forceRun if the application is not running, start it.
      * @return true if succeeded, false otherwise.
      */
-    @Override
-    public synchronized boolean openApplication(String executablePath) {
+    public synchronized boolean openApplication(String executablePath, boolean forceRun) {
+        if (executablePath == null)
+            return false;
+
         // Get the currently active application PID
         int activePID = getActivePID();
 
@@ -107,7 +114,9 @@ public class MSApplicationManager extends ApplicationManager {
                 }
 
                 // Try to open the application
-                return application.open();
+                if (forceRun) {
+                    return application.open();
+                }
             }
 
             // Get the current active application PID
@@ -141,6 +150,17 @@ public class MSApplicationManager extends ApplicationManager {
         }
 
         return hasBeenOpened;
+    }
+
+    /**
+     * Focus an application if already open or start it if not.
+     *
+     * @param executablePath path to the application.
+     * @return true if succeeded, false otherwise.
+     */
+    @Override
+    public synchronized boolean openApplication(String executablePath) {
+        return openApplication(executablePath, true);
     }
 
     /**
@@ -221,6 +241,12 @@ public class MSApplicationManager extends ApplicationManager {
             e.printStackTrace();
         }
         return false;
+    }
+
+    @Override
+    public boolean focusDokey() {
+        // Focus dokey by opening the currently active Dokey process
+        return openApplication(startupManager.getCurrentExecutablePath(), false);
     }
 
     @Override

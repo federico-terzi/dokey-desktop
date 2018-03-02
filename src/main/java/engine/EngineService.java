@@ -382,6 +382,10 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
         }else if (command.equals("open_editor")) {  // Request to open the editor
             // Send a broadcast event
             BroadcastManager.getInstance().sendBroadcast(BroadcastManager.OPEN_EDITOR_REQUEST_EVENT, null);
+
+            // Focus the dokey app
+            appManager.focusDokey();
+
             return CommandPacket.RESPONSE_OK;
         }
 

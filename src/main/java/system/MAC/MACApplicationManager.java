@@ -2,6 +2,7 @@ package system.MAC;
 
 import system.CacheManager;
 import system.ResourceUtils;
+import system.StartupManager;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.model.Window;
@@ -19,6 +20,11 @@ public class MACApplicationManager extends ApplicationManager {
 
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
+    private StartupManager startupManager;
+
+    public MACApplicationManager(StartupManager startupManager){
+        this.startupManager = startupManager;
+    }
 
     /**
      * Focus an application if already open or start it if not.
@@ -28,6 +34,9 @@ public class MACApplicationManager extends ApplicationManager {
      */
     @Override
     public synchronized boolean openApplication(String executablePath) {
+        if (executablePath == null)
+            return false;
+
         // Get the application
         Application application = applicationMap.get(executablePath);
         // Not present in the map, analyze it dynamically.
@@ -114,6 +123,18 @@ public class MACApplicationManager extends ApplicationManager {
             e.printStackTrace();
         }
         return false;
+    }
+
+    @Override
+    public boolean focusDokey() {
+        // Translate the executable path to the app Path
+        String executablePath = startupManager.getCurrentExecutablePath();
+        if (executablePath == null)
+            return false;
+
+        // Open the application
+        String appPath = getAppPathFromExecutablePath(executablePath);
+        return openApplication(appPath);
     }
 
     @Override
