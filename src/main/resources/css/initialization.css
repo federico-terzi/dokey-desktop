@@ -1,16 +1,29 @@
 @import "colors.css";
 
+@font-face {
+    font-family: Roboto;
+    src: url('../font/Roboto-Bold.ttf');
+}
+
 .root {
     -fx-background-color: transparent;
+    -fx-text-fill: -primaryTextColor;
+}
+
+.logo-label {
+    -fx-font-family: Roboto;
+    -fx-font-size: 62px;
+    -fx-text-fill: -primaryTextColor;
 }
 
 .intro-container {
-    -fx-background-image: url("../assets/intro.png");
-    -fx-background-size: stretch;
+    /*-fx-background-image: url("../assets/intro3.png");*/
+    /*-fx-background-size: stretch;*/
+    -fx-background-color: -primaryColor;
 }
 
 .intro-container .label {
-    -fx-text-fill: -primaryColor;
+    -fx-text-fill: -primaryTextColor;
 }
 
 .intro-container .check-box {
@@ -19,7 +32,7 @@
 }
 
 .intro-container .check-box .label{
-    -fx-text-fill: -primaryColor;
+    -fx-text-fill: -primaryTextColor
 }
 
 .progress-bar {
@@ -27,12 +40,13 @@
 }
 
 .progress-bar > .track {
-    -fx-background-color: -primaryTextColor;
+    -fx-background-color: transparent;
 
 }
 
 .progress-bar > .bar {
-    -fx-background-color: -primaryColor;
+    -fx-background-color: -secondaryColor;
     -fx-padding: 0px;
     -fx-background-insets: 0px;
+    -fx-background-radius: 0;
 }
