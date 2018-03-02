@@ -129,7 +129,7 @@ public class TrayIconManager {
      * @param status the status text
      */
     public void setTrayIconStatus(String status) {
-        trayIcon.setToolTip(TRAY_ICON_APPNAME + "\n" + status);
+        trayIcon.setToolTip(TRAY_ICON_APPNAME + " " + MainApp.DOKEY_VERSION + "\n" + status);
     }
 
     /**
