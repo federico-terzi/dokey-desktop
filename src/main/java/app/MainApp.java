@@ -8,6 +8,8 @@ import engine.EngineWorker;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.scene.control.Alert;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import net.discovery.ServerDiscoveryDaemon;
 import net.model.DeviceInfo;
@@ -25,10 +27,10 @@ import system.adb.ADBManager;
 import system.model.ApplicationManager;
 import system.section.SectionManager;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.net.ServerSocket;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Timer;
@@ -60,6 +62,9 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
     public final static String LOG_FILENAME = "log.txt";
+
+    public final static String LOCK_FILENAME = "lock";  // File used as lock to make sure only one instance of dokey is running at each time.
+    private RandomAccessFile lockFile = null;
 
     private static boolean isFirstStartup = true;  // If true, it means that the app is opened for the first time.
     private static boolean isAutomaticStartup = false;  // If true, it means that the app is started automatically by the system.
@@ -121,6 +126,13 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+        // Check if dokey is already running. If so, show a dialog and terminate.
+        if (checkIfDokeyIsAlreadyRunning()) {
+            LOG.severe("Another instance of dokey was already running. Terminating.");
+            showAlreadyRunningDialog();
+            System.exit(5);
+        }
+
         // Initialize the server socket
         try {
             serverSocket = new ServerSocket(0);  // Let the OS choose the port.
@@ -315,6 +327,40 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         if (openSettings) {
             openSettings();
         }
+    }
+
+    /**
+     * Check if Dokey is already running by analyzing the lock file
+     * @return true if already running, false otherwise.
+     */
+    private boolean checkIfDokeyIsAlreadyRunning() {
+        final File inputFile = new File(CacheManager.getInstance().getCacheDir(), LOCK_FILENAME);
+        try {
+            lockFile = new RandomAccessFile(inputFile, "rw");
+            final FileChannel fc = lockFile.getChannel();
+            FileLock fileLock = fc.tryLock();
+            if (fileLock == null) {
+                return true;
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Show a dialog to the user warning that dokey is already running, and the application will stop.
+     */
+    private void showAlreadyRunningDialog() {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(MainApp.class.getResourceAsStream("/assets/icon.png")));
+        alert.setTitle("Dokey is already running!");
+        alert.setHeaderText("Dokey is already running on this computer!");
+        alert.setContentText("Only one instance of Dokey can run at a time.");
+        alert.showAndWait();
     }
 
     /**
