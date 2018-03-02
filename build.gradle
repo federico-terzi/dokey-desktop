@@ -132,8 +132,8 @@ jfx {
     mainClass = "app.MainApp"
 
     appName = "Dokey"
-    vendor = "Rocket Guys"
-    nativeReleaseVersion = "0.1"
+    vendor = "Dokey"
+    nativeReleaseVersion = project.version.toString()
     identifier = "com.rocketguys.dokey"
 
     updateExistingJar = true

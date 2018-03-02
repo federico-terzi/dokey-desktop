@@ -1,6 +1,5 @@
 package system.adb;
 
-import engine.EngineServer;
 import net.model.DeviceInfo;
 import net.model.ServerInfo;
 import system.ResourceUtils;
@@ -21,8 +20,6 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
     private OnUSBDeviceConnectedListener listener;
     private ServerInfo serverInfo;
 
-    private boolean isSystemPathADB = false;  // If true, it means that the found ADB was already present in the system.
-
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
 
@@ -33,10 +30,13 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
         boolean adbFound = false;
 
         // Check if ADB is included in system path
-        if (checkIfADBIsEnabled()) {
-            LOG.info("ADB was found in system PATH: "+adbPath);
+        if (checkIfADBIsEnabled("adb")) {
+            LOG.info("ADB was found in system PATH: " + adbPath);
             adbFound = true;
-            isSystemPathADB = true;
+        }else if (checkIfADBIsEnabled(getAndroidSDKADB())) {  // Check if ADB is included in the default Android SDK directory
+            adbPath = getAndroidSDKADB();
+            LOG.info("ADB was found in the default Android SDK directory: " + adbPath);
+            adbFound = true;
         }else{
             // Use the built in ADB version
             // Construct the path based on the OS.
@@ -48,8 +48,8 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
             }
             File adbExecutable = ResourceUtils.getResource("/adb/adb"+OSSuffix);
             if (adbExecutable != null) {
-                adbPath = adbExecutable.getAbsolutePath();
-                if (checkIfADBIsEnabled()) {  // Check if it works
+                if (checkIfADBIsEnabled(adbExecutable.getAbsolutePath())) {  // Check if it works
+                    adbPath = adbExecutable.getAbsolutePath();
                     LOG.info("ADB: using built in version: "+adbPath);
                     adbFound = true;
                 }
@@ -58,7 +58,7 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
 
         // Make sure ADB is enabled
         if (adbFound) {
-            daemon = new ADBDaemon(adbPath, isSystemPathADB, this);
+            daemon = new ADBDaemon(adbPath, this);
             adbDiscoveryServer = new ADBDiscoveryServer(serverInfo);
         }else{
             LOG.warning("ADB can't be executed!");
@@ -151,13 +151,16 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
     }
 
     /**
-     * Check if ADB is reachable by the system
+     * Check if ADB is reachable by the system at the specified position.
      * @return true if succeeded, false otherwise.
      */
-    private boolean checkIfADBIsEnabled() {
+    private boolean checkIfADBIsEnabled(String adbPath) {
+        if (adbPath == null)
+            return false;
+
         // Make the executable runnable if the platform is mac
         if (OSValidator.isMac()) {
-            enableADBExecutablePermissions();
+            enableADBExecutablePermissions(adbPath);
         }
 
         Runtime runtime = Runtime.getRuntime();
@@ -175,7 +178,7 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
      * Make the executable file runnable.
      * @return true if succeeded, false otherwise.
      */
-    private boolean enableADBExecutablePermissions() {
+    private boolean enableADBExecutablePermissions(String adbPath) {
         Runtime runtime = Runtime.getRuntime();
         try {
             // Execute the adb process
@@ -188,6 +191,28 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * @return the expected path of ADB in the android sdk installation directory
+     */
+    private static String getAndroidSDKADB() {
+        File homeDir = new File(System.getProperty("user.home")); // Get the user home directory
+
+        // Find the ADB location based on the OS.
+        if (OSValidator.isWindows()) {
+            File adbFile = new File(homeDir, "AppData/Local/Android/sdk/platform-tools/adb.exe");
+            if (adbFile.isFile()) {
+                return adbFile.getAbsolutePath();
+            }
+        }else if(OSValidator.isMac()) {
+            File adbFile = new File(homeDir, "Library/Android/sdk/platform-tools/adb");
+            if (adbFile.isFile()) {
+                return adbFile.getAbsolutePath();
+            }
+        }
+
+        return null;
     }
 
     public interface OnUSBDeviceConnectedListener {
