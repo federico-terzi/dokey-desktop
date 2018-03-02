@@ -7,6 +7,7 @@ import java.nio.file.StandardCopyOption
 
 group 'com.freddyt_studio.remotekey_desktop'
 version '0.1'
+int version_number = 1
 
 buildscript {
     ext.kotlin_version = '1.1.61'
@@ -108,7 +109,18 @@ task('copyAdditionalFiles', type: Sync) {
     into outProduction
 }
 
+// Used to produce project info properties file
+task('produceProjInfo') {
+    Path outProduction = projectDir.toPath().resolve("src/main/resources")
+    File propertiesFile = new File(new File(outProduction.toAbsolutePath().toString()), "proj.properties")
+    Properties properties = new Properties();
+    properties.put("version", project.version)
+    properties.put("vnumber", String.valueOf(version_number))
+    properties.store(new FileOutputStream(propertiesFile), null)
+}
+
 build.dependsOn copyAdditionalFiles
+build.dependsOn produceProjInfo
 
 // NATIVE COPY OS SPECIFIC FILES
 Path additionalFilesBuildDir = buildDir.toPath().resolve('jfx-additional-files')

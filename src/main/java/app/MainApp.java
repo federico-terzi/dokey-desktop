@@ -14,12 +14,7 @@ import javafx.stage.Stage;
 import net.discovery.ServerDiscoveryDaemon;
 import net.model.DeviceInfo;
 import net.model.ServerInfo;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
 import system.*;
@@ -32,8 +27,8 @@ import java.net.ServerSocket;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.Timer;
 import java.util.logging.*;
 
 @Service
@@ -73,8 +68,21 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private static boolean ignoreLanguage = false;  // If true, force the language to be english.
 
     public static Locale locale = Locale.ENGLISH;  // Current locale
+    public static int DOKEY_VERSION_NUMBER = -1;
+    public static String DOKEY_VERSION = null;
 
     public static void main(String[] args) {
+        // Load the properties
+        Properties properties = new Properties();
+        try {
+            properties.load(MainApp.class.getResourceAsStream("/proj.properties"));
+            DOKEY_VERSION_NUMBER = Integer.parseInt(properties.getProperty("vnumber"));
+            DOKEY_VERSION = properties.getProperty("version");
+        } catch (IOException e) {
+            LOG.severe("Cannot load project properties");
+            System.exit(6);
+        }
+
         Level level = Level.INFO;  // logging level
 
         // Check the arguments
