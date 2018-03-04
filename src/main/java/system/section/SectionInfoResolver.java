@@ -49,7 +49,7 @@ public class SectionInfoResolver {
                 break;
             case SYSTEM:
                 result.image = new Image(SectionInfoResolver.class.getResourceAsStream("/assets/shutdown.png"), imageSize, imageSize, true, true);
-                result.name = resourceBundle.getString("system");
+                result.name = resourceBundle.getString("system_controls");
                 result.description = resourceBundle.getString("system_desc");
                 break;
         }
