@@ -6,10 +6,7 @@ import net.model.DeviceInfo;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import system.ActiveApplicationsDaemon;
-import system.ApplicationSwitchDaemon;
-import system.SystemManager;
-import system.WebLinkResolver;
+import system.*;
 import system.model.ApplicationManager;
 
 import java.awt.*;
@@ -51,6 +48,11 @@ public class EngineWorker extends Thread implements ApplicationContextAware{
                     receiverInfo = deviceInfo;
                     LOG.warning("Connection not accepted by the phone: "+deviceInfo.getName()+" with version: "+version);
                     shouldTerminate = true;
+
+                    // Send the notification
+                    if (deviceConnectionListener != null) {
+                        deviceConnectionListener.onDesktopVersionTooLow(deviceInfo);
+                    }
                 }
 
                 @Override
@@ -58,6 +60,11 @@ public class EngineWorker extends Thread implements ApplicationContextAware{
                     receiverInfo = deviceInfo;
                     LOG.warning("Not accepting connection, phone has version too low: "+deviceInfo.getName()+" with version: "+version);
                     shouldTerminate = true;
+
+                    // Send the notification
+                    if (deviceConnectionListener != null) {
+                        deviceConnectionListener.onMobileVersionTooLow(deviceInfo);
+                    }
                 }
 
                 @Override
@@ -116,6 +123,8 @@ public class EngineWorker extends Thread implements ApplicationContextAware{
     public interface OnDeviceConnectionListener {
         void onDeviceConnected(DeviceInfo deviceInfo);
         void onDeviceDisconnected(DeviceInfo deviceInfo);
+        void onDesktopVersionTooLow(DeviceInfo deviceInfo);
+        void onMobileVersionTooLow(DeviceInfo deviceInfo);
     }
 
 }

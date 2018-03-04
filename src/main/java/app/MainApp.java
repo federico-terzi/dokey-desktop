@@ -35,7 +35,7 @@ import java.util.logging.*;
 public class MainApp extends Application implements EngineWorker.OnDeviceConnectionListener, ADBManager.OnUSBDeviceConnectedListener,
         TrayIconManager.OnTrayActionListener{
 
-    public static int DOKEY_MOBILE_MIN_VERSION = 2;  // Minimum dokey mobile version that this Desktop support
+    public static int DOKEY_MOBILE_MIN_VERSION = -1;  // Don't change here, modify it in the gradle
     public static int DOKEY_VERSION_NUMBER = -1;  // Don't change here, modify it in the gradle
     public static String DOKEY_VERSION = null;  // Don't change here, modify it in the gradle
 
@@ -81,6 +81,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         try {
             properties.load(MainApp.class.getResourceAsStream("/proj.properties"));
             DOKEY_VERSION_NUMBER = Integer.parseInt(properties.getProperty("vnumber"));
+            DOKEY_MOBILE_MIN_VERSION = Integer.parseInt(properties.getProperty("minimum_mobile_version"));
             DOKEY_VERSION = properties.getProperty("version");
         } catch (IOException e) {
             LOG.severe("Cannot load project properties");
@@ -446,6 +447,48 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         // Set the tray icon as ready
         trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_READY);
         trayIconManager.setTrayIconStatus(resourceBundle.getString("not_connected"));
+    }
+
+    /**
+     * Called when a connected device needs a more recent desktop version.
+     * @param deviceInfo the DeviceInfo object with the information about the connected device.
+     */
+    @Override
+    public void onDesktopVersionTooLow(DeviceInfo deviceInfo) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                stage.getIcons().add(new Image(MainApp.class.getResourceAsStream("/assets/icon.png")));
+                stage.setAlwaysOnTop(true);
+                alert.setTitle("Your Dokey Desktop version is too old :(");
+                alert.setHeaderText("The version of Dokey Desktop you are running on your PC is too old!");
+                alert.setContentText("Please update it from the Dokey website to connect!");
+                alert.showAndWait();
+            }
+        });
+    }
+
+    /**
+     * Called when a connected device has a version not supported anymore by this Desktop.
+     * @param deviceInfo the DeviceInfo object with the information about the connected device.
+     */
+    @Override
+    public void onMobileVersionTooLow(DeviceInfo deviceInfo) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                stage.getIcons().add(new Image(MainApp.class.getResourceAsStream("/assets/icon.png")));
+                stage.setAlwaysOnTop(true);
+                alert.setTitle("Your Dokey Android version is too old :(");
+                alert.setHeaderText("The version of Dokey Android you are running on your smartphone is too old!");
+                alert.setContentText("Please update it from the PlayStore to connect!");
+                alert.showAndWait();
+            }
+        });
     }
 
 
