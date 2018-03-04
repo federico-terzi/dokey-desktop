@@ -47,9 +47,9 @@ public class AppConfig {
 
     @Bean
     @Scope("prototype")
-    public EditorStage editorStage(EditorStage.OnEditorEventListener onEditorEventListener) throws IOException {
+    public EditorStage editorStage(String targetApp, EditorStage.OnEditorEventListener onEditorEventListener) throws IOException {
         return new EditorStage(applicationManager, sectionManager, shortcutIconManager, webLinkResolver,
-                onEditorEventListener, resourceBundle());
+                onEditorEventListener, resourceBundle(), targetApp);
     }
 
     @Bean

@@ -66,7 +66,7 @@ public class ClientTestMain {
         System.out.println("Connected!");
 
         try {
-            LinkManager manager = new LinkManager(socket, SystemInfoManager.getDeviceInfo(), 1, 1, true, null);
+            LinkManager manager = new LinkManager(socket, SystemInfoManager.getDeviceInfo(), 2, 1, true, null);
 
             manager.setAppSwitchEventListener(new LinkManager.OnAppSwitchEventListener() {
                 @Override

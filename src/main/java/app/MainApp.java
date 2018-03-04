@@ -53,6 +53,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private ServerSocket serverSocket;  // This is the server socket later used by the EngineServer
 
     private InitializationStage initializationStage;
+    private EditorStage editorStage = null;
 
     private ResourceBundle resourceBundle;
 
@@ -338,7 +339,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_EDITOR_REQUEST_EVENT, openEditorRequestListener);
 
         if (openEditor) {
-            openEditor();
+            openEditor(null);
         }
         if (openSettings) {
             openSettings();
@@ -390,20 +391,22 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         activeApplicationsDaemon.stopDaemon();
     }
 
-    private void openEditor() {
+    private void openEditor(String targetApp) {
         if (isEditorOpen) {
+            // If the editor is already open, just select the requested app
+            editorStage.selectSection(targetApp);
             return;
         }
 
         isEditorOpen = true;
-        EditorStage editorStage = context.getBean(EditorStage.class,
+        editorStage = context.getBean(EditorStage.class, targetApp,
                 (EditorStage.OnEditorEventListener) () -> isEditorOpen = false);
         editorStage.show();
     }
 
     @Override
     public void onEditorOpenRequest() {
-        openEditor();
+        openEditor(null);
     }
 
     private void openSettings() {
@@ -537,7 +540,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private BroadcastManager.BroadcastListener openEditorRequestListener = new BroadcastManager.BroadcastListener() {
         @Override
         public void onBroadcastReceived(Serializable param) {
-            Platform.runLater(() -> openEditor());
+            String targetApp = (String) param;
+            Platform.runLater(() -> openEditor(targetApp));
         }
     };
 }

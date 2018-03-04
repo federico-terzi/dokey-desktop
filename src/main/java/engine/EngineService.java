@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 
@@ -383,9 +384,19 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
             systemManager.logout();
         }else if (command.equals(SystemCommands.RESTART.getCommand())) {
             systemManager.restart();
-        }else if (command.equals("open_editor")) {  // Request to open the editor
+        }else if (command.startsWith("open_editor")) {  // Request to open the editor
+            String specificApplication = null;
+
+            // Check if a specific application is specified
+            if (command.length() != "open_editor".length()) {  // It means that a specific application is specified
+                // Extrapolate the path from the command:
+                // NOTE: the command should have this format:
+                // open_editor /Applications/.../Yeah.app
+                specificApplication = command.substring(("open_editor ".length()), command.length());
+            }
+
             // Send a broadcast event
-            BroadcastManager.getInstance().sendBroadcast(BroadcastManager.OPEN_EDITOR_REQUEST_EVENT, null);
+            BroadcastManager.getInstance().sendBroadcast(BroadcastManager.OPEN_EDITOR_REQUEST_EVENT, specificApplication);
 
             // Focus the dokey app
             appManager.focusDokey();

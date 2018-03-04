@@ -87,7 +87,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     private PublishSubject<Section> modifySectionPublisher = PublishSubject.create();
 
     public EditorStage(ApplicationManager applicationManager, SectionManager sectionManager, ShortcutIconManager shortcutIconManager,
-                       WebLinkResolver webLinkResolver, OnEditorEventListener onEditorEventListener, ResourceBundle resourceBundle) throws IOException {
+                       WebLinkResolver webLinkResolver, OnEditorEventListener onEditorEventListener, ResourceBundle resourceBundle,
+                       String targetApplication) throws IOException {
         this.applicationManager = applicationManager;
         this.shortcutIconManager = shortcutIconManager;
         this.sectionManager = sectionManager;
@@ -267,7 +268,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             }
         });
 
-        requestSectionList();
+        requestSectionList(targetApplication);
 
         renderToggleAppsListView();
 
@@ -315,11 +316,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                         // Select the list view item if present
                         if (targetSectionID != null) {
                             // Select the correct entry in the list view
-                            for (Section sec : controller.getSectionsListView().getItems()) {
-                                if (sec.getStringID() != null && sec.getStringID().equals(targetSectionID)) {
-                                    controller.getSectionsListView().getSelectionModel().select(sec);
-                                }
-                            }
+                            selectSection(targetSectionID);
                         }
 
                     }
@@ -329,6 +326,21 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         };
 
         new Thread(sectionTask).start();
+    }
+
+    /**
+     * Select the specified target app in the list
+     * @param targetApp
+     */
+    public void selectSection(String targetApp) {
+        if (targetApp == null)
+            return;
+
+        for (Section sec : controller.getSectionsListView().getItems()) {
+            if (sec.getStringID() != null && sec.getStringID().equals(targetApp)) {
+                controller.getSectionsListView().getSelectionModel().select(sec);
+            }
+        }
     }
 
     /**
