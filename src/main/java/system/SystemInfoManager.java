@@ -17,6 +17,17 @@ public class SystemInfoManager {
      * @return a ServerInfo object with the system info.
      */
     public static ServerInfo getServerInfo(int serverPort) {
+        DeviceInfo deviceInfo = getDeviceInfo();
+
+        // Create the server info object
+        ServerInfo serverInfo = new ServerInfo();
+        serverInfo.setPort(serverPort);
+        serverInfo.setDeviceInfo(deviceInfo);
+
+        return serverInfo;
+    }
+
+    public static DeviceInfo getDeviceInfo() {
         String serverName = getName();
 
         DeviceInfo deviceInfo = new DeviceInfo();
@@ -25,13 +36,7 @@ public class SystemInfoManager {
         deviceInfo.setID(DigestUtils.md5Hex(serverName));  // TODO: improve ID generation
         // Get the system os
         deviceInfo.setOs(getOS());
-
-        // Create the server info object
-        ServerInfo serverInfo = new ServerInfo();
-        serverInfo.setPort(serverPort);
-        serverInfo.setDeviceInfo(deviceInfo);
-
-        return serverInfo;
+        return deviceInfo;
     }
 
     public static String getName() {

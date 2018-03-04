@@ -34,11 +34,12 @@ import java.util.logging.*;
 @Service
 public class MainApp extends Application implements EngineWorker.OnDeviceConnectionListener, ADBManager.OnUSBDeviceConnectedListener,
         TrayIconManager.OnTrayActionListener{
-    private boolean isEditorOpen = false;
-    private boolean isSettingsOpen = false;
+
+    public static int DOKEY_MOBILE_MIN_VERSION = 2;  // Minimum dokey mobile version that this Desktop support
+    public static int DOKEY_VERSION_NUMBER = -1;  // Don't change here, modify it in the gradle
+    public static String DOKEY_VERSION = null;  // Don't change here, modify it in the gradle
 
     private ApplicationContext context;
-
     private ApplicationManager appManager;
     private TrayIconManager trayIconManager;
     private ApplicationSwitchDaemon applicationSwitchDaemon;
@@ -61,6 +62,11 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     public final static String LOCK_FILENAME = "lock";  // File used as lock to make sure only one instance of dokey is running at each time.
     private RandomAccessFile lockFile = null;
 
+    // Status variables
+    private boolean isEditorOpen = false;
+    private boolean isSettingsOpen = false;
+
+    // Argument parameters
     private static boolean isFirstStartup = true;  // If true, it means that the app is opened for the first time.
     private static boolean isAutomaticStartup = false;  // If true, it means that the app is started automatically by the system.
     private static boolean openEditor = false;  // If true, at startup the editor is open;
@@ -68,8 +74,6 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private static boolean ignoreLanguage = false;  // If true, force the language to be english.
 
     public static Locale locale = Locale.ENGLISH;  // Current locale
-    public static int DOKEY_VERSION_NUMBER = -1;
-    public static String DOKEY_VERSION = null;
 
     public static void main(String[] args) {
         // Load the properties
@@ -128,6 +132,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
             // Set up the correct Locale
             locale = Locale.getDefault();
         }
+
+        LOG.info("VERSION: "+DOKEY_VERSION + " VNUM: "+DOKEY_VERSION_NUMBER+" MIN_VER: "+DOKEY_MOBILE_MIN_VERSION);
 
         launch(args);
     }
@@ -417,12 +423,11 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     /**
      * Called when a device connects to the server.
      *
-     * @param deviceID the string ID of the device
-     * @param deviceName the name of the device
+     * @param deviceInfo the DeviceInfo object with the information about the connected device.
      */
     @Override
-    public void onDeviceConnected(String deviceID, String deviceName) {
-        LOG.info("Connected to: "+deviceID);
+    public void onDeviceConnected(DeviceInfo deviceInfo) {
+        LOG.info("Connected to: "+deviceInfo.getName() +" ID: "+deviceInfo.getID());
 
         // Set the tray icon as running
         trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_CONNECTED);
@@ -432,11 +437,11 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     /**
      * Called when a device disconnects from the server.
      *
-     * @param deviceID the string ID of the device
+     * @param deviceInfo the DeviceInfo object with the information about the connected device.
      */
     @Override
-    public void onDeviceDisconnected(String deviceID) {
-        LOG.info("Disconnected from: "+deviceID);
+    public void onDeviceDisconnected(DeviceInfo deviceInfo) {
+        LOG.info("Disconnected from: "+deviceInfo.getName() +" ID: "+deviceInfo.getID());
 
         // Set the tray icon as ready
         trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_READY);

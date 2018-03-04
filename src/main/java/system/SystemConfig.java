@@ -3,6 +3,7 @@ package system;
 import engine.EngineServer;
 import engine.EngineService;
 import engine.EngineWorker;
+import net.DEManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -83,9 +84,10 @@ public class SystemConfig {
 
     @Bean
     @Scope("prototype")
-    public EngineService engineService(Socket socket) throws UnsupportedOperatingSystemException, AWTException {
+    public EngineService engineService(Socket socket, DEManager.OnConnectionListener onConnectionListener)
+            throws UnsupportedOperatingSystemException, AWTException {
         return new EngineService(socket, applicationManager(), applicationSwitchDaemon(),
-                systemManager(), activeApplicationsDaemon(), webLinkResolver());
+                systemManager(), activeApplicationsDaemon(), webLinkResolver(), onConnectionListener);
     }
 
     @Bean

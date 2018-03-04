@@ -8,6 +8,7 @@ import net.packets.AppListPacket;
 import net.packets.DEPacket;
 import org.jetbrains.annotations.NotNull;
 import section.model.Section;
+import system.SystemInfoManager;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -55,7 +56,7 @@ public class ClientTestMain {
         Socket socket = null;
 
         try {
-            socket = new Socket(address, 1234);
+            socket = new Socket(address, port);
         } catch (IOException e1) {
             e1.printStackTrace();
             System.err.println("Errore nell'apertura della socket.");
@@ -65,7 +66,7 @@ public class ClientTestMain {
         System.out.println("Connected!");
 
         try {
-            LinkManager manager = new LinkManager(socket);
+            LinkManager manager = new LinkManager(socket, SystemInfoManager.getDeviceInfo(), 1, 1, true, null);
 
             manager.setAppSwitchEventListener(new LinkManager.OnAppSwitchEventListener() {
                 @Override

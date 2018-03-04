@@ -1,8 +1,11 @@
 package engine;
 
+import app.MainApp;
 import json.JSONObject;
 import net.DEDaemon;
+import net.DEManager;
 import net.LinkManager;
+import net.model.DeviceInfo;
 import net.model.IconTheme;
 import net.model.KeyboardKeys;
 import net.model.RemoteApplication;
@@ -32,7 +35,7 @@ import java.util.logging.Logger;
 /**
  * Represents the background worker that executes all the actions in the server.
  */
-public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnImageRequestListener, LinkManager.OnAppOpenRequestReceivedListener, LinkManager.OnSectionRequestListener, LinkManager.OnFolderOpenRequestReceivedListener, LinkManager.OnWebLinkRequestReceivedListener, LinkManager.OnCommandRequestReceivedListener, LinkManager.OnAppInfoRequestReceivedListener, LinkManager.OnModifiedSectionEventListener{
+public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnImageRequestListener, LinkManager.OnAppOpenRequestReceivedListener, LinkManager.OnSectionRequestListener, LinkManager.OnFolderOpenRequestReceivedListener, LinkManager.OnWebLinkRequestReceivedListener, LinkManager.OnCommandRequestReceivedListener, LinkManager.OnAppInfoRequestReceivedListener, LinkManager.OnModifiedSectionEventListener {
     public static final int DELAY_FROM_FOCUS_TO_KEYSTROKE = 300;  // In milliseconds
 
     private LinkManager linkManager;
@@ -50,9 +53,10 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
 
     public EngineService(Socket socket, ApplicationManager appManager, ApplicationSwitchDaemon applicationSwitchDaemon,
                          SystemManager systemManager, ActiveApplicationsDaemon activeApplicationsDaemon,
-                         WebLinkResolver webLinkResolver) throws AWTException {
+                         WebLinkResolver webLinkResolver, DEManager.OnConnectionListener onConnectionListener) throws AWTException {
         // Create a link manager
-        this.linkManager = new LinkManager(socket);
+        this.linkManager = new LinkManager(socket, SystemInfoManager.getDeviceInfo(), MainApp.DOKEY_VERSION_NUMBER,
+                MainApp.DOKEY_MOBILE_MIN_VERSION, true, onConnectionListener);
         this.appManager = appManager;
         this.applicationSwitchDaemon = applicationSwitchDaemon;
         this.systemManager = systemManager;

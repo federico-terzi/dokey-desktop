@@ -1,6 +1,8 @@
 package engine;
 
 import net.DEDaemon;
+import net.DEManager;
+import net.model.DeviceInfo;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -18,8 +20,10 @@ public class EngineWorker extends Thread implements ApplicationContextAware{
     private Socket socket;
     private OnDeviceConnectionListener deviceConnectionListener;
     private EngineService service = null;
+    private DeviceInfo receiverInfo = null;
 
     private ApplicationContext context;
+
 
     private volatile boolean shouldTerminate = false;
 
@@ -41,7 +45,31 @@ public class EngineWorker extends Thread implements ApplicationContextAware{
     public void run() {
         try {
             // Create the engine service
-            service = context.getBean(EngineService.class, socket);
+            service = context.getBean(EngineService.class, socket, new DEManager.OnConnectionListener() {
+                @Override
+                public void onConnectionNotAccepted(DeviceInfo deviceInfo, int version) {
+                    receiverInfo = deviceInfo;
+                    LOG.warning("Connection not accepted by the phone: "+deviceInfo.getName()+" with version: "+version);
+                    shouldTerminate = true;
+                }
+
+                @Override
+                public void onReceiverVersionTooLow(DeviceInfo deviceInfo, int version) {
+                    receiverInfo = deviceInfo;
+                    LOG.warning("Not accepting connection, phone has version too low: "+deviceInfo.getName()+" with version: "+version);
+                    shouldTerminate = true;
+                }
+
+                @Override
+                public void onConnectionStarted(DeviceInfo deviceInfo, int version) {
+                    receiverInfo = deviceInfo;
+                    LOG.info("Connection accepted by: "+deviceInfo.getName()+" with version: "+version);
+                    // Send the connect notification
+                    if (deviceConnectionListener != null) {
+                        deviceConnectionListener.onDeviceConnected(deviceInfo);
+                    }
+                }
+            });
 
             // Set up the connection closed listener
             service.setOnConnectionClosedListener(new DEDaemon.OnConnectionClosedListener() {
@@ -53,11 +81,6 @@ public class EngineWorker extends Thread implements ApplicationContextAware{
 
             // Start the daemons
             service.start();
-
-            // Send the connect notification
-            if (deviceConnectionListener != null) {
-                deviceConnectionListener.onDeviceConnected("test123", "TEST DEVICE");  // TODO: implement device id logic
-            }
 
             // Loop until should terminate is true
             while(!shouldTerminate) {
@@ -76,7 +99,7 @@ public class EngineWorker extends Thread implements ApplicationContextAware{
 
         // Send the disconnect notification
         if (deviceConnectionListener != null) {
-            deviceConnectionListener.onDeviceDisconnected("test123");  // TODO: implement device id logic
+            deviceConnectionListener.onDeviceDisconnected(receiverInfo);
         }
     }
 
@@ -91,8 +114,8 @@ public class EngineWorker extends Thread implements ApplicationContextAware{
      * Used to notify when a device connects or disconnects from the server
      */
     public interface OnDeviceConnectionListener {
-        void onDeviceConnected(String deviceID, String deviceName);
-        void onDeviceDisconnected(String deviceID);
+        void onDeviceConnected(DeviceInfo deviceInfo);
+        void onDeviceDisconnected(DeviceInfo deviceInfo);
     }
 
 }
