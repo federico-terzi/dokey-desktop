@@ -1,6 +1,7 @@
 package app;
 
 import app.editor.stages.EditorStage;
+import app.notifications.NotificationFactory;
 import app.stages.SettingsStage;
 import app.stages.InitializationStage;
 import engine.EngineServer;
@@ -433,6 +434,16 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         // Set the tray icon as running
         trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_CONNECTED);
         trayIconManager.setTrayIconStatus(resourceBundle.getString("connected"));
+
+        // Create the notification
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                String title = "Dokey: "+resourceBundle.getString("device_connected");
+                String message = resourceBundle.getString("connected_to")+" "+deviceInfo.getName();
+                NotificationFactory.showNotification(title, message);
+            }
+        });
     }
 
     /**
@@ -447,6 +458,16 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         // Set the tray icon as ready
         trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_READY);
         trayIconManager.setTrayIconStatus(resourceBundle.getString("not_connected"));
+
+        // Create the notification
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                String title = "Dokey: "+resourceBundle.getString("device_disconnected");
+                String message = resourceBundle.getString("disconnected_from")+" "+deviceInfo.getName();
+                NotificationFactory.showNotification(title, message);
+            }
+        });
     }
 
     /**
