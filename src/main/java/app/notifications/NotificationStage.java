@@ -18,6 +18,7 @@ public class NotificationStage extends Stage {
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/notification.fxml").toURI().toURL());
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
+        scene.getStylesheets().add(ResourceUtils.getResource("/css/notification.css").toURI().toString());
         this.setScene(scene);
         setAlwaysOnTop(true);
         this.getIcons().add(new Image(NotificationStage.class.getResourceAsStream("/assets/icon.png")));

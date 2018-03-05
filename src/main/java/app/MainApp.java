@@ -442,7 +442,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                String title = "Dokey: "+resourceBundle.getString("device_connected");
+                String title = resourceBundle.getString("device_connected");
                 String message = resourceBundle.getString("connected_to")+" "+deviceInfo.getName();
                 NotificationFactory.showNotification(title, message);
             }
@@ -466,7 +466,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                String title = "Dokey: "+resourceBundle.getString("device_disconnected");
+                String title = resourceBundle.getString("device_disconnected");
                 String message = resourceBundle.getString("disconnected_from")+" "+deviceInfo.getName();
                 NotificationFactory.showNotification(title, message);
             }

@@ -1,0 +1,11 @@
+@import "colors.css";
+
+.root {
+    -fx-background-color: -primaryTextColor;
+    -fx-background-radius: 7px;
+    -fx-opacity: 0.9;
+}
+
+.root .label {
+    -fx-fill: -primaryColor;
+}
