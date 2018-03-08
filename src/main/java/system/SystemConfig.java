@@ -36,7 +36,7 @@ public class SystemConfig {
         if (OSValidator.isWindows()) {  // WINDOWS
             return new MSApplicationManager(iconManager(), StartupManager.getInstance());
         }else if (OSValidator.isMac()) {  // MAC OSX
-            return new MACApplicationManager(StartupManager.getInstance());
+            return new MACApplicationManager(StartupManager.getInstance(), applicationSwitchDaemon());
         }
         throw new UnsupportedOperatingSystemException("This Operating system is not supported by Dokey");
     }
