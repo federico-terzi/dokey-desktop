@@ -1,5 +1,6 @@
 package system.section;
 
+import json.JSONException;
 import org.apache.commons.codec.digest.DigestUtils;
 import json.JSONObject;
 import json.JSONTokener;
@@ -42,7 +43,9 @@ public class SectionManager {
         for (File sectionFile : userSectionDir.listFiles()) {
             // Get the section from the file
             Section currentSection = getSectionFromFile(sectionFile);
-            output.add(currentSection);
+            if (currentSection != null) {
+                output.add(currentSection);
+            }
         }
 
         return output;
@@ -122,6 +125,8 @@ public class SectionManager {
             fis.close();
 
             return section;
+        } catch (JSONException e) {
+            e.printStackTrace();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

@@ -85,7 +85,7 @@
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </padding>
                      <children>
-                        <Label text="Dokey was made by the Rocket Guys ( alias for Federico Terzi and Matteo Pellegrino )." />
+                        <Label text="Dokey was made by the Rocket Guys ( alias for Matteo and Federico )." />
                         <Label text="The application uses open-source software and image assets to work." />
                         <Label text="The licenses are shown below:  " />
                         <TextArea editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefRowCount="100" fx:id="licensesTextArea"/>
