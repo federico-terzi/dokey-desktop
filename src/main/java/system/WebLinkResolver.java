@@ -1,5 +1,6 @@
 package system;
 
+import app.MainApp;
 import net.sf.image4j.codec.ico.ICODecoder;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
@@ -222,12 +223,18 @@ public class WebLinkResolver {
                 LOG.fine("WLR: saving icon: "+imageUrl);
                 URL image = new URL(imageUrl);
                 if (!imageUrl.endsWith(".ico")) {  // Not an ICO file, save directly
-                    FileUtils.copyURLToFile(image, imageFile, 3000, 3000);
+                    URLConnection conn = image.openConnection();
+                    conn.setRequestProperty("User-Agent", "Dokey/"+ MainApp.DOKEY_VERSION);
+                    conn.connect();
+                    FileUtils.copyInputStreamToFile(conn.getInputStream(), imageFile);
                     return true;
                 }else{  // ICO file, must be converted beforehand
                     File tempFile = File.createTempFile("ico", "ico");
                     // Download the icon
-                    FileUtils.copyURLToFile(image, tempFile, 3000, 3000);
+                    URLConnection conn = image.openConnection();
+                    conn.setRequestProperty("User-Agent", "Dokey/"+ MainApp.DOKEY_VERSION);
+                    conn.connect();
+                    FileUtils.copyInputStreamToFile(conn.getInputStream(), imageFile);
 
                     // CONVERSION
                     List<BufferedImage> images = ICODecoder.read(tempFile);
