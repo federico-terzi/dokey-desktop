@@ -1,6 +1,5 @@
 package system.MAC;
 
-import system.ApplicationSwitchDaemon;
 import system.CacheManager;
 import system.ResourceUtils;
 import system.StartupManager;
@@ -19,19 +18,14 @@ public class MACApplicationManager extends ApplicationManager {
     // This map will hold the applications, associated with their executable path
     private Map<String, Application> applicationMap = new HashMap<>();
 
-    private static final long OPEN_APPLICATION_TIMEOUT = 2000;  // How much time should the method openApplication
-                                                                // wait for the correct application to appear.
-    private static final long OPEN_APPLICATION_CHECK_INTERVAL = 100;  // How often to check if the correct application
-                                                                      // has been focused.
-
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
     private StartupManager startupManager;
-    private ApplicationSwitchDaemon applicationSwitchDaemon;
 
-    public MACApplicationManager(StartupManager startupManager, ApplicationSwitchDaemon applicationSwitchDaemon){
+    private static final long OPEN_APPLICATION_DELAY = 100;  // How much to wait after requesting an openApplication
+
+    public MACApplicationManager(StartupManager startupManager){
         this.startupManager = startupManager;
-        this.applicationSwitchDaemon = applicationSwitchDaemon;
     }
 
     /**
@@ -57,23 +51,11 @@ public class MACApplicationManager extends ApplicationManager {
             return application.open();
         }
 
-
-        // Wait until the app is focused or the timeout has come
-        long waitAmount = 0;
-        while (waitAmount < OPEN_APPLICATION_TIMEOUT) {
-            // Check if the application has been focused
-            if (applicationSwitchDaemon.getCurrentApplication() != null &&
-                    applicationSwitchDaemon.getCurrentApplication().getExecutablePath().equals(executablePath)) {
-                break;
-            }
-
-            // Sleep for a bit to give some time to the application
-            try {
-                Thread.sleep(OPEN_APPLICATION_CHECK_INTERVAL);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            waitAmount += OPEN_APPLICATION_CHECK_INTERVAL;
+        // Sleep for a bit to give the application some time to open
+        try {
+            Thread.sleep(OPEN_APPLICATION_DELAY);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         return true;
