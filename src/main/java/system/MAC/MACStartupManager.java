@@ -85,9 +85,10 @@ public class MACStartupManager extends StartupManager {
         if (!libraryFolder.isDirectory())
             return null;
 
+        // If it doesn't exist yet, create it
         File launchAgentsFolder = new File(libraryFolder, "LaunchAgents");
         if (!launchAgentsFolder.isDirectory())
-            return null;
+            launchAgentsFolder.mkdir();
 
         return launchAgentsFolder;
     }
