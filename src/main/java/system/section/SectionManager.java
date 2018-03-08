@@ -41,6 +41,10 @@ public class SectionManager {
 
         // Go through all user section files
         for (File sectionFile : userSectionDir.listFiles()) {
+            // Skip hidden files
+            if (sectionFile.isHidden())
+                continue;
+
             // Get the section from the file
             Section currentSection = getSectionFromFile(sectionFile);
             if (currentSection != null) {
