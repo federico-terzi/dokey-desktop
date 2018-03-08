@@ -22,7 +22,7 @@ public class MACApplicationManager extends ApplicationManager {
     private final static Logger LOG = Logger.getGlobal();
     private StartupManager startupManager;
 
-    private static final long OPEN_APPLICATION_TIMEOUT = 2000;  // Timeout for the open application request.
+    private static final long OPEN_APPLICATION_TIMEOUT = 3000;  // Timeout for the open application request.
 
     private static final long OPEN_APPLICATION_CHECK_INTERVAL = 500;  // How often to check if an application has focus
                                                                       // in a openApplication request.
@@ -51,7 +51,7 @@ public class MACApplicationManager extends ApplicationManager {
 
         // Open it
         if (application != null) {
-            return application.open();
+            application.open();
         }
 
         long waitAmount = 0;
