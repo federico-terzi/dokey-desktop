@@ -22,7 +22,10 @@ public class MACApplicationManager extends ApplicationManager {
     private final static Logger LOG = Logger.getGlobal();
     private StartupManager startupManager;
 
-    private static final long OPEN_APPLICATION_DELAY = 100;  // How much to wait after requesting an openApplication
+    private static final long OPEN_APPLICATION_TIMEOUT = 2000;  // Timeout for the open application request.
+
+    private static final long OPEN_APPLICATION_CHECK_INTERVAL = 500;  // How often to check if an application has focus
+                                                                      // in a openApplication request.
 
     public MACApplicationManager(StartupManager startupManager){
         this.startupManager = startupManager;
@@ -51,14 +54,24 @@ public class MACApplicationManager extends ApplicationManager {
             return application.open();
         }
 
-        // Sleep for a bit to give the application some time to open
-        try {
-            Thread.sleep(OPEN_APPLICATION_DELAY);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        long waitAmount = 0;
+        while (waitAmount < OPEN_APPLICATION_TIMEOUT) {
+            // Check if the application has taken focus
+            Application activeApp = getActiveApplication();
+            if (activeApp != null && activeApp.getExecutablePath().equals(executablePath)){
+                return true;
+            }
+
+            // Sleep for a bit to give the application some time to open
+            try {
+                Thread.sleep(OPEN_APPLICATION_CHECK_INTERVAL);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            waitAmount += OPEN_APPLICATION_CHECK_INTERVAL;
         }
 
-        return true;
+        return false;
     }
 
     /**
