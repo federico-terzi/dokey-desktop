@@ -95,6 +95,13 @@ public class TrayIconManager {
                 }
             }));
 
+            java.awt.MenuItem helpItem = new java.awt.MenuItem(resourceBundle.getString("get_help"));
+            helpItem.addActionListener(event -> Platform.runLater(() -> {
+                if (listener != null) {
+                    listener.onHelpOpenRequest();
+                }
+            }));
+
             java.awt.MenuItem exitItem = new java.awt.MenuItem(resourceBundle.getString("exit"));
             exitItem.addActionListener(event -> {
                 //notificationTimer.cancel();
@@ -106,6 +113,8 @@ public class TrayIconManager {
             final java.awt.PopupMenu popup = new java.awt.PopupMenu();
             popup.add(openEditor);
             popup.add(settingsItem);
+            popup.addSeparator();
+            popup.add(helpItem);
             popup.addSeparator();
             popup.add(exitItem);
             trayIcon.setPopupMenu(popup);
@@ -121,6 +130,7 @@ public class TrayIconManager {
     public interface OnTrayActionListener {
         void onEditorOpenRequest();
         void onSettingsOpenRequest();
+        void onHelpOpenRequest();
     }
 
     /**

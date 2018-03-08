@@ -1,5 +1,6 @@
 package app.editor.stages;
 
+import app.MainApp;
 import app.editor.animations.DividerTransition;
 import app.editor.components.*;
 import app.editor.listeners.OnSectionModifiedListener;
@@ -40,6 +41,7 @@ import section.model.Component;
 import section.model.Page;
 import section.model.Section;
 import section.model.SectionType;
+import sun.applet.Main;
 import system.BroadcastManager;
 import system.ResourceUtils;
 import system.WebLinkResolver;
@@ -233,7 +235,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             @Override
             public void handle(ActionEvent event) {
                 // Open the help page in the browser
-                applicationManager.openWebLink("https://dokey.io/docs/");
+                applicationManager.openWebLink(MainApp.DOCS_URL);
             }
         });
 

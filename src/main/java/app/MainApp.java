@@ -40,6 +40,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     public static int DOKEY_VERSION_NUMBER = -1;  // Don't change here, modify it in the gradle
     public static String DOKEY_VERSION = null;  // Don't change here, modify it in the gradle
 
+    public static final String DOCS_URL = "https://dokey.io/docs/";
+
     private ApplicationContext context;
     private ApplicationManager appManager;
     private TrayIconManager trayIconManager;
@@ -423,6 +425,12 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     @Override
     public void onSettingsOpenRequest() {
         openSettings();
+    }
+
+    @Override
+    public void onHelpOpenRequest() {
+        // Open the docs in the browser
+        appManager.openWebLink(DOCS_URL);
     }
 
     /**
