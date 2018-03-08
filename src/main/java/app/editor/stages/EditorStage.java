@@ -229,14 +229,21 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 renderToggleAppsListView();
             }
         });
-
-        // Keyboard events
-        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+        controller.helpBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(KeyEvent event) {
-                System.out.println(event);
+            public void handle(ActionEvent event) {
+                // Open the help page in the browser
+                applicationManager.openWebLink("https://dokey.io/docs/");
             }
         });
+
+//        // Keyboard events
+//        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+//            @Override
+//            public void handle(KeyEvent event) {
+//                System.out.println(event);
+//            }
+//        });
 
         // Listener for the search query
         controller.searchSectionTextField.textProperty().addListener((observable, oldValue, newValue) -> {
