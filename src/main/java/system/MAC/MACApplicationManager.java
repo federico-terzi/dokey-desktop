@@ -49,6 +49,13 @@ public class MACApplicationManager extends ApplicationManager {
             return application.open();
         }
 
+        // Sleep for a bit to give some time to the application
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         return false;
     }
 

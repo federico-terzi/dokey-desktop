@@ -19,10 +19,12 @@ class ApplicationSwitchDaemon(val appManager : ApplicationManager) : Thread(){
     var checkInterval : Long = DEFAULT_CHECK_INTERVAL
     var shouldStop = false
 
+    var currentApplication : Application? = null  // The currently active application
+
     val listeners : MutableList<OnApplicationSwitchListener> = mutableListOf()
 
     override fun run() {
-        var previousPID = appManager.activePID
+        var previousPID = -1
 
         while (!shouldStop) {
             val currentPID = appManager.activePID
@@ -30,14 +32,14 @@ class ApplicationSwitchDaemon(val appManager : ApplicationManager) : Thread(){
             // Check for changes in the active pid
             if (currentPID != previousPID) {  // APP CHANGED
                 // Get the active application
-                val application = appManager.activeApplication
+                currentApplication = appManager.activeApplication
 
                 // Make sure the application exists
-                if (application != null) {
+                if (currentApplication != null) {
                     // Notify the change to all listeners
                     listeners.forEach({
                         try {
-                            it.onApplicationSwitch(application)
+                            it.onApplicationSwitch(currentApplication!!)
                         }catch (e: Exception) {
                             e.printStackTrace()
                         }

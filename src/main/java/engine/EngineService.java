@@ -138,8 +138,12 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
 
         // If an application is specified, first focus the application
         if (application != null) {
-            // Try to open the application, and get the result
-            result = appManager.openApplication(application);
+            // if the current application is not the one in focus, open the correct one.
+            if (applicationSwitchDaemon.getCurrentApplication() != null &&
+                    !applicationSwitchDaemon.getCurrentApplication().getExecutablePath().equals(application)) {
+                // Try to open the application, and get the result
+                result = appManager.openApplication(application);
+            }
         }
 
         // The app was already focused, send the keystrokes directly
