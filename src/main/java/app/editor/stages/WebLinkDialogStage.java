@@ -194,7 +194,7 @@ public class WebLinkDialogStage extends Stage {
 
                         if (res != null) {  // If a result is available
                             // Populate the title
-                            if (res.title != null) {
+                            if (res.title != null && controller.titleTextField.getText().isEmpty()) {
                                 controller.titleTextField.setText(res.title);
                             }
 

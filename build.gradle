@@ -6,8 +6,8 @@ import org.apache.commons.lang3.SystemUtils
 import java.nio.file.StandardCopyOption
 
 group 'com.freddyt_studio.remotekey_desktop'
-version '0.2'  // Human readable version
-int version_number = 2  // An integer that must be incremented at each release
+version '0.2.1'  // Human readable version
+int version_number = 3  // An integer that must be incremented at each release
 int minimum_mobile_version = 2 // Minimum dokey mobile version that this Desktop support
 
 buildscript {

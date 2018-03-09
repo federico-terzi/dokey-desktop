@@ -10,6 +10,8 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import net.discovery.ServerDiscoveryDaemon;
@@ -28,6 +30,7 @@ import java.net.ServerSocket;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.*;
@@ -41,6 +44,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     public static String DOKEY_VERSION = null;  // Don't change here, modify it in the gradle
 
     public static final String DOCS_URL = "https://dokey.io/docs/";
+    public static final String DOWNLOAD_URL = "https://dokey.io/#download";
+    public static final String PLAYSTORE_URL = "https://dokey.io/";  // TODO: change
 
     private ApplicationContext context;
     private ApplicationManager appManager;
@@ -490,14 +495,21 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
+                ButtonType cancel = new ButtonType(resourceBundle.getString("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
+                ButtonType download = new ButtonType(resourceBundle.getString("download"), ButtonBar.ButtonData.OK_DONE);
+
+                Alert alert = new Alert(Alert.AlertType.WARNING, "", download, cancel);
                 Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
                 stage.getIcons().add(new Image(MainApp.class.getResourceAsStream("/assets/icon.png")));
                 stage.setAlwaysOnTop(true);
                 alert.setTitle("Your Dokey Desktop version is too old :(");
                 alert.setHeaderText("The version of Dokey Desktop you are running on your PC is too old!");
-                alert.setContentText("Please update it from the Dokey website to connect!");
-                alert.showAndWait();
+                alert.setContentText("Please download the new version from the Dokey Website");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == download) {
+                    // Navigate to the dokey website, download section
+                    appManager.openWebLink(DOWNLOAD_URL);
+                }
             }
         });
     }
@@ -511,14 +523,21 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
+                ButtonType cancel = new ButtonType(resourceBundle.getString("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
+                ButtonType download = new ButtonType(resourceBundle.getString("visit_playstore"), ButtonBar.ButtonData.OK_DONE);
+
+                Alert alert = new Alert(Alert.AlertType.WARNING, "", download, cancel);
                 Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
                 stage.getIcons().add(new Image(MainApp.class.getResourceAsStream("/assets/icon.png")));
                 stage.setAlwaysOnTop(true);
                 alert.setTitle("Your Dokey Android version is too old :(");
                 alert.setHeaderText("The version of Dokey Android you are running on your smartphone is too old!");
                 alert.setContentText("Please update it from the PlayStore to connect!");
-                alert.showAndWait();
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == download) {
+                    // Navigate to the playstore page
+                    appManager.openWebLink(PLAYSTORE_URL);
+                }
             }
         });
     }

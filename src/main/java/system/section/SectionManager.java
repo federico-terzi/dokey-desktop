@@ -301,23 +301,15 @@ public class SectionManager {
         firstPage.setRowCount(4);
 
         // Add the default elements
-        WebLinkItem dokeyWebsiteItem = new WebLinkItem();
-        dokeyWebsiteItem.setUrl("https://dokey.io/");
-        dokeyWebsiteItem.setTitle("Dokey");
-        Component websiteComponent = new Component();
-        websiteComponent.setItem(dokeyWebsiteItem);
-        websiteComponent.setX(0);
-        websiteComponent.setY(0);
-
         WebLinkItem docsItem = new WebLinkItem();
         docsItem.setUrl("https://dokey.io/docs/");
         docsItem.setTitle("Docs");
+        docsItem.setIconID("dokey");
         Component docsComponent = new Component();
         docsComponent.setItem(docsItem);
         docsComponent.setX(0);
-        docsComponent.setY(1);
+        docsComponent.setY(0);
 
-        firstPage.addComponent(websiteComponent);
         firstPage.addComponent(docsComponent);
 
         section.addPage(firstPage);
