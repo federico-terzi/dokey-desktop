@@ -1,14 +1,24 @@
 package system.search.agents;
 
+import system.search.SearchEngine;
 import system.search.results.AbstractResult;
 
 import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * Represents an abstract search agent, an entity responsible of returning specific results based
  * on the searched query.
  */
 public abstract class AbstractAgent {
+    protected SearchEngine searchEngine;
+    protected ResourceBundle resourceBundle;
+
+    public AbstractAgent(SearchEngine searchEngine, ResourceBundle resourceBundle) {
+        this.searchEngine = searchEngine;
+        this.resourceBundle = resourceBundle;
+    }
+
     /**
      * This method is called before getResults() to make sure this agent
      * supports this query type.

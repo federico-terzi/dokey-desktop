@@ -17,6 +17,7 @@ import java.io.File;
 import java.util.ResourceBundle;
 
 public class ResultListCell extends ListCell<AbstractResult> {
+    public static final int ROW_HEIGHT = 48;
 
     private GridPane grid = new GridPane();
     private ImageView image = new ImageView();
@@ -27,6 +28,8 @@ public class ResultListCell extends ListCell<AbstractResult> {
 
     public ResultListCell(ResourceBundle resourceBundle) {
         this.resourceBundle = resourceBundle;
+
+        setPrefHeight(ROW_HEIGHT);
 
         configureGrid();
         addControlsToGrid();

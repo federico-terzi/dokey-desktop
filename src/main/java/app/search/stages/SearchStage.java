@@ -5,12 +5,15 @@ import app.search.listcells.ResultListCell;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -64,11 +67,43 @@ public class SearchStage extends Stage {
                 Platform.runLater(() -> {
                     controller.resultListView.setItems(observableResults);
 
+                    // Select the first item
+                    if (results.size() > 0) {
+                        controller.resultListView.getSelectionModel().select(0);
+                    }
+
+                    // Set the height based on the list view
+                    controller.resultListView.setPrefHeight(results.size() * ResultListCell.ROW_HEIGHT + 2);
+
                     // Show the list view and refresh stage size to fit all contents
                     controller.resultListView.setManaged(true);
                     sizeToScene();
                 });
             });
+        });
+
+        // Setup keyboard events
+        controller.queryTextField.setOnKeyPressed(event -> {
+            int currentlySelected = controller.resultListView.getSelectionModel().getSelectedIndex();
+            if (event.getCode() == KeyCode.DOWN) {  // Select next element in the list
+                if (currentlySelected < (controller.resultListView.getItems().size() - 1)) {
+                    controller.resultListView.getSelectionModel().select(currentlySelected + 1);
+                }
+
+                event.consume();
+            }else if (event.getCode() == KeyCode.UP) {  // Select previous element in the list
+                if (currentlySelected > 0) {
+                    controller.resultListView.getSelectionModel().select(currentlySelected - 1);
+                }
+
+                event.consume();
+            }else if (event.getCode() == KeyCode.ENTER) {  // Execute action and close the stage
+                AbstractResult result = (AbstractResult) controller.resultListView.getSelectionModel().getSelectedItem();
+                if (result != null) {
+                    result.executeAction();
+                    close();
+                }
+            }
         });
 
         Platform.runLater(() -> sizeToScene());

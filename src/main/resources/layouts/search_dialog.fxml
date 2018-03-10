@@ -32,6 +32,9 @@
             <Insets bottom="10.0" />
          </VBox.margin>
       </HBox>
-      <ListView fx:id="resultListView" />
+      <ListView fx:id="resultListView">
+         <VBox.margin>
+            <Insets bottom="8.0" left="8.0" right="8.0" />
+         </VBox.margin></ListView>
    </children>
 </VBox>

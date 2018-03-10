@@ -8,15 +8,38 @@
 .root {
     -fx-background-color: -primaryTextColor;
     -fx-background-radius: 10px;
-    -fx-opacity: 0.8;
+    -fx-opacity: 0.9;
 }
 
 .text-field {
     -fx-background-color: transparent;
-    -fx-font-family: Robotosdfsd;
     -fx-font-size: 24;
 }
 
 .list-view {
     -fx-background-color: transparent;
+}
+
+.list-view .list-cell:even {
+    -fx-background-color: transparent;
+}
+.list-view .list-cell:odd {
+    -fx-background-color: transparent;
+}
+.list-view .list-cell:filled:selected{
+    /*-fx-background-color: -primaryLightColor;*/
+    -fx-background-color: #d6d6d6;
+    -fx-background-radius: 5px;
+}
+
+.list-view .scroll-bar .increment-arrow,
+.list-view .scroll-bar .decrement-arrow,
+.list-view .scroll-bar .increment-button,
+.list-view .scroll-bar .decrement-button {
+    -fx-padding:0;
+}
+
+.list-view {
+    -fx-background-insets: 0, 0;
+    -fx-padding: 0;
 }

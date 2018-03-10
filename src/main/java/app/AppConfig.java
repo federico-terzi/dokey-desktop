@@ -31,39 +31,31 @@ public class AppConfig {
     @Autowired private ShortcutIconManager shortcutIconManager;
     @Autowired private WebLinkResolver webLinkResolver;
     @Autowired private SearchEngine searchEngine;
+    @Autowired private ResourceBundle resourceBundle;
+
 
     @Bean
     public TrayIconManager trayIconManager()
     {
-        return new TrayIconManager(resourceBundle());
-    }
-
-    @Bean
-    public ResourceBundle resourceBundle() {
-        // Try to load the correct locale, if not found, fallback to English.
-        try {
-            return ResourceBundle.getBundle("lang.dokey", MainApp.locale);
-        }catch (MissingResourceException e) {
-            return ResourceBundle.getBundle("lang.dokey", Locale.ENGLISH); // Default fallback
-        }
+        return new TrayIconManager(resourceBundle);
     }
 
     @Bean
     @Scope("prototype")
     public EditorStage editorStage(String targetApp, EditorStage.OnEditorEventListener onEditorEventListener) throws IOException {
         return new EditorStage(applicationManager, sectionManager, shortcutIconManager, webLinkResolver,
-                onEditorEventListener, resourceBundle(), targetApp);
+                onEditorEventListener, resourceBundle, targetApp);
     }
 
     @Bean
     @Scope("prototype")
     public SettingsStage settingsStage(SettingsStage.OnSettingsCloseListener onSettingsCloseListener) throws IOException {
-        return new SettingsStage(applicationManager, resourceBundle(), onSettingsCloseListener);
+        return new SettingsStage(applicationManager, resourceBundle, onSettingsCloseListener);
     }
 
     @Bean
     @Scope("prototype")
     public SearchStage searchStage() throws IOException {
-        return new SearchStage(resourceBundle(), searchEngine);
+        return new SearchStage(resourceBundle, searchEngine);
     }
 }

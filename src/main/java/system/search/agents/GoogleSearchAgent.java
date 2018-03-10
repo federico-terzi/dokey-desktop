@@ -4,17 +4,17 @@ import system.model.ApplicationManager;
 import system.search.SearchEngine;
 import system.search.results.AbstractResult;
 import system.search.results.ApplicationResult;
+import system.search.results.GoogleSearchResult;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-public class ApplicationAgent extends AbstractAgent {
+public class GoogleSearchAgent extends AbstractAgent {
     private ApplicationManager applicationManager;
 
-    public ApplicationAgent(SearchEngine searchEngine, ResourceBundle resourceBundle, ApplicationManager applicationManager) {
+    public GoogleSearchAgent(SearchEngine searchEngine, ResourceBundle resourceBundle, ApplicationManager applicationManager) {
         super(searchEngine, resourceBundle);
 
         this.applicationManager = applicationManager;
@@ -27,12 +27,9 @@ public class ApplicationAgent extends AbstractAgent {
 
     @Override
     public List<? extends AbstractResult> getResults(String query) {
-        String lowerCaseQuery = query.toLowerCase();
-
-        List<ApplicationResult> results = applicationManager.getApplicationList().stream().filter(
-                application -> application.getName().toLowerCase().contains(lowerCaseQuery))
-                .map((application -> new ApplicationResult(searchEngine, resourceBundle, application)))
-                .collect(Collectors.toList());
+        GoogleSearchResult result = new GoogleSearchResult(searchEngine, resourceBundle, query);
+        ArrayList<GoogleSearchResult> results = new ArrayList<>(1);
+        results.add(result);
         return results;
     }
 }

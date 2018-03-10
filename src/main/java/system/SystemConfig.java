@@ -1,5 +1,6 @@
 package system;
 
+import app.MainApp;
 import app.search.stages.SearchStage;
 import engine.EngineServer;
 import engine.EngineService;
@@ -17,6 +18,7 @@ import system.exceptions.UnsupportedOperatingSystemException;
 import system.model.ApplicationManager;
 import system.search.SearchEngine;
 import system.search.agents.ApplicationAgent;
+import system.search.agents.GoogleSearchAgent;
 import system.section.SectionManager;
 import utils.IconManager;
 import utils.OSValidator;
@@ -24,12 +26,25 @@ import utils.OSValidator;
 import java.awt.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
  * Spring configuration class
  */
 @Configuration
 public class SystemConfig {
+    @Bean
+    public ResourceBundle resourceBundle() {
+        // Try to load the correct locale, if not found, fallback to English.
+        try {
+            return ResourceBundle.getBundle("lang.dokey", MainApp.locale);
+        }catch (MissingResourceException e) {
+            return ResourceBundle.getBundle("lang.dokey", Locale.ENGLISH); // Default fallback
+        }
+    }
+
     /**
      * @return the correct ApplicationManager instance based on the operating system.
      * @throws UnsupportedOperatingSystemException
@@ -115,12 +130,17 @@ public class SystemConfig {
 
     // SEARCH
     @Bean
-    public SearchEngine searchEngine() {
-        return new SearchEngine();
+    public SearchEngine searchEngine() throws UnsupportedOperatingSystemException {
+        return new SearchEngine(applicationManager());
     }
 
     @Bean
     public ApplicationAgent applicationAgent() throws UnsupportedOperatingSystemException {
-        return new ApplicationAgent(applicationManager());
+        return new ApplicationAgent(searchEngine(), resourceBundle(), applicationManager());
+    }
+
+    @Bean
+    public GoogleSearchAgent googleSearchAgent() throws UnsupportedOperatingSystemException {
+        return new GoogleSearchAgent(searchEngine(), resourceBundle(), applicationManager());
     }
 }

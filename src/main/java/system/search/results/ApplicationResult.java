@@ -2,13 +2,16 @@ package system.search.results;
 
 import javafx.scene.image.Image;
 import system.model.Application;
+import system.search.SearchEngine;
 
 import java.io.File;
+import java.util.ResourceBundle;
 
 public class ApplicationResult extends AbstractResult {
     private Application application;
 
-    public ApplicationResult(Application application) {
+    public ApplicationResult(SearchEngine searchEngine, ResourceBundle resourceBundle, Application application) {
+        super(searchEngine, resourceBundle);
         this.application = application;
     }
 
@@ -32,5 +35,10 @@ public class ApplicationResult extends AbstractResult {
                 }
             }).start();
         }
+    }
+
+    @Override
+    public void executeAction() {
+        searchEngine.getApplicationManager().openApplication(application.getExecutablePath());
     }
 }
