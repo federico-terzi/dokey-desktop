@@ -387,13 +387,10 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
                     @Override
                     public void run() {
                         if (searchStage == null || !searchStage.isShowing()) {
-                            // Focus workaround on windows
-                            if (appManager instanceof MSApplicationManager) {
-                                ((MSApplicationManager) appManager).enableFocusWorkaround();
-                            }
-
                             searchStage = context.getBean(SearchStage.class);
                             searchStage.show();
+
+                            appManager.focusDokey();
                         }else{
                             searchStage.hide();
                             searchStage = null;
