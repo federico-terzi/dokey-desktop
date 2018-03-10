@@ -1,33 +1,25 @@
-import app.notifications.NotificationFactory;
-import com.sun.jna.Library;
-import com.sun.jna.Native;
-import system.MAC.MACApplicationManager;
-import system.model.Application;
-import system.model.ApplicationManager;
-import system.model.Window;
+import com.tulskiy.keymaster.common.HotKey;
+import com.tulskiy.keymaster.common.HotKeyListener;
+import com.tulskiy.keymaster.common.MediaKey;
+import com.tulskiy.keymaster.common.Provider;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.List;
+import javax.swing.*;
 
 public class TestMain {
-    private interface CLibrary extends Library {
-        CLibrary INSTANCE = (CLibrary) Native.loadLibrary("c", CLibrary.class);
-        int getpid ();
-    }
-
     public static void main(String[] args) {
-        int pid = CLibrary.INSTANCE.getpid();
+        Provider provider = Provider.getCurrentProvider(false);
 
-        NotificationFactory.showNotification("Dokey: Connected", "Connected to bo");
+        provider.register(KeyStroke.getKeyStroke("alt SPACE"), new HotKeyListener() {
+            @Override
+            public void onHotKey(HotKey hotKey) {
+                System.out.println(hotKey);
+            }
+        });
 
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        while(true) {
+
         }
 
-        System.exit(0);
+        //System.exit(0);
     }
 }
