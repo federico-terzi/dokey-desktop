@@ -56,6 +56,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private EngineServer engineServer;
     private ADBManager adbManager;
     private SystemManager systemManager;
+    private DaemonMonitor daemonMonitor;
 
     private ServerSocket serverSocket;  // This is the server socket later used by the EngineServer
 
@@ -74,6 +75,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     // Status variables
     private boolean isEditorOpen = false;
     private boolean isSettingsOpen = false;
+    private int connectedClientsCount = 0;  // How many clients are currently connected
 
     // Argument parameters
     private static boolean isFirstStartup = true;  // If true, it means that the app is opened for the first time.
@@ -182,6 +184,9 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         // sets up the tray icon manager
         trayIconManager = context.getBean(TrayIconManager.class);
         javax.swing.SwingUtilities.invokeLater(() -> trayIconManager.initialize(MainApp.this));
+
+        // Get the DaemonMonitor
+        daemonMonitor = context.getBean(DaemonMonitor.class);
 
         // Initialize the application manager
         appManager = context.getBean(ApplicationManager.class);
@@ -451,6 +456,10 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_CONNECTED);
         trayIconManager.setTrayIconStatus(resourceBundle.getString("connected"));
 
+        // Wake up all daemons
+        daemonMonitor.wakeUp();
+        connectedClientsCount++;
+
         // Create the notification
         Platform.runLater(new Runnable() {
             @Override
@@ -474,6 +483,12 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         // Set the tray icon as ready
         trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_READY);
         trayIconManager.setTrayIconStatus(resourceBundle.getString("not_connected"));
+
+        // If there are no more devices connected, pause all the daemons
+        connectedClientsCount--;
+        if (connectedClientsCount==0) {
+            daemonMonitor.pause();
+        }
 
         // Create the notification
         Platform.runLater(new Runnable() {

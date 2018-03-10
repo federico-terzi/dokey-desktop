@@ -2,11 +2,12 @@ package system
 
 import system.model.Application
 import system.model.ApplicationManager
+import java.util.logging.Logger
 
 /**
  * Used to check periodically which app is in focus.
  */
-class ApplicationSwitchDaemon(val appManager : ApplicationManager) : Thread(){
+class ApplicationSwitchDaemon(val appManager : ApplicationManager, val daemonMonitor: DaemonMonitor) : Thread(){
 
     companion object {
         val DEFAULT_CHECK_INTERVAL : Long = 500 // How ofter check for app changes ( in milliseconds )
@@ -23,10 +24,26 @@ class ApplicationSwitchDaemon(val appManager : ApplicationManager) : Thread(){
 
     val listeners : MutableList<OnApplicationSwitchListener> = mutableListOf()
 
+    val LOG : Logger = Logger.getGlobal()
+
     override fun run() {
         var previousPID = -1
 
         while (!shouldStop) {
+            // Check if thread should be paused
+            daemonMonitor.lock.lock()
+            try {
+                while (daemonMonitor.shouldPause()) {
+                    LOG.info("APPLICATION SWITCH DAEMON PAUSED")
+                    // If the thread should be paused, block it until a new device is available
+                    daemonMonitor.notPaused.await()
+                }
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
+            } finally {
+                daemonMonitor.lock.unlock()
+            }
+
             val currentPID = appManager.activePID
 
             // Check for changes in the active pid

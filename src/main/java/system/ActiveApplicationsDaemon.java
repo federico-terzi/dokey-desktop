@@ -5,6 +5,7 @@ import system.model.ApplicationManager;
 
 import java.io.File;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -16,6 +17,7 @@ public class ActiveApplicationsDaemon extends Thread{
 
     private volatile boolean shouldStop = false;
     private ApplicationManager appManager;
+    private DaemonMonitor daemonMonitor;
 
     // The synchronized list that will hold the currently active apps
     private List<Application> activeApplications = Collections.synchronizedList(new ArrayList<>(100));
@@ -23,8 +25,12 @@ public class ActiveApplicationsDaemon extends Thread{
     // The list of apps that must be filtered out
     private Set<String> skippedApps = new HashSet<>();
 
-    public ActiveApplicationsDaemon(ApplicationManager appManager) {
+    // Create the logger
+    private final static Logger LOG = Logger.getGlobal();
+
+    public ActiveApplicationsDaemon(ApplicationManager appManager, DaemonMonitor daemonMonitor) {
         this.appManager = appManager;
+        this.daemonMonitor = daemonMonitor;
 
         // Initialize the apps that will be filtered out
         skippedApps.add("WinStore.App.exe");
@@ -43,6 +49,20 @@ public class ActiveApplicationsDaemon extends Thread{
     @Override
     public void run() {
         while (!shouldStop) {
+            // Check if thread should be paused
+            daemonMonitor.getLock().lock();
+            try {
+                while(daemonMonitor.shouldPause()) {
+                    LOG.info("ACTIVE APPLICATIONS DAEMON PAUSED");
+                    // If the thread should be paused, block it until a new device is available
+                    daemonMonitor.getNotPaused().await();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                daemonMonitor.getLock().unlock();
+            }
+
             try {
                 // Get the currently active apps, filtering out the skipped ones
                 List<Application> currentlyActive = appManager.getActiveApplications().stream().filter(

@@ -42,13 +42,18 @@ public class SystemConfig {
     }
 
     @Bean
+    public DaemonMonitor daemonMonitor() {
+        return new DaemonMonitor();
+    }
+
+    @Bean
     public ApplicationSwitchDaemon applicationSwitchDaemon() throws UnsupportedOperatingSystemException {
-        return new ApplicationSwitchDaemon(applicationManager());
+        return new ApplicationSwitchDaemon(applicationManager(), daemonMonitor());
     }
 
     @Bean
     public ActiveApplicationsDaemon activeApplicationsDaemon() throws UnsupportedOperatingSystemException {
-        return new ActiveApplicationsDaemon(applicationManager());
+        return new ActiveApplicationsDaemon(applicationManager(), daemonMonitor());
     }
 
     @Bean
