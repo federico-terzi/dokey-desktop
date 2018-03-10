@@ -62,6 +62,33 @@ public class MSApplicationManager extends ApplicationManager {
 
         // Check if powershell is enabled in this machine
         isPowerShellEnabled = checkPowerShellEnabled();
+
+        disableForegroundLock();
+    }
+
+    interface WUser32 extends User32 {
+        WUser32 INSTANCE = (WUser32) Native.loadLibrary("User32", WUser32.class, W32APIOptions.DEFAULT_OPTIONS);
+        int SystemParametersInfo(int uiAction, int uiParam, int pvParam, int fWinIni);
+    }
+
+    /**
+     * Disable foreground lock that can cause problems when opening an application
+     */
+    private void disableForegroundLock() {
+        // Change the foreground timeout
+        //win32gui.SystemParametersInfo(win32con.SPI_SETFOREGROUNDLOCKTIMEOUT, 0, win32con.SPIF_SENDWININICHANGE | win32con.SPIF_UPDATEINIFILE)
+        int res = WUser32.INSTANCE.SystemParametersInfo(0x2001, 0, 0, 0x01 | 0x02);
+    }
+
+    /**
+     * This function is used to attach the current thread to the foreground one
+     * to enable getting the focus.
+     */
+    public void enableFocusWorkaround() {
+        // Attach the thread to the foreground one
+        int foregroundThreadID = User32.INSTANCE.GetWindowThreadProcessId(User32.INSTANCE.GetForegroundWindow(), null);
+        int currentThreadID = Kernel32.INSTANCE.GetCurrentThreadId();
+        User32.INSTANCE.AttachThreadInput(new WinDef.DWORD(foregroundThreadID), new WinDef.DWORD(currentThreadID), true);
     }
 
     /**
@@ -101,6 +128,9 @@ public class MSApplicationManager extends ApplicationManager {
         // Try to open the application until a timeout occurs
         while ((System.currentTimeMillis()-initialTime) < OPEN_APPLICATION_TIMEOUT && !hasBeenOpened) {
             if (isApplicationOpen) {
+                // Attach to the foreground thread to gain focus rights
+                enableFocusWorkaround();
+
                 firstOpenWindow.focusWindow();
             }else{
                 // Get the requested application

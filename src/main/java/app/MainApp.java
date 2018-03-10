@@ -26,6 +26,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.stereotype.Service;
 import sun.plugin.services.PlatformService;
 import system.*;
+import system.MS.MSApplicationManager;
 import system.adb.ADBManager;
 import system.model.ApplicationManager;
 import system.section.SectionManager;
@@ -386,6 +387,11 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
                     @Override
                     public void run() {
                         if (searchStage == null || !searchStage.isShowing()) {
+                            // Focus workaround on windows
+                            if (appManager instanceof MSApplicationManager) {
+                                ((MSApplicationManager) appManager).enableFocusWorkaround();
+                            }
+
                             searchStage = context.getBean(SearchStage.class);
                             searchStage.show();
                         }else{
