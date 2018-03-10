@@ -19,6 +19,7 @@ import system.model.ApplicationManager;
 import system.search.SearchEngine;
 import system.search.agents.ApplicationAgent;
 import system.search.agents.GoogleSearchAgent;
+import system.search.agents.TerminalAgent;
 import system.section.SectionManager;
 import utils.IconManager;
 import utils.OSValidator;
@@ -142,5 +143,10 @@ public class SystemConfig {
     @Bean
     public GoogleSearchAgent googleSearchAgent() throws UnsupportedOperatingSystemException {
         return new GoogleSearchAgent(searchEngine(), resourceBundle(), applicationManager());
+    }
+
+    @Bean
+    public TerminalAgent terminalAgent() throws UnsupportedOperatingSystemException {
+        return new TerminalAgent(searchEngine(), resourceBundle(), applicationManager());
     }
 }

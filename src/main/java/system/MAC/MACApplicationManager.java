@@ -148,6 +148,23 @@ public class MACApplicationManager extends ApplicationManager {
     }
 
     @Override
+    public boolean openTerminalWithCommand(String command) {  // TODO
+        Runtime runtime = Runtime.getRuntime();
+
+        String escapedCommand = command.replaceAll("\"","\\\"");
+
+        try {
+            // Execute the process
+            Process proc = runtime.exec(new String[]{"osascript", "-e", "tell application \"Terminal\" to do script \""+escapedCommand+"\""});
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
     public boolean focusDokey() {
         // Translate the executable path to the app Path
         String executablePath = startupManager.getCurrentExecutablePath();

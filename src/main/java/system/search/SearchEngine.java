@@ -7,6 +7,7 @@ import system.model.ApplicationManager;
 import system.search.agents.AbstractAgent;
 import system.search.agents.ApplicationAgent;
 import system.search.agents.GoogleSearchAgent;
+import system.search.agents.TerminalAgent;
 import system.search.results.AbstractResult;
 import system.search.results.GoogleSearchResult;
 
@@ -40,6 +41,7 @@ public class SearchEngine implements ApplicationContextAware{
      */
     private void registerAgents() {
         agents.add(context.getBean(ApplicationAgent.class));
+        agents.add(context.getBean(TerminalAgent.class));
         agents.add(context.getBean(GoogleSearchAgent.class));
     }
 

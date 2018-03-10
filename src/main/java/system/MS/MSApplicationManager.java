@@ -274,6 +274,22 @@ public class MSApplicationManager extends ApplicationManager {
     }
 
     @Override
+    public boolean openTerminalWithCommand(String command) {
+        Runtime runtime = Runtime.getRuntime();
+
+        try {
+            // Execute the process
+            Process proc = runtime.exec(new String[]{"cmd", "/c", "start", "cmd.exe", "/k", command});
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    @Override
     public boolean focusDokey() {
         // Focus dokey by opening the currently active Dokey process
         return openApplication(startupManager.getCurrentExecutablePath(), false);

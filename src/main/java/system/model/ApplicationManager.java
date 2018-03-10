@@ -85,6 +85,13 @@ public abstract class ApplicationManager {
     public abstract boolean openWebLink(String url);
 
     /**
+     * Open the System terminal and execute the specified command.
+     * @param command the command to execute
+     * @return true if succeeded, false otherwise.
+     */
+    public abstract boolean openTerminalWithCommand(String command);
+
+    /**
      * Focus Dokey if open.
      * @return true if succeeded, false otherwise.
      */
