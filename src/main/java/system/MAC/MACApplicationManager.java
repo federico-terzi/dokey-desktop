@@ -148,10 +148,10 @@ public class MACApplicationManager extends ApplicationManager {
     }
 
     @Override
-    public boolean openTerminalWithCommand(String command) {  // TODO
+    public boolean openTerminalWithCommand(String command) {
         Runtime runtime = Runtime.getRuntime();
 
-        String escapedCommand = command.replaceAll("\"","\\\"");
+        String escapedCommand = command.replace("\"","\\\"");
 
         try {
             // Execute the process
