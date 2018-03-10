@@ -4,11 +4,9 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import system.model.ApplicationManager;
-import system.search.agents.AbstractAgent;
-import system.search.agents.ApplicationAgent;
-import system.search.agents.GoogleSearchAgent;
-import system.search.agents.TerminalAgent;
+import system.search.agents.*;
 import system.search.results.AbstractResult;
+import system.search.results.CalculatorResult;
 import system.search.results.GoogleSearchResult;
 
 import java.util.ArrayList;
@@ -41,6 +39,7 @@ public class SearchEngine implements ApplicationContextAware{
      */
     private void registerAgents() {
         agents.add(context.getBean(ApplicationAgent.class));
+        agents.add(context.getBean(CalculatorAgent.class));
         agents.add(context.getBean(TerminalAgent.class));
         agents.add(context.getBean(GoogleSearchAgent.class));
     }

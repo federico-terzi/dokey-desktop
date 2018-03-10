@@ -18,6 +18,7 @@ import system.exceptions.UnsupportedOperatingSystemException;
 import system.model.ApplicationManager;
 import system.search.SearchEngine;
 import system.search.agents.ApplicationAgent;
+import system.search.agents.CalculatorAgent;
 import system.search.agents.GoogleSearchAgent;
 import system.search.agents.TerminalAgent;
 import system.section.SectionManager;
@@ -148,5 +149,10 @@ public class SystemConfig {
     @Bean
     public TerminalAgent terminalAgent() throws UnsupportedOperatingSystemException {
         return new TerminalAgent(searchEngine(), resourceBundle(), applicationManager());
+    }
+
+    @Bean
+    public CalculatorAgent calculatorAgent() throws UnsupportedOperatingSystemException {
+        return new CalculatorAgent(searchEngine(), resourceBundle());
     }
 }
