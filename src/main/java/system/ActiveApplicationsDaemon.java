@@ -20,7 +20,7 @@ public class ActiveApplicationsDaemon extends Thread{
     private DaemonMonitor daemonMonitor;
 
     // The synchronized list that will hold the currently active apps
-    private List<Application> activeApplications = Collections.synchronizedList(new ArrayList<>(100));
+    private List<Application> activeApplications = new ArrayList<>();
 
     // The list of apps that must be filtered out
     private Set<String> skippedApps = new HashSet<>();
@@ -65,28 +65,12 @@ public class ActiveApplicationsDaemon extends Thread{
 
             try {
                 // Get the currently active apps, filtering out the skipped ones
-                List<Application> currentlyActive = appManager.getActiveApplications().stream().filter(
+                activeApplications = appManager.getActiveApplications().stream().filter(
                         (application -> {
                             File appFile = new File(application.getExecutablePath());
                             return !skippedApps.contains(appFile.getName());
                         })
                 ).collect(Collectors.toList());
-
-                // Add the app that are not yet present
-                for (Application app : currentlyActive) {
-                    if (!activeApplications.contains(app)) {
-                        activeApplications.add(app);
-                    }
-                }
-
-                // Remove those who are not present anymore
-                List<Application> toBeDeleted = new LinkedList<>();
-                for (Application app : activeApplications) {
-                    if (!currentlyActive.contains(app)) {
-                        toBeDeleted.add(app);
-                    }
-                }
-                activeApplications.removeAll(toBeDeleted);
 
                 Thread.sleep(CHECK_INTERVAL);
             } catch (InterruptedException e) {

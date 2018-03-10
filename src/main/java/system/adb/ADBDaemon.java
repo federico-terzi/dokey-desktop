@@ -10,7 +10,7 @@ import java.util.*;
  */
 public class ADBDaemon extends Thread{
 
-    public static final long CHECK_INTERVAL = 1000;  // Check interval
+    public static final long CHECK_INTERVAL = 2000;  // Check interval
 
     private List<DeviceInfo> devices;  // List of connected devices
 
