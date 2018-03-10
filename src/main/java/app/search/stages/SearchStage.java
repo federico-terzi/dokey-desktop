@@ -51,10 +51,11 @@ public class SearchStage extends Stage {
         // TODO: stage loose focus close event
 
         // Setup the list cells
+        Image fallback = new Image(SearchStage.class.getResourceAsStream("/assets/photo.png"), 32, 32, true, true);
         controller.resultListView.setCellFactory(new Callback<ListView<AbstractResult>, ListCell<AbstractResult>>() {
             @Override
             public ListCell<AbstractResult> call(ListView<AbstractResult> param) {
-                return new ResultListCell(resourceBundle);
+                return new ResultListCell(resourceBundle, fallback);
             }
         });
 
@@ -81,6 +82,12 @@ public class SearchStage extends Stage {
                 });
             });
         });
+        // If someone deselects the textfield, re select it
+        controller.queryTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == false) {
+                Platform.runLater(() -> controller.queryTextField.requestFocus());
+            }
+        });
 
         // Setup keyboard events
         controller.queryTextField.setOnKeyPressed(event -> {
@@ -103,6 +110,17 @@ public class SearchStage extends Stage {
                     result.executeAction();
                     close();
                 }
+            }else if (event.getCode() == KeyCode.ESCAPE) { // Close the search stage
+                close();
+            }
+        });
+
+        // Result list view click listener, execute the corresponding action
+        controller.resultListView.setOnMouseClicked(event -> {
+            AbstractResult result = (AbstractResult) controller.resultListView.getSelectionModel().getSelectedItem();
+            if (result != null) {
+                result.executeAction();
+                close();
             }
         });
 

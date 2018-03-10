@@ -5,6 +5,9 @@ import app.notifications.NotificationFactory;
 import app.search.stages.SearchStage;
 import app.stages.SettingsStage;
 import app.stages.InitializationStage;
+import com.tulskiy.keymaster.common.HotKey;
+import com.tulskiy.keymaster.common.HotKeyListener;
+import com.tulskiy.keymaster.common.Provider;
 import engine.EngineServer;
 import engine.EngineWorker;
 import javafx.application.Application;
@@ -21,11 +24,13 @@ import net.model.ServerInfo;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
+import sun.plugin.services.PlatformService;
 import system.*;
 import system.adb.ADBManager;
 import system.model.ApplicationManager;
 import system.section.SectionManager;
 
+import javax.swing.*;
 import java.io.*;
 import java.net.ServerSocket;
 import java.nio.channels.FileChannel;
@@ -63,8 +68,11 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
     private InitializationStage initializationStage;
     private EditorStage editorStage = null;
+    private SearchStage searchStage;
 
     private ResourceBundle resourceBundle;
+
+    private Provider provider = Provider.getCurrentProvider(true); // Used for global hotkeys
 
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
@@ -351,6 +359,9 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         // Register the global event listeners
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_EDITOR_REQUEST_EVENT, openEditorRequestListener);
 
+        // Register global hot keys
+        registerHotKeys();
+
         if (openEditor) {
             openEditor(null);
         }
@@ -359,8 +370,32 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         }
 
         // TODO: remove
-        SearchStage searchStage = context.getBean(SearchStage.class);
+        searchStage = context.getBean(SearchStage.class);
         searchStage.show();
+    }
+
+    /**
+     * Register Global hot keys
+     */
+    private void registerHotKeys() {
+        // Register search hot key
+        provider.register(KeyStroke.getKeyStroke("alt SPACE"), new HotKeyListener() {
+            @Override
+            public void onHotKey(HotKey hotKey) {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (searchStage == null || !searchStage.isShowing()) {
+                            searchStage = context.getBean(SearchStage.class);
+                            searchStage.show();
+                        }else{
+                            searchStage.hide();
+                            searchStage = null;
+                        }
+                    }
+                });
+            }
+        });
     }
 
     /**

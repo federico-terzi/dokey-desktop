@@ -12,6 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import system.search.results.AbstractResult;
+import system.search.results.GoogleSearchResult;
 
 import java.io.File;
 import java.util.ResourceBundle;
@@ -25,9 +26,11 @@ public class ResultListCell extends ListCell<AbstractResult> {
     private Label description = new Label();
 
     private ResourceBundle resourceBundle;
+    private Image fallback;
 
-    public ResultListCell(ResourceBundle resourceBundle) {
+    public ResultListCell(ResourceBundle resourceBundle, Image fallback) {
         this.resourceBundle = resourceBundle;
+        this.fallback = fallback;
 
         setPrefHeight(ROW_HEIGHT);
 
@@ -56,6 +59,9 @@ public class ResultListCell extends ListCell<AbstractResult> {
 
         title.setText(result.getTitle());
         description.setText(result.getDescription());
+
+        // Image fallback
+        image.setImage(fallback);
 
         // Request the image
         result.requestImage((resImage) -> {
