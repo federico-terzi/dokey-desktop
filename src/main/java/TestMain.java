@@ -1,25 +1,31 @@
-import com.tulskiy.keymaster.common.HotKey;
-import com.tulskiy.keymaster.common.HotKeyListener;
-import com.tulskiy.keymaster.common.MediaKey;
-import com.tulskiy.keymaster.common.Provider;
 
-import javax.swing.*;
+import com.sun.jna.*;
+import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.ptr.PointerByReference;
+import org.apache.commons.lang3.time.StopWatch;
+import system.MAC.MACApplicationManager;
+import system.MAC.MACUtils;
+import system.model.Application;
+
+import java.util.List;
+
 
 public class TestMain {
     public static void main(String[] args) {
-        Provider provider = Provider.getCurrentProvider(false);
+        MACApplicationManager macApplicationManager = new MACApplicationManager(null);
 
-        provider.register(KeyStroke.getKeyStroke("alt SPACE"), new HotKeyListener() {
-            @Override
-            public void onHotKey(HotKey hotKey) {
-                System.out.println(hotKey);
-            }
-        });
+        StopWatch timer2 = new StopWatch();
+        timer2.start();
+        List<Application> apps2 = macApplicationManager.getActiveApplicationsWithApplescript();
+        timer2.stop();
+        System.out.println("APPLE: "+timer2.getTime());
 
-        while(true) {
+        StopWatch timer = new StopWatch();
+        timer.start();
+        List<Application> apps1 = macApplicationManager.getActiveApplications();
+        timer.stop();
+        System.out.println("NATIVE: "+timer.getTime());
 
-        }
-
-        //System.exit(0);
+        System.exit(0);
     }
 }

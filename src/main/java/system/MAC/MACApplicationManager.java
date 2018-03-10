@@ -1,5 +1,6 @@
 package system.MAC;
 
+import com.sun.jna.Pointer;
 import system.CacheManager;
 import system.ResourceUtils;
 import system.StartupManager;
@@ -272,6 +273,57 @@ public class MACApplicationManager extends ApplicationManager {
 
     @Override
     public List<Application> getActiveApplications() {
+        List<Application> apps = new ArrayList<>();
+
+        Pointer nsWorkspace = MACUtils.lookUpClass("NSWorkspace");
+        Pointer sharedWorkspace = MACUtils.message(nsWorkspace, "sharedWorkspace");
+        Pointer runningApplications = MACUtils.message(sharedWorkspace, "runningApplications");
+
+        // Get objects count
+        long count = MACUtils.messageLong(runningApplications, "count");
+
+        Pointer enumerator = MACUtils.message(runningApplications, "objectEnumerator");
+
+        // Cycle through
+        for (int i = 0; i<count; i++) {
+            Pointer nextObj = MACUtils.message(enumerator, "nextObject");
+            long activationPolicy = MACUtils.messageLong(nextObj, "activationPolicy");
+
+            // Make sure they are active
+            if (activationPolicy == 0) { // NSApplicationActivationPolicyRegular
+                // Get the app path
+                Pointer executableURL = MACUtils.message(nextObj, "executableURL");
+                Pointer pathPtr = MACUtils.message(executableURL, "path");
+                Pointer utfPath = MACUtils.message(pathPtr, "UTF8String");
+                String path = utfPath.getString(0);
+
+                // Convert the executable path to app path
+                String appPath = getAppPathFromExecutablePath(path);
+
+                if (appPath == null)
+                    continue;
+
+                Application app = null;
+
+                // Try to get it from the applicationMap
+                if (applicationMap.containsKey(appPath)){
+                    app = applicationMap.get(appPath);
+                }
+
+                // If not found on the map, dynamically analyze the app.
+                app = addApplicationFromAppPath(appPath);
+
+                if (app != null && !apps.contains(app)) {
+                    apps.add(app);
+                }
+            }
+        }
+
+        return apps;
+    }
+
+    @Deprecated
+    public List<Application> getActiveApplicationsWithApplescript() {
         String scriptPath = ResourceUtils.getResource("/applescripts/getActiveApplications.scpt").getAbsolutePath();
         Runtime runtime = Runtime.getRuntime();
 

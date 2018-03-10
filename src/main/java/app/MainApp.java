@@ -24,7 +24,6 @@ import net.model.ServerInfo;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
-import sun.plugin.services.PlatformService;
 import system.*;
 import system.MS.MSApplicationManager;
 import system.adb.ADBManager;
@@ -390,7 +389,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
                             searchStage = context.getBean(SearchStage.class);
                             searchStage.show();
 
-                            appManager.focusDokey();
+                            new Thread(() -> appManager.focusDokey()).start();
                         }else{
                             searchStage.hide();
                             searchStage = null;
