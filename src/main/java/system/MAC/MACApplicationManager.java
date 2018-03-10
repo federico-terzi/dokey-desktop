@@ -234,11 +234,57 @@ public class MACApplicationManager extends ApplicationManager {
     }
 
     /**
-     * Get the current active application by using the "getActiveApplication" mac executable.
+     * Get the current active application by using objective c runtime bindings.
      * @return the active Application
      */
     @Override
     public Application getActiveApplication() {
+        Pointer nsWorkspace = MACUtils.lookUpClass("NSWorkspace");
+        Pointer sharedWorkspace = MACUtils.message(nsWorkspace, "sharedWorkspace");
+        Pointer runningApplications = MACUtils.message(sharedWorkspace, "runningApplications");
+
+        // Get objects count
+        long count = MACUtils.messageLong(runningApplications, "count");
+
+        Pointer enumerator = MACUtils.message(runningApplications, "objectEnumerator");
+
+        // Cycle through
+        for (int i = 0; i<count; i++) {
+            Pointer nextObj = MACUtils.message(enumerator, "nextObject");
+            long isActive = MACUtils.messageLong(nextObj, "isActive");
+
+            // Make sure find the active one
+            if (isActive == 1) { // NSApplicationActivationPolicyRegular
+                // Get the app path
+                Pointer executableURL = MACUtils.message(nextObj, "executableURL");
+                Pointer pathPtr = MACUtils.message(executableURL, "path");
+                Pointer utfPath = MACUtils.message(pathPtr, "UTF8String");
+                String executablePath = utfPath.getString(0);
+
+                // Convert the executable path to the .app bundle path
+                String appPath = getAppPathFromExecutablePath(executablePath);
+
+                // Get the application
+
+                // Try to get it from the applicationMap
+                if (applicationMap.containsKey(appPath)){
+                    return applicationMap.get(appPath);
+                }
+
+                // If not found on the map, dynamically analyze the app.
+                return addApplicationFromAppPath(appPath);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the current active application by using the "getActiveApplication" mac executable.
+     * @return the active Application
+     */
+    @Deprecated
+    public Application getActiveApplicationWithExternalCall() {
         String scriptPath = ResourceUtils.getResource("/mac/getActiveApplication").getAbsolutePath();
         Runtime runtime = Runtime.getRuntime();
 
@@ -440,10 +486,41 @@ public class MACApplicationManager extends ApplicationManager {
     }
 
     /**
+     * Get the current active pid by using objective c runtime bindings.
      * @return PID of the current active application. -1 is returned in case of errors.
      */
     @Override
     public synchronized int getActivePID() {
+        Pointer nsWorkspace = MACUtils.lookUpClass("NSWorkspace");
+        Pointer sharedWorkspace = MACUtils.message(nsWorkspace, "sharedWorkspace");
+        Pointer runningApplications = MACUtils.message(sharedWorkspace, "runningApplications");
+
+        // Get objects count
+        long count = MACUtils.messageLong(runningApplications, "count");
+
+        Pointer enumerator = MACUtils.message(runningApplications, "objectEnumerator");
+
+        // Cycle through
+        for (int i = 0; i<count; i++) {
+            Pointer nextObj = MACUtils.message(enumerator, "nextObject");
+            long isActive = MACUtils.messageLong(nextObj, "isActive");
+
+            // Make sure find the active one
+            if (isActive == 1) { // NSApplicationActivationPolicyRegular
+                // Get the PID
+                long pid = MACUtils.messageLong(nextObj, "processIdentifier");
+                return (int) pid;
+            }
+        }
+
+        return -1;
+    }
+
+    /**
+     * @return PID of the current active application. -1 is returned in case of errors.
+     */
+    @Deprecated
+    public synchronized int getActivePIDWithExternalCall() {
         String scriptPath = ResourceUtils.getResource("/mac/getActiveApplication").getAbsolutePath();
         Runtime runtime = Runtime.getRuntime();
 

@@ -14,17 +14,30 @@ public class TestMain {
     public static void main(String[] args) {
         MACApplicationManager macApplicationManager = new MACApplicationManager(null);
 
-        StopWatch timer2 = new StopWatch();
-        timer2.start();
-        List<Application> apps2 = macApplicationManager.getActiveApplicationsWithApplescript();
-        timer2.stop();
-        System.out.println("APPLE: "+timer2.getTime());
+        double t1 = 0;
+        double t2 = 0;
 
-        StopWatch timer = new StopWatch();
-        timer.start();
-        List<Application> apps1 = macApplicationManager.getActiveApplications();
-        timer.stop();
-        System.out.println("NATIVE: "+timer.getTime());
+        int tries = 100;
+
+        for (int i = 0; i< tries; i++) {
+            StopWatch timer = new StopWatch();
+            timer.start();
+            List<Application> apps1 = macApplicationManager.getActiveApplications();
+            timer.stop();
+            t1+=timer.getTime();
+
+            StopWatch timer2 = new StopWatch();
+            timer2.start();
+            List<Application> apps2 = macApplicationManager.getActiveApplicationsWithApplescript();
+            timer2.stop();
+            t2+=timer2.getTime();
+
+        }
+        t1 = t1/tries;
+        t2 = t2/tries;
+
+        System.out.println("NATIVE: "+t1);
+        System.out.println("APPLE: "+t2);
 
         System.exit(0);
     }

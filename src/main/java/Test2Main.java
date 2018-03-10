@@ -1,51 +1,41 @@
-import app.search.stages.SearchStage;
-import com.tulskiy.keymaster.common.HotKey;
-import com.tulskiy.keymaster.common.HotKeyListener;
-import com.tulskiy.keymaster.common.Provider;
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.stage.Stage;
 
-import javax.swing.*;
+import com.sun.jna.Pointer;
+import system.MAC.MACUtils;
+import system.model.Application;
+
 import java.io.IOException;
 
-public class Test2Main extends Application{
-    private Provider provider;
-    private SearchStage stage;
+public class Test2Main{
 
     public static void main(String[] args) throws IOException {
-        launch(args);
-    }
+        Pointer nsWorkspace = MACUtils.lookUpClass("NSWorkspace");
+        Pointer sharedWorkspace = MACUtils.message(nsWorkspace, "sharedWorkspace");
+        Pointer runningApplications = MACUtils.message(sharedWorkspace, "runningApplications");
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        Platform.setImplicitExit(false);
+        // Get objects count
+        long count = MACUtils.messageLong(runningApplications, "count");
 
-        stage = new SearchStage(null, null);
-        stage.show();
+        Pointer enumerator = MACUtils.message(runningApplications, "objectEnumerator");
 
-        provider = Provider.getCurrentProvider(false);
+        // Cycle through
+        for (int i = 0; i<count; i++) {
+            Pointer nextObj = MACUtils.message(enumerator, "nextObject");
+            long isActive = MACUtils.messageLong(nextObj, "isActive");
 
-        provider.register(KeyStroke.getKeyStroke("alt SPACE"), new HotKeyListener() {
-            @Override
-            public void onHotKey(HotKey hotKey) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (stage == null) {
-                            try {
-                                stage = new SearchStage(null, null);
-                                stage.show();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }else{
-                            stage.hide();
-                            stage = null;
-                        }
-                    }
-                });
+            // Make sure find the active one
+            if (isActive == 1) { // NSApplicationActivationPolicyRegular
+                // Get the app path
+                Pointer executableURL = MACUtils.message(nextObj, "executableURL");
+                Pointer pathPtr = MACUtils.message(executableURL, "path");
+                Pointer utfPath = MACUtils.message(pathPtr, "UTF8String");
+                String path = utfPath.getString(0);
+
+                // Get the PID
+                long pid = MACUtils.messageLong(nextObj, "processIdentifier");
+
+                System.out.println(path);
+                System.out.println(pid);
             }
-        });
+        }
     }
 }
