@@ -2,6 +2,7 @@ package app;
 
 import app.editor.stages.EditorStage;
 import app.notifications.NotificationFactory;
+import app.search.stages.SearchStage;
 import app.stages.SettingsStage;
 import app.stages.InitializationStage;
 import engine.EngineServer;
@@ -356,6 +357,10 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         if (openSettings) {
             openSettings();
         }
+
+        // TODO: remove
+        SearchStage searchStage = context.getBean(SearchStage.class);
+        searchStage.show();
     }
 
     /**

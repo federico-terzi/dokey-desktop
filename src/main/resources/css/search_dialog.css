@@ -4,3 +4,19 @@
     font-family: Roboto;
     src: url('../font/Roboto-Bold.ttf');
 }
+
+.root {
+    -fx-background-color: -primaryTextColor;
+    -fx-background-radius: 10px;
+    -fx-opacity: 0.8;
+}
+
+.text-field {
+    -fx-background-color: transparent;
+    -fx-font-family: Robotosdfsd;
+    -fx-font-size: 24;
+}
+
+.list-view {
+    -fx-background-color: transparent;
+}

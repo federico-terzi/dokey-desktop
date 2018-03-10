@@ -1,5 +1,6 @@
 package system;
 
+import app.search.stages.SearchStage;
 import engine.EngineServer;
 import engine.EngineService;
 import engine.EngineWorker;
@@ -14,6 +15,8 @@ import system.MS.MSApplicationManager;
 import system.MS.MSSystemManager;
 import system.exceptions.UnsupportedOperatingSystemException;
 import system.model.ApplicationManager;
+import system.search.SearchEngine;
+import system.search.agents.ApplicationAgent;
 import system.section.SectionManager;
 import utils.IconManager;
 import utils.OSValidator;
@@ -108,5 +111,16 @@ public class SystemConfig {
     @Bean
     public WebLinkResolver webLinkResolver() {
         return new WebLinkResolver(iconManager());
+    }
+
+    // SEARCH
+    @Bean
+    public SearchEngine searchEngine() {
+        return new SearchEngine();
+    }
+
+    @Bean
+    public ApplicationAgent applicationAgent() throws UnsupportedOperatingSystemException {
+        return new ApplicationAgent(applicationManager());
     }
 }

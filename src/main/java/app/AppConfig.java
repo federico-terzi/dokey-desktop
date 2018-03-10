@@ -1,6 +1,7 @@
 package app;
 
 import app.editor.stages.EditorStage;
+import app.search.stages.SearchStage;
 import app.stages.SettingsStage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +12,7 @@ import system.ShortcutIconManager;
 import system.SystemConfig;
 import system.WebLinkResolver;
 import system.model.ApplicationManager;
+import system.search.SearchEngine;
 import system.section.SectionManager;
 
 import java.io.IOException;
@@ -28,6 +30,7 @@ public class AppConfig {
     @Autowired private SectionManager sectionManager;
     @Autowired private ShortcutIconManager shortcutIconManager;
     @Autowired private WebLinkResolver webLinkResolver;
+    @Autowired private SearchEngine searchEngine;
 
     @Bean
     public TrayIconManager trayIconManager()
@@ -56,5 +59,11 @@ public class AppConfig {
     @Scope("prototype")
     public SettingsStage settingsStage(SettingsStage.OnSettingsCloseListener onSettingsCloseListener) throws IOException {
         return new SettingsStage(applicationManager, resourceBundle(), onSettingsCloseListener);
+    }
+
+    @Bean
+    @Scope("prototype")
+    public SearchStage searchStage() throws IOException {
+        return new SearchStage(resourceBundle(), searchEngine);
     }
 }
