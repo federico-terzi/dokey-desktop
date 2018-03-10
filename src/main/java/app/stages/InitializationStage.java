@@ -1,7 +1,6 @@
 package app.stages;
 
-import app.MainApp;
-import app.UIControllers.InitializationController;
+import app.controllers.InitializationController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,7 +10,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import system.ResourceUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ResourceBundle;
 

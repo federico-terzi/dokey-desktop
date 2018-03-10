@@ -9,7 +9,7 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="BOTTOM_LEFT" prefHeight="316.0" prefWidth="500.0" styleClass="intro-container" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.UIControllers.InitializationController">
+<VBox alignment="BOTTOM_LEFT" prefHeight="316.0" prefWidth="500.0" styleClass="intro-container" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controllers.InitializationController">
   <children>
       <Label styleClass="logo-label" text="Dokey" textFill="WHITE">
          <VBox.margin>

@@ -1,10 +1,7 @@
-package app.UIControllers;
+package app.controllers;
 
-import app.editor.listcells.ApplicationListCell;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.util.Callback;
-import system.model.Application;
 
 import java.net.URL;
 import java.util.ResourceBundle;

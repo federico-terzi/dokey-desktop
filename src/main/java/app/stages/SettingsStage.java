@@ -1,8 +1,7 @@
 package app.stages;
 
-import app.UIControllers.SettingsController;
+import app.controllers.SettingsController;
 import app.editor.listcells.ApplicationListCell;
-import app.editor.stages.AppSelectDialogStage;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
