@@ -79,6 +79,26 @@ public class SectionManager {
         return getSectionFromFile(sectionFile);
     }
 
+    /**
+     * Get the Section based on the StringID
+     * @param sectionID the StringID of the required section
+     * @return the Section if found, null otherwise.
+     */
+    public Section getSectionFromID(String sectionID) {
+        Section section = null;
+
+        // Generate the section based on the required sectionID
+        if (sectionID.equals("launchpad")) {  // LAUNCHPAD
+            section = getLaunchpadSection();
+        }else if (sectionID.equals("system")) {  // SYSTEM
+            section = getSystemSection();
+        } else {  // APP SHORTCUT SECTION
+            section = getShortcutSection(sectionID);
+        }
+
+        return section;
+    }
+
     public synchronized boolean saveSection(Section section) {
         File sectionFile = null;
 

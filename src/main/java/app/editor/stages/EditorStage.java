@@ -305,6 +305,11 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         Task sectionTask = new Task() {
             @Override
             protected Object call() throws Exception {
+                // If the targetSection is specified, make sure the required section exists.
+                if (targetSectionID != null) {
+                    sectionManager.getSectionFromID(targetSectionID);  // This will create the section if it doesn't exist.
+                }
+
                 // Get all the sections
                 sections = sectionManager.getSections();
 
@@ -345,10 +350,18 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         if (targetApp == null)
             return;
 
+        boolean isFound = false;  // Becomes true if the requested app is present in the list
         for (Section sec : controller.getSectionsListView().getItems()) {
             if (sec.getStringID() != null && sec.getStringID().equals(targetApp)) {
                 controller.getSectionsListView().getSelectionModel().select(sec);
+                isFound = true;
+                break;
             }
+        }
+
+        // If the app is not found in the list, request to refresh the list ( also creates the section )
+        if (!isFound) {
+            requestSectionList(targetApp);
         }
     }
 
