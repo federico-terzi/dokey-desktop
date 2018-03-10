@@ -121,13 +121,6 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
         // load the applications
         loadApplications();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                provider = Provider.getCurrentProvider(true);
-            }
-        }).start();
     }
 
     /**
@@ -266,6 +259,17 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 //                openSettings();
 //            }
 //        });
+
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            provider = Provider.getCurrentProvider(true);
+
+            provider.register(KeyStroke.getKeyStroke("alt SPACE"), new HotKeyListener() {
+                @Override
+                public void onHotKey(HotKey hotKey) {
+                    Platform.runLater(() -> openEditor());
+                }
+            });
+        });
     }
 
     /**
