@@ -8,7 +8,7 @@
 .root {
     -fx-background-color: -primaryTextColor;
     -fx-background-radius: 10px;
-    -fx-opacity: 0.9;
+    -fx-opacity: 1;
 }
 
 .text-field {
