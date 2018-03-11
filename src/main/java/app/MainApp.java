@@ -368,10 +368,6 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         if (openSettings) {
             openSettings();
         }
-
-        // TODO: remove
-        searchStage = context.getBean(SearchStage.class);
-        searchStage.show();
     }
 
     /**
@@ -386,10 +382,10 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
                     @Override
                     public void run() {
                         if (searchStage == null || !searchStage.isShowing()) {
+                            new Thread(() -> appManager.focusDokey()).start();
+
                             searchStage = context.getBean(SearchStage.class);
                             searchStage.show();
-
-                            new Thread(() -> appManager.focusDokey()).start();
                         }else{
                             searchStage.hide();
                             searchStage = null;

@@ -147,7 +147,7 @@ jfxRun.dependsOn copyAdditionalFilesNative
 // for all available settings please look at the class "JavaFXGradlePluginExtension"
 jfx {
     verbose = true
-    mainClass = "app.MainApp"
+    mainClass = "app.MainLauncher"
 
     appName = "Dokey"
     vendor = "Dokey"
