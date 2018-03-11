@@ -167,14 +167,29 @@ public class MACApplicationManager extends ApplicationManager {
 
     @Override
     public boolean focusDokey() {
-        // Translate the executable path to the app Path
-        String executablePath = startupManager.getCurrentExecutablePath();
-        if (executablePath == null)
-            return false;
+        int dokeyPid = startupManager.getPID();
 
-        // Open the application
-        String appPath = getAppPathFromExecutablePath(executablePath);
-        return openApplication(appPath);
+        Pointer nsWorkspace = MACUtils.lookUpClass("NSWorkspace");
+        Pointer sharedWorkspace = MACUtils.message(nsWorkspace, "sharedWorkspace");
+        Pointer runningApplications = MACUtils.message(sharedWorkspace, "runningApplications");
+
+        // Get objects count
+        long count = MACUtils.messageLong(runningApplications, "count");
+        Pointer enumerator = MACUtils.message(runningApplications, "objectEnumerator");
+
+        // Cycle through
+        for (int i = 0; i<count; i++) {
+            Pointer nextObj = MACUtils.message(enumerator, "nextObject");
+            // Get the PID
+            long pid = MACUtils.messageLong(nextObj, "processIdentifier");
+
+            if (pid == dokeyPid) {
+                MACUtils.message(nextObj, "activateWithOptions:", 2);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -263,6 +278,9 @@ public class MACApplicationManager extends ApplicationManager {
 
                 // Convert the executable path to the .app bundle path
                 String appPath = getAppPathFromExecutablePath(executablePath);
+
+                if (appPath == null)
+                    return null;
 
                 // Get the application
 

@@ -22,7 +22,7 @@ int main(int argc, char const *argv[])
 		}
 	}
 
-	printf("%d\n", NSApplicationActivationPolicyRegular);
+	printf("%d\n", NSApplicationActivateIgnoringOtherApps);
 
 	return 0;
 }

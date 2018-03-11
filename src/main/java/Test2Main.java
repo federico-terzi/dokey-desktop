@@ -20,21 +20,11 @@ public class Test2Main{
         // Cycle through
         for (int i = 0; i<count; i++) {
             Pointer nextObj = MACUtils.message(enumerator, "nextObject");
-            long isActive = MACUtils.messageLong(nextObj, "isActive");
+            // Get the PID
+            long pid = MACUtils.messageLong(nextObj, "processIdentifier");
 
-            // Make sure find the active one
-            if (isActive == 1) { // NSApplicationActivationPolicyRegular
-                // Get the app path
-                Pointer executableURL = MACUtils.message(nextObj, "executableURL");
-                Pointer pathPtr = MACUtils.message(executableURL, "path");
-                Pointer utfPath = MACUtils.message(pathPtr, "UTF8String");
-                String path = utfPath.getString(0);
-
-                // Get the PID
-                long pid = MACUtils.messageLong(nextObj, "processIdentifier");
-
-                System.out.println(path);
-                System.out.println(pid);
+            if (pid == 246) {
+                MACUtils.message(nextObj, "activateWithOptions:", 2);
             }
         }
     }

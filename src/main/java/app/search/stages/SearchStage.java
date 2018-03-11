@@ -106,10 +106,7 @@ public class SearchStage extends Stage {
                 event.consume();
             }else if (event.getCode() == KeyCode.ENTER) {  // Execute action and close the stage
                 AbstractResult result = (AbstractResult) controller.resultListView.getSelectionModel().getSelectedItem();
-                if (result != null) {
-                    result.executeAction();
-                    close();
-                }
+                executeSearch(result);
             }else if (event.getCode() == KeyCode.ESCAPE) { // Close the search stage
                 close();
             }
@@ -118,13 +115,19 @@ public class SearchStage extends Stage {
         // Result list view click listener, execute the corresponding action
         controller.resultListView.setOnMouseClicked(event -> {
             AbstractResult result = (AbstractResult) controller.resultListView.getSelectionModel().getSelectedItem();
-            if (result != null) {
-                result.executeAction();
-                close();
-            }
+            executeSearch(result);
         });
 
         Platform.runLater(() -> sizeToScene());
         Platform.runLater(() -> controller.queryTextField.requestFocus());
+    }
+
+    private void executeSearch(AbstractResult result) {
+        if (result != null) {
+            new Thread(() -> {
+                result.executeAction();
+            }).start();
+            close();
+        }
     }
 }
