@@ -31,7 +31,7 @@ public class GoogleSearchResult extends AbstractResult {
         if (listener != null) {
             new Thread(() -> {
                 Image appImage = new Image(GoogleSearchResult.class.getResourceAsStream("/assets/google.png"), 32, 32, true, true);
-                listener.onImageAvailable(appImage);
+                listener.onImageAvailable(appImage, null);
             }).start();
         }
     }

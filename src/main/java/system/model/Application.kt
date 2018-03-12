@@ -1,6 +1,7 @@
 package system.model
 
 import org.apache.commons.codec.digest.DigestUtils
+import system.ResourceUtils
 import java.io.File
 
 /**
@@ -39,6 +40,18 @@ abstract class Application : Comparable<Application>{
      */
     fun getHashID() : String {
         return getHashIDForExecutablePath(executablePath)
+    }
+
+    /**
+     * Return the icon file associated with the application if available,
+     * the fallback image otherwise.
+     */
+    fun getIconFile() : File {
+        if (iconPath == null || !File(iconPath).isFile) {
+            return ResourceUtils.getResource("/assets/photo.png")  // Default Fallback
+        }else{
+            return File(iconPath)  // Application icon
+        }
     }
 
     override fun toString(): String {

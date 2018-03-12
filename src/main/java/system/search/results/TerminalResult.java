@@ -28,7 +28,7 @@ public class TerminalResult extends AbstractResult {
         if (listener != null) {
             new Thread(() -> {
                 Image appImage = new Image(TerminalResult.class.getResourceAsStream("/assets/right.png"), 32, 32, true, true);
-                listener.onImageAvailable(appImage);
+                listener.onImageAvailable(appImage, null);
             }).start();
         }
     }

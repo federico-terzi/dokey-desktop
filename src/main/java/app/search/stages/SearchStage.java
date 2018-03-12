@@ -23,12 +23,19 @@ import system.search.SearchEngine;
 import system.search.results.AbstractResult;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SearchStage extends Stage {
     private SearchController controller;
     private SearchEngine searchEngine;
+
+    /**
+     * This map is used to store image caches
+     */
+    private ConcurrentHashMap<String, Image> imageCacheMap = new ConcurrentHashMap<>();
 
     public SearchStage(ResourceBundle resourceBundle, SearchEngine searchEngine) throws IOException {
         this.searchEngine = searchEngine;
@@ -55,7 +62,7 @@ public class SearchStage extends Stage {
         controller.resultListView.setCellFactory(new Callback<ListView<AbstractResult>, ListCell<AbstractResult>>() {
             @Override
             public ListCell<AbstractResult> call(ListView<AbstractResult> param) {
-                return new ResultListCell(resourceBundle, fallback);
+                return new ResultListCell(resourceBundle, fallback, imageCacheMap);
             }
         });
 

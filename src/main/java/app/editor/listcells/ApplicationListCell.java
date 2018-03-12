@@ -52,10 +52,9 @@ public class ApplicationListCell extends ListCell<Application> {
 
     private void addContent(Application application) {
         setText(null);
-        if (application.getIconPath() != null) {
-            Image appImage = new Image(new File(application.getIconPath()).toURI().toString(), 32, 32, true, true);
-            image.setImage(appImage);
-        }
+
+        Image appImage = new Image(application.getIconFile().toURI().toString(), 32, 32, true, true);
+        image.setImage(appImage);
 
         name.setText(application.getName());
         path.setText(application.getExecutablePath());

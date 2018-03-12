@@ -31,7 +31,7 @@ public class CalculatorResult extends AbstractResult {
         if (listener != null) {
             new Thread(() -> {
                 Image appImage = new Image(CalculatorResult.class.getResourceAsStream("/assets/light.png"), 32, 32, true, true);
-                listener.onImageAvailable(appImage);
+                listener.onImageAvailable(appImage, null);
             }).start();
         }
     }

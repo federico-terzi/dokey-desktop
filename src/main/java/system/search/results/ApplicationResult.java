@@ -30,11 +30,16 @@ public class ApplicationResult extends AbstractResult {
         if (listener != null) {
             new Thread(() -> {
                 if (application.getIconPath() != null) {
-                    Image appImage = new Image(new File(application.getIconPath()).toURI().toString(), 32, 32, true, true);
-                    listener.onImageAvailable(appImage);
+                    Image appImage = new Image(application.getIconFile().toURI().toString(), 32, 32, true, true);
+                    listener.onImageAvailable(appImage, application.getHashID());
                 }
             }).start();
         }
+    }
+
+    @Override
+    public String getHash() {
+        return this.application.getHashID();
     }
 
     @Override

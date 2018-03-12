@@ -16,6 +16,7 @@ import system.search.results.GoogleSearchResult;
 
 import java.io.File;
 import java.util.ResourceBundle;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ResultListCell extends ListCell<AbstractResult> {
     public static final int ROW_HEIGHT = 48;
@@ -27,10 +28,12 @@ public class ResultListCell extends ListCell<AbstractResult> {
 
     private ResourceBundle resourceBundle;
     private Image fallback;
+    private ConcurrentHashMap<String, Image> imageCacheMap;
 
-    public ResultListCell(ResourceBundle resourceBundle, Image fallback) {
+    public ResultListCell(ResourceBundle resourceBundle, Image fallback, ConcurrentHashMap<String, Image> imageCacheMap) {
         this.resourceBundle = resourceBundle;
         this.fallback = fallback;
+        this.imageCacheMap = imageCacheMap;
 
         setPrefHeight(ROW_HEIGHT);
 
@@ -60,13 +63,24 @@ public class ResultListCell extends ListCell<AbstractResult> {
         title.setText(result.getTitle());
         description.setText(result.getDescription());
 
-        // Image fallback
-        image.setImage(fallback);
+        // If the image is available in the cache, display it immediately
+        // If not, show the fallback image and request it.
+        String resultHash = result.getHash();
+        if (resultHash != null && imageCacheMap.containsKey(resultHash)) {
+           image.setImage(imageCacheMap.get(resultHash));
+        }else{
+            image.setImage(fallback);  // Image fallback
 
-        // Request the image
-        result.requestImage((resImage) -> {
-            image.setImage(resImage);
-        });
+            // Request the image
+            result.requestImage((resImage, hashID) -> {
+                image.setImage(resImage);
+
+                // Update the cache
+                if (hashID != null) {
+                    imageCacheMap.put(hashID, resImage);
+                }
+            });
+        }
 
         setGraphic(grid);
     }

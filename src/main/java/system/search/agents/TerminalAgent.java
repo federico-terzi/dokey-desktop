@@ -21,7 +21,7 @@ public class TerminalAgent extends AbstractAgent {
 
     @Override
     public boolean validate(String query) {
-        return query.startsWith(":");
+        return query.startsWith(">");
     }
 
     @Override

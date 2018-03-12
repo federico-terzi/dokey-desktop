@@ -22,7 +22,15 @@ public abstract class AbstractResult {
     public abstract void requestImage(OnImageAvailableListener listener);
 
     public interface OnImageAvailableListener {
-        void onImageAvailable(Image image);
+        void onImageAvailable(Image image, String hashID);
+    }
+
+    /**
+     * Get the hash for the result or null if is is not cache-able.
+     * @return the Hash identifier of the current result if cache-able, null otherwise.
+     */
+    public String getHash() {
+        return null;
     }
 
     /**
