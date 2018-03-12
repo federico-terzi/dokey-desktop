@@ -1,19 +1,51 @@
 @import "colors.css";
 
 @font-face {
-    font-family: Roboto;
-    src: url('../font/Roboto-Bold.ttf');
+    src: url('../font/NunitoSans-Light.ttf');
+}
+
+@font-face {
+    src: url('../font/NunitoSans-Bold.ttf');
 }
 
 .root {
     -fx-background-color: -primaryTextColor;
-    -fx-background-radius: 10px;
+    -fx-background-radius: 3px;
     -fx-opacity: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0, 0.15), 20, 0, 4, 4);
+    -fx-padding: 20px;
+    -fx-background-insets: 20;
+}
+
+.dokey-logo-box {
+    -fx-background-color: transparent;
 }
 
 .text-field {
+    -fx-font-family: "Nunito Sans Light";
     -fx-background-color: transparent;
     -fx-font-size: 24;
+    -fx-text-fill: #555555;
+}
+
+.text-field:focused {
+    -fx-prompt-text-fill: derive(-fx-control-inner-background,-30%);
+}
+
+.dokey-search-result-box {
+    -fx-padding: 5 10 5 10;
+}
+
+.dokey-search-result-title{
+    -fx-padding: 0 0 0 18;
+    -fx-font-family: "Nunito Sans Bold";
+    -fx-font-size: 14px;
+}
+
+.dokey-search-result-description {
+    -fx-padding: 0 0 0 18;
+    -fx-font-family: "Nunito Sans Light";
+    -fx-font-size: 12px;
 }
 
 .list-view {
@@ -28,8 +60,11 @@
 }
 .list-view .list-cell:filled:selected{
     /*-fx-background-color: -primaryLightColor;*/
-    -fx-background-color: #d6d6d6;
-    -fx-background-radius: 5px;
+    -fx-background-color: -primaryColor;
+}
+
+.list-view .list-cell:filled:selected .label{
+    -fx-text-fill: -primaryTextColor;
 }
 
 .list-view .scroll-bar .increment-arrow,

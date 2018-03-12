@@ -7,10 +7,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -54,7 +56,6 @@ public class SearchStage extends Stage {
         controller = (SearchController) fxmlLoader.getController();
         controller.resultListView.setManaged(false);
 
-        // TODO: esc key close event
         // TODO: stage loose focus close event
 
         // Setup the list cells
@@ -81,7 +82,7 @@ public class SearchStage extends Stage {
                     }
 
                     // Set the height based on the list view
-                    controller.resultListView.setPrefHeight(results.size() * ResultListCell.ROW_HEIGHT + 2);
+                    controller.resultListView.setPrefHeight(results.size() * ResultListCell.ROW_HEIGHT);
 
                     // Show the list view and refresh stage size to fit all contents
                     controller.resultListView.setManaged(true);

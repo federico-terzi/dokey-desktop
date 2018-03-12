@@ -11,6 +11,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import system.search.results.AbstractResult;
 import system.search.results.GoogleSearchResult;
 
@@ -19,9 +21,9 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ResultListCell extends ListCell<AbstractResult> {
-    public static final int ROW_HEIGHT = 48;
+    public static final int ROW_HEIGHT = 55;
 
-    private GridPane grid = new GridPane();
+    private HBox hBox = new HBox();
     private ImageView image = new ImageView();
     private Label title = new Label();
     private Label description = new Label();
@@ -42,14 +44,18 @@ public class ResultListCell extends ListCell<AbstractResult> {
     }
 
     private void configureGrid() {
-        grid.setHgap(10);
-        grid.setVgap(4);
-        grid.setPadding(new Insets(0, 0, 0, 0));
+        hBox.getStyleClass().add("dokey-search-result-box");
+        title.getStyleClass().add("dokey-search-result-title");
+        description.getStyleClass().add("dokey-search-result-description");
+        image.getStyleClass().add("dokey-search-result-image");
     }
     private void addControlsToGrid() {
-        grid.add(image, 0, 0, 1, 2);
-        grid.add(title, 1, 0);
-        grid.add(description, 1, 1);
+        hBox.getChildren().add(image);
+
+        VBox vBox = new VBox();
+        vBox.getChildren().add(title);
+        vBox.getChildren().add(description);
+        hBox.getChildren().add(vBox);
     }
 
     private void clearContent() {
@@ -82,7 +88,7 @@ public class ResultListCell extends ListCell<AbstractResult> {
             });
         }
 
-        setGraphic(grid);
+        setGraphic(hBox);
     }
 
     @Override

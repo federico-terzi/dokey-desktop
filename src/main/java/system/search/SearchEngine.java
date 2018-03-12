@@ -53,13 +53,17 @@ public class SearchEngine implements ApplicationContextAware{
         new Thread(() -> {
             List<AbstractResult> results = new ArrayList<>();
 
-            for (AbstractAgent agent : agents) {
-                if (agent.validate(query)) {
-                    for (AbstractResult result : agent.getResults(query)) {
-                        if (results.size() < MAX_RESULTS) {
-                            results.add(result);
-                        }else{
-                            break;
+            // Make sure the query is not empty
+            if (!query.trim().isEmpty()) {
+                // For each agent, request the results
+                for (AbstractAgent agent : agents) {
+                    if (agent.validate(query)) {
+                        for (AbstractResult result : agent.getResults(query)) {
+                            if (results.size() < MAX_RESULTS) {
+                                results.add(result);
+                            }else{
+                                break;
+                            }
                         }
                     }
                 }

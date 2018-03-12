@@ -7,34 +7,41 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="539.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.search.controllers.SearchController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" fx:id="rootNode" prefWidth="539.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.search.controllers.SearchController">
    <children>
       <HBox>
          <children>
-            <TextField fx:id="queryTextField" promptText="What do you want to do?" HBox.hgrow="ALWAYS">
+            <HBox styleClass="dokey-logo-box">
+               <children>
+                  <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                     <image>
+                        <Image url="@../assets/logo_accent.png" />
+                     </image>
+                  </ImageView>
+               </children>
+               <padding>
+                  <Insets bottom="18.0" left="18.0" top="18.0" />
+               </padding>
+            </HBox>
+            <TextField fx:id="queryTextField" promptText=" Dokey Search" HBox.hgrow="ALWAYS">
                <font>
                   <Font size="24.0" />
                </font>
                <HBox.margin>
-                  <Insets top="10.0" />
+                  <Insets top="8.0" />
                </HBox.margin>
             </TextField>
-            <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-               <HBox.margin>
-                  <Insets left="8.0" right="10.0" top="10.0" />
-               </HBox.margin>
-               <image>
-                  <Image url="@../assets/icon.png" />
-               </image>
-            </ImageView>
          </children>
          <VBox.margin>
-            <Insets bottom="10.0" />
+            <Insets />
          </VBox.margin>
       </HBox>
       <ListView fx:id="resultListView">
          <VBox.margin>
-            <Insets bottom="8.0" left="8.0" right="8.0" />
+            <Insets />
          </VBox.margin></ListView>
    </children>
 </VBox>
