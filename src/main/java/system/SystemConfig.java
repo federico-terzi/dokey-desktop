@@ -17,10 +17,7 @@ import system.MS.MSSystemManager;
 import system.exceptions.UnsupportedOperatingSystemException;
 import system.model.ApplicationManager;
 import system.search.SearchEngine;
-import system.search.agents.ApplicationAgent;
-import system.search.agents.CalculatorAgent;
-import system.search.agents.GoogleSearchAgent;
-import system.search.agents.TerminalAgent;
+import system.search.agents.*;
 import system.section.SectionManager;
 import utils.IconManager;
 import utils.OSValidator;
@@ -130,6 +127,9 @@ public class SystemConfig {
         return new WebLinkResolver(iconManager());
     }
 
+    @Bean
+    public DebugManager debugManager() throws UnsupportedOperatingSystemException { return new DebugManager(applicationManager());}
+
     // SEARCH
     @Bean
     public SearchEngine searchEngine() throws UnsupportedOperatingSystemException {
@@ -154,5 +154,10 @@ public class SystemConfig {
     @Bean
     public CalculatorAgent calculatorAgent() throws UnsupportedOperatingSystemException {
         return new CalculatorAgent(searchEngine(), resourceBundle());
+    }
+
+    @Bean
+    public DebugAgent debugAgent() throws UnsupportedOperatingSystemException {
+        return new DebugAgent(searchEngine(), resourceBundle(), debugManager());
     }
 }
