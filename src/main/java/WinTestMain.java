@@ -21,7 +21,7 @@ public class WinTestMain {
     public static void main(String[] args) throws IOException {
         MSApplicationManager appManager = new MSApplicationManager(null, null);
         for (int i = 30; i<300; i++) {
-            appManager.extractIconNative("C:\\Program Files\\FileZilla FTP Client\\filezilla.exe", new File("C:\\Users\\fredd\\Documents\\test"+i+".png"), i);
+//            appManager.extractIconNative("C:\\Program Files\\FileZilla FTP Client\\filezilla.exe", new File("C:\\Users\\fredd\\Documents\\test"+i+".png"), i);
             System.out.println(i);
         }
 //        System.setProperty("jna.platform.library.path", ResourceUtils.getResource("/libs/").getAbsolutePath());
