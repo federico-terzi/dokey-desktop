@@ -54,7 +54,7 @@ public class SystemConfig {
     @Bean
     public ApplicationManager applicationManager() throws UnsupportedOperatingSystemException {
         if (OSValidator.isWindows()) {  // WINDOWS
-            return new MSApplicationManager(iconManager(), StartupManager.getInstance());
+            return new MSApplicationManager(StartupManager.getInstance());
         }else if (OSValidator.isMac()) {  // MAC OSX
             return new MACApplicationManager(StartupManager.getInstance());
         }

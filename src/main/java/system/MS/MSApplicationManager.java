@@ -53,11 +53,9 @@ public class MSApplicationManager extends ApplicationManager {
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
 
-    private IconManager iconManager;
     private StartupManager startupManager;
 
-    public MSApplicationManager(IconManager iconManager, StartupManager startupManager) {
-        this.iconManager = iconManager;
+    public MSApplicationManager(StartupManager startupManager) {
         this.startupManager = startupManager;
 
         // Check if powershell is enabled in this machine

@@ -13,33 +13,11 @@ import java.util.Map;
  * Used to manage the cached high res icon images
  */
 public class IconManager {
-    // Contains the association between the exe filename and the high res icon file ( in the resource folder )
-    // EXAMPLE: Photoshop.exe -> /path_to_res_folder/Photoshop.exe.png
-    public Map<String, File> highResIconMap;
-
     // Contains the association between the domain and the high res icon file
     public Map<String, File> webIconMap;
 
     public IconManager() {
-        loadHighResIconMap();
         loadWebIconMap();
-    }
-
-    /**
-     * Used to populate the map containing the high res icon files contained in the resources folder
-     */
-    private void loadHighResIconMap() {
-        File iconDir = ResourceUtils.getResource("/icons/");
-
-        highResIconMap = new HashMap<>();
-
-        // Cycle through all icons
-        for (File icon : iconDir.listFiles()) {
-            // Remove the .png suffix
-            String executableName = icon.getName().substring(0, icon.getName().length()-4);
-            // Add it to the map
-            highResIconMap.put(executableName, icon);
-        }
     }
 
     /**
