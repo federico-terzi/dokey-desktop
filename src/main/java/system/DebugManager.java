@@ -19,7 +19,7 @@ public class DebugManager {
         this.appManager = appManager;
 
         // Register the commands
-        commands.put("dokeydir", () -> {  // OPEN DOKEY FOLDER
+        commands.put("dir", () -> {  // OPEN DOKEY FOLDER
            appManager.openFolder(CacheManager.getInstance().getCacheDir().getAbsolutePath());
         });
     }
