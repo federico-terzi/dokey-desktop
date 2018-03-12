@@ -954,17 +954,8 @@ public class MSApplicationManager extends ApplicationManager {
         // Get the icon file
         File iconFile = null;
 
-        // Get the executable file
-        File executableFile = new File(executablePath);
-
-        // Check if an high res version is available
-        if (iconManager.highResIconMap.containsKey(executableFile.getName())) {
-            iconFile = iconManager.highResIconMap.get(executableFile.getName());
-            LOG.fine("ICON FROM HIGH RES CACHE: "+executablePath);
-        }else{
-            // Generate the icon file
-            iconFile = generateIconFile(executablePath);
-        }
+        // Generate the icon file
+        iconFile = generateIconFile(executablePath);
 
         // If the file doesn't exist, it must be generated
         if (!iconFile.isFile()) {
@@ -988,7 +979,7 @@ public class MSApplicationManager extends ApplicationManager {
 
         // Try to generate the icon using the native method
         try {
-            File extractedIcon = extractIconUsingExe(executablePath, iconFile);
+            File extractedIcon = extractIconUsingExe(executablePath, iconFile, true);
             if (extractedIcon != null) {
                 return extractedIcon;
             }
@@ -1058,23 +1049,57 @@ public class MSApplicationManager extends ApplicationManager {
     }
 
     /**
+     * Check if the given image is low res ( smaller than 48x48 ).
+     * Used to filter big images 256x256 with small icons on the top left corner.
+     * @param image the image to analyze.
+     * @return true if image is smaller than 48x48, false otherwise.
+     */
+    public static boolean isLowResImage(BufferedImage image) {
+        if (image.getHeight() < 250)
+            return true;
+
+        int index = image.getHeight()-1;
+        while (image.getRGB(index, index) == 0 && index > 0) {
+            index--;
+        }
+
+        return index < 48;
+    }
+
+    /**
      * Extract the icon from the executable using the extractIcon.exe method
      *
      * @param executablePath  path of the executable
      * @param destinationFile path of the destination image file
+     * @param bigIcon if true, request the 256x256 icon. If false 48x48 is requested.
      * @return true if succeeded, false otherwise.
      */
-    private File extractIconUsingExe(String executablePath, File destinationFile) {
+    public File extractIconUsingExe(String executablePath, File destinationFile, boolean bigIcon) {
         Runtime runtime = Runtime.getRuntime();
         String exePath = ResourceUtils.getResource("/win/extractIcon.exe").getAbsolutePath();
 
         try {
+            String quality = bigIcon ? "jumbo" : "small";
+
             // Execute powershell
-            Process proc = runtime.exec(new String[]{exePath, executablePath, destinationFile.getAbsolutePath()});
+            Process proc = runtime.exec(new String[]{exePath, executablePath, destinationFile.getAbsolutePath(), quality});
             proc.waitFor();
+
+            // If a big icon has been requested, make sure the resulting icon is valid.
+            if (bigIcon && destinationFile.isFile()) {
+                // Reload the destination file
+                destinationFile = new File(destinationFile.getAbsolutePath());
+
+                // If the image is low resolution, request the 48x48 image.
+                BufferedImage image = ImageIO.read(destinationFile);
+                if (isLowResImage(image)) {
+                    return extractIconUsingExe(executablePath, destinationFile, false);
+                }
+            }
 
             return destinationFile;
         } catch (IOException e) {
+            System.out.println(executablePath);
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -1090,7 +1115,7 @@ public class MSApplicationManager extends ApplicationManager {
      * @param destinationFile destination image file
      * @return the extracted file if succeeded, false otherwise.
      */
-    private File extractIconNative(String executablePath, File destinationFile) {
+    private File extractIconNative(String executablePath, File destinationFile, int size) {
         // Create an array that will hold the icon references
         WinDef.HICON[] icons = new WinDef.HICON[10];
 
@@ -1100,7 +1125,7 @@ public class MSApplicationManager extends ApplicationManager {
                 0,
                 icons,
                 null,
-                128);
+                size);
         // Cycle through the icons.
         for (int j = 0; j<icons.length; j++) {
             // Get the icon
