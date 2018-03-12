@@ -990,7 +990,7 @@ public class MSApplicationManager extends ApplicationManager {
 
         // Try to generate the icon using the native method
         try {
-            File extractedIcon = extractIconNative(executablePath, iconFile);
+            File extractedIcon = extractIconUsingExe(executablePath, iconFile);
             if (extractedIcon != null) {
                 return extractedIcon;
             }
@@ -1057,6 +1057,31 @@ public class MSApplicationManager extends ApplicationManager {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * Extract the icon from the executable using the extractIcon.exe method
+     *
+     * @param executablePath  path of the executable
+     * @param destinationFile path of the destination image file
+     * @return true if succeeded, false otherwise.
+     */
+    private File extractIconUsingExe(String executablePath, File destinationFile) {
+        Runtime runtime = Runtime.getRuntime();
+        String exePath = ResourceUtils.getResource("/win/extractIcon.exe").getAbsolutePath();
+
+        try {
+            // Execute powershell
+            Process proc = runtime.exec(new String[]{exePath, executablePath, destinationFile.getAbsolutePath()});
+            proc.waitFor();
+
+            return destinationFile;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
