@@ -14,6 +14,7 @@ public class GoogleSearchResult extends AbstractResult {
     public GoogleSearchResult(SearchEngine searchEngine, ResourceBundle resourceBundle, String query) {
         super(searchEngine, resourceBundle);
         this.query = query;
+        this.isIcon = false;
     }
 
     @Override

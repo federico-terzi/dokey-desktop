@@ -88,6 +88,13 @@ public class ResultListCell extends ListCell<AbstractResult> {
             });
         }
 
+        // Set up selected result image behaviour
+        if (result.isIcon()) {
+            image.getStyleClass().add("dokey-search-result-icon");
+        }else{
+            image.getStyleClass().remove("dokey-search-result-icon");
+        }
+
         setGraphic(hBox);
     }
 

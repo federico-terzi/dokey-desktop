@@ -13,6 +13,7 @@ public class ApplicationResult extends AbstractResult {
     public ApplicationResult(SearchEngine searchEngine, ResourceBundle resourceBundle, Application application) {
         super(searchEngine, resourceBundle);
         this.application = application;
+        this.isIcon = false;
     }
 
     @Override

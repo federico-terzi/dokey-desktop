@@ -12,6 +12,8 @@ public abstract class AbstractResult {
     protected SearchEngine searchEngine;
     protected ResourceBundle resourceBundle;
 
+    protected boolean isIcon = true;  // Should be true if the result image is an icon, and should change color when selected
+
     protected AbstractResult(SearchEngine searchEngine, ResourceBundle resourceBundle) {
         this.searchEngine = searchEngine;
         this.resourceBundle = resourceBundle;
@@ -23,6 +25,10 @@ public abstract class AbstractResult {
 
     public interface OnImageAvailableListener {
         void onImageAvailable(Image image, String hashID);
+    }
+
+    public boolean isIcon() {
+        return isIcon;
     }
 
     /**

@@ -63,6 +63,9 @@
     -fx-background-color: -primaryColor;
 }
 
+.list-view .list-cell:filled:selected .dokey-search-result-icon{
+    -fx-effect: innershadow( gaussian , -primaryTextColor , 7 , 1 , 1 , 1 );
+}
 .list-view .list-cell:filled:selected .label{
     -fx-text-fill: -primaryTextColor;
 }
