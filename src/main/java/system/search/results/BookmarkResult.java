@@ -33,7 +33,7 @@ public class BookmarkResult extends AbstractResult {
         if (listener != null) {
             new Thread(() -> {
                 new Thread(() -> {
-                    Image image = new Image(BookmarkResult.class.getResourceAsStream("/assets/photo.png"), 32, 32, true, true);
+                    Image image = new Image(BookmarkResult.class.getResourceAsStream("/assets/star.png"), 32, 32, true, true);
                     listener.onImageAvailable(image, null);
                 }).start();
             }).start();
