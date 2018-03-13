@@ -42,8 +42,8 @@ public class SearchEngine implements ApplicationContextAware{
         agents.add(context.getBean(CalculatorAgent.class));
         agents.add(context.getBean(TerminalAgent.class));
         agents.add(context.getBean(DebugAgent.class));
-        agents.add(context.getBean(BookmarkAgent.class));
         agents.add(context.getBean(GoogleSearchAgent.class));
+        agents.add(context.getBean(BookmarkAgent.class));
     }
 
     public void requestQuery(String query, OnQueryResultListener listener) {
@@ -63,15 +63,16 @@ public class SearchEngine implements ApplicationContextAware{
                         for (AbstractResult result : agent.getResults(query)) {
                             if (results.size() < MAX_RESULTS) {
                                 results.add(result);
+                                listener.onQueryResult(results);
                             }else{
                                 break;
                             }
                         }
                     }
                 }
+            }else{
+                listener.onQueryResult(results);  // For empty queries
             }
-
-            listener.onQueryResult(results);
         }).start();
     }
 
