@@ -103,6 +103,6 @@ public class ChromeBookmarkImportAgent implements BookmarkImportAgent{
 
     @Override
     public List<Bookmark> getBookmarks() {
-        return null;
+        return bookmarks;
     }
 }

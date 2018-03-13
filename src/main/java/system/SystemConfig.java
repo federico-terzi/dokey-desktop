@@ -148,6 +148,11 @@ public class SystemConfig {
     }
 
     @Bean
+    public BookmarkAgent bookmarkAgent() throws UnsupportedOperatingSystemException {
+        return new BookmarkAgent(searchEngine(), resourceBundle(), bookmarkManager(), applicationManager());
+    }
+
+    @Bean
     public GoogleSearchAgent googleSearchAgent() throws UnsupportedOperatingSystemException {
         return new GoogleSearchAgent(searchEngine(), resourceBundle(), applicationManager());
     }
