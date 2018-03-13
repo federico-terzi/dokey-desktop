@@ -68,7 +68,7 @@ public class BookmarkManager {
             return new ArrayList<>();
 
         return bookmarks.stream().filter((bookmark -> {
-            return bookmark.title.toLowerCase().contains(query) &&
+            return bookmark.title.toLowerCase().contains(query) ||
                     bookmark.url.toLowerCase().contains(query);
         })).collect(Collectors.toList());
     }
