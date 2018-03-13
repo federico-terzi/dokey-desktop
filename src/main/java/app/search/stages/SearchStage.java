@@ -23,6 +23,7 @@ import javafx.util.Callback;
 import system.ResourceUtils;
 import system.search.SearchEngine;
 import system.search.results.AbstractResult;
+import utils.ImageResolver;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -59,7 +60,7 @@ public class SearchStage extends Stage {
         // TODO: stage loose focus close event
 
         // Setup the list cells
-        Image fallback = new Image(SearchStage.class.getResourceAsStream("/assets/photo.png"), 32, 32, true, true);
+        Image fallback = ImageResolver.getInstance().getImage(SearchStage.class.getResourceAsStream("/assets/photo.png"), 32);
         controller.resultListView.setCellFactory(new Callback<ListView<AbstractResult>, ListCell<AbstractResult>>() {
             @Override
             public ListCell<AbstractResult> call(ListView<AbstractResult> param) {

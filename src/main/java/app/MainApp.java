@@ -17,6 +17,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import net.discovery.ServerDiscoveryDaemon;
 import net.model.DeviceInfo;
@@ -30,6 +31,7 @@ import system.adb.ADBManager;
 import system.bookmarks.BookmarkManager;
 import system.model.ApplicationManager;
 import system.section.SectionManager;
+import utils.ImageResolver;
 
 import javax.swing.*;
 import java.io.*;
@@ -179,6 +181,9 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
             LOG.severe("Error opening socket. "+e1.toString());
             System.exit(4);
         }
+
+        // Initialize image resolver based on the screen DPI
+        ImageResolver.getInstance().setDpi(Screen.getPrimary().getDpi());
 
         // Setup spring
         context = new AnnotationConfigApplicationContext(AppConfig.class);

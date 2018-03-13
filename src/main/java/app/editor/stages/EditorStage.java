@@ -51,6 +51,7 @@ import system.model.ApplicationManager;
 import system.ShortcutIconManager;
 import app.editor.components.SectionGridController.SectionAnimationType;
 import system.section.importer.SectionWrapper;
+import utils.ImageResolver;
 import utils.OSValidator;
 
 import java.io.File;
@@ -447,14 +448,15 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         Image image = null;
         String message = null;
         if (!areAppsShown) {
-            image = new Image(EditorStage.class.getResourceAsStream("/assets/toolbar_icons/menu.png"), 20, 20, true, true);
+            image = ImageResolver.getInstance().getImage(EditorStage.class.getResourceAsStream("/assets/toolbar_icons/menu.png"), 20);
             message = resourceBundle.getString("show_applications");
         } else {
             message = resourceBundle.getString("hide_applications");
-            image = new Image(EditorStage.class.getResourceAsStream("/assets/toolbar_icons/back.png"), 20, 20, true, true);
+            image = ImageResolver.getInstance().getImage(EditorStage.class.getResourceAsStream("/assets/toolbar_icons/back.png"), 20);
         }
         ImageView buttonImageView = new ImageView(image);
-        buttonImageView.setSmooth(true);
+        buttonImageView.setFitWidth(20);
+        buttonImageView.setFitHeight(20);
         Tooltip tooltip = new Tooltip(message);
         controller.toggleAppsBtn.setGraphic(buttonImageView);
         controller.toggleAppsBtn.setTooltip(tooltip);

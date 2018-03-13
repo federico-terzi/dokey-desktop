@@ -6,6 +6,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import section.model.Component;
 import section.model.SystemItem;
+import utils.ImageResolver;
 import utils.SystemItemManager;
 
 import java.io.File;
@@ -26,8 +27,10 @@ public class SystemButton extends ComponentButton {
 
         File iconFile = SystemItemManager.getIconForType(item.getCommandType());
         if (iconFile != null) {
-            Image systemImage = new Image(iconFile.toURI().toString(), 48, 48, true, true);
+            Image systemImage = ImageResolver.getInstance().getImage(iconFile, 48);
             ImageView imageView = new ImageView(systemImage);
+            imageView.setFitWidth(48);
+            imageView.setFitHeight(48);
             setContentDisplay(ContentDisplay.TOP);
             setGraphic(imageView);
         }

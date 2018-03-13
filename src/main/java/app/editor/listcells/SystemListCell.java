@@ -7,6 +7,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import section.model.SystemCommands;
+import utils.ImageResolver;
 import utils.SystemItemManager;
 
 import java.io.File;
@@ -26,6 +27,9 @@ public class SystemListCell extends ListCell<SystemCommands> {
         grid.setHgap(10);
         grid.setVgap(4);
         grid.setPadding(new Insets(0, 0, 0, 0));
+
+        image.setFitWidth(32);
+        image.setFitHeight(32);
     }
     private void addControlsToGrid() {
         grid.add(image, 0, 0, 1, 1);
@@ -41,7 +45,7 @@ public class SystemListCell extends ListCell<SystemCommands> {
         setText(null);
         File iconFile = SystemItemManager.getIconForType(systemCommand);
         if (iconFile != null) {
-            Image appImage = new Image(iconFile.toURI().toString(), 32, 32, true, true);
+            Image appImage = ImageResolver.getInstance().getImage(iconFile, 32);
             image.setImage(appImage);
         }
 

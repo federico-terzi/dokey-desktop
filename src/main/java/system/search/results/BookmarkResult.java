@@ -4,6 +4,7 @@ import javafx.scene.image.Image;
 import system.bookmarks.Bookmark;
 import system.model.ApplicationManager;
 import system.search.SearchEngine;
+import utils.ImageResolver;
 
 import java.util.ResourceBundle;
 
@@ -33,7 +34,7 @@ public class BookmarkResult extends AbstractResult {
         if (listener != null) {
             new Thread(() -> {
                 new Thread(() -> {
-                    Image image = new Image(BookmarkResult.class.getResourceAsStream("/assets/star.png"), 32, 32, true, true);
+                    Image image = ImageResolver.getInstance().getImage(BookmarkResult.class.getResourceAsStream("/assets/star.png"), 32);
                     listener.onImageAvailable(image, null);
                 }).start();
             }).start();

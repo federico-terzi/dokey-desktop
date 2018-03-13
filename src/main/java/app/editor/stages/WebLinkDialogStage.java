@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import section.model.WebLinkItem;
 import system.ResourceUtils;
 import system.WebLinkResolver;
+import utils.ImageResolver;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -64,8 +65,10 @@ public class WebLinkDialogStage extends Stage {
         controller = (WebLinkDialogController) fxmlLoader.getController();
 
         // Setup the image
-        Image image = new Image(WebLinkDialogStage.class.getResourceAsStream("/assets/world.png"), 64, 64, true, true);
+        Image image = ImageResolver.getInstance().getImage(WebLinkDialogStage.class.getResourceAsStream("/assets/world.png"), 64);
         controller.imageView.setImage(image);
+        controller.imageView.setFitWidth(64);
+        controller.imageView.setFitHeight(64);
 
         // Listener for the url field change
         controller.urlTextField.textProperty().addListener(new ChangeListener<String>() {
@@ -207,7 +210,7 @@ public class WebLinkDialogStage extends Stage {
                                     // Setup the image
                                     try {
                                         FileInputStream fis = new FileInputStream(imageFile);
-                                        Image image = new Image(fis, 64, 64, true, true);
+                                        Image image = ImageResolver.getInstance().getImage(fis, 64);
                                         controller.imageView.setImage(image);
                                         fis.close();
                                         imageUrl = res.imageUrl;
@@ -219,7 +222,7 @@ public class WebLinkDialogStage extends Stage {
 
                                 }
                             }else{ // Image not available, default fallback
-                                Image image = new Image(WebLinkDialogStage.class.getResourceAsStream("/assets/world.png"), 64, 64, true, true);
+                                Image image = ImageResolver.getInstance().getImage(WebLinkDialogStage.class.getResourceAsStream("/assets/world.png"), 64);
                                 controller.imageView.setImage(image);
                                 imageUrl = null;
                             }
@@ -252,7 +255,7 @@ public class WebLinkDialogStage extends Stage {
             if (imageFile != null) {
                 try {
                     FileInputStream fis = new FileInputStream(imageFile);
-                    Image image = new Image(fis, 48, 48, true, true);
+                    Image image = ImageResolver.getInstance().getImage(fis, 64);
                     controller.imageView.setImage(image);
                     fis.close();
                 } catch (FileNotFoundException e) {
@@ -263,7 +266,7 @@ public class WebLinkDialogStage extends Stage {
             }
         }else{
             // Default image fallback
-            Image image = new Image(WebLinkDialogStage.class.getResourceAsStream("/assets/world.png"), 48, 48, true, true);
+            Image image = ImageResolver.getInstance().getImage(WebLinkDialogStage.class.getResourceAsStream("/assets/world.png"), 64);
             controller.imageView.setImage(image);
         }
     }

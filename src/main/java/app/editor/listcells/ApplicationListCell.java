@@ -11,6 +11,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import system.model.Application;
+import utils.ImageResolver;
 
 import java.io.File;
 import java.util.ResourceBundle;
@@ -38,6 +39,8 @@ public class ApplicationListCell extends ListCell<Application> {
 
         name.getStyleClass().add("applistcell-name");
         path.getStyleClass().add("applistcell-path");
+        image.setFitWidth(32);
+        image.setFitHeight(32);
     }
     private void addControlsToGrid() {
         grid.add(image, 0, 0, 1, 2);
@@ -53,7 +56,7 @@ public class ApplicationListCell extends ListCell<Application> {
     private void addContent(Application application) {
         setText(null);
 
-        Image appImage = new Image(application.getIconFile().toURI().toString(), 32, 32, true, true);
+        Image appImage = ImageResolver.getInstance().getImage(application.getIconFile(), 32);
         image.setImage(appImage);
 
         name.setText(application.getName());
@@ -71,8 +74,10 @@ public class ApplicationListCell extends ListCell<Application> {
                 }
             }
         });
-        Image deleteImage = new Image(SectionListCell.class.getResourceAsStream("/assets/delete.png"), 16, 16, true, true);
+        Image deleteImage = ImageResolver.getInstance().getImage(SectionListCell.class.getResourceAsStream("/assets/delete.png"), 16);
         ImageView deleteImageView = new ImageView(deleteImage);
+        deleteImageView.setFitHeight(16);
+        deleteImageView.setFitWidth(16);
         deleteItem.setGraphic(deleteImageView);
 
         contextMenu.getItems().addAll(deleteItem);

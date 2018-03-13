@@ -9,6 +9,7 @@ import net.model.IconTheme;
 import section.model.Component;
 import section.model.ShortcutItem;
 import system.ShortcutIcon;
+import utils.ImageResolver;
 
 import java.util.ResourceBundle;
 
@@ -37,15 +38,17 @@ public class ShortcutButton extends ComponentButton {
         Image image = null;
         if (shortcutIcon != null) {
             if (shortcutIcon.getFile().isFile()) {
-                image = new Image(shortcutIcon.getFile().toURI().toString(), 36, 36, true, true);
+                image = ImageResolver.getInstance().getImage(shortcutIcon.getFile(), 36);
             }
         }
         if (image == null) {   // No image found, default fallback
-            image = new Image(ComponentButton.class.getResourceAsStream("/assets/image.png"), 36, 36, true, true);
+            image = ImageResolver.getInstance().getImage(ComponentButton.class.getResourceAsStream("/assets/image.png"), 36);
         }
 
         // Create the icon box
         ImageView imageView = new ImageView(image);
+        imageView.setFitHeight(36);
+        imageView.setFitWidth(36);
         VBox box = new VBox();
         box.getStyleClass().add("shortcut-box");
         box.getChildren().addAll(imageView);

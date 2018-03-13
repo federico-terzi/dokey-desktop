@@ -3,6 +3,7 @@ package system.search.results;
 import javafx.scene.image.Image;
 import system.model.Application;
 import system.search.SearchEngine;
+import utils.ImageResolver;
 
 import java.io.File;
 import java.util.ResourceBundle;
@@ -31,7 +32,7 @@ public class ApplicationResult extends AbstractResult {
         if (listener != null) {
             new Thread(() -> {
                 if (application.getIconPath() != null) {
-                    Image appImage = new Image(application.getIconFile().toURI().toString(), 32, 32, true, true);
+                    Image appImage = ImageResolver.getInstance().getImage(application.getIconFile(), 32);
                     listener.onImageAvailable(appImage, application.getHashID());
                 }
             }).start();

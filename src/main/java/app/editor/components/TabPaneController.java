@@ -18,6 +18,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import utils.ImageResolver;
 
 import java.util.Map;
 
@@ -65,8 +66,10 @@ public class TabPaneController {
                     }
                 }
             });
-            Image image = new Image(TabPaneController.class.getResourceAsStream("/assets/circle_full.png"), 16, 16, true, true);
+            Image image = ImageResolver.getInstance().getImage(TabPaneController.class.getResourceAsStream("/assets/circle_full.png"), 16);
             ImageView imageView = new ImageView(image);
+            imageView.setFitHeight(16);
+            imageView.setFitWidth(16);
             if (tab.isSelected()) {
                 imageView.getStyleClass().add("dot-selected");
             }else{
@@ -99,8 +102,10 @@ public class TabPaneController {
                 }
             }
         });
-        Image image = new Image(TabPaneController.class.getResourceAsStream("/assets/add_white.png"), 16, 16, true, true);
+        Image image = ImageResolver.getInstance().getImage(TabPaneController.class.getResourceAsStream("/assets/add_white.png"), 16);
         ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(16);
+        imageView.setFitHeight(16);
         addBtn.setGraphic(imageView);
         masterPane.getChildren().add(addBtn);
 

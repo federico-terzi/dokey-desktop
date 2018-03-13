@@ -2,6 +2,7 @@ package system.search.results;
 
 import javafx.scene.image.Image;
 import system.search.SearchEngine;
+import utils.ImageResolver;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -31,7 +32,7 @@ public class GoogleSearchResult extends AbstractResult {
     public void requestImage(OnImageAvailableListener listener) {
         if (listener != null) {
             new Thread(() -> {
-                Image appImage = new Image(GoogleSearchResult.class.getResourceAsStream("/assets/google.png"), 32, 32, true, true);
+                Image appImage = ImageResolver.getInstance().getImage(GoogleSearchResult.class.getResourceAsStream("/assets/google.png"), 32);
                 listener.onImageAvailable(appImage, null);
             }).start();
         }

@@ -9,6 +9,7 @@ import section.model.AppItem;
 import section.model.Component;
 import system.BroadcastManager;
 import system.model.Application;
+import utils.ImageResolver;
 
 import java.io.File;
 import java.util.List;
@@ -34,12 +35,12 @@ public class AppButton extends ComponentButton {
             if (application.getIconPath() != null) {
                 File iconFile = new File(application.getIconPath());
                 if (iconFile.isFile()) {
-                    image = new Image(iconFile.toURI().toString(), 48, 48, true, true);
+                    image = ImageResolver.getInstance().getImage(iconFile, 48);
                 }
             }
         }else{  // Fallback
             title = item.getTitle();
-            image = new Image(ComponentButton.class.getResourceAsStream("/assets/image.png"), 48, 48, true, true);
+            image = ImageResolver.getInstance().getImage(ComponentButton.class.getResourceAsStream("/assets/image.png"), 48);
         }
 
         // Set the button properties
@@ -53,6 +54,8 @@ public class AppButton extends ComponentButton {
         // Set up the image
         if (image != null) {
             ImageView imageView = new ImageView(image);
+            imageView.setFitHeight(48);
+            imageView.setFitWidth(48);
             setGraphic(imageView);
             setContentDisplay(ContentDisplay.TOP);
         }
@@ -70,7 +73,7 @@ public class AppButton extends ComponentButton {
                 BroadcastManager.getInstance().sendBroadcast(BroadcastManager.OPEN_SHORTCUT_PAGE_FOR_APPLICATION_EVENT, application.getExecutablePath());
             }
         });
-        Image pageImage = new Image(ComponentButton.class.getResourceAsStream("/assets/keyboard.png"));
+        Image pageImage = ImageResolver.getInstance().getImage(ComponentButton.class.getResourceAsStream("/assets/keyboard.png"), 16);
         ImageView pageImageView = new ImageView(pageImage);
         pageImageView.setFitWidth(16);
         pageImageView.setFitHeight(16);

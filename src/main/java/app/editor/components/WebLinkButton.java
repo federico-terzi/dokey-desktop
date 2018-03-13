@@ -7,6 +7,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import section.model.Component;
 import section.model.WebLinkItem;
+import utils.ImageResolver;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -61,7 +62,7 @@ public class WebLinkButton extends ComponentButton {
         if (imageFile != null) {
             try {
                 FileInputStream fis = new FileInputStream(imageFile);
-                webImage = new Image(fis, 48, 48, true, true);
+                webImage = ImageResolver.getInstance().getImage(fis, 48);
                 fis.close();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -69,11 +70,13 @@ public class WebLinkButton extends ComponentButton {
                 e.printStackTrace();
             }
         }else{  // If image is not available, default fallback
-            webImage = new Image(ComponentButton.class.getResourceAsStream("/assets/world.png"), 48, 48, true, true);
+            webImage = ImageResolver.getInstance().getImage(ComponentButton.class.getResourceAsStream("/assets/world.png"), 48);
         }
 
         // Set the image
         ImageView imageView = new ImageView(webImage);
+        imageView.setFitHeight(48);
+        imageView.setFitWidth(48);
         setContentDisplay(ContentDisplay.TOP);
         setGraphic(imageView);
     }

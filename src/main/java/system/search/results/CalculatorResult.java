@@ -2,6 +2,7 @@ package system.search.results;
 
 import javafx.scene.image.Image;
 import system.search.SearchEngine;
+import utils.ImageResolver;
 
 import java.math.BigDecimal;
 import java.util.ResourceBundle;
@@ -30,7 +31,7 @@ public class CalculatorResult extends AbstractResult {
     public void requestImage(OnImageAvailableListener listener) {
         if (listener != null) {
             new Thread(() -> {
-                Image appImage = new Image(CalculatorResult.class.getResourceAsStream("/assets/light.png"), 32, 32, true, true);
+                Image appImage = ImageResolver.getInstance().getImage(CalculatorResult.class.getResourceAsStream("/assets/light.png"), 32);
                 listener.onImageAvailable(appImage, null);
             }).start();
         }

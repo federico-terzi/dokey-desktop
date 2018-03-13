@@ -9,6 +9,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import section.model.Component;
+import utils.ImageResolver;
 
 import java.util.ResourceBundle;
 
@@ -37,8 +38,10 @@ public abstract class ItemAction {
      */
     public MenuItem getContextMenuItem() {
         MenuItem menuItem = new MenuItem(message);
-        Image menuItemImage = new Image(ComponentButton.class.getResourceAsStream(iconPath), 32, 32, true, true);
+        Image menuItemImage = ImageResolver.getInstance().getImage(ComponentButton.class.getResourceAsStream(iconPath), 32);
         ImageView menuItemImageView = new ImageView(menuItemImage);
+        menuItemImageView.setFitHeight(32);
+        menuItemImageView.setFitWidth(32);
         menuItem.setGraphic(menuItemImageView);
         return menuItem;
     }

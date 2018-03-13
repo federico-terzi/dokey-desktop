@@ -12,6 +12,7 @@ import javafx.scene.input.TransferMode;
 import section.model.Component;
 import section.model.ItemType;
 import system.model.Application;
+import utils.ImageResolver;
 
 import java.io.File;
 import java.util.List;
@@ -30,8 +31,10 @@ public class EmptyButton extends DragButton {
 
         // Set up the button design
         getStyleClass().add("empty-btn");
-        Image image = new Image(EmptyButton.class.getResourceAsStream("/assets/add_clean.png"), 24, 24, true, true);
+        Image image = ImageResolver.getInstance().getImage(EmptyButton.class.getResourceAsStream("/assets/add_clean.png"), 24);
         ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(24);
+        imageView.setFitHeight(24);
         setGraphic(imageView);
         setContentDisplay(ContentDisplay.TOP);
 

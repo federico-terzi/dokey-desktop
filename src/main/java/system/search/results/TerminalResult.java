@@ -2,6 +2,7 @@ package system.search.results;
 
 import javafx.scene.image.Image;
 import system.search.SearchEngine;
+import utils.ImageResolver;
 
 import java.util.ResourceBundle;
 
@@ -27,7 +28,7 @@ public class TerminalResult extends AbstractResult {
     public void requestImage(OnImageAvailableListener listener) {
         if (listener != null) {
             new Thread(() -> {
-                Image appImage = new Image(TerminalResult.class.getResourceAsStream("/assets/right.png"), 32, 32, true, true);
+                Image appImage = ImageResolver.getInstance().getImage(TerminalResult.class.getResourceAsStream("/assets/right.png"), 32);
                 listener.onImageAvailable(appImage, null);
             }).start();
         }

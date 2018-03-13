@@ -24,7 +24,7 @@ public class ChromeBookmarkImportAgent implements BookmarkImportAgent{
         // Calculate the correct bookmark file path
         if (OSValidator.isWindows()) {
             bookmarkFile = new File(CacheManager.getInstance().getUserHomeDir(),
-                    "AppData/Local/Google/Chrome/User Data/Default/Bookmarks");
+                    "AppData/Local/Google/Chrome/User Data/Default/Bookmarks");  //TODO: dynamic, also for other profiles
         }else if (OSValidator.isMac()) {  //TODO: mac
 
         }else{

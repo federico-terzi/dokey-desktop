@@ -7,6 +7,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import system.ShortcutIcon;
+import utils.ImageResolver;
 
 public class ShortcutIconListCell extends ListCell<ShortcutIcon> {
 
@@ -27,6 +28,8 @@ public class ShortcutIconListCell extends ListCell<ShortcutIcon> {
 
         name.getStyleClass().add("shortcutlistcell-name");
         id.getStyleClass().add("shortcutlistcell-id");
+        image.setFitHeight(32);
+        image.setFitWidth(32);
     }
     private void addControlsToGrid() {
         grid.add(image, 0, 0, 1, 2);
@@ -41,7 +44,7 @@ public class ShortcutIconListCell extends ListCell<ShortcutIcon> {
 
     private void addContent(ShortcutIcon shortcutIcon) {
         setText(null);
-        Image appImage = new Image(shortcutIcon.getFile().toURI().toString(), 32, 32, true, true);
+        Image appImage = ImageResolver.getInstance().getImage(shortcutIcon.getFile(), 32);
         image.setImage(appImage);
 
         name.setText(shortcutIcon.getName());

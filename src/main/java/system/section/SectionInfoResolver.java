@@ -5,6 +5,7 @@ import section.model.Section;
 import section.model.SectionType;
 import system.model.Application;
 import system.model.ApplicationManager;
+import utils.ImageResolver;
 
 import java.io.File;
 import java.util.ResourceBundle;
@@ -37,18 +38,18 @@ public class SectionInfoResolver {
                 }
 
                 if (application != null && application.getIconPath() != null) {
-                    result.image = new Image(new File(application.getIconPath()).toURI().toString(), imageSize, imageSize, true, true);
+                    result.image = ImageResolver.getInstance().getImage(new File(application.getIconPath()), imageSize);
                     result.name = application.getName();
                     result.description = application.getExecutablePath();
                 }
                 break;
             case LAUNCHPAD:
-                result.image = new Image(SectionInfoResolver.class.getResourceAsStream("/assets/apps.png"), imageSize, imageSize, true, true);
+                result.image = ImageResolver.getInstance().getImage(SectionInfoResolver.class.getResourceAsStream("/assets/apps.png"), imageSize);
                 result.name = resourceBundle.getString("launchpad");
                 result.description = resourceBundle.getString("launchpad_desc");
                 break;
             case SYSTEM:
-                result.image = new Image(SectionInfoResolver.class.getResourceAsStream("/assets/shutdown.png"), imageSize, imageSize, true, true);
+                result.image = ImageResolver.getInstance().getImage(SectionInfoResolver.class.getResourceAsStream("/assets/shutdown.png"), imageSize);
                 result.name = resourceBundle.getString("system_controls");
                 result.description = resourceBundle.getString("system_desc");
                 break;

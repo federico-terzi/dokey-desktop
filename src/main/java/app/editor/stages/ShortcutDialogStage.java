@@ -20,6 +20,7 @@ import section.model.ShortcutItem;
 import system.ResourceUtils;
 import system.ShortcutIcon;
 import system.ShortcutIconManager;
+import utils.ImageResolver;
 import utils.OSValidator;
 
 import java.io.IOException;
@@ -53,13 +54,17 @@ public class ShortcutDialogStage extends Stage {
         controller = (ShortcutDialogController) fxmlLoader.getController();
 
         // Setup the button image
-        Image image = new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/clear.png"), 32, 32, true, true);
+        Image image = ImageResolver.getInstance().getImage(ShortcutDialogStage.class.getResourceAsStream("/assets/clear.png"), 32);
         ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(32);
+        imageView.setFitHeight(32);
         controller.getClearShortcutBtn().setGraphic(imageView);
 
         // Setup the icon button
-        Image iconImage = new Image(ShortcutDialogStage.class.getResourceAsStream("/assets/cake.png"), 32, 32, true, true);
+        Image iconImage = ImageResolver.getInstance().getImage(ShortcutDialogStage.class.getResourceAsStream("/assets/cake.png"), 32);
         ImageView iconImageView = new ImageView(iconImage);
+        iconImageView.setFitHeight(32);
+        iconImageView.setFitWidth(32);
         controller.iconBtn.setGraphic(iconImageView);
         controller.iconBtn.setContentDisplay(ContentDisplay.TOP);
 
@@ -189,8 +194,10 @@ public class ShortcutDialogStage extends Stage {
 
     private void renderIcon() {
         if (icon != null) {
-            Image image = new Image(icon.getFile().toURI().toString(), 32, 32, true, true);
+            Image image = ImageResolver.getInstance().getImage(icon.getFile(), 32);
             ImageView imageView = new ImageView(image);
+            imageView.setFitHeight(32);
+            imageView.setFitWidth(32);
             controller.iconBtn.setGraphic(imageView);
             controller.iconBtn.setText(resourceBundle.getString("change_icon_btn"));
         }else{

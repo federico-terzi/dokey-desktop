@@ -26,7 +26,7 @@
                   <Insets bottom="18.0" left="18.0" top="18.0" />
                </padding>
             </HBox>
-            <TextField fx:id="queryTextField" promptText=" Dokey Search" HBox.hgrow="ALWAYS">
+            <TextField fx:id="queryTextField" promptText="Dokey Search" HBox.hgrow="ALWAYS">
                <font>
                   <Font size="24.0" />
                </font>

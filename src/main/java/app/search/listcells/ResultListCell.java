@@ -48,6 +48,9 @@ public class ResultListCell extends ListCell<AbstractResult> {
         title.getStyleClass().add("dokey-search-result-title");
         description.getStyleClass().add("dokey-search-result-description");
         image.getStyleClass().add("dokey-search-result-image");
+
+        image.setFitWidth(32);
+        image.setFitHeight(32);
     }
     private void addControlsToGrid() {
         hBox.getChildren().add(image);
@@ -91,8 +94,10 @@ public class ResultListCell extends ListCell<AbstractResult> {
         // Set up selected result image behaviour
         if (result.isIcon()) {
             image.getStyleClass().add("dokey-search-result-icon");
+            image.getStyleClass().remove("dokey-search-result-image");
         }else{
             image.getStyleClass().remove("dokey-search-result-icon");
+            image.getStyleClass().add("dokey-search-result-image");
         }
 
         setGraphic(hBox);

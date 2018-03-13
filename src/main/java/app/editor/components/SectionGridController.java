@@ -18,6 +18,7 @@ import section.model.Section;
 import system.WebLinkResolver;
 import system.model.ApplicationManager;
 import system.ShortcutIconManager;
+import utils.ImageResolver;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -322,20 +323,24 @@ public class SectionGridController {
         if (screenOrientation == ScreenOrientation.PORTRAIT) {
             Image openBtnImage;
             if (!isBottomBarVisible) {
-                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/down_arrow.png"), 24, 24, true, true);
+                openBtnImage = ImageResolver.getInstance().getImage(TabPaneController.class.getResourceAsStream("/assets/down_arrow.png"), 24);
             } else {
-                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/up_arrow.png"), 24, 24, true, true);
+                openBtnImage = ImageResolver.getInstance().getImage(TabPaneController.class.getResourceAsStream("/assets/up_arrow.png"), 24);
             }
             ImageView imageView = new ImageView(openBtnImage);
+            imageView.setFitWidth(24);
+            imageView.setFitHeight(24);
             showHideBottomBarButton.setGraphic(imageView);
         } else {
             Image openBtnImage;
             if (!isBottomBarVisible) {
-                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/right_arrow.png"), 24, 24, true, true);
+                openBtnImage = ImageResolver.getInstance().getImage(TabPaneController.class.getResourceAsStream("/assets/right_arrow.png"), 24);
             } else {
-                openBtnImage = new Image(TabPaneController.class.getResourceAsStream("/assets/left_arrow.png"), 24, 24, true, true);
+                openBtnImage = ImageResolver.getInstance().getImage(TabPaneController.class.getResourceAsStream("/assets/left_arrow.png"), 24);
             }
             ImageView imageView = new ImageView(openBtnImage);
+            imageView.setFitWidth(24);
+            imageView.setFitHeight(24);
             showHideBottomBarButton.setGraphic(imageView);
         }
     }

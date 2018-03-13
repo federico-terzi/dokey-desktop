@@ -23,6 +23,7 @@ import system.model.Application;
 import system.model.ApplicationManager;
 import system.section.SectionInfoResolver;
 import system.section.importer.SectionImporter;
+import utils.ImageResolver;
 
 import java.io.File;
 import java.io.IOException;
@@ -188,7 +189,7 @@ public class ImportDialogStage extends Stage {
             controller.sectionTitleLabel.setText(sectionInfo.name);
             controller.sectionDescriptionLabel.setText(sectionInfo.description);
         }else{
-            Image notFoundImage = new Image(SectionInfoResolver.class.getResourceAsStream("/assets/help.png"), 64, 64, true, true);
+            Image notFoundImage = ImageResolver.getInstance().getImage(SectionInfoResolver.class.getResourceAsStream("/assets/help.png"), 64);
             controller.targetImageView.setImage(notFoundImage);
             controller.sectionTitleLabel.setText(resourceBundle.getString("target_not_found"));
             controller.sectionDescriptionLabel.setText(resourceBundle.getString("target_not_found_msg"));

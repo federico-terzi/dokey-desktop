@@ -12,6 +12,7 @@ import section.model.SectionType;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.section.SectionInfoResolver;
+import utils.ImageResolver;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -46,6 +47,8 @@ public class SectionListCell extends ListCell<Section> {
         grid.setPadding(new Insets(0, 0, 0, 0));
         name.getStyleClass().add("sectionlistcell-name");
         path.getStyleClass().add("sectionlistcell-path");
+        image.setFitWidth(32);
+        image.setFitHeight(32);
     }
     private void addControlsToGrid() {
         grid.add(image, 0, 0, 1, 2);
@@ -84,7 +87,7 @@ public class SectionListCell extends ListCell<Section> {
                 onContextMenuListener.onReloadSection(section);
             }
         });
-        Image reloadImage = new Image(SectionListCell.class.getResourceAsStream("/assets/refresh_black.png"));
+        Image reloadImage = ImageResolver.getInstance().getImage(SectionListCell.class.getResourceAsStream("/assets/refresh_black.png"), 16);
         ImageView reloadImageView = new ImageView(reloadImage);
         reloadImageView.setFitWidth(16);
         reloadImageView.setFitHeight(16);
@@ -98,7 +101,7 @@ public class SectionListCell extends ListCell<Section> {
                 onContextMenuListener.onExportSection(section);
             }
         });
-        Image exportImage = new Image(SectionListCell.class.getResourceAsStream("/assets/export.png"));
+        Image exportImage = ImageResolver.getInstance().getImage(SectionListCell.class.getResourceAsStream("/assets/export.png"), 16);
         ImageView exportImageView = new ImageView(exportImage);
         exportImageView.setFitWidth(16);
         exportImageView.setFitHeight(16);
@@ -120,7 +123,7 @@ public class SectionListCell extends ListCell<Section> {
                 }
             }
         });
-        Image deleteImage = new Image(SectionListCell.class.getResourceAsStream("/assets/delete.png"));
+        Image deleteImage = ImageResolver.getInstance().getImage(SectionListCell.class.getResourceAsStream("/assets/delete.png"), 16);
         ImageView deleteImageView = new ImageView(deleteImage);
         deleteImageView.setFitWidth(16);
         deleteImageView.setFitHeight(16);

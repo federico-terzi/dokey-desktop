@@ -6,6 +6,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import section.model.Component;
 import section.model.FolderItem;
+import utils.ImageResolver;
 
 import java.util.ResourceBundle;
 
@@ -22,8 +23,10 @@ public class FolderButton extends ComponentButton {
 
         getStyleClass().add("folder-button");
 
-        Image folderImage = new Image(ComponentButton.class.getResourceAsStream("/assets/folder_white.png"), 48, 48, true, true);
+        Image folderImage = ImageResolver.getInstance().getImage(ComponentButton.class.getResourceAsStream("/assets/folder_white.png"), 48);
         ImageView imageView = new ImageView(folderImage);
+        imageView.setFitHeight(48);
+        imageView.setFitWidth(48);
         setContentDisplay(ContentDisplay.TOP);
         setGraphic(imageView);
 

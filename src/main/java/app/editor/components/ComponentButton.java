@@ -11,6 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.paint.Color;
 import section.model.Component;
+import utils.ImageResolver;
 import utils.OSValidator;
 
 import java.util.ArrayList;
@@ -102,7 +103,8 @@ public class ComponentButton extends DragButton {
                 }
             }
         });
-        Image editImage = new Image(ComponentButton.class.getResourceAsStream("/assets/edit.png"));
+
+        Image editImage = ImageResolver.getInstance().getImage(ComponentButton.class.getResourceAsStream("/assets/edit.png"), 16);
         ImageView editImageView = new ImageView(editImage);
         editImageView.setFitWidth(16);
         editImageView.setFitHeight(16);
@@ -117,7 +119,7 @@ public class ComponentButton extends DragButton {
                 }
             }
         });
-        Image deleteImage = new Image(ComponentButton.class.getResourceAsStream("/assets/delete.png"));
+        Image deleteImage = ImageResolver.getInstance().getImage(ComponentButton.class.getResourceAsStream("/assets/delete.png"), 16);
         ImageView deleteImageView = new ImageView(deleteImage);
         deleteImageView.setFitWidth(16);
         deleteImageView.setFitHeight(16);

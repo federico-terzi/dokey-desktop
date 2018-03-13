@@ -3,6 +3,7 @@ package system.search.results;
 import javafx.scene.image.Image;
 import system.DebugManager;
 import system.search.SearchEngine;
+import utils.ImageResolver;
 
 import java.util.ResourceBundle;
 
@@ -30,7 +31,7 @@ public class DebugResult extends AbstractResult {
     public void requestImage(OnImageAvailableListener listener) {
         if (listener != null) {
             new Thread(() -> {
-                Image appImage = new Image(DebugResult.class.getResourceAsStream("/assets/bug.png"), 32, 32, true, true);
+                Image appImage = ImageResolver.getInstance().getImage(DebugResult.class.getResourceAsStream("/assets/bug.png"), 32);
                 listener.onImageAvailable(appImage, null);
             }).start();
         }
