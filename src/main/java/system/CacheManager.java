@@ -166,6 +166,16 @@ public class CacheManager {
     }
 
 
+    /**
+     * @return the user home directory
+     */
+    public File getUserHomeDir() {
+        // Get the user home directory
+        File homeDir = new File(System.getProperty("user.home"));
+
+        return homeDir;
+    }
+
     public File getCacheDir() {
         return cacheDir;
     }

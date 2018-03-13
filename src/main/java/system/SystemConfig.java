@@ -14,6 +14,7 @@ import system.MAC.MACApplicationManager;
 import system.MAC.MACSystemManager;
 import system.MS.MSApplicationManager;
 import system.MS.MSSystemManager;
+import system.bookmarks.BookmarkManager;
 import system.exceptions.UnsupportedOperatingSystemException;
 import system.model.ApplicationManager;
 import system.search.SearchEngine;
@@ -76,6 +77,11 @@ public class SystemConfig {
     @Bean
     public SectionManager sectionManager() {
         return new SectionManager();
+    }
+
+    @Bean
+    public BookmarkManager bookmarkManager() {
+        return new BookmarkManager();
     }
 
     /**

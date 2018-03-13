@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import system.*;
 import system.MS.MSApplicationManager;
 import system.adb.ADBManager;
+import system.bookmarks.BookmarkManager;
 import system.model.ApplicationManager;
 import system.section.SectionManager;
 
@@ -59,6 +60,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private ApplicationSwitchDaemon applicationSwitchDaemon;
     private ServerDiscoveryDaemon serverDiscoveryDaemon;
     private ActiveApplicationsDaemon activeApplicationsDaemon;
+    private BookmarkManager bookmarkManager;
     private EngineServer engineServer;
     private ADBManager adbManager;
     private SystemManager systemManager;
@@ -223,6 +225,10 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
         // Initialize the active applications daemon
         activeApplicationsDaemon = context.getBean(ActiveApplicationsDaemon.class);
+
+        // Initialize the bookmark manager and import them
+        bookmarkManager = context.getBean(BookmarkManager.class);
+        bookmarkManager.startImport();
 
         // load the applications
         loadApplications();
