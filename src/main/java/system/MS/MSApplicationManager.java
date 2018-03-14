@@ -289,6 +289,10 @@ public class MSApplicationManager extends ApplicationManager {
 
     @Override
     public boolean focusDokey() {
+        // If Dokey is already focused, return immediately
+        if (getActivePID() == startupManager.getPID())
+            return false;
+
         // Focus dokey by opening the currently active Dokey process
         return openApplication(startupManager.getCurrentExecutablePath(), false);
     }
