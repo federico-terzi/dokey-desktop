@@ -71,10 +71,10 @@ public class SearchStage extends Stage {
         // Setup the text field search callbacks
         controller.queryTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             searchEngine.requestQuery(newValue, (results) -> {
+                ObservableList<AbstractResult> observableResults = FXCollections.observableArrayList(results);
+
                 // Update the list view
                 Platform.runLater(() -> {
-                    ObservableList<AbstractResult> observableResults = FXCollections.observableArrayList(results);
-
                     controller.resultListView.setItems(observableResults);
 
                     // Select the first item

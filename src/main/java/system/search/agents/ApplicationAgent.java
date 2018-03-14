@@ -31,6 +31,7 @@ public class ApplicationAgent extends AbstractAgent {
 
         List<ApplicationResult> results = applicationManager.getApplicationList().stream().filter(
                 application -> application.getName().toLowerCase().contains(lowerCaseQuery))
+                .limit(MAX_RESULTS_FOR_AGENT)
                 .map((application -> new ApplicationResult(searchEngine, resourceBundle, application)))
                 .collect(Collectors.toList());
         return results;

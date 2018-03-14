@@ -63,13 +63,13 @@ public class BookmarkManager {
         return bookmarks;
     }
 
-    public List<Bookmark> searchBookmarks(String query) {
+    public List<Bookmark> searchBookmarks(String query, int limit) {
         if (query.isEmpty() || !areBookmarksLoaded())
             return new ArrayList<>();
 
         return bookmarks.stream().filter((bookmark -> {
             return bookmark.title.toLowerCase().contains(query) ||
                     bookmark.url.toLowerCase().contains(query);
-        })).collect(Collectors.toList());
+        })).limit(limit).collect(Collectors.toList());
     }
 }

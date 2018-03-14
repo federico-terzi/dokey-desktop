@@ -12,6 +12,8 @@ import java.util.ResourceBundle;
  * on the searched query.
  */
 public abstract class AbstractAgent {
+    public static final int MAX_RESULTS_FOR_AGENT = 6;  // Maximum number of result returned by an agent.
+
     protected SearchEngine searchEngine;
     protected ResourceBundle resourceBundle;
 

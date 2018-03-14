@@ -35,7 +35,8 @@ public class BookmarkAgent extends AbstractAgent {
     public List<? extends AbstractResult> getResults(String query) {
         String lowerCaseQuery = query.toLowerCase();
 
-        List<BookmarkResult> results = bookmarkManager.searchBookmarks(query.toLowerCase()).stream().map((bookmark -> {
+        List<BookmarkResult> results = bookmarkManager.searchBookmarks(query.toLowerCase(), MAX_RESULTS_FOR_AGENT)
+                .stream().map((bookmark -> {
             return new BookmarkResult(searchEngine, resourceBundle, bookmark, applicationManager, defaultImage);
         })).collect(Collectors.toList());
         return results;
