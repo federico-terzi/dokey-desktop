@@ -11,8 +11,9 @@ public class DebugResult extends AbstractResult {
     private final DebugManager debugManager;
     private String command;
 
-    public DebugResult(SearchEngine searchEngine, ResourceBundle resourceBundle, DebugManager debugManager, String query) {
-        super(searchEngine, resourceBundle);
+    public DebugResult(SearchEngine searchEngine, ResourceBundle resourceBundle, DebugManager debugManager, String query,
+                       Image defaultImage) {
+        super(searchEngine, resourceBundle, defaultImage);
         this.debugManager = debugManager;
         this.command = query.substring(2).trim();
     }
@@ -31,8 +32,7 @@ public class DebugResult extends AbstractResult {
     public void requestImage(OnImageAvailableListener listener) {
         if (listener != null) {
             new Thread(() -> {
-                Image appImage = ImageResolver.getInstance().getImage(DebugResult.class.getResourceAsStream("/assets/bug.png"), 32);
-                listener.onImageAvailable(appImage, null);
+                listener.onImageAvailable(defaultImage, null);
             }).start();
         }
     }

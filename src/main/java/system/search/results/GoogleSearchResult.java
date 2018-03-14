@@ -12,8 +12,8 @@ import java.util.ResourceBundle;
 public class GoogleSearchResult extends AbstractResult {
     private String query;
 
-    public GoogleSearchResult(SearchEngine searchEngine, ResourceBundle resourceBundle, String query) {
-        super(searchEngine, resourceBundle);
+    public GoogleSearchResult(SearchEngine searchEngine, ResourceBundle resourceBundle, String query, Image defaultImage) {
+        super(searchEngine, resourceBundle, defaultImage);
         this.query = query;
         this.isIcon = false;
     }
@@ -32,8 +32,7 @@ public class GoogleSearchResult extends AbstractResult {
     public void requestImage(OnImageAvailableListener listener) {
         if (listener != null) {
             new Thread(() -> {
-                Image appImage = ImageResolver.getInstance().getImage(GoogleSearchResult.class.getResourceAsStream("/assets/google.png"), 32);
-                listener.onImageAvailable(appImage, null);
+                listener.onImageAvailable(defaultImage, null);
             }).start();
         }
     }

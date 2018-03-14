@@ -5,6 +5,7 @@ import system.search.SearchEngine;
 import system.search.results.AbstractResult;
 import system.search.results.ApplicationResult;
 import system.search.results.GoogleSearchResult;
+import utils.ImageResolver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,8 @@ public class GoogleSearchAgent extends AbstractAgent {
         super(searchEngine, resourceBundle);
 
         this.applicationManager = applicationManager;
+
+        this.defaultImage = ImageResolver.getInstance().getImage(GoogleSearchAgent.class.getResourceAsStream("/assets/google.png"), 32);
     }
 
     @Override
@@ -27,7 +30,7 @@ public class GoogleSearchAgent extends AbstractAgent {
 
     @Override
     public List<? extends AbstractResult> getResults(String query) {
-        GoogleSearchResult result = new GoogleSearchResult(searchEngine, resourceBundle, query);
+        GoogleSearchResult result = new GoogleSearchResult(searchEngine, resourceBundle, query, defaultImage);
         ArrayList<GoogleSearchResult> results = new ArrayList<>(1);
         results.add(result);
         return results;

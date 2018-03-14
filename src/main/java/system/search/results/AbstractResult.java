@@ -13,10 +13,12 @@ public abstract class AbstractResult {
     protected ResourceBundle resourceBundle;
 
     protected boolean isIcon = true;  // Should be true if the result image is an icon, and should change color when selected
+    protected Image defaultImage; // The default image for this category
 
-    protected AbstractResult(SearchEngine searchEngine, ResourceBundle resourceBundle) {
+    protected AbstractResult(SearchEngine searchEngine, ResourceBundle resourceBundle, Image defaultImage) {
         this.searchEngine = searchEngine;
         this.resourceBundle = resourceBundle;
+        this.defaultImage = defaultImage;
     }
 
     public abstract String getTitle();
@@ -43,4 +45,8 @@ public abstract class AbstractResult {
      * Execute the action associated with this result
      */
     public abstract void executeAction();
+
+    public Image getDefaultImage() {
+        return defaultImage;
+    }
 }

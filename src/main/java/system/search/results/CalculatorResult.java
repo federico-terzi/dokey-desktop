@@ -11,8 +11,9 @@ public class CalculatorResult extends AbstractResult {
     private String expression;
     private BigDecimal result;
 
-    public CalculatorResult(SearchEngine searchEngine, ResourceBundle resourceBundle, String query, BigDecimal result) {
-        super(searchEngine, resourceBundle);
+    public CalculatorResult(SearchEngine searchEngine, ResourceBundle resourceBundle, String query, BigDecimal result,
+                            Image defaultImage) {
+        super(searchEngine, resourceBundle, defaultImage);
         this.expression = query;
         this.result = result;
     }
@@ -31,8 +32,7 @@ public class CalculatorResult extends AbstractResult {
     public void requestImage(OnImageAvailableListener listener) {
         if (listener != null) {
             new Thread(() -> {
-                Image appImage = ImageResolver.getInstance().getImage(CalculatorResult.class.getResourceAsStream("/assets/light.png"), 32);
-                listener.onImageAvailable(appImage, null);
+                listener.onImageAvailable(defaultImage, null);
             }).start();
         }
     }

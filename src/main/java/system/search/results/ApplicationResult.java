@@ -12,7 +12,7 @@ public class ApplicationResult extends AbstractResult {
     private Application application;
 
     public ApplicationResult(SearchEngine searchEngine, ResourceBundle resourceBundle, Application application) {
-        super(searchEngine, resourceBundle);
+        super(searchEngine, resourceBundle, null);
         this.application = application;
         this.isIcon = false;
     }

@@ -1,5 +1,6 @@
 package system.search.agents;
 
+import javafx.scene.image.Image;
 import system.search.SearchEngine;
 import system.search.results.AbstractResult;
 
@@ -13,6 +14,8 @@ import java.util.ResourceBundle;
 public abstract class AbstractAgent {
     protected SearchEngine searchEngine;
     protected ResourceBundle resourceBundle;
+
+    protected Image defaultImage = null;  // The default image for this category
 
     public AbstractAgent(SearchEngine searchEngine, ResourceBundle resourceBundle) {
         this.searchEngine = searchEngine;

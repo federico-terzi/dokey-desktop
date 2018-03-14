@@ -5,6 +5,7 @@ import system.search.SearchEngine;
 import system.search.results.AbstractResult;
 import system.search.results.GoogleSearchResult;
 import system.search.results.TerminalResult;
+import utils.ImageResolver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,8 @@ public class TerminalAgent extends AbstractAgent {
         super(searchEngine, resourceBundle);
 
         this.applicationManager = applicationManager;
+
+        this.defaultImage = ImageResolver.getInstance().getImage(TerminalAgent.class.getResourceAsStream("/assets/right.png"), 32);
     }
 
     @Override
@@ -26,7 +29,7 @@ public class TerminalAgent extends AbstractAgent {
 
     @Override
     public List<? extends AbstractResult> getResults(String query) {
-        TerminalResult result = new TerminalResult(searchEngine, resourceBundle, query);
+        TerminalResult result = new TerminalResult(searchEngine, resourceBundle, query, defaultImage);
         ArrayList<TerminalResult> results = new ArrayList<>(1);
         results.add(result);
         return results;

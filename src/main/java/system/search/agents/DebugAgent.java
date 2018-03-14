@@ -6,6 +6,7 @@ import system.search.SearchEngine;
 import system.search.results.AbstractResult;
 import system.search.results.DebugResult;
 import system.search.results.TerminalResult;
+import utils.ImageResolver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,8 @@ public class DebugAgent extends AbstractAgent {
     public DebugAgent(SearchEngine searchEngine, ResourceBundle resourceBundle, DebugManager debugManager) {
         super(searchEngine, resourceBundle);
         this.debugManager = debugManager;
+
+        this.defaultImage = ImageResolver.getInstance().getImage(DebugAgent.class.getResourceAsStream("/assets/bug.png"), 32);
     }
 
     @Override
@@ -26,7 +29,7 @@ public class DebugAgent extends AbstractAgent {
 
     @Override
     public List<? extends AbstractResult> getResults(String query) {
-        DebugResult result = new DebugResult(searchEngine, resourceBundle, debugManager, query);
+        DebugResult result = new DebugResult(searchEngine, resourceBundle, debugManager, query, defaultImage);
         ArrayList<DebugResult> results = new ArrayList<>(1);
         results.add(result);
         return results;

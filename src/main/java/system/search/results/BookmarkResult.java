@@ -13,8 +13,8 @@ public class BookmarkResult extends AbstractResult {
     private ApplicationManager applicationManager;
 
     public BookmarkResult(SearchEngine searchEngine, ResourceBundle resourceBundle, Bookmark bookmark,
-                          ApplicationManager applicationManager) {
-        super(searchEngine, resourceBundle);
+                          ApplicationManager applicationManager, Image defaultImage) {
+        super(searchEngine, resourceBundle, defaultImage);
         this.bookmark = bookmark;
         this.applicationManager = applicationManager;
     }
@@ -34,8 +34,7 @@ public class BookmarkResult extends AbstractResult {
         if (listener != null) {
             new Thread(() -> {
                 new Thread(() -> {
-                    Image image = ImageResolver.getInstance().getImage(BookmarkResult.class.getResourceAsStream("/assets/star.png"), 32);
-                    listener.onImageAvailable(image, null);
+                    listener.onImageAvailable(defaultImage, null);
                 }).start();
             }).start();
         }

@@ -9,8 +9,8 @@ import java.util.ResourceBundle;
 public class TerminalResult extends AbstractResult {
     private String command;
 
-    public TerminalResult(SearchEngine searchEngine, ResourceBundle resourceBundle, String query) {
-        super(searchEngine, resourceBundle);
+    public TerminalResult(SearchEngine searchEngine, ResourceBundle resourceBundle, String query, Image defaultImage) {
+        super(searchEngine, resourceBundle, defaultImage);
         this.command = query.substring(1).trim();
     }
 
@@ -28,8 +28,7 @@ public class TerminalResult extends AbstractResult {
     public void requestImage(OnImageAvailableListener listener) {
         if (listener != null) {
             new Thread(() -> {
-                Image appImage = ImageResolver.getInstance().getImage(TerminalResult.class.getResourceAsStream("/assets/right.png"), 32);
-                listener.onImageAvailable(appImage, null);
+                listener.onImageAvailable(defaultImage, null);
             }).start();
         }
     }

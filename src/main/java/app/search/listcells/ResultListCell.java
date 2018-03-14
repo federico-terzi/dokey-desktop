@@ -72,12 +72,14 @@ public class ResultListCell extends ListCell<AbstractResult> {
         title.setText(result.getTitle());
         description.setText(result.getDescription());
 
-        // If the image is available in the cache, display it immediately
-        // If not, show the fallback image and request it.
         String resultHash = result.getHash();
-        if (resultHash != null && imageCacheMap.containsKey(resultHash)) {
-           image.setImage(imageCacheMap.get(resultHash));
+        if (result.getDefaultImage() != null) {  // Default image available
+            image.setImage(result.getDefaultImage());
+        }else if (resultHash != null && imageCacheMap.containsKey(resultHash)) {
+            // If the image is available in the cache, display it immediately
+            image.setImage(imageCacheMap.get(resultHash));
         }else{
+            // If not, show the fallback image and request it.
             image.setImage(fallback);  // Image fallback
 
             // Request the image

@@ -6,6 +6,7 @@ import system.search.SearchEngine;
 import system.search.results.AbstractResult;
 import system.search.results.ApplicationResult;
 import system.search.results.BookmarkResult;
+import utils.ImageResolver;
 
 import java.util.List;
 import java.util.ResourceBundle;
@@ -21,6 +22,8 @@ public class BookmarkAgent extends AbstractAgent {
 
         this.bookmarkManager = bookmarkManager;
         this.applicationManager = applicationManager;
+
+        this.defaultImage = ImageResolver.getInstance().getImage(BookmarkAgent.class.getResourceAsStream("/assets/star.png"), 32);
     }
 
     @Override
@@ -33,7 +36,7 @@ public class BookmarkAgent extends AbstractAgent {
         String lowerCaseQuery = query.toLowerCase();
 
         List<BookmarkResult> results = bookmarkManager.searchBookmarks(query.toLowerCase()).stream().map((bookmark -> {
-            return new BookmarkResult(searchEngine, resourceBundle, bookmark, applicationManager);
+            return new BookmarkResult(searchEngine, resourceBundle, bookmark, applicationManager, defaultImage);
         })).collect(Collectors.toList());
         return results;
     }
