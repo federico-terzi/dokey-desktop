@@ -28,6 +28,8 @@ public class MACApplicationManager extends ApplicationManager {
     private static final long OPEN_APPLICATION_CHECK_INTERVAL = 500;  // How often to check if an application has focus
                                                                       // in a openApplication request.
 
+    private Application terminalApp = null;
+
     public MACApplicationManager(StartupManager startupManager){
         this.startupManager = startupManager;
     }
@@ -158,13 +160,16 @@ public class MACApplicationManager extends ApplicationManager {
             // Execute the process
             Process proc = runtime.exec(new String[]{"osascript", "-e", "tell application \"Terminal\" to do script \""+escapedCommand+"\""});
 
+            // Focus terminal app
+            if (terminalApp != null)
+                openApplication(terminalApp.getExecutablePath());
+
             return true;
         } catch (IOException e) {
             e.printStackTrace();
         }
         return false;
     }
-
     @Override
     public boolean focusDokey() {
         int dokeyPid = startupManager.getPID();
@@ -660,6 +665,10 @@ public class MACApplicationManager extends ApplicationManager {
 
                 // Add the application
                 Application application = addApplicationFromAppPath(appPath);
+
+                // Save terminal app if found
+                if (terminalApp == null && application != null && application.getExecutablePath().endsWith("Terminal.app"))
+                    terminalApp = application;
 
                 // Update the listener and increase the counter
                 if (listener != null && application != null) {
