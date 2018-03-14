@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
-
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
-<BorderPane prefHeight="701.0" prefWidth="900.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="app.editor.controllers.EditorController">
+
+<BorderPane prefHeight="701.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.editor.controllers.EditorController">
   <center>
-    <SplitPane dividerPositions="0.2541225626740946" focusTraversable="true" styleClass="split-pane" fx:id="splitPane">
+    <SplitPane fx:id="splitPane" dividerPositions="0.2541225626740946" focusTraversable="true" styleClass="split-pane">
       <items>
         <BorderPane>
           <top>
@@ -20,7 +21,7 @@
             <ListView fx:id="sectionsListView" />
           </center>
         </BorderPane>
-        <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="AS_NEEDED" styleClass="content-scrollpane" fx:id="scrollPane">
+        <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="AS_NEEDED" styleClass="content-scrollpane">
           <content>
             <VBox fx:id="contentBox" alignment="CENTER" fillWidth="true" styleClass="editor-container">
 
@@ -35,78 +36,92 @@
       <children>
         <ToolBar>
           <items>
-            <Button mnemonicParsing="false" fx:id="toggleAppsBtn">
+            <Button fx:id="toggleAppsBtn" mnemonicParsing="false">
               <!--Created by code-->
             </Button>
-            <Button mnemonicParsing="false" fx:id="addApplicationBtn">
+            <Button fx:id="addApplicationBtn" mnemonicParsing="false">
               <graphic>
                 <ImageView fitHeight="20" fitWidth="20">
-                  <Image url="/assets/toolbar_icons/add_app.png" />
+                   <image>
+                     <Image url="/assets/toolbar_icons/add_app.png" />
+                   </image>
                 </ImageView>
               </graphic>
               <tooltip>
-                <Tooltip text="%add_app"/>
+                <Tooltip text="%add_app" />
               </tooltip>
             </Button>
-            <Button mnemonicParsing="false" fx:id="exportBtn">
+            <Button fx:id="exportBtn" mnemonicParsing="false">
               <graphic>
                 <ImageView fitHeight="20" fitWidth="20">
-                  <Image url="/assets/toolbar_icons/export.png" />
+                   <image>
+                     <Image url="/assets/toolbar_icons/export.png" />
+                   </image>
                 </ImageView>
               </graphic>
               <tooltip>
-                <Tooltip text="%export_layout"/>
+                <Tooltip text="%export_layout" />
               </tooltip>
             </Button>
-            <Button mnemonicParsing="false" fx:id="importBtn">
+            <Button fx:id="importBtn" mnemonicParsing="false">
               <graphic>
                 <ImageView fitHeight="20" fitWidth="20">
-                  <Image url="/assets/toolbar_icons/inex.png" />
+                   <image>
+                     <Image url="/assets/toolbar_icons/inex.png" />
+                   </image>
                 </ImageView>
               </graphic>
               <tooltip>
-                <Tooltip text="%import_layout"/>
+                <Tooltip text="%import_layout" />
               </tooltip>
             </Button>
-            <Button mnemonicParsing="false" fx:id="searchBtn">
+            <Button fx:id="searchBtn" mnemonicParsing="false">
               <graphic>
                 <ImageView fitHeight="20" fitWidth="20">
-                  <Image url="/assets/toolbar_icons/search.png" />
+                   <image>
+                     <Image url="/assets/toolbar_icons/search.png" />
+                   </image>
                 </ImageView>
               </graphic>
               <tooltip>
-                <Tooltip text="%search_application"/>
+                <Tooltip text="%search_application" />
               </tooltip>
             </Button>
             <Pane HBox.hgrow="ALWAYS" />
-            <Button mnemonicParsing="false" fx:id="rotateViewBtn">
+            <Button fx:id="rotateViewBtn" mnemonicParsing="false">
               <graphic>
                 <ImageView fitHeight="20" fitWidth="20">
-                  <Image url="/assets/toolbar_icons/screen_rotation.png" />
+                   <image>
+                     <Image url="/assets/toolbar_icons/screen_rotation.png" />
+                   </image>
                 </ImageView>
               </graphic>
               <tooltip>
-                <Tooltip text="%rotate_view"/>
+                <Tooltip text="%rotate_view" />
               </tooltip>
             </Button>
-            <Button mnemonicParsing="false" fx:id="changeSizeBtn">
+            <Button fx:id="changeSizeBtn" mnemonicParsing="false">
               <graphic>
                 <ImageView fitHeight="20" fitWidth="20">
-                  <Image url="/assets/toolbar_icons/grid.png" />
+                   <image>
+                     <Image url="/assets/toolbar_icons/grid.png" />
+                   </image>
                 </ImageView>
               </graphic>
               <tooltip>
-                <Tooltip text="%change_grid_size"/>
+                <Tooltip text="%change_grid_size" />
               </tooltip>
             </Button>
-            <Button mnemonicParsing="false" fx:id="helpBtn">
+            <Button fx:id="helpBtn" mnemonicParsing="false">
               <graphic>
                 <ImageView fitHeight="20" fitWidth="20">
-                  <Image url="/assets/toolbar_icons/help.png" />
+                   <image>
+                     <Image url="/assets/toolbar_icons/help.png" />
+                   </image>
                 </ImageView>
               </graphic>
               <tooltip>
-                <Tooltip text="%get_help"/>
+                <Tooltip text="%get_help" />
               </tooltip>
             </Button>
           </items>
@@ -117,4 +132,7 @@
   <right>
 
   </right>
+   <bottom>
+      <ProgressBar fx:id="loadingProgressBar" maxWidth="1.7976931348623157E308" progress="0.0" BorderPane.alignment="CENTER" />
+   </bottom>
 </BorderPane>

@@ -125,3 +125,19 @@
 .section-box {
     -fx-background-color: -primaryColor;
 }
+
+.progress-bar {
+    -fx-max-height: 5px;
+    -fx-pref-height: 5px;
+}
+
+.progress-bar > .track {
+    -fx-background-color: transparent;
+}
+
+.progress-bar > .bar {
+    -fx-background-color: -secondaryDarkColor;
+    -fx-padding: 4px;
+    -fx-background-insets: 0px;
+    -fx-background-radius: 0;
+}

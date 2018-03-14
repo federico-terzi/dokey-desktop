@@ -35,12 +35,29 @@ public class SectionManager {
      * @return the list of all user sections.
      */
     public List<Section> getSections() {
+        return getSections(null);
+    }
+
+    /**
+     * Get the list of all user Section(s).
+     * @param listener the listener that will handle progress updates.
+     * @return the list of all user sections.
+     */
+    public List<Section> getSections(OnSectionProgressListener listener) {
         List<Section> output = new ArrayList<>();
         // Get the section directory
         File userSectionDir = CacheManager.getInstance().getSectionDir();
 
+        int total = userSectionDir.listFiles().length;
+        int current = 0;
+
         // Go through all user section files
         for (File sectionFile : userSectionDir.listFiles()) {
+            // Notify the listener
+            if (listener != null) {
+                listener.onSectionProgress(current / (float) total);
+            }
+
             // Skip hidden files
             if (sectionFile.isHidden())
                 continue;
@@ -52,7 +69,16 @@ public class SectionManager {
             }
         }
 
+        // Notify the listener
+        if (listener != null) {
+            listener.onSectionProgress(1);
+        }
+
         return output;
+    }
+
+    public interface OnSectionProgressListener {
+        void onSectionProgress(double progress);
     }
 
     public Section getShortcutSection(String appPath) {

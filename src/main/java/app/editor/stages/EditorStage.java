@@ -240,14 +240,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             }
         });
 
-//        // Keyboard events
-//        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-//            @Override
-//            public void handle(KeyEvent event) {
-//                System.out.println(event);
-//            }
-//        });
-
         // Listener for the search query
         controller.searchSectionTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             sectionQuery = newValue;
@@ -303,6 +295,10 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         // Reset the list view
         controller.getSectionsListView().getItems().clear();
 
+        controller.loadingProgressBar.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
+        controller.loadingProgressBar.setManaged(true);
+        controller.loadingProgressBar.setVisible(true);
+
         Task sectionTask = new Task() {
             @Override
             protected Object call() throws Exception {
@@ -334,6 +330,9 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                             selectSection(targetSectionID);
                         }
 
+                        controller.loadingProgressBar.setManaged(false);
+                        controller.loadingProgressBar.setVisible(false);
+                        controller.loadingProgressBar.setProgress(0);
                     }
                 });
                 return null;

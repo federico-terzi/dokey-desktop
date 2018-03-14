@@ -22,6 +22,8 @@ public class EditorController {
     public ScrollPane scrollPane;
     public Button importBtn;
     public Button helpBtn;
+    public ProgressBar loadingProgressBar;
+
     @FXML
     private ResourceBundle resources;
 
