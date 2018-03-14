@@ -94,11 +94,10 @@ public class ResultListCell extends ListCell<AbstractResult> {
         }
 
         // Set up selected result image behaviour
+        image.getStyleClass().clear();
         if (result.isIcon()) {
             image.getStyleClass().add("dokey-search-result-icon");
-            image.getStyleClass().remove("dokey-search-result-image");
         }else{
-            image.getStyleClass().remove("dokey-search-result-icon");
             image.getStyleClass().add("dokey-search-result-image");
         }
 
