@@ -188,6 +188,25 @@ public class SectionManager {
     }
 
     /**
+     * Get the list of items contained in the given section.
+     * @param section the section to analyze.
+     * @return the List of Items contained in the given section.
+     */
+    public List<Item> getSectionItems(Section section) {
+        List<Item> output = new ArrayList<>(30);
+
+        for (Page page : section.getPages()) {
+            for (Component component : page.getComponents()) {
+                output.add(component.getItem());
+            }
+        }
+
+        output.addAll(section.getBottomBarItems());
+
+        return output;
+    }
+
+    /**
      * Return the File of the Section associated with the launchpad.
      * If a section is not available, it generates an empty one and then
      * writes it to the file.

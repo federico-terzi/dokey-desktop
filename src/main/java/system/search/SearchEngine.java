@@ -43,6 +43,7 @@ public class SearchEngine implements ApplicationContextAware{
         agents.add(context.getBean(TerminalAgent.class));
         agents.add(context.getBean(DebugAgent.class));
         agents.add(context.getBean(GoogleSearchAgent.class));
+        agents.add(context.getBean(ShortcutAgent.class));
         agents.add(context.getBean(BookmarkAgent.class));
     }
 

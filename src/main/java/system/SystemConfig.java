@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
+import section.model.ShortcutItem;
 import system.MAC.MACApplicationManager;
 import system.MAC.MACSystemManager;
 import system.MS.MSApplicationManager;
@@ -19,6 +20,7 @@ import system.exceptions.UnsupportedOperatingSystemException;
 import system.model.ApplicationManager;
 import system.search.SearchEngine;
 import system.search.agents.*;
+import system.section.SectionInfoResolver;
 import system.section.SectionManager;
 import utils.IconManager;
 import utils.OSValidator;
@@ -82,6 +84,11 @@ public class SystemConfig {
     @Bean
     public BookmarkManager bookmarkManager() {
         return new BookmarkManager();
+    }
+
+    @Bean
+    public SectionInfoResolver sectionInfoResolver() throws UnsupportedOperatingSystemException {
+        return new SectionInfoResolver(applicationManager(), resourceBundle());
     }
 
     /**
@@ -170,5 +177,10 @@ public class SystemConfig {
     @Bean
     public DebugAgent debugAgent() throws UnsupportedOperatingSystemException {
         return new DebugAgent(searchEngine(), resourceBundle(), debugManager());
+    }
+
+    @Bean
+    public ShortcutAgent shortcutAgent() throws UnsupportedOperatingSystemException {
+        return new ShortcutAgent(searchEngine(), resourceBundle(), applicationManager(), sectionManager(), sectionInfoResolver());
     }
 }
