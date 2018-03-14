@@ -77,6 +77,14 @@ public class TrayIconManager {
 
             setTrayIconStatus(resourceBundle.getString("initializing"));
 
+            java.awt.MenuItem toggleSearchItem = new java.awt.MenuItem(resourceBundle.getString("toggle_search"));
+            toggleSearchItem.addActionListener(event -> Platform.runLater(() -> {
+                if (listener != null) {
+                    listener.onSearchOpenRequest();
+                }
+            }));
+
+
             java.awt.MenuItem openEditor = new java.awt.MenuItem(resourceBundle.getString("open_editor"));
             openEditor.addActionListener(event -> Platform.runLater(() -> {
                 if (listener != null) {
@@ -111,6 +119,8 @@ public class TrayIconManager {
 
             // setup the popup menu for the application.
             final java.awt.PopupMenu popup = new java.awt.PopupMenu();
+            popup.add(toggleSearchItem);
+            popup.addSeparator();
             popup.add(openEditor);
             popup.add(settingsItem);
             popup.addSeparator();
@@ -131,6 +141,7 @@ public class TrayIconManager {
         void onEditorOpenRequest();
         void onSettingsOpenRequest();
         void onHelpOpenRequest();
+        void onSearchOpenRequest();
     }
 
     /**

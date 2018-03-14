@@ -392,15 +392,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        if (searchStage == null || !searchStage.isShowing()) {
-                            new Thread(() -> appManager.focusDokey()).start();
-
-                            searchStage = context.getBean(SearchStage.class);
-                            searchStage.show();
-                        }else{
-                            searchStage.hide();
-                            searchStage = null;
-                        }
+                        onSearchOpenRequest();
                     }
                 });
             }
@@ -490,6 +482,19 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     public void onHelpOpenRequest() {
         // Open the docs in the browser
         appManager.openWebLink(DOCS_URL);
+    }
+
+    @Override
+    public void onSearchOpenRequest() {
+        if (searchStage == null || !searchStage.isShowing()) {
+            new Thread(() -> appManager.focusDokey()).start();
+
+            searchStage = context.getBean(SearchStage.class);
+            searchStage.show();
+        }else{
+            searchStage.hide();
+            searchStage = null;
+        }
     }
 
     /**
