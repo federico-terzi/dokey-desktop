@@ -34,6 +34,7 @@ public class BookmarkManager {
      * Start the import procedure in another thread
      */
     public void startImport() {
+        LOG.info("Starting bookmark import");
         new Thread(() -> {
             for (BookmarkImportAgent importAgent : importAgents) {
                 boolean res = importAgent.importBookmarks();

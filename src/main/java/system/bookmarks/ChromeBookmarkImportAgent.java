@@ -16,17 +16,19 @@ import java.util.List;
 import java.util.Map;
 
 public class ChromeBookmarkImportAgent implements BookmarkImportAgent{
-    private File bookmarkFile;
+    private File googleDir;
 
     private List<Bookmark> bookmarks;
 
     public ChromeBookmarkImportAgent() throws UnsupportedOperatingSystemException {
         // Calculate the correct bookmark file path
         if (OSValidator.isWindows()) {
-            bookmarkFile = new File(CacheManager.getInstance().getUserHomeDir(),
-                    "AppData/Local/Google/Chrome/User Data/Default/Bookmarks");  //TODO: dynamic, also for other profiles
+            googleDir = new File(CacheManager.getInstance().getUserHomeDir(),
+                    "AppData/Local/Google/Chrome/User Data/");  //TODO: dynamic, also for other profiles
+            // AppData/Local/Google/Chrome/User Data/Default/Bookmarks
         }else if (OSValidator.isMac()) {  //TODO: mac
-
+            googleDir = new File(CacheManager.getInstance().getUserHomeDir(),
+                    "Library/Application Support/Google/Chrome/");
         }else{
             throw new UnsupportedOperatingSystemException("This OS is not valid. YET.");
         }
@@ -43,35 +45,54 @@ public class ChromeBookmarkImportAgent implements BookmarkImportAgent{
      */
     @Override
     public boolean importBookmarks() {
-        // Make sure the bookmarks exist
-        if (!bookmarkFile.isFile()) {
+        // Make sure the google directory exists
+        if (googleDir == null || !googleDir.isDirectory())
             return false;
+
+        // Find all the bookmark files
+        List<File> bookmarkFiles = new ArrayList<>();
+
+        // Cycle in the directories to find the Bookmarks file
+        for (File file : googleDir.listFiles()) {
+            if (file.isDirectory()) {
+                File bookmarkFile = new File(file, "Bookmarks");
+                if (bookmarkFile.isFile()) {
+                    bookmarkFiles.add(bookmarkFile);
+                }
+            }
         }
+
+        // Make sure there is at least 1 file
+        if (bookmarkFiles.size() == 0)
+            return false;
 
         bookmarks = new ArrayList<>(200);
 
-        // Load the bookmarks
-        try {
-            FileInputStream fis = new FileInputStream(bookmarkFile);
-            JSONTokener tokener = new JSONTokener(fis);
-            JSONObject jsonContent = new JSONObject(tokener);
+        for (File bookmarkFile : bookmarkFiles) {
+            LOG.info(getName()+ ": Importing bookmarks from "+bookmarkFile);
+            // Load the bookmarks
+            try {
+                FileInputStream fis = new FileInputStream(bookmarkFile);
+                JSONTokener tokener = new JSONTokener(fis);
+                JSONObject jsonContent = new JSONObject(tokener);
 
-            // Create the recursive map
-            Map<String, Object> jsonMap = jsonContent.toMap();
+                // Create the recursive map
+                Map<String, Object> jsonMap = jsonContent.toMap();
 
-            // Load the bookmarks recursively
-            recourseJSONTree(jsonMap, bookmarks);
+                // Load the bookmarks recursively
+                recourseJSONTree(jsonMap, bookmarks);
 
-            fis.close();
-
-            return true;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+                fis.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return false;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
         }
 
-        return false;
+        return true;
     }
 
     /**
