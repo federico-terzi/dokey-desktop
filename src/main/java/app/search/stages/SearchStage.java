@@ -5,29 +5,25 @@ import app.search.listcells.ResultListCell;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import system.ResourceUtils;
+import system.StartupManager;
+import system.model.ApplicationManager;
 import system.search.SearchEngine;
 import system.search.results.AbstractResult;
 import utils.ImageResolver;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -107,19 +103,24 @@ public class SearchStage extends Stage {
                 }
 
                 event.consume();
-            }else if (event.getCode() == KeyCode.UP) {  // Select previous element in the list
+            } else if (event.getCode() == KeyCode.UP) {  // Select previous element in the list
                 if (currentlySelected > 0) {
                     controller.resultListView.getSelectionModel().select(currentlySelected - 1);
                 }
 
                 event.consume();
-            }else if (event.getCode() == KeyCode.ENTER) {  // Execute action and close the stage
+            } else if (event.getCode() == KeyCode.ENTER) {  // Execute action and close the stage
                 AbstractResult result = (AbstractResult) controller.resultListView.getSelectionModel().getSelectedItem();
                 executeSearch(result);
-            }else if (event.getCode() == KeyCode.ESCAPE) { // Close the search stage
+            } else if (event.getCode() == KeyCode.ESCAPE) { // Close the search stage
                 close();
             }
         });
+        // Detect if window lose focus
+        focusedProperty().addListener(((observable, oldValue, newValue) -> {
+            if (newValue == false)
+                close();
+        }));
 
         // Result list view click listener, execute the corresponding action
         controller.resultListView.setOnMouseClicked(event -> {
