@@ -3,6 +3,7 @@ package system;
 
 import org.apache.commons.io.FileUtils;
 import system.model.ApplicationManager;
+import system.quick_commands.QuickCommandManager;
 import system.section.SectionManager;
 import utils.OSValidator;
 
@@ -27,12 +28,14 @@ public class CacheManager {
     private File iconCacheDir;
     private File webCacheDir;
     private File sectionDir;
+    private File quickCommandsDir;
 
     private CacheManager() {
         cacheDir = loadCacheDir();
         iconCacheDir = loadIconCacheDir();
         webCacheDir = loadWebCacheDir();
         sectionDir = loadSectionDir();
+        quickCommandsDir = loadQuickCommandsDir();
     }
 
     /**
@@ -113,6 +116,25 @@ public class CacheManager {
     }
 
     /**
+     * Create and retrieve the quick commands directory.
+     *
+     * @return the quick commands directory.
+     */
+    public File loadQuickCommandsDir() {
+        File cacheDir = loadCacheDir();
+
+        // Get the icon cache directory
+        File quickCommandsDir = new File(cacheDir, QuickCommandManager.QUICK_COMMANDS_DIR_NAME);
+
+        // If it doesn't exists, createRequest it
+        if (!quickCommandsDir.isDirectory()) {
+            quickCommandsDir.mkdir();
+        }
+
+        return quickCommandsDir;
+    }
+
+    /**
      * Clear the app cache, by deleting the icons and the cached apps.
      * SECTIONS WILL NOT BE DELETED
      * @return true if succeeded, false otherwise.
@@ -190,5 +212,9 @@ public class CacheManager {
 
     public File getWebCacheDir() {
         return webCacheDir;
+    }
+
+    public File getQuickCommandsDir() {
+        return quickCommandsDir;
     }
 }
