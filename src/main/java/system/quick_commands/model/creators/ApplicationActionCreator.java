@@ -11,7 +11,7 @@ import java.util.ResourceBundle;
 
 public class ApplicationActionCreator extends QuickActionCreator {
     public ApplicationActionCreator(DependencyResolver resolver, ResourceBundle resourceBundle) {
-        super(resolver, resourceBundle);
+        super(QuickAction.Type.APP, resolver, resourceBundle);
     }
 
     @Override
@@ -46,7 +46,32 @@ public class ApplicationActionCreator extends QuickActionCreator {
 
     @Override
     public void editAction(QuickAction action, OnQuickActionListener listener) {
+        try {
+            AppSelectDialogStage appSelectDialogStage = new AppSelectDialogStage(resolver.getApplicationManager(),
+                    resourceBundle,
+                    new AppSelectDialogStage.OnApplicationListener() {
+                        @Override
+                        public void onApplicationSelected(Application application) {
+                            // Create the action
+                            ApplicationAction action = new ApplicationAction();
+                            action.setExecutablePath(application.getExecutablePath());
 
+                            if (listener != null) {
+                                listener.onQuickActionSelected(action);
+                            }
+                        }
+
+                        @Override
+                        public void onCanceled() {
+                            if (listener != null) {
+                                listener.onCanceled();
+                            }
+                        }
+                    });
+            appSelectDialogStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

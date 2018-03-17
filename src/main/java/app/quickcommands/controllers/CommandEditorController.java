@@ -12,4 +12,6 @@ public class CommandEditorController {
     public Button addCommandBtn;
     public Button saveBtn;
     public TextField nameTextField;
+    public Button editActionBtn;
+    public Button clearActionBtn;
 }

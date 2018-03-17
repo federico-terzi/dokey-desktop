@@ -10,10 +10,12 @@ import java.util.ResourceBundle;
  * It makes available methods to create and exit a quick action
  */
 public abstract class QuickActionCreator {
+    protected QuickAction.Type actionType;
     protected DependencyResolver resolver;
     protected ResourceBundle resourceBundle;  //  the ResourceBundle used for the i18n.
 
-    public QuickActionCreator(DependencyResolver resolver, ResourceBundle resourceBundle) {
+    protected QuickActionCreator(QuickAction.Type actionType, DependencyResolver resolver, ResourceBundle resourceBundle) {
+        this.actionType = actionType;
         this.resolver = resolver;
         this.resourceBundle = resourceBundle;
     }
@@ -39,5 +41,13 @@ public abstract class QuickActionCreator {
     public interface OnQuickActionListener {
         void onQuickActionSelected(QuickAction action);
         void onCanceled();
+    }
+
+    public QuickAction.Type getActionType() {
+        return actionType;
+    }
+
+    public void setActionType(QuickAction.Type actionType) {
+        this.actionType = actionType;
     }
 }

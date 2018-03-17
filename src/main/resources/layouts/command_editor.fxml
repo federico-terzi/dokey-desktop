@@ -75,9 +75,17 @@
                   <Label fx:id="actionLabel" text="No action specified yet..." GridPane.columnIndex="1" GridPane.rowIndex="2" />
                   <HBox GridPane.columnIndex="1" GridPane.rowIndex="3">
                      <children>
-                         <MenuButton layoutX="-9.0" fx:id="addActionBtn" mnemonicParsing="false" text="Add Action">
-                         </MenuButton>
-                         <Pane HBox.hgrow="ALWAYS"/>
+                         <MenuButton fx:id="addActionBtn" layoutX="-9.0" mnemonicParsing="false" text="Add Action">
+                           <HBox.margin>
+                              <Insets right="8.0" />
+                           </HBox.margin></MenuButton>
+                        <Button fx:id="editActionBtn" mnemonicParsing="false" text="Edit Action">
+                           <HBox.margin>
+                              <Insets right="8.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="clearActionBtn" mnemonicParsing="false" text="Clear Action" />
+                         <Pane HBox.hgrow="ALWAYS" />
                          <Button fx:id="saveBtn" mnemonicParsing="false" text="Save" />
                      </children>
                   </HBox>

@@ -25,9 +25,7 @@ import system.quick_commands.model.creators.ApplicationActionCreator;
 import system.quick_commands.model.creators.QuickActionCreator;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class CommandEditorStage extends Stage implements DependencyResolver {
     private QuickCommandManager quickCommandManager;
@@ -39,7 +37,7 @@ public class CommandEditorStage extends Stage implements DependencyResolver {
     // from null, it means the user is modifying an existing one.
     private QuickCommand currentCommand = new QuickCommand(true);
 
-    private List<QuickActionCreator> actionCreators = new ArrayList<>();
+    private Map<QuickAction.Type, QuickActionCreator> actionCreators = new HashMap<>();
 
     public CommandEditorStage(QuickCommandManager quickCommandManager, ResourceBundle resourceBundle,
                               ApplicationManager applicationManager,
@@ -59,8 +57,7 @@ public class CommandEditorStage extends Stage implements DependencyResolver {
 
         controller = (CommandEditorController) fxmlLoader.getController();
 
-        // Disable save button initially
-        controller.saveBtn.setDisable(true);
+        renderFields();
 
         // Register all the action creators in the add button
         registerActionCreators();
@@ -89,6 +86,33 @@ public class CommandEditorStage extends Stage implements DependencyResolver {
             currentCommand.setName(newValue);
             renderFields();
         }));
+
+        // Item select listener
+        controller.tableView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                loadQuickCommand((QuickCommand) newValue);
+            }
+        }));
+
+        // Add the command
+        controller.addCommandBtn.setOnAction(event -> {
+            resetFields();
+        });
+
+        // Clear action button
+        controller.clearActionBtn.setOnAction(event -> {currentCommand.setAction(null); renderFields();});
+
+        // Edit action button
+        controller.editActionBtn.setOnAction(event -> {
+            if (currentCommand.getAction() == null)
+                return;
+
+            // Get the associated action creator and trigger the edit dialog
+            QuickActionCreator actionCreator = actionCreators.get(currentCommand.getAction().getType());
+            if (actionCreator != null) {
+                actionCreator.editAction(currentCommand.getAction(), onQuickActionListener);
+            }
+        });
 
         // Save button
         controller.saveBtn.setOnAction((event) -> saveCommand());
@@ -153,36 +177,57 @@ public class CommandEditorStage extends Stage implements DependencyResolver {
     private void populateTableView(List<QuickCommand> commands) {
         ObservableList<QuickCommand> observableList = FXCollections.observableList(commands);
         controller.tableView.setItems(observableList);
+
+        // Select the currentcommand in the list if present
+        for (int i = 0; i<observableList.size(); i++) {
+            if (observableList.get(i).getId().equals(currentCommand.getId())) {
+                controller.tableView.getSelectionModel().select(i);
+            }
+        }
     }
 
     /**
      * Register all the action creators in the list
      */
     private void registerActionCreators() {
-        actionCreators.add(new ApplicationActionCreator(this, resourceBundle));
+        QuickActionCreator appCreator = new ApplicationActionCreator(this, resourceBundle);
+        actionCreators.put(appCreator.getActionType(), appCreator);
     }
 
     /**
      * Populate the add action button list with the action creators
      */
     private void populateActionCreators() {
-        for (QuickActionCreator actionCreator : actionCreators) {
+        for (QuickActionCreator actionCreator : actionCreators.values()) {
             MenuItem menuItem = new MenuItem(actionCreator.getDisplayText());
-            menuItem.setOnAction((event -> actionCreator.createAction(new QuickActionCreator.OnQuickActionListener() {
-                @Override
-                public void onQuickActionSelected(QuickAction action) {
-                    currentCommand.setAction(action);
-
-                    validateSave();
-                }
-
-                @Override
-                public void onCanceled() {
-
-                }
-            })));
+            menuItem.setOnAction((event -> actionCreator.createAction(onQuickActionListener)));
             controller.addActionBtn.getItems().add(menuItem);
         }
+    }
+
+    /**
+     * Used when adding or editing a quick action.
+     */
+    private QuickActionCreator.OnQuickActionListener onQuickActionListener = new QuickActionCreator.OnQuickActionListener() {
+        @Override
+        public void onQuickActionSelected(QuickAction action) {
+            currentCommand.setAction(action);
+            validateSave();
+        }
+
+        @Override
+        public void onCanceled() {
+
+        }
+    };
+
+    /**
+     * Load the given quick command in the edit section.
+     * @param command the command to visualize
+     */
+    private void loadQuickCommand(QuickCommand command) {
+        currentCommand = command;
+        renderFields();
     }
 
     /**
@@ -192,12 +237,45 @@ public class CommandEditorStage extends Stage implements DependencyResolver {
         if (currentCommand == null)
             return;
 
-        controller.commandTextField.setText(currentCommand.getCommand());
+        String commandText = ":";
+        if (currentCommand.getCommand() != null)
+            commandText = currentCommand.getCommand();
+
+        controller.commandTextField.setText(commandText);
         controller.nameTextField.setText(currentCommand.getName());
+
+        if (currentCommand.getAction() != null) {
+            controller.actionLabel.setText(currentCommand.getAction().getDisplayText(this, resourceBundle));
+
+            controller.editActionBtn.setManaged(true);
+            controller.editActionBtn.setVisible(true);
+            controller.clearActionBtn.setManaged(true);
+            controller.clearActionBtn.setVisible(true);
+            controller.addActionBtn.setManaged(false);
+            controller.addActionBtn.setVisible(false);
+        }else{
+            controller.actionLabel.setText("No action selected");  // TODO: i18n
+
+            controller.editActionBtn.setManaged(false);
+            controller.editActionBtn.setVisible(false);
+            controller.clearActionBtn.setManaged(false);
+            controller.clearActionBtn.setVisible(false);
+            controller.addActionBtn.setManaged(true);
+            controller.addActionBtn.setVisible(true);
+        }
 
         // Check if can be saved
         validateSave();
     }
+
+    /**
+     * Reset all the fields
+     */
+    private void resetFields() {
+        currentCommand = new QuickCommand(true);
+        renderFields();
+    }
+
 
     /**
      * Save the current command
@@ -218,6 +296,8 @@ public class CommandEditorStage extends Stage implements DependencyResolver {
         requestQuickCommandsList();
     }
 
+
+
     /**
      * Check if the current input is valid and enable the save button if so.
      */
@@ -228,7 +308,8 @@ public class CommandEditorStage extends Stage implements DependencyResolver {
             valid = false;
         else if (currentCommand.getCommand().length() <= 1)
             valid = false;
-        else if (quickCommandManager.getCommand(currentCommand.getCommand()) != null)
+        else if (quickCommandManager.getCommand(currentCommand.getCommand()) != null &&
+                !quickCommandManager.getCommand(currentCommand.getCommand()).getId().equals(currentCommand.getId()))
             valid = false;
 
         controller.saveBtn.setDisable(!valid);
