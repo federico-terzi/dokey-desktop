@@ -1,18 +1,40 @@
 package system.quick_commands;
 
-import json.JSONArray;
 import json.JSONObject;
-import section.model.Item;
+import system.quick_commands.model.actions.QuickAction;
+
+import java.util.UUID;
 
 /**
  * This class represents a Quick Command and has all the basic attributes.
  */
 public class QuickCommand {
+    private String id;  // The identifier of the quick command, a randomly generated string
     private String command;  // The command identifier, for example -> "editor"
-    private String description = null;
-    private Item item;  // The item corresponding to the action.
+    private QuickAction action;  // The command action.
 
     private String relatedAppID = null;  // A command can be optionally associated with an application
+
+    public QuickCommand() {}
+
+    public QuickCommand(boolean generateRandomID) {
+        if (generateRandomID)
+            this.id = UUID.randomUUID().toString().replace("-", "");  // Generate ID automatically
+    }
+
+    public QuickCommand(String id, String command, QuickAction action, String relatedAppID) {
+        this.id = id;
+        this.command = command;
+        this.action = action;
+        this.relatedAppID = relatedAppID;
+    }
+
+    public QuickCommand(String command, QuickAction action, String relatedAppID) {
+        this.id = UUID.randomUUID().toString().replace("-", "");  // Generate ID automatically
+        this.command = command;
+        this.action = action;
+        this.relatedAppID = relatedAppID;
+    }
 
     /**
      * Convert the current object to a JSONObject.
@@ -20,12 +42,10 @@ public class QuickCommand {
      */
     public JSONObject json() {
         JSONObject json = new JSONObject();
+        json.put("id", id);
         json.put("command", command);
-        json.put("item", item.json());
+        json.put("action", action.json());
 
-        if (description != null) {
-            json.put("description", description);
-        }
         if (relatedAppID != null) {
             json.put("relatedAppID", relatedAppID);
         }
@@ -40,9 +60,9 @@ public class QuickCommand {
      */
     public static QuickCommand fromJson(JSONObject json) {
         QuickCommand quickCommand = new QuickCommand();
+        quickCommand.setId(json.getString("id"));
         quickCommand.setCommand(json.getString("command"));
-        quickCommand.setDescription(json.optString("description", null));
-        quickCommand.setItem(Item.fromJson(json.getJSONObject("item")));
+        quickCommand.setAction(QuickAction.fromJson(json.getJSONObject("action")));
         quickCommand.setRelatedAppID(json.optString("relatedAppID", null));
         return quickCommand;
     }
@@ -55,20 +75,12 @@ public class QuickCommand {
         this.command = command;
     }
 
-    public String getDescription() {
-        return description;
+    public QuickAction getAction() {
+        return action;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Item getItem() {
-        return item;
-    }
-
-    public void setItem(Item item) {
-        this.item = item;
+    public void setAction(QuickAction action) {
+        this.action = action;
     }
 
     public String getRelatedAppID() {
@@ -77,5 +89,13 @@ public class QuickCommand {
 
     public void setRelatedAppID(String relatedAppID) {
         this.relatedAppID = relatedAppID;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

@@ -2,6 +2,7 @@ package app;
 
 import app.editor.stages.EditorStage;
 import app.notifications.NotificationFactory;
+import app.quickcommands.CommandEditorStage;
 import app.search.stages.SearchStage;
 import app.stages.SettingsStage;
 import app.stages.InitializationStage;
@@ -30,6 +31,7 @@ import system.MS.MSApplicationManager;
 import system.adb.ADBManager;
 import system.bookmarks.BookmarkManager;
 import system.model.ApplicationManager;
+import system.quick_commands.QuickCommandManager;
 import system.section.SectionManager;
 import utils.ImageResolver;
 
@@ -63,6 +65,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private ServerDiscoveryDaemon serverDiscoveryDaemon;
     private ActiveApplicationsDaemon activeApplicationsDaemon;
     private BookmarkManager bookmarkManager;
+    private QuickCommandManager quickCommandManager;
     private EngineServer engineServer;
     private ADBManager adbManager;
     private SystemManager systemManager;
@@ -88,6 +91,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     // Status variables
     private boolean isEditorOpen = false;
     private boolean isSettingsOpen = false;
+    private boolean isCommandEditorOpen = false;
     private int connectedClientsCount = 0;  // How many clients are currently connected
 
     // Argument parameters
@@ -95,6 +99,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private static boolean isAutomaticStartup = false;  // If true, it means that the app is started automatically by the system.
     private static boolean openEditor = false;  // If true, at startup the editor is open;
     private static boolean openSettings = false;  // If true, at startup the settings is open;
+    private static boolean openCommandEditor = false;  // If true, at startup the command editor is opened;
     private static boolean ignoreLanguage = false;  // If true, force the language to be english.
 
     public static Locale locale = Locale.ENGLISH;  // Current locale
@@ -120,6 +125,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
                 isAutomaticStartup = true;
             }else if (arg.equals("-editor")) {
                 openEditor = true;
+            }else if (arg.equals("-ceditor")) {
+                openCommandEditor = true;
             }else if (arg.equals("-settings")) {
                 openSettings = true;
             }else if (arg.equals("-ignorelang")) {
@@ -234,6 +241,10 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         // Initialize the bookmark manager and import them
         bookmarkManager = context.getBean(BookmarkManager.class);
         bookmarkManager.startImport();
+
+        // Initialize quick command manager
+        quickCommandManager = context.getBean(QuickCommandManager.class);
+        quickCommandManager.requestQuickCommands();
 
         // load the applications
         loadApplications();
@@ -379,6 +390,9 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         if (openSettings) {
             openSettings();
         }
+        if (openCommandEditor) {
+            openCommandEditor();
+        }
     }
 
     /**
@@ -476,6 +490,17 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     @Override
     public void onSettingsOpenRequest() {
         openSettings();
+    }
+
+    private void openCommandEditor() {
+        if (isCommandEditorOpen) {
+            return;
+        }
+
+        isCommandEditorOpen = true;
+        CommandEditorStage commandEditorStage = context.getBean(CommandEditorStage.class,
+                (CommandEditorStage.OnCommandEditorCloseListener) () -> isCommandEditorOpen = false);
+        commandEditorStage.show();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package app;
 
 import app.editor.stages.EditorStage;
+import app.quickcommands.CommandEditorStage;
 import app.search.stages.SearchStage;
 import app.stages.SettingsStage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import system.ShortcutIconManager;
 import system.SystemConfig;
 import system.WebLinkResolver;
 import system.model.ApplicationManager;
+import system.quick_commands.QuickCommandManager;
 import system.search.SearchEngine;
 import system.section.SectionManager;
 
@@ -30,6 +32,7 @@ public class AppConfig {
     @Autowired private WebLinkResolver webLinkResolver;
     @Autowired private SearchEngine searchEngine;
     @Autowired private ResourceBundle resourceBundle;
+    @Autowired private QuickCommandManager quickCommandManager;
 
 
     @Bean
@@ -49,6 +52,12 @@ public class AppConfig {
     @Scope("prototype")
     public SettingsStage settingsStage(SettingsStage.OnSettingsCloseListener onSettingsCloseListener) throws IOException {
         return new SettingsStage(applicationManager, resourceBundle, onSettingsCloseListener);
+    }
+
+    @Bean
+    @Scope("prototype")
+    public CommandEditorStage commandEditorStage(CommandEditorStage.OnCommandEditorCloseListener onCommandEditorCloseListener) throws IOException {
+        return new CommandEditorStage(quickCommandManager, resourceBundle, onCommandEditorCloseListener);
     }
 
     @Bean

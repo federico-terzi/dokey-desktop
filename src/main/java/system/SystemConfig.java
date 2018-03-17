@@ -18,6 +18,7 @@ import system.MS.MSSystemManager;
 import system.bookmarks.BookmarkManager;
 import system.exceptions.UnsupportedOperatingSystemException;
 import system.model.ApplicationManager;
+import system.quick_commands.QuickCommandManager;
 import system.search.SearchEngine;
 import system.search.agents.*;
 import system.section.SectionInfoResolver;
@@ -142,6 +143,11 @@ public class SystemConfig {
 
     @Bean
     public DebugManager debugManager() throws UnsupportedOperatingSystemException { return new DebugManager(applicationManager());}
+
+    @Bean
+    public QuickCommandManager quickCommandManager() {
+        return new QuickCommandManager();
+    }
 
     // SEARCH
     @Bean

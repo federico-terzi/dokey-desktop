@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="533.0" prefWidth="526.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="533.0" prefWidth="526.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.quickcommands.controllers.CommandEditorController">
    <center>
-      <TableView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <columns>
           <TableColumn prefWidth="132.0" text="Command" />
-          <TableColumn prefWidth="224.0" text="Description" />
+          <TableColumn prefWidth="224.0" text="Name" />
             <TableColumn minWidth="0.0" prefWidth="191.0" text="Action" />
         </columns>
          <columnResizePolicy>
@@ -24,8 +28,71 @@
    <top>
       <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <items>
-          <Button mnemonicParsing="false" text="Button" />
+            <Button fx:id="addCommandBtn" mnemonicParsing="false">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <image>
+                            <Image url="/assets/toolbar_icons/add_app.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <tooltip>
+                    <Tooltip text="%add_app" />
+                </tooltip>
+            </Button>
         </items>
       </ToolBar>
    </top>
+   <bottom>
+      <VBox fx:id="editCommandVbox" BorderPane.alignment="CENTER">
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+         <children>
+            <GridPane>
+              <columnConstraints>
+                <ColumnConstraints halignment="RIGHT" hgrow="NEVER" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label text="Command:">
+                     <GridPane.margin>
+                        <Insets right="8.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <TextField fx:id="commandTextField" text=":" GridPane.columnIndex="1">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </TextField>
+                   <TextField fx:id="nameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Label text="Action:" GridPane.rowIndex="2">
+                     <GridPane.margin>
+                        <Insets right="8.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <Label fx:id="actionLabel" text="No action specified yet..." GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <HBox GridPane.columnIndex="1" GridPane.rowIndex="3">
+                     <children>
+                        <Button fx:id="addActionBtn" mnemonicParsing="false" text="Add Action" />
+                        <Pane HBox.hgrow="ALWAYS" />
+                        <Button fx:id="saveBtn" mnemonicParsing="false" text="Save" />
+                     </children>
+                  </HBox>
+                  <Label text="Name ( optional ):" GridPane.rowIndex="1">
+                     <GridPane.margin>
+                        <Insets right="8.0" />
+                     </GridPane.margin>
+                  </Label>
+               </children>
+            </GridPane>
+         </children>
+      </VBox>
+   </bottom>
 </BorderPane>
