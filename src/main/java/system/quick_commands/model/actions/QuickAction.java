@@ -10,20 +10,21 @@ import java.util.ResourceBundle;
  * This class represents an action relative to a quick command
  */
 public abstract class QuickAction {
-    protected DependencyResolver resolver;  // a DependencyResolver to obtain a reference to all the managers
-
     private Type type;
 
     /**
      * Called to execute the corresponding quick action.
+     * @param resolver a DependencyResolver to obtain a reference to all the managers
      * @return true if succeeded, false otherwise.
      */
-    public abstract boolean executeAction();
+    public abstract boolean executeAction(DependencyResolver resolver);
 
     /**
+     * @param resolver a DependencyResolver to obtain a reference to all the managers
+     * @param resourceBundle the ResourceBundle used for the i18n.
      * @return a human readable text describing what the action does.
      */
-    public abstract String getDisplayText(ResourceBundle resourceBundle);
+    public abstract String getDisplayText(DependencyResolver resolver, ResourceBundle resourceBundle);
 
     /**
      * Convert the current object to a JSONObject.
@@ -50,7 +51,7 @@ public abstract class QuickAction {
      * @param json the JSONObject to parse.
      * @return the parsed subclass of QuickAction.
      */
-    public static QuickAction fromJson(JSONObject json, DependencyResolver resolver) {
+    public static QuickAction fromJson(JSONObject json) {
         // Read the type string
         String type = json.getString("type");
 
@@ -61,7 +62,6 @@ public abstract class QuickAction {
 
             // Get an instance of the correct QuickAction subclass
             QuickAction action = actionType.getActionClass().getConstructor().newInstance();
-            action.setResolver(resolver);
 
             // Populate the action with the json data and return it
             action.populateFromJson(json);
@@ -88,14 +88,6 @@ public abstract class QuickAction {
 
     public void setType(Type type) {
         this.type = type;
-    }
-
-    public DependencyResolver getResolver() {
-        return resolver;
-    }
-
-    public void setResolver(DependencyResolver resolver) {
-        this.resolver = resolver;
     }
 
     /**

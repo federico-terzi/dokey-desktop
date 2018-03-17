@@ -57,7 +57,7 @@ public class AppConfig {
     @Bean
     @Scope("prototype")
     public CommandEditorStage commandEditorStage(CommandEditorStage.OnCommandEditorCloseListener onCommandEditorCloseListener) throws IOException {
-        return new CommandEditorStage(quickCommandManager, resourceBundle, onCommandEditorCloseListener);
+        return new CommandEditorStage(quickCommandManager, resourceBundle, applicationManager, onCommandEditorCloseListener);
     }
 
     @Bean

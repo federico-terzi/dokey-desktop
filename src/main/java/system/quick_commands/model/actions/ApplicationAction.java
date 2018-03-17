@@ -1,5 +1,6 @@
 package system.quick_commands.model.actions;
 
+import json.JSONObject;
 import system.model.Application;
 import system.quick_commands.model.DependencyResolver;
 
@@ -17,17 +18,38 @@ public class ApplicationAction extends QuickAction{
     }
 
     @Override
-    public boolean executeAction() {
+    public JSONObject json() {
+        JSONObject json = super.json();
+        json.put("executablePath", executablePath);
+        return json;
+    }
+
+    @Override
+    public void populateFromJson(JSONObject json) {
+        super.populateFromJson(json);
+        this.setExecutablePath(json.getString("executablePath"));
+    }
+
+    @Override
+    public boolean executeAction(DependencyResolver resolver) {
         return resolver.getApplicationManager().openApplication(executablePath);
     }
 
     @Override
-    public String getDisplayText(ResourceBundle resourceBundle) {
+    public String getDisplayText(DependencyResolver resolver, ResourceBundle resourceBundle) {
         Application application = resolver.getApplicationManager().getApplication(executablePath);
 
         if (application != null)
-            return "Open "+application.getName();  // TODO: i18n
+            return "Open \""+application.getName() + "\"";  // TODO: i18n
 
         return "";
+    }
+
+    public String getExecutablePath() {
+        return executablePath;
+    }
+
+    public void setExecutablePath(String executablePath) {
+        this.executablePath = executablePath;
     }
 }

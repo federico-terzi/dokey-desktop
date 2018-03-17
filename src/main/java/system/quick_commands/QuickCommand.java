@@ -11,29 +11,14 @@ import java.util.UUID;
 public class QuickCommand {
     private String id;  // The identifier of the quick command, a randomly generated string
     private String command;  // The command identifier, for example -> "editor"
+    private String name;  // The name of the command, can be null
     private QuickAction action;  // The command action.
-
-    private String relatedAppID = null;  // A command can be optionally associated with an application
 
     public QuickCommand() {}
 
     public QuickCommand(boolean generateRandomID) {
         if (generateRandomID)
             this.id = UUID.randomUUID().toString().replace("-", "");  // Generate ID automatically
-    }
-
-    public QuickCommand(String id, String command, QuickAction action, String relatedAppID) {
-        this.id = id;
-        this.command = command;
-        this.action = action;
-        this.relatedAppID = relatedAppID;
-    }
-
-    public QuickCommand(String command, QuickAction action, String relatedAppID) {
-        this.id = UUID.randomUUID().toString().replace("-", "");  // Generate ID automatically
-        this.command = command;
-        this.action = action;
-        this.relatedAppID = relatedAppID;
     }
 
     /**
@@ -46,9 +31,8 @@ public class QuickCommand {
         json.put("command", command);
         json.put("action", action.json());
 
-        if (relatedAppID != null) {
-            json.put("relatedAppID", relatedAppID);
-        }
+        if (name != null)
+            json.put("name", name);
 
         return json;
     }
@@ -62,8 +46,8 @@ public class QuickCommand {
         QuickCommand quickCommand = new QuickCommand();
         quickCommand.setId(json.getString("id"));
         quickCommand.setCommand(json.getString("command"));
+        quickCommand.setName(json.optString("name", null));
         quickCommand.setAction(QuickAction.fromJson(json.getJSONObject("action")));
-        quickCommand.setRelatedAppID(json.optString("relatedAppID", null));
         return quickCommand;
     }
 
@@ -83,19 +67,19 @@ public class QuickCommand {
         this.action = action;
     }
 
-    public String getRelatedAppID() {
-        return relatedAppID;
-    }
-
-    public void setRelatedAppID(String relatedAppID) {
-        this.relatedAppID = relatedAppID;
-    }
-
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

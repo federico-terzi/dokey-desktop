@@ -7,7 +7,9 @@ import system.CacheManager;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -17,6 +19,7 @@ public class QuickCommandManager {
     public static final String QUICK_COMMANDS_DIR_NAME = "quickcommands";
 
     private List<QuickCommand> commands = new ArrayList<>(30);
+    private Map<String, QuickCommand> commandMap = new HashMap<>();
 
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
@@ -39,20 +42,22 @@ public class QuickCommandManager {
      */
     public void loadCommands() {
         commands = new ArrayList<>(30);
+        commandMap = new HashMap<>();
 
         // Get the quickcommands directory
         File userCommandsDir = CacheManager.getInstance().getQuickCommandsDir();
 
-        // Go through all user section files
+        // Go through all user command files
         for (File commandFile : userCommandsDir.listFiles()) {
             // Skip hidden files
             if (commandFile.isHidden())
                 continue;
 
-            // Get the section from the file
+            // Get the command from the file
             QuickCommand currentCommand = getCommandFromFile(commandFile);
             if (currentCommand != null) {
                 commands.add(currentCommand);
+                commandMap.put(currentCommand.getCommand(), currentCommand);
             }
         }
     }
@@ -91,6 +96,17 @@ public class QuickCommandManager {
      */
     public List<QuickCommand> getCommands() {
         return commands;
+    }
+
+    /**
+     * Get the command with the given command string.
+     * Note: the command string must be in this format ":command",
+     * starting with :
+     * @param command the command to search
+     * @return the corresponding QuickCommand if found, null otherwise.
+     */
+    public QuickCommand getCommand(String command) {
+        return commandMap.get(command);
     }
 
     /**
