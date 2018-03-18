@@ -6,10 +6,7 @@ import json.JSONTokener;
 import system.CacheManager;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -104,7 +101,12 @@ public class QuickCommandManager {
      */
     public List<QuickCommand> searchCommands(String query, int limit) {
         return commands.stream().filter((quickCommand -> quickCommand.getCommand().toLowerCase().startsWith(query)))
-                .limit(limit).collect(Collectors.toList());
+                .limit(limit).sorted(new Comparator<QuickCommand>() {
+                    @Override
+                    public int compare(QuickCommand o1, QuickCommand o2) {
+                        return o1.getCommand().compareTo(o2.getCommand());
+                    }
+                }).collect(Collectors.toList());
     }
 
     /**

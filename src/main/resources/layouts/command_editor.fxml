@@ -47,6 +47,19 @@
                     <Tooltip text="%remove_command" />
                 </tooltip>
             </Button>
+            <Pane HBox.hgrow="ALWAYS" />
+            <Button fx:id="helpBtn" mnemonicParsing="false">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <image>
+                            <Image url="/assets/toolbar_icons/help.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <tooltip>
+                    <Tooltip text="%get_help" />
+                </tooltip>
+            </Button>
         </items>
       </ToolBar>
    </top>

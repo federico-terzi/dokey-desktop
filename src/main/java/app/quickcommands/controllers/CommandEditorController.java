@@ -14,4 +14,5 @@ public class CommandEditorController {
     public Button clearActionBtn;
     public Button removeCommandBtn;
     public VBox actionBox;
+    public Button helpBtn;
 }

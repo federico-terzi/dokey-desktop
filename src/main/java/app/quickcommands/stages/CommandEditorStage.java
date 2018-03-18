@@ -31,12 +31,13 @@ public class CommandEditorStage extends AbstractStage<CommandEditorController> {
     private ApplicationManager applicationManager;
     private DependencyResolver resolver;
 
-    // If null, the user is adding a new command. When different
-    // from null, it means the user is modifying an existing one.
+    // The current command present in the bottom edit pane
     private QuickCommand currentCommand = new QuickCommand(true);
 
     // The type of action of the current command
     private QuickAction.Type currentActionType = null;
+
+    private boolean isCurrentANewCommand = true;  // If true, the current command is a new one
 
     private Map<QuickAction.Type, QuickActionCreator> actionCreators = new HashMap<>();
 
@@ -91,6 +92,7 @@ public class CommandEditorStage extends AbstractStage<CommandEditorController> {
 
         // Add the command
         controller.addCommandBtn.setOnAction(event -> {
+            isCurrentANewCommand = true;
             resetFields();
         });
         // Remove the command
@@ -247,6 +249,7 @@ public class CommandEditorStage extends AbstractStage<CommandEditorController> {
      */
     private void loadQuickCommand(QuickCommand command) {
         currentCommand = command;
+        isCurrentANewCommand = false;
 
         if (command.getAction() == null)
             currentActionType = null;
@@ -271,6 +274,11 @@ public class CommandEditorStage extends AbstractStage<CommandEditorController> {
 
         controller.commandTextField.setText(commandText);
         controller.nameTextField.setText(currentCommand.getName());
+
+        if (isCurrentANewCommand)
+            controller.saveBtn.setText("Add");
+        else
+            controller.saveBtn.setText("Save");
 
         if (currentCommand.getAction() != null) {
 //            controller.actionLabel.setText(currentCommand.getAction().getDisplayText(resolver, resourceBundle));
