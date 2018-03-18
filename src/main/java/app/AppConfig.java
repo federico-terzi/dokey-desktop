@@ -14,6 +14,7 @@ import system.SystemConfig;
 import system.WebLinkResolver;
 import system.model.ApplicationManager;
 import system.quick_commands.QuickCommandManager;
+import system.quick_commands.model.DependencyResolver;
 import system.search.SearchEngine;
 import system.section.SectionManager;
 
@@ -33,6 +34,7 @@ public class AppConfig {
     @Autowired private SearchEngine searchEngine;
     @Autowired private ResourceBundle resourceBundle;
     @Autowired private QuickCommandManager quickCommandManager;
+    @Autowired private DependencyResolver dependencyResolver;
 
 
     @Bean
@@ -57,7 +59,7 @@ public class AppConfig {
     @Bean
     @Scope("prototype")
     public CommandEditorStage commandEditorStage(CommandEditorStage.OnCommandEditorCloseListener onCommandEditorCloseListener) throws IOException {
-        return new CommandEditorStage(quickCommandManager, resourceBundle, applicationManager, onCommandEditorCloseListener);
+        return new CommandEditorStage(quickCommandManager, resourceBundle, applicationManager, dependencyResolver, onCommandEditorCloseListener);
     }
 
     @Bean

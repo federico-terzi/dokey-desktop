@@ -4,6 +4,7 @@ import json.JSONException;
 import json.JSONObject;
 import json.JSONTokener;
 import system.CacheManager;
+import system.search.agents.AbstractAgent;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * This class is used to manage quick commands
@@ -96,6 +98,14 @@ public class QuickCommandManager {
      */
     public List<QuickCommand> getCommands() {
         return commands;
+    }
+
+    /**
+     * @return the List of quick commands that start with the given query
+     */
+    public List<QuickCommand> searchCommands(String query, int limit) {
+        return commands.stream().filter((quickCommand -> quickCommand.getCommand().toLowerCase().startsWith(query)))
+                .limit(limit).collect(Collectors.toList());
     }
 
     /**

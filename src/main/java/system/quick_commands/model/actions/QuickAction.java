@@ -94,7 +94,8 @@ public abstract class QuickAction {
      * Types of Quick Actions
      */
     public enum Type {
-        APP(ApplicationAction.class);
+        APP(ApplicationAction.class),
+        WEB_LINK(WebLinkAction.class);
 
         private Class<? extends QuickAction> actionClass;
 

@@ -19,6 +19,7 @@ import system.bookmarks.BookmarkManager;
 import system.exceptions.UnsupportedOperatingSystemException;
 import system.model.ApplicationManager;
 import system.quick_commands.QuickCommandManager;
+import system.quick_commands.model.DependencyResolver;
 import system.search.SearchEngine;
 import system.search.agents.*;
 import system.section.SectionInfoResolver;
@@ -149,6 +150,26 @@ public class SystemConfig {
         return new QuickCommandManager();
     }
 
+    @Bean
+    public DependencyResolver dependencyResolver() {
+        return new DependencyResolver() {
+            @Override
+            public ApplicationManager getApplicationManager() {
+                try {
+                    return applicationManager();
+                } catch (UnsupportedOperatingSystemException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            public WebLinkResolver getWebLinkResolver() {
+                return webLinkResolver();
+            }
+        };
+    }
+
     // SEARCH
     @Bean
     public SearchEngine searchEngine() throws UnsupportedOperatingSystemException {
@@ -188,5 +209,10 @@ public class SystemConfig {
     @Bean
     public ShortcutAgent shortcutAgent() throws UnsupportedOperatingSystemException {
         return new ShortcutAgent(searchEngine(), resourceBundle(), applicationManager(), sectionManager(), sectionInfoResolver());
+    }
+
+    @Bean
+    public QuickCommandAgent quickCommandAgent() throws UnsupportedOperatingSystemException {
+        return new QuickCommandAgent(searchEngine(), resourceBundle(), quickCommandManager(), dependencyResolver());
     }
 }

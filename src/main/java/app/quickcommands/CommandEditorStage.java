@@ -23,15 +23,17 @@ import system.quick_commands.model.DependencyResolver;
 import system.quick_commands.model.actions.QuickAction;
 import system.quick_commands.model.creators.ApplicationActionCreator;
 import system.quick_commands.model.creators.QuickActionCreator;
+import system.quick_commands.model.creators.WebLinkActionCreator;
 
 import java.io.IOException;
 import java.util.*;
 
-public class CommandEditorStage extends Stage implements DependencyResolver {
+public class CommandEditorStage extends Stage {
     private QuickCommandManager quickCommandManager;
     private CommandEditorController controller;
     private ResourceBundle resourceBundle;
     private ApplicationManager applicationManager;
+    private DependencyResolver resolver;
 
     // If null, the user is adding a new command. When different
     // from null, it means the user is modifying an existing one.
@@ -40,11 +42,12 @@ public class CommandEditorStage extends Stage implements DependencyResolver {
     private Map<QuickAction.Type, QuickActionCreator> actionCreators = new HashMap<>();
 
     public CommandEditorStage(QuickCommandManager quickCommandManager, ResourceBundle resourceBundle,
-                              ApplicationManager applicationManager,
+                              ApplicationManager applicationManager, DependencyResolver resolver,
                               OnCommandEditorCloseListener onCommandEditorCloseListener) throws IOException {
         this.quickCommandManager = quickCommandManager;
         this.resourceBundle = resourceBundle;
         this.applicationManager = applicationManager;
+        this.resolver = resolver;
 
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/command_editor.fxml").toURI().toURL());
         fxmlLoader.setResources(resourceBundle);
@@ -90,7 +93,9 @@ public class CommandEditorStage extends Stage implements DependencyResolver {
         // Item select listener
         controller.tableView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                loadQuickCommand((QuickCommand) newValue);
+                // Copy the command
+                QuickCommand commandCopy = QuickCommand.fromJson(((QuickCommand)newValue).json());
+                loadQuickCommand((QuickCommand) commandCopy);
             }
         }));
 
@@ -151,7 +156,7 @@ public class CommandEditorStage extends Stage implements DependencyResolver {
         actionCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<QuickCommand, String>, ObservableValue>() {
             @Override
             public ObservableValue call(TableColumn.CellDataFeatures<QuickCommand, String> param) {
-                return new SimpleStringProperty(param.getValue().getAction().getDisplayText(CommandEditorStage.this, resourceBundle));
+                return new SimpleStringProperty(param.getValue().getAction().getDisplayText(resolver, resourceBundle));
             }
         });
 
@@ -190,8 +195,11 @@ public class CommandEditorStage extends Stage implements DependencyResolver {
      * Register all the action creators in the list
      */
     private void registerActionCreators() {
-        QuickActionCreator appCreator = new ApplicationActionCreator(this, resourceBundle);
+        QuickActionCreator appCreator = new ApplicationActionCreator(resolver, resourceBundle);
         actionCreators.put(appCreator.getActionType(), appCreator);
+
+        QuickActionCreator urlCreator = new WebLinkActionCreator(resolver, resourceBundle);
+        actionCreators.put(urlCreator.getActionType(), urlCreator);
     }
 
     /**
@@ -245,7 +253,7 @@ public class CommandEditorStage extends Stage implements DependencyResolver {
         controller.nameTextField.setText(currentCommand.getName());
 
         if (currentCommand.getAction() != null) {
-            controller.actionLabel.setText(currentCommand.getAction().getDisplayText(this, resourceBundle));
+            controller.actionLabel.setText(currentCommand.getAction().getDisplayText(resolver, resourceBundle));
 
             controller.editActionBtn.setManaged(true);
             controller.editActionBtn.setVisible(true);
@@ -313,11 +321,6 @@ public class CommandEditorStage extends Stage implements DependencyResolver {
             valid = false;
 
         controller.saveBtn.setDisable(!valid);
-    }
-
-    @Override
-    public ApplicationManager getApplicationManager() {
-        return applicationManager;
     }
 
     public interface OnCommandEditorCloseListener {

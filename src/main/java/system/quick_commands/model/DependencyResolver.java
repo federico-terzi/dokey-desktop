@@ -1,5 +1,6 @@
 package system.quick_commands.model;
 
+import system.WebLinkResolver;
 import system.model.ApplicationManager;
 
 /**
@@ -7,4 +8,5 @@ import system.model.ApplicationManager;
  */
 public interface DependencyResolver {
     ApplicationManager getApplicationManager();
+    WebLinkResolver getWebLinkResolver();
 }
