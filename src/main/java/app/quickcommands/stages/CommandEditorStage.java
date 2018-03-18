@@ -94,11 +94,12 @@ public class CommandEditorStage extends AbstractStage<CommandEditorController> {
         controller.addCommandBtn.setOnAction(event -> {
             isCurrentANewCommand = true;
             resetFields();
+            Platform.runLater(() -> controller.commandTextField.requestFocus());
         });
         // Remove the command
         controller.removeCommandBtn.setOnAction(event -> {
             ConfirmationDialog confirmationDialog = new ConfirmationDialog(resourceBundle.getString("delete_confirmation"),
-                    "Are you sure you want to delete these items?");  // TODO: i18n
+                    resourceBundle.getString("items_delete_message"));
 
             confirmationDialog.success(() -> {
                 ObservableList<QuickCommand> toBeRemoved = controller.tableView.getSelectionModel().getSelectedItems();
@@ -139,21 +140,21 @@ public class CommandEditorStage extends AbstractStage<CommandEditorController> {
      * Configure the table view columns
      */
     private void configureTableView() {
-        TableColumn commandCol = new TableColumn("Command");
+        TableColumn commandCol = new TableColumn(resourceBundle.getString("command"));
         commandCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<QuickCommand, String>, ObservableValue>() {
             @Override
             public ObservableValue call(TableColumn.CellDataFeatures<QuickCommand, String> param) {
                 return new SimpleStringProperty(param.getValue().getCommand());
             }
         });
-        TableColumn nameCol = new TableColumn("Name");
+        TableColumn nameCol = new TableColumn(resourceBundle.getString("name"));
         nameCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<QuickCommand, String>, ObservableValue>() {
             @Override
             public ObservableValue call(TableColumn.CellDataFeatures<QuickCommand, String> param) {
                 return new SimpleStringProperty(param.getValue().getName());
             }
         });
-        TableColumn actionCol = new TableColumn("Action");
+        TableColumn actionCol = new TableColumn(resourceBundle.getString("action"));
         actionCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<QuickCommand, String>, ObservableValue>() {
             @Override
             public ObservableValue call(TableColumn.CellDataFeatures<QuickCommand, String> param) {
@@ -229,7 +230,7 @@ public class CommandEditorStage extends AbstractStage<CommandEditorController> {
 
         // If no action is specified, put a label
         if (currentActionType == null) {
-            Label label = new Label("No action specified.");
+            Label label = new Label(resourceBundle.getString("no_action_specified"));
             controller.actionBox.getChildren().add(label);
             return;
         }
@@ -276,13 +277,11 @@ public class CommandEditorStage extends AbstractStage<CommandEditorController> {
         controller.nameTextField.setText(currentCommand.getName());
 
         if (isCurrentANewCommand)
-            controller.saveBtn.setText("Add");
+            controller.saveBtn.setText(resourceBundle.getString("add"));
         else
-            controller.saveBtn.setText("Save");
+            controller.saveBtn.setText(resourceBundle.getString("save"));
 
         if (currentCommand.getAction() != null) {
-//            controller.actionLabel.setText(currentCommand.getAction().getDisplayText(resolver, resourceBundle));
-
             // Update action fields
             if (actionCreators.get(currentActionType) != null) {
                 actionCreators.get(currentActionType).renderActionBox(currentCommand.getAction());
@@ -293,8 +292,6 @@ public class CommandEditorStage extends AbstractStage<CommandEditorController> {
             controller.clearActionBtn.setManaged(true);
             controller.clearActionBtn.setVisible(true);
         }else{
-//            controller.actionLabel.setText("No action selected");  // TODO: i18n
-
             controller.addActionBtn.setManaged(true);
             controller.addActionBtn.setVisible(true);
             controller.clearActionBtn.setManaged(false);

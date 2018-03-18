@@ -5,6 +5,8 @@ import utils.OSValidator;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -96,6 +98,13 @@ public class TrayIconManager {
             java.awt.Font boldFont = defaultFont.deriveFont(java.awt.Font.BOLD);
             openEditor.setFont(boldFont);
 
+            java.awt.MenuItem quickCommandsItem = new java.awt.MenuItem(resourceBundle.getString("manage_quick_commands"));
+            quickCommandsItem.addActionListener(event -> Platform.runLater(() -> {
+                if (listener != null) {
+                    listener.onQuickCommandsOpenRequest();
+                }
+            }));
+
             java.awt.MenuItem settingsItem = new java.awt.MenuItem(resourceBundle.getString("settings"));
             settingsItem.addActionListener(event -> Platform.runLater(() -> {
                 if (listener != null) {
@@ -122,6 +131,7 @@ public class TrayIconManager {
             popup.add(toggleSearchItem);
             popup.addSeparator();
             popup.add(openEditor);
+            popup.add(quickCommandsItem);
             popup.add(settingsItem);
             popup.addSeparator();
             popup.add(helpItem);
@@ -142,6 +152,7 @@ public class TrayIconManager {
         void onSettingsOpenRequest();
         void onHelpOpenRequest();
         void onSearchOpenRequest();
+        void onQuickCommandsOpenRequest();
     }
 
     /**

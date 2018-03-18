@@ -81,7 +81,7 @@
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <Label text="Command:">
+                  <Label text="%command_label">
                      <GridPane.margin>
                         <Insets right="8.0" />
                      </GridPane.margin>
@@ -92,7 +92,7 @@
                      </font>
                   </TextField>
                    <TextField fx:id="nameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <Label text="Action:" GridPane.rowIndex="2">
+                  <Label text="%action_label" GridPane.rowIndex="2">
                      <GridPane.margin>
                         <Insets right="8.0" />
                      </GridPane.margin>
@@ -107,19 +107,19 @@
                          <Button fx:id="saveBtn" mnemonicParsing="false" text="Save" />
                      </children>
                   </HBox>
-                  <Label text="Name ( optional ):" GridPane.rowIndex="1">
+                  <Label text="%name_optional" GridPane.rowIndex="1">
                      <GridPane.margin>
                         <Insets right="8.0" />
                      </GridPane.margin>
                   </Label>
                   <HBox alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                      <children>
-                         <MenuButton fx:id="addActionBtn" mnemonicParsing="false" text="Select Action">
+                         <MenuButton fx:id="addActionBtn" mnemonicParsing="false" text="%select_action">
                            <HBox.margin>
                               <Insets right="8.0" />
                            </HBox.margin>
                         </MenuButton>
-                        <Button fx:id="clearActionBtn" mnemonicParsing="false" text="Change Action" />
+                        <Button fx:id="clearActionBtn" mnemonicParsing="false" text="%change_action" />
                      </children>
                      <GridPane.margin>
                         <Insets />

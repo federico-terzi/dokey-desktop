@@ -521,6 +521,11 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         }
     }
 
+    @Override
+    public void onQuickCommandsOpenRequest() {
+        openCommandEditor();
+    }
+
     /**
      * Called when a device connects to the server.
      *
