@@ -1,5 +1,6 @@
 package system.quick_commands.model.creators;
 
+import javafx.scene.layout.VBox;
 import system.quick_commands.model.DependencyResolver;
 import system.quick_commands.model.actions.QuickAction;
 
@@ -21,27 +22,26 @@ public abstract class QuickActionCreator {
     }
 
     /**
-     * Display a dialog to create the action.
-     * @param listener that will handle the returned action.
+     * Used to inject in the given VBox all the widgets needed to customize the action editor.
+     * @param box the VBox container.
+     * @param listener that will handle all the modifications of the action.
      */
-    public abstract void createAction(OnQuickActionListener listener);
+    public abstract void createActionBox(VBox box, OnActionModifiedListener listener);
 
     /**
-     * Display a dialog to edit the given action.
-     * @param action the action to edit.
-     * @param listener that will handle the returned action.
+     * Update the widgets to reflect the status of the given action.
+     * @param action the action to reflect
      */
-    public abstract void editAction(QuickAction action, OnQuickActionListener listener);
+    public abstract void renderActionBox(QuickAction action);
+
+    public interface OnActionModifiedListener {
+        void onActionModified(QuickAction action);
+    }
 
     /**
      * @return the human readable creator description.
      */
     public abstract String getDisplayText();
-
-    public interface OnQuickActionListener {
-        void onQuickActionSelected(QuickAction action);
-        void onCanceled();
-    }
 
     public QuickAction.Type getActionType() {
         return actionType;

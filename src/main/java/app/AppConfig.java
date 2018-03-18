@@ -1,7 +1,7 @@
 package app;
 
 import app.editor.stages.EditorStage;
-import app.quickcommands.CommandEditorStage;
+import app.quickcommands.stages.CommandEditorStage;
 import app.search.stages.SearchStage;
 import app.stages.SettingsStage;
 import org.springframework.beans.factory.annotation.Autowired;

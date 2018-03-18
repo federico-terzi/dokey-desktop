@@ -1,21 +1,18 @@
-package app.quickcommands;
+package app.quickcommands.stages;
 
 import app.quickcommands.controllers.CommandEditorController;
+import app.utils.AbstractStage;
+import app.utils.ConfirmationDialog;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TableColumn;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.apache.commons.lang3.StringUtils;
-import system.ResourceUtils;
 import system.model.ApplicationManager;
 import system.quick_commands.QuickCommand;
 import system.quick_commands.QuickCommandManager;
@@ -28,9 +25,8 @@ import system.quick_commands.model.creators.WebLinkActionCreator;
 import java.io.IOException;
 import java.util.*;
 
-public class CommandEditorStage extends Stage {
+public class CommandEditorStage extends AbstractStage<CommandEditorController> {
     private QuickCommandManager quickCommandManager;
-    private CommandEditorController controller;
     private ResourceBundle resourceBundle;
     private ApplicationManager applicationManager;
     private DependencyResolver resolver;
@@ -39,28 +35,22 @@ public class CommandEditorStage extends Stage {
     // from null, it means the user is modifying an existing one.
     private QuickCommand currentCommand = new QuickCommand(true);
 
+    // The type of action of the current command
+    private QuickAction.Type currentActionType = null;
+
     private Map<QuickAction.Type, QuickActionCreator> actionCreators = new HashMap<>();
 
     public CommandEditorStage(QuickCommandManager quickCommandManager, ResourceBundle resourceBundle,
                               ApplicationManager applicationManager, DependencyResolver resolver,
                               OnCommandEditorCloseListener onCommandEditorCloseListener) throws IOException {
+        super(resourceBundle, "/layouts/command_editor.fxml", "/css/main.css", resourceBundle.getString("quick_commands"));
+
         this.quickCommandManager = quickCommandManager;
         this.resourceBundle = resourceBundle;
         this.applicationManager = applicationManager;
         this.resolver = resolver;
 
-        FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/command_editor.fxml").toURI().toURL());
-        fxmlLoader.setResources(resourceBundle);
-        Parent root = fxmlLoader.load();
-        Scene scene = new Scene(root);
-        this.setTitle(resourceBundle.getString("quick_commands"));
-        this.setScene(scene);
-        this.getIcons().add(new Image(CommandEditorStage.class.getResourceAsStream("/assets/icon.png")));
-        scene.getStylesheets().add(ResourceUtils.getResource("/css/main.css").toURI().toString());
-
-        controller = (CommandEditorController) fxmlLoader.getController();
-
-        renderFields();
+        resetFields();
 
         // Register all the action creators in the add button
         registerActionCreators();
@@ -103,20 +93,29 @@ public class CommandEditorStage extends Stage {
         controller.addCommandBtn.setOnAction(event -> {
             resetFields();
         });
+        // Remove the command
+        controller.removeCommandBtn.setOnAction(event -> {
+            ConfirmationDialog confirmationDialog = new ConfirmationDialog(resourceBundle.getString("delete_confirmation"),
+                    "Are you sure you want to delete these items?");  // TODO: i18n
+
+            confirmationDialog.success(() -> {
+                ObservableList<QuickCommand> toBeRemoved = controller.tableView.getSelectionModel().getSelectedItems();
+
+                for (QuickCommand command : toBeRemoved) {
+                    quickCommandManager.deleteCommand(command);
+                }
+
+                resetFields();
+                requestQuickCommandsList();
+            });
+        });
 
         // Clear action button
-        controller.clearActionBtn.setOnAction(event -> {currentCommand.setAction(null); renderFields();});
-
-        // Edit action button
-        controller.editActionBtn.setOnAction(event -> {
-            if (currentCommand.getAction() == null)
-                return;
-
-            // Get the associated action creator and trigger the edit dialog
-            QuickActionCreator actionCreator = actionCreators.get(currentCommand.getAction().getType());
-            if (actionCreator != null) {
-                actionCreator.editAction(currentCommand.getAction(), onQuickActionListener);
-            }
+        controller.clearActionBtn.setOnAction(event -> {
+            currentCommand.setAction(null);
+            currentActionType = null;
+            createActionBox();
+            renderFields();
         });
 
         // Save button
@@ -159,6 +158,9 @@ public class CommandEditorStage extends Stage {
                 return new SimpleStringProperty(param.getValue().getAction().getDisplayText(resolver, resourceBundle));
             }
         });
+        controller.tableView.getSelectionModel().setSelectionMode(
+                SelectionMode.MULTIPLE
+        );
 
         controller.tableView.getColumns().addAll(commandCol, nameCol, actionCol);
     }
@@ -208,26 +210,36 @@ public class CommandEditorStage extends Stage {
     private void populateActionCreators() {
         for (QuickActionCreator actionCreator : actionCreators.values()) {
             MenuItem menuItem = new MenuItem(actionCreator.getDisplayText());
-            menuItem.setOnAction((event -> actionCreator.createAction(onQuickActionListener)));
+            menuItem.setOnAction((event -> {
+                currentCommand.setAction(null);  // Reset previous action
+                currentActionType = actionCreator.getActionType();
+                createActionBox();  // Inject the widgets
+            }));
             controller.addActionBtn.getItems().add(menuItem);
         }
     }
 
     /**
-     * Used when adding or editing a quick action.
+     * Used to inject the widgets needed for the current action type
      */
-    private QuickActionCreator.OnQuickActionListener onQuickActionListener = new QuickActionCreator.OnQuickActionListener() {
-        @Override
-        public void onQuickActionSelected(QuickAction action) {
-            currentCommand.setAction(action);
-            validateSave();
+    private void createActionBox() {
+        controller.actionBox.getChildren().clear();  // Delete old content
+
+        // If no action is specified, put a label
+        if (currentActionType == null) {
+            Label label = new Label("No action specified.");
+            controller.actionBox.getChildren().add(label);
+            return;
         }
 
-        @Override
-        public void onCanceled() {
-
+        // Add the correct action box
+        if (actionCreators.get(currentActionType) != null) {
+            actionCreators.get(currentActionType).createActionBox(controller.actionBox, action -> {
+                currentCommand.setAction(action);
+                renderFields();
+            });
         }
-    };
+    }
 
     /**
      * Load the given quick command in the edit section.
@@ -235,6 +247,14 @@ public class CommandEditorStage extends Stage {
      */
     private void loadQuickCommand(QuickCommand command) {
         currentCommand = command;
+
+        if (command.getAction() == null)
+            currentActionType = null;
+        else
+            currentActionType = command.getAction().getType();
+
+        createActionBox();
+
         renderFields();
     }
 
@@ -253,23 +273,24 @@ public class CommandEditorStage extends Stage {
         controller.nameTextField.setText(currentCommand.getName());
 
         if (currentCommand.getAction() != null) {
-            controller.actionLabel.setText(currentCommand.getAction().getDisplayText(resolver, resourceBundle));
+//            controller.actionLabel.setText(currentCommand.getAction().getDisplayText(resolver, resourceBundle));
 
-            controller.editActionBtn.setManaged(true);
-            controller.editActionBtn.setVisible(true);
-            controller.clearActionBtn.setManaged(true);
-            controller.clearActionBtn.setVisible(true);
+            // Update action fields
+            if (actionCreators.get(currentActionType) != null) {
+                actionCreators.get(currentActionType).renderActionBox(currentCommand.getAction());
+            }
+
             controller.addActionBtn.setManaged(false);
             controller.addActionBtn.setVisible(false);
+            controller.clearActionBtn.setManaged(true);
+            controller.clearActionBtn.setVisible(true);
         }else{
-            controller.actionLabel.setText("No action selected");  // TODO: i18n
+//            controller.actionLabel.setText("No action selected");  // TODO: i18n
 
-            controller.editActionBtn.setManaged(false);
-            controller.editActionBtn.setVisible(false);
-            controller.clearActionBtn.setManaged(false);
-            controller.clearActionBtn.setVisible(false);
             controller.addActionBtn.setManaged(true);
             controller.addActionBtn.setVisible(true);
+            controller.clearActionBtn.setManaged(false);
+            controller.clearActionBtn.setVisible(false);
         }
 
         // Check if can be saved
@@ -281,6 +302,8 @@ public class CommandEditorStage extends Stage {
      */
     private void resetFields() {
         currentCommand = new QuickCommand(true);
+        currentActionType = null;
+        createActionBox();
         renderFields();
     }
 
@@ -312,7 +335,7 @@ public class CommandEditorStage extends Stage {
     private void validateSave() {
         boolean valid = true;
 
-        if (currentCommand.getAction() == null)
+        if (currentCommand.getAction() == null || currentCommand.getCommand() == null)
             valid = false;
         else if (currentCommand.getCommand().length() <= 1)
             valid = false;

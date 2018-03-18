@@ -4,7 +4,6 @@ import json.JSONException;
 import json.JSONObject;
 import json.JSONTokener;
 import system.CacheManager;
-import system.search.agents.AbstractAgent;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -120,16 +119,24 @@ public class QuickCommandManager {
     }
 
     /**
+     * @param quickCommand
+     * @return the File associated with the given command.
+     */
+    private File getCommandFile(QuickCommand quickCommand) {
+        // Obtain the quick command file
+        return new File(CacheManager.getInstance().getQuickCommandsDir(), quickCommand.getId()+".json");
+    }
+
+    /**
      * Save the given quick command to file
      * @param quickCommand the QuickCommand to save
      * @return true if succeeded, false otherwise.
      */
     public boolean saveQuickCommand(QuickCommand quickCommand) {
-        // Obtain the quick command file
-        File quickCommandFile = new File(CacheManager.getInstance().getQuickCommandsDir(), quickCommand.getId()+".json");
+        File quickCommandFile = getCommandFile(quickCommand);
 
         // Save the quick command
-        return writeSectionToFile(quickCommand, quickCommandFile);
+        return writeCommandToFile(quickCommand, quickCommandFile);
     }
 
     /**
@@ -139,7 +146,7 @@ public class QuickCommandManager {
      * @param dest    the destination File.
      * @return true if succeeded, false otherwise.
      */
-    public synchronized boolean writeSectionToFile(QuickCommand quickCommand, File dest) {
+    public synchronized boolean writeCommandToFile(QuickCommand quickCommand, File dest) {
         try {
             // Write the json quickCommand to the file
             FileOutputStream fos = new FileOutputStream(dest);
@@ -156,5 +163,15 @@ public class QuickCommandManager {
         }
 
         return false;
+    }
+
+    /**
+     * Delete the given command from the filesystem
+     * @param command
+     * @return true if succeeded, false otherwise.
+     */
+    public synchronized boolean deleteCommand(QuickCommand command) {
+        File commandFile = getCommandFile(command);
+        return commandFile.delete();
     }
 }

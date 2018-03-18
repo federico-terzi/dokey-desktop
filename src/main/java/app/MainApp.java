@@ -2,7 +2,7 @@ package app;
 
 import app.editor.stages.EditorStage;
 import app.notifications.NotificationFactory;
-import app.quickcommands.CommandEditorStage;
+import app.quickcommands.stages.CommandEditorStage;
 import app.search.stages.SearchStage;
 import app.stages.SettingsStage;
 import app.stages.InitializationStage;
@@ -27,7 +27,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
 import system.*;
-import system.MS.MSApplicationManager;
 import system.adb.ADBManager;
 import system.bookmarks.BookmarkManager;
 import system.model.ApplicationManager;
