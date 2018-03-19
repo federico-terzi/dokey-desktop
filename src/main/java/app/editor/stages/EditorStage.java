@@ -60,6 +60,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class EditorStage extends Stage implements OnSectionModifiedListener {
     public static final double SECTION_LIST_VIEW_OPEN_POSITION = 0.3;
@@ -209,7 +210,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 if (controller.searchSectionTextField.isManaged()) {
                     sectionQuery = null;
                     controller.searchSectionTextField.setText(null);
-                    populateSectionListView();
+                    // populateSectionListView(); TODO
                     controller.searchSectionTextField.setManaged(false);
                 } else {
                     controller.searchSectionTextField.setManaged(true);
@@ -243,7 +244,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         // Listener for the search query
         controller.searchSectionTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             sectionQuery = newValue;
-            populateSectionListView();
+            // populateSectionListView();  TODO
         });
 
         // Drag layout files listener for importing
@@ -267,6 +268,29 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                     File importFile = event.getDragboard().getFiles().get(0);
                     importSection(importFile);
                 }
+            }
+        });
+        // Set up section list view
+        controller.getSectionsListView().setCellFactory(new Callback<ListView<Section>, ListCell<Section>>() {
+            @Override
+            public ListCell<Section> call(ListView<Section> param) {
+                return new SectionListCell(applicationManager, resourceBundle, new SectionListCell.OnContextMenuListener() {
+                    @Override
+                    public void onDeleteSection(Section section) {
+                        sectionManager.deleteSection(section);
+                        requestSectionList();
+                    }
+
+                    @Override
+                    public void onReloadSection(Section section) {
+                        requestSectionList();
+                    }
+
+                    @Override
+                    public void onExportSection(Section section) {
+                        exportSection(section);
+                    }
+                });
             }
         });
 
@@ -295,10 +319,6 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         // Reset the list view
         controller.getSectionsListView().getItems().clear();
 
-        controller.loadingProgressBar.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
-        controller.loadingProgressBar.setManaged(true);
-        controller.loadingProgressBar.setVisible(true);
-
         Task sectionTask = new Task() {
             @Override
             protected Object call() throws Exception {
@@ -311,28 +331,41 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 sections = sectionManager.getSections();
 
                 // Filter out the sections without an associated application
-                sections = sections.stream().filter(section -> {
+                Stream<Section> sectionStream = sections.stream().filter(section -> {
                     return section.getSectionType() == SectionType.LAUNCHPAD ||
                             section.getSectionType() == SectionType.SYSTEM ||
-                            applicationManager.getApplication(section.getRelatedAppId()) != null;
-                }).collect(Collectors.toList());
+                            (section.getRelatedAppId() != null &&
+                            applicationManager.getApplication(section.getRelatedAppId()) != null);
+                });
+
+                // If there is a search query, filter the results
+                if (sectionQuery != null) {
+                    sectionStream = sectionStream.filter(section -> {
+                        if (section.getRelatedAppId() != null) {
+                            Application app = applicationManager.getApplication(section.getRelatedAppId());
+                            return app.getName().toLowerCase().contains(sectionQuery.toLowerCase());
+                        }
+
+                        return true;
+                    });
+                }
+
+                // Create custom list cells
+                ObservableList<Section> observableList = FXCollections.observableArrayList(sectionStream.collect(Collectors.toList()));
+                Collections.sort(observableList, new SectionComparator(applicationManager));
 
                 // Populate the listview
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
                         // Fill the list view
-                        populateSectionListView();
+                        populateSectionListView(observableList);
 
                         // Select the list view item if present
                         if (targetSectionID != null) {
                             // Select the correct entry in the list view
                             selectSection(targetSectionID);
                         }
-
-                        controller.loadingProgressBar.setManaged(false);
-                        controller.loadingProgressBar.setVisible(false);
-                        controller.loadingProgressBar.setProgress(0);
                     }
                 });
                 return null;
@@ -350,19 +383,22 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         if (targetApp == null)
             return;
 
-        boolean isFound = false;  // Becomes true if the requested app is present in the list
-        for (Section sec : controller.getSectionsListView().getItems()) {
-            if (sec.getStringID() != null && sec.getStringID().equals(targetApp)) {
-                controller.getSectionsListView().getSelectionModel().select(sec);
-                isFound = true;
-                break;
+        // Request asynchronously
+        new Thread(()-> {
+            boolean isFound = false;  // Becomes true if the requested app is present in the list
+            for (Section sec : controller.getSectionsListView().getItems()) {
+                if (sec.getStringID() != null && sec.getStringID().equals(targetApp)) {
+                    Platform.runLater(() -> controller.getSectionsListView().getSelectionModel().select(sec));
+                    isFound = true;
+                    break;
+                }
             }
-        }
 
-        // If the app is not found in the list, request to refresh the list ( also creates the section )
-        if (!isFound) {
-            requestSectionList(targetApp);
-        }
+            // If the app is not found in the list, request to refresh the list ( also creates the section )
+            if (!isFound) {
+                Platform.runLater(() -> requestSectionList(targetApp));
+            }
+        }).start();
     }
 
     /**
@@ -375,51 +411,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
     /**
      * Fill the section list view.
      */
-    private void populateSectionListView() {
-        List<Section> input = this.sections;
-
-        // If there is a search query, filter the results
-        if (sectionQuery != null) {
-            input = input.stream().filter(section -> {
-                if (section.getSectionType() == SectionType.LAUNCHPAD) {
-                    return true;
-                } else if (section.getRelatedAppId() == null) {
-                    return false;
-                }
-
-                Application app = applicationManager.getApplication(section.getRelatedAppId());
-                if (app == null) {
-                    return false;
-                }
-                return app.getName().toLowerCase().contains(sectionQuery.toLowerCase());
-            }).collect(Collectors.toList());
-        }
-
-        // Create custom list cells
-        ObservableList<Section> sections = FXCollections.observableArrayList(input);
-        Collections.sort(sections, new SectionComparator(applicationManager));
-        controller.getSectionsListView().setCellFactory(new Callback<ListView<Section>, ListCell<Section>>() {
-            @Override
-            public ListCell<Section> call(ListView<Section> param) {
-                return new SectionListCell(applicationManager, resourceBundle, new SectionListCell.OnContextMenuListener() {
-                    @Override
-                    public void onDeleteSection(Section section) {
-                        sectionManager.deleteSection(section);
-                        requestSectionList();
-                    }
-
-                    @Override
-                    public void onReloadSection(Section section) {
-                        requestSectionList();
-                    }
-
-                    @Override
-                    public void onExportSection(Section section) {
-                        exportSection(section);
-                    }
-                });
-            }
-        });
+    private void populateSectionListView(ObservableList<Section> sections) {
         controller.getSectionsListView().setItems(sections);
 
         // If no active section is specified, load the first section
@@ -571,8 +563,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         // Create the section
         sectionManager.getShortcutSection(executablePath);
 
-        // Refresh the list
-        requestSectionList(executablePath);
+        selectSection(executablePath);
     }
 
     /**

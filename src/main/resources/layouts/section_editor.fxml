@@ -132,7 +132,4 @@
   <right>
 
   </right>
-   <bottom>
-      <ProgressBar fx:id="loadingProgressBar" maxWidth="1.7976931348623157E308" progress="0.0" BorderPane.alignment="CENTER" />
-   </bottom>
 </BorderPane>

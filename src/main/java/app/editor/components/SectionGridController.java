@@ -3,9 +3,11 @@ package app.editor.components;
 import app.editor.listeners.OnSectionModifiedListener;
 import app.editor.model.ScreenOrientation;
 import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -58,6 +60,7 @@ public class SectionGridController {
     private Node activePane;
     private Node previousPane;
     private Button showHideBottomBarButton = null;
+    private boolean isFirstStart = true;
 
     public SectionGridController(Section section, VBox container, ScreenOrientation screenOrientation,
                                  ApplicationManager applicationManager, ShortcutIconManager shortcutIconManager,
@@ -78,7 +81,7 @@ public class SectionGridController {
             isBottomBarVisible = true;
         }
 
-        render(createView());
+        invalidate();
     }
 
     public interface OnSectionGridEventListener {
@@ -97,7 +100,12 @@ public class SectionGridController {
      * Trigger a re-rendering of the grid
      */
     public void invalidate() {
-        render(createView());
+        container.getChildren().clear();
+
+        new Thread(() -> {
+            Node view = createView();
+            Platform.runLater(() -> render(view));
+        }).start();
     }
 
     /**
@@ -108,6 +116,11 @@ public class SectionGridController {
         container.getChildren().add(view);
 
         activePane = view;
+
+        if (isFirstStart) {
+            fadeIn();
+            isFirstStart = false;
+        }
     }
 
     /**
@@ -478,6 +491,9 @@ public class SectionGridController {
         Node newView = createView();
         Node oldContent = activePane;
 
+        oldContent.setCache(true);
+        oldContent.setCacheHint(CacheHint.SPEED);
+
         RotateTransition rotate = new RotateTransition(
                 Duration.seconds(ROTATE_SECTION_DURATION), oldContent);
 
@@ -497,6 +513,17 @@ public class SectionGridController {
         fadeIn.setToValue(1);
 
         new SequentialTransition(new ParallelTransition(rotate, fadeOut), fadeIn).play();
+    }
+
+    private void fadeIn() {
+        activePane.setCache(true);
+        activePane.setCacheHint(CacheHint.SPEED);
+        FadeTransition fadeIn = new FadeTransition(
+                Duration.seconds(0.4), activePane);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+        fadeIn.setOnFinished((event) -> activePane.setCache(false));
+        fadeIn.play();
     }
 
     public Section getSection() {
