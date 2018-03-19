@@ -23,6 +23,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -50,6 +51,8 @@ public class MSApplicationManager extends ApplicationManager {
 
     private boolean isPowerShellEnabled;
 
+    private Robot robot = null;  // Used for the key and alt tab workaround.
+
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
 
@@ -62,6 +65,15 @@ public class MSApplicationManager extends ApplicationManager {
         isPowerShellEnabled = checkPowerShellEnabled();
 
         disableForegroundLock();
+
+        // Initialize the robot
+        try {
+            robot = new Robot();
+            robot.setAutoDelay(40);
+            robot.setAutoWaitForIdle(true);
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
     }
 
     interface WUser32 extends User32 {
@@ -295,6 +307,35 @@ public class MSApplicationManager extends ApplicationManager {
 
         // Focus dokey by opening the currently active Dokey process
         return openApplication(startupManager.getCurrentExecutablePath(), false);
+    }
+
+    @Override
+    public boolean focusSearch() {
+        if (getActivePID() == startupManager.getPID())
+            return false;
+
+        // Search bar wasn't focused, the workaround is simple
+        // Get the search bar window rect, and then simulate a click on it
+        // to focus the window.
+
+        // Get the dokey window rect
+        HWND dokeyHwnd = User32.INSTANCE.FindWindow(null, "Dokey Search");
+        WinDef.RECT dokeyRect = new WinDef.RECT();
+        User32.INSTANCE.GetWindowRect(dokeyHwnd, dokeyRect);
+
+        // Get the middle coordinate
+        int clickX = (dokeyRect.left+dokeyRect.right)/2;
+        int clickY = (dokeyRect.top+dokeyRect.bottom)/2;
+
+        if (robot == null)
+            return false;
+
+        // Simulate the click
+        robot.mouseMove(clickX, clickY);
+        robot.mousePress(InputEvent.BUTTON1_MASK);
+        robot.mouseRelease(InputEvent.BUTTON1_MASK);
+
+        return true;
     }
 
     @Override
@@ -551,23 +592,17 @@ public class MSApplicationManager extends ApplicationManager {
      * Used when windows is stucked and doesn't change window.
      */
     private void triggerAppSwitch() {
-        Robot robot = null;
-        try {
-            robot = new Robot();
-            robot.setAutoDelay(40);
-            robot.setAutoWaitForIdle(true);
-            robot.keyPress(KeyEvent.VK_ALT);
-            robot.delay(40);
-            robot.keyPress(KeyEvent.VK_TAB);
-            robot.delay(40);
-            robot.keyRelease(KeyEvent.VK_ALT);
-            robot.delay(40);
-            robot.keyRelease(KeyEvent.VK_TAB);
-            robot.delay(40);
-        } catch (AWTException e) {
-            e.printStackTrace();
-        }
+        if (robot == null)
+            return;
 
+        robot.keyPress(KeyEvent.VK_ALT);
+        robot.delay(40);
+        robot.keyPress(KeyEvent.VK_TAB);
+        robot.delay(40);
+        robot.keyRelease(KeyEvent.VK_ALT);
+        robot.delay(40);
+        robot.keyRelease(KeyEvent.VK_TAB);
+        robot.delay(40);
     }
 
     /**

@@ -43,7 +43,7 @@ public class SearchStage extends Stage {
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         scene.getStylesheets().add(ResourceUtils.getResource("/css/search_dialog.css").toURI().toString());
-        this.setTitle("Dokey Search");
+        this.setTitle("Dokey Search");  // DON'T CHANGE, used on window in the focus mechanism.
         this.setScene(scene);
         this.setAlwaysOnTop(true);
         initStyle(StageStyle.TRANSPARENT);

@@ -98,6 +98,12 @@ public abstract class ApplicationManager {
     public abstract boolean focusDokey();
 
     /**
+     * Focus Dokey search bar
+     * @return true if succeeded, false otherwise.
+     */
+    public abstract boolean focusSearch();
+
+    /**
      * Interface used to update the status of the "loadApplications" operation.
      */
     public interface OnLoadApplicationsListener {

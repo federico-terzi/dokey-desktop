@@ -198,6 +198,11 @@ public class MACApplicationManager extends ApplicationManager {
     }
 
     @Override
+    public boolean focusSearch() {
+        return focusDokey();
+    }
+
+    @Override
     public boolean isApplicationAlreadyPresent(String executablePath) {
         return applicationMap.containsKey(executablePath);
     }

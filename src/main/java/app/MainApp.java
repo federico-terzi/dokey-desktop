@@ -511,10 +511,9 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     @Override
     public void onSearchOpenRequest() {
         if (searchStage == null || !searchStage.isShowing()) {
-            new Thread(() -> appManager.focusDokey()).start();
-
             searchStage = context.getBean(SearchStage.class);
             searchStage.show();
+            appManager.focusSearch();
         }else{
             searchStage.hide();
             searchStage = null;
