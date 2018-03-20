@@ -330,10 +330,17 @@ public class MSApplicationManager extends ApplicationManager {
         if (robot == null)
             return false;
 
+        // Get the current mouse position
+        WinDef.POINT mousePoint = new WinDef.POINT();
+        User32.INSTANCE.GetCursorPos(mousePoint);
+
         // Simulate the click
         robot.mouseMove(clickX, clickY);
         robot.mousePress(InputEvent.BUTTON1_MASK);
         robot.mouseRelease(InputEvent.BUTTON1_MASK);
+
+        // Return to the previous position
+        robot.mouseMove(mousePoint.x, mousePoint.y);
 
         return true;
     }
