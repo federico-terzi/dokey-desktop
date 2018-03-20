@@ -36,7 +36,7 @@ public class FolderAction extends QuickAction{
 
     @Override
     public String getDisplayText(DependencyResolver resolver, ResourceBundle resourceBundle) {
-        return "Open \""+path + "\"";  // TODO: i18n
+        return resourceBundle.getString("open") + " \""+path + "\"";
     }
 
     public String getPath() {

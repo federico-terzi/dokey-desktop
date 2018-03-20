@@ -23,11 +23,11 @@ public class ApplicationActionCreator extends QuickActionCreator {
 
     @Override
     public void createActionBox(VBox box, OnActionModifiedListener listener) {
-        applicationLabel = new Label("No application currently selected");  // TODO: I18n
+        applicationLabel = new Label(resourceBundle.getString("no_application_selected"));
         applicationLabel.setPadding(new Insets(5, 0, 5, 0));
         box.getChildren().add(applicationLabel);
 
-        selectAppButton = new Button("Select Application...");
+        selectAppButton = new Button(resourceBundle.getString("select_application"));
         selectAppButton.setOnAction(event -> {
             try {
                 AppSelectDialogStage appSelectDialogStage = new AppSelectDialogStage(resolver.getApplicationManager(),
@@ -60,7 +60,7 @@ public class ApplicationActionCreator extends QuickActionCreator {
     @Override
     public void renderActionBox(QuickAction action) {
         if (action == null) {
-            applicationLabel.setText("No application currently selected");  // TODO: i18n
+            applicationLabel.setText(resourceBundle.getString("no_application_selected"));
         }else{
             applicationLabel.setText(action.getDisplayText(resolver, resourceBundle));
         }
@@ -68,6 +68,6 @@ public class ApplicationActionCreator extends QuickActionCreator {
 
     @Override
     public String getDisplayText() {
-        return "Open Application";  // TODO: i18n
+        return resourceBundle.getString("open_application");
     }
 }

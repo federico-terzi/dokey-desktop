@@ -4,6 +4,8 @@ import json.JSONException;
 import json.JSONObject;
 import json.JSONTokener;
 import system.CacheManager;
+import system.quick_commands.model.actions.DokeyAction;
+import system.quick_commands.model.actions.WebLinkAction;
 
 import java.io.*;
 import java.util.*;
@@ -21,18 +23,17 @@ public class QuickCommandManager {
 
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
+    private ResourceBundle resourceBundle;
 
-    public QuickCommandManager() {
-
+    public QuickCommandManager(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
     }
 
     /**
      * Request to load all the quick commands, asynchronously
      */
     public void requestQuickCommands() {
-        new Thread(() -> {
-            loadCommands();
-        }).start();
+        new Thread(() -> loadCommands()).start();
     }
 
     /**
@@ -57,6 +58,65 @@ public class QuickCommandManager {
                 commands.add(currentCommand);
                 commandMap.put(currentCommand.getCommand(), currentCommand);
             }
+        }
+
+        // Initialize default commands
+        initializeDefaultCommands();
+    }
+
+    /**
+     * Initialize default commands
+     */
+    private void initializeDefaultCommands() {
+        boolean modified = false;
+
+        if (!commandMap.containsKey(":editor")) {
+            QuickCommand command = new QuickCommand(true);
+            command.setName(resourceBundle.getString("open_editor"));
+            DokeyAction action = new DokeyAction();
+            action.setDokeyActionType(DokeyAction.DokeyActionType.OPEN_EDITOR);
+            command.setAction(action);
+            command.setCommand(":editor");
+            saveQuickCommand(command);
+            modified = true;
+        }
+
+        if (!commandMap.containsKey(":commands")) {
+            QuickCommand command = new QuickCommand(true);
+            command.setName(resourceBundle.getString("open_commands"));
+            DokeyAction action = new DokeyAction();
+            action.setDokeyActionType(DokeyAction.DokeyActionType.OPEN_COMMANDS);
+            command.setAction(action);
+            command.setCommand(":commands");
+            saveQuickCommand(command);
+            modified = true;
+        }
+
+        if (!commandMap.containsKey(":settings")) {
+            QuickCommand command = new QuickCommand(true);
+            command.setName(resourceBundle.getString("open_settings"));
+            DokeyAction action = new DokeyAction();
+            action.setDokeyActionType(DokeyAction.DokeyActionType.OPEN_SETTINGS);
+            command.setAction(action);
+            command.setCommand(":settings");
+            saveQuickCommand(command);
+            modified = true;
+        }
+
+        if (!commandMap.containsKey(":docs")) {
+            QuickCommand command = new QuickCommand(true);
+            command.setName(resourceBundle.getString("get_help"));
+            WebLinkAction action = new WebLinkAction();
+            action.setUrl("https://dokey.io/docs/");
+            command.setAction(action);
+            command.setCommand(":docs");
+            saveQuickCommand(command);
+            modified = true;
+        }
+
+        // If a command was added, reload all the commands
+        if (modified) {
+            loadCommands();
         }
     }
 

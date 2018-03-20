@@ -26,11 +26,11 @@ public class FolderActionCreator extends QuickActionCreator {
 
     @Override
     public void createActionBox(VBox box, OnActionModifiedListener listener) {
-        folderLabel = new Label("No folder currently selected");  // TODO: I18n
+        folderLabel = new Label(resourceBundle.getString("no_folder_selected"));
         folderLabel.setPadding(new Insets(5, 0, 5, 0));
         box.getChildren().add(folderLabel);
 
-        selectFolderApp = new Button("Select Folder...");
+        selectFolderApp = new Button(resourceBundle.getString("select_folder"));
         selectFolderApp.setOnAction(event -> {
             DirectoryChooser chooser = new DirectoryChooser();
             chooser.setTitle(resourceBundle.getString("choose_the_folder"));
@@ -51,7 +51,7 @@ public class FolderActionCreator extends QuickActionCreator {
     @Override
     public void renderActionBox(QuickAction action) {
         if (action == null) {
-            folderLabel.setText("No folder currently selected");  // TODO: i18n
+            folderLabel.setText(resourceBundle.getString("no_folder_selected"));
         }else{
             folderLabel.setText(action.getDisplayText(resolver, resourceBundle));
         }
@@ -59,6 +59,6 @@ public class FolderActionCreator extends QuickActionCreator {
 
     @Override
     public String getDisplayText() {
-        return "Open Folder";  // TODO: i18n
+        return resourceBundle.getString("open_folder");
     }
 }

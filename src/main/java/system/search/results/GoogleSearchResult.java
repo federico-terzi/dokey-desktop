@@ -25,7 +25,7 @@ public class GoogleSearchResult extends AbstractResult {
 
     @Override
     public String getDescription() {
-        return "Search \""+query+"\" on Google";  // TODO: i18n
+        return resourceBundle.getString("search") + " \""+query+"\" "+resourceBundle.getString("on_google");
     }
 
     @Override

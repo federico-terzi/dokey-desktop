@@ -37,8 +37,6 @@ import java.util.logging.Logger;
  * Represents the background worker that executes all the actions in the server.
  */
 public class EngineService implements LinkManager.OnKeyboardShortcutReceivedListener, LinkManager.OnAppListRequestListener, ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnImageRequestListener, LinkManager.OnAppOpenRequestReceivedListener, LinkManager.OnSectionRequestListener, LinkManager.OnFolderOpenRequestReceivedListener, LinkManager.OnWebLinkRequestReceivedListener, LinkManager.OnCommandRequestReceivedListener, LinkManager.OnAppInfoRequestReceivedListener, LinkManager.OnModifiedSectionEventListener {
-    public static final int DELAY_FROM_FOCUS_TO_KEYSTROKE = 300;  // In milliseconds
-
     private LinkManager linkManager;
     private ApplicationManager appManager;
     private KeyboardManager keyboardManager;

@@ -147,7 +147,7 @@ public class SystemConfig {
 
     @Bean
     public QuickCommandManager quickCommandManager() {
-        return new QuickCommandManager();
+        return new QuickCommandManager(resourceBundle());
     }
 
     @Bean

@@ -37,7 +37,7 @@ public class WebLinkAction extends QuickAction{
 
     @Override
     public String getDisplayText(DependencyResolver resolver, ResourceBundle resourceBundle) {
-        return "Navigate to \""+url + "\"";  // TODO: i18n
+        return resourceBundle.getString("navigate_to") + " \""+url + "\"";
     }
 
     public String getUrl() {

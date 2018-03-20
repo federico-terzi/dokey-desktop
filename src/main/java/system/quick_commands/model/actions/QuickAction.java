@@ -91,11 +91,12 @@ public abstract class QuickAction {
     }
 
     /**
-     * Types of Quick Actions
+     * Types of Quick DokeyActionType
      */
     public enum Type {
         APP(ApplicationAction.class),
         FOLDER(FolderAction.class),
+        DOKEY(DokeyAction.class),
         WEB_LINK(WebLinkAction.class);
 
         private Class<? extends QuickAction> actionClass;

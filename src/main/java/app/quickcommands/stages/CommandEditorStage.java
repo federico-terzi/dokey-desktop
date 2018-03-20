@@ -18,10 +18,7 @@ import system.quick_commands.QuickCommand;
 import system.quick_commands.QuickCommandManager;
 import system.quick_commands.model.DependencyResolver;
 import system.quick_commands.model.actions.QuickAction;
-import system.quick_commands.model.creators.ApplicationActionCreator;
-import system.quick_commands.model.creators.FolderActionCreator;
-import system.quick_commands.model.creators.QuickActionCreator;
-import system.quick_commands.model.creators.WebLinkActionCreator;
+import system.quick_commands.model.creators.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -209,6 +206,9 @@ public class CommandEditorStage extends AbstractStage<CommandEditorController> {
 
         QuickActionCreator folderCreator = new FolderActionCreator(resolver, resourceBundle);
         actionCreators.put(folderCreator.getActionType(), folderCreator);
+
+        QuickActionCreator dokeyCreator = new DokeyActionCreator(resolver, resourceBundle);
+        actionCreators.put(dokeyCreator.getActionType(), dokeyCreator);
     }
 
     /**

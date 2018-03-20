@@ -21,7 +21,7 @@ public class TerminalResult extends AbstractResult {
 
     @Override
     public String getDescription() {
-        return "Execute \""+ command +"\" in the Terminal";  // TODO: i18n
+        return resourceBundle.getString("execute") + " \""+ command +"\" "+resourceBundle.getString("in_the_terminal");
     }
 
     @Override

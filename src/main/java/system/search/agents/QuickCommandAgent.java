@@ -25,7 +25,7 @@ public class QuickCommandAgent extends AbstractAgent {
         this.quickCommandManager = quickCommandManager;
         this.dependencyResolver = dependencyResolver;
 
-        this.defaultImage = ImageResolver.getInstance().getImage(QuickCommandAgent.class.getResourceAsStream("/assets/star.png"), 32);
+        this.defaultImage = ImageResolver.getInstance().getImage(QuickCommandAgent.class.getResourceAsStream("/assets/last_page.png"), 32);
     }
 
     @Override

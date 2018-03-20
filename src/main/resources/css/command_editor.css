@@ -20,6 +20,10 @@
     -fx-text-fill: -secondaryTextColor;
 }
 
+.choice-box .label{
+    -fx-text-fill: -secondaryTextColor;
+}
+
 .table-view {
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;

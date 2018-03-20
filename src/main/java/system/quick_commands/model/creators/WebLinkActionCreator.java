@@ -19,7 +19,7 @@ public class WebLinkActionCreator extends QuickActionCreator {
     @Override
     public void createActionBox(VBox box, OnActionModifiedListener listener) {
         urlTextField = new TextField();
-        urlTextField.setPromptText("Insert URL here...");
+        urlTextField.setPromptText(resourceBundle.getString("insert_url_here"));
         urlTextField.setMaxWidth(Double.MAX_VALUE);
 
         urlTextField.textProperty().addListener(((observable, oldValue, newValue) -> {
@@ -69,6 +69,6 @@ public class WebLinkActionCreator extends QuickActionCreator {
 
     @Override
     public String getDisplayText() {
-        return "Navigate to URL";  // TODO: i18n
+        return resourceBundle.getString("navigate_to_url");
     }
 }

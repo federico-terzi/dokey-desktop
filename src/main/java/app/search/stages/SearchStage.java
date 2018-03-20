@@ -53,8 +53,6 @@ public class SearchStage extends Stage {
         controller = (SearchController) fxmlLoader.getController();
         controller.resultListView.setManaged(false);
 
-        // TODO: stage loose focus close event
-
         // Setup the list cells
         Image fallback = ImageResolver.getInstance().getImage(SearchStage.class.getResourceAsStream("/assets/photo.png"), 32);
         controller.resultListView.setCellFactory(new Callback<ListView<AbstractResult>, ListCell<AbstractResult>>() {

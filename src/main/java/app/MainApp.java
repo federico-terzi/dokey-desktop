@@ -383,6 +383,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
         // Register the global event listeners
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_EDITOR_REQUEST_EVENT, openEditorRequestListener);
+        BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_SETTINGS_REQUEST_EVENT, openSettingsRequestListener);
+        BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_COMMANDS_REQUEST_EVENT, openCommandsRequestListener);
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.ENABLE_DOKEY_SEARCH_PROPERTY_CHANGED, enableDokeySearchChangedListener);
 
         // Register global hot keys if enabled
@@ -682,6 +684,25 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
             });
         }
     };
+    /**
+     * Called when the user request to open settings.
+     */
+    private BroadcastManager.BroadcastListener openSettingsRequestListener = new BroadcastManager.BroadcastListener() {
+        @Override
+        public void onBroadcastReceived(Serializable param) {
+            Platform.runLater(() -> openSettings());
+        }
+    };
+    /**
+     * Called when the user request to open commands editor.
+     */
+    private BroadcastManager.BroadcastListener openCommandsRequestListener = new BroadcastManager.BroadcastListener() {
+        @Override
+        public void onBroadcastReceived(Serializable param) {
+            Platform.runLater(() -> openCommandEditor());
+        }
+    };
+
 
     /**
      * Called when the user request to enable/disable the dokey search hotkey.

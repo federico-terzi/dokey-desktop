@@ -40,7 +40,7 @@ public class ApplicationAction extends QuickAction{
         Application application = resolver.getApplicationManager().getApplication(executablePath);
 
         if (application != null)
-            return "Open \""+application.getName() + "\"";  // TODO: i18n
+            return resourceBundle.getString("open")+" \""+application.getName() + "\"";
 
         return "";
     }

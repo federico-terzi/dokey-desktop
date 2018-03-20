@@ -25,7 +25,7 @@ public class CalculatorResult extends AbstractResult {
 
     @Override
     public String getDescription() {
-        return "The result of the expression is: "+result;  // TODO: i18n
+        return resourceBundle.getString("result_of_expression") + " " + result;
     }
 
     @Override
