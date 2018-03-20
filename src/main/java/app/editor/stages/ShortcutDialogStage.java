@@ -75,9 +75,14 @@ public class ShortcutDialogStage extends Stage {
         controller.getCancelBtn().setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                onShortcutListener.onCanceled();
+                if (onShortcutListener != null)
+                    onShortcutListener.onCanceled();
                 close();
             }
+        });
+        setOnCloseRequest(event -> {
+            if (onShortcutListener != null)
+                onShortcutListener.onCanceled();
         });
 
         controller.getSelectBtn().setOnAction(new EventHandler<ActionEvent>() {
@@ -88,7 +93,8 @@ public class ShortcutDialogStage extends Stage {
                     if (name.isEmpty()) {
                         name = getShortcut();
                     }
-                    onShortcutListener.onShortcutSelected(getShortcut(),name, icon);
+                    if (onShortcutListener != null)
+                        onShortcutListener.onShortcutSelected(getShortcut(),name, icon);
                     close();
                 }else {
                     Alert alert = new Alert(Alert.AlertType.WARNING);

@@ -47,9 +47,14 @@ public class SystemDialogStage extends Stage {
         controller.cancelBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                listener.onCanceled();
+                if (listener != null)
+                    listener.onCanceled();
                 close();
             }
+        });
+        setOnCloseRequest(event -> {
+            if (listener != null)
+                listener.onCanceled();
         });
 
         controller.selectBtn.setOnAction(new EventHandler<ActionEvent>() {
@@ -63,7 +68,8 @@ public class SystemDialogStage extends Stage {
                     item.setCommandType(commandType);
                     item.setTitle(commandType.getTitle());
 
-                    listener.onSystemItemSelected(item);
+                    if (listener != null)
+                        listener.onSystemItemSelected(item);
                     close();
                 }
             }

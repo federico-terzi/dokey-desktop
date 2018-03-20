@@ -86,9 +86,14 @@ public class WebLinkDialogStage extends Stage {
         controller.cancelBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                onWebLinkListener.onCanceled();
+                if (onWebLinkListener != null)
+                    onWebLinkListener.onCanceled();
                 close();
             }
+        });
+        setOnCloseRequest(event -> {
+            if (onWebLinkListener != null)
+                onWebLinkListener.onCanceled();
         });
 
         // Select button
@@ -101,9 +106,10 @@ public class WebLinkDialogStage extends Stage {
                     url = "http://"+url;
                 }
 
-                onWebLinkListener.onWebLinkSelected(url,
-                        controller.titleTextField.getText(),
-                        imageUrl);
+                if (onWebLinkListener != null)
+                    onWebLinkListener.onWebLinkSelected(url,
+                            controller.titleTextField.getText(),
+                            imageUrl);
                 close();
             }
         });

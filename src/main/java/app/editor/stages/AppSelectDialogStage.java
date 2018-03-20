@@ -54,9 +54,14 @@ public class AppSelectDialogStage extends Stage {
         controller.getCancelBtn().setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                listener.onCanceled();
+                if (listener != null)
+                    listener.onCanceled();
                 close();
             }
+        });
+        setOnCloseRequest(event -> {
+            if (listener != null)
+                listener.onCanceled();
         });
 
         controller.getSelectBtn().setOnAction(new EventHandler<ActionEvent>() {
@@ -65,7 +70,8 @@ public class AppSelectDialogStage extends Stage {
                 Application selectedApp = controller.getAppListView().getSelectionModel().getSelectedItem();
 
                 if (selectedApp != null) {
-                    listener.onApplicationSelected(selectedApp);
+                    if (listener != null)
+                        listener.onApplicationSelected(selectedApp);
                     close();
                 }
             }

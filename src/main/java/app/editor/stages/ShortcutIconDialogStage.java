@@ -52,9 +52,14 @@ public class ShortcutIconDialogStage extends Stage {
         controller.cancelBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                listener.onCanceled();
+                if (listener != null)
+                    listener.onCanceled();
                 close();
             }
+        });
+        setOnCloseRequest(event -> {
+            if (listener != null)
+                listener.onCanceled();
         });
 
         controller.selectBtn.setOnAction(new EventHandler<ActionEvent>() {
@@ -65,7 +70,8 @@ public class ShortcutIconDialogStage extends Stage {
                 if (icon != null) {
                     // Workaround to get the light icon
                     ShortcutIcon lightIcon = shortcutIconManager.getIcon(icon.getId(), IconTheme.LIGHT);
-                    listener.onIconSelected(lightIcon);
+                    if (listener != null)
+                        listener.onIconSelected(lightIcon);
                     close();
                 }
             }
