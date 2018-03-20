@@ -13,6 +13,7 @@ public class SettingsController {
     public Button clearCacheBtn;
     public CheckBox startupCheckbox;
     public TextArea licensesTextArea;
+    public CheckBox enableDokeySearchCheckbox;
 
     @FXML
     private ResourceBundle resources;

@@ -26,6 +26,18 @@
                               <Insets bottom="10.0" />
                            </VBox.margin>
                                </TitledPane>
+                        <TitledPane animated="false" collapsible="false" text="%dokey_search">
+                           <content>
+                              <HBox alignment="CENTER_LEFT">
+                                 <children>
+                                    <CheckBox fx:id="enableDokeySearchCheckbox" mnemonicParsing="false" text="%enable_dokey_search" />
+                                 </children>
+                              </HBox>
+                           </content>
+                           <VBox.margin>
+                              <Insets bottom="10.0" />
+                           </VBox.margin>
+                        </TitledPane>
                                <TitledPane animated="false" collapsible="false" text="%cache_and_data">
                                    <content>
                                        <HBox alignment="CENTER_LEFT">
@@ -88,7 +100,7 @@
                         <Label text="Dokey was made by the Rocket Guys ( alias for Matteo and Federico )." />
                         <Label text="The application uses open-source software and image assets to work." />
                         <Label text="The licenses are shown below:  " />
-                        <TextArea editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefRowCount="100" fx:id="licensesTextArea"/>
+                        <TextArea fx:id="licensesTextArea" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefRowCount="100" />
                      </children>
                   </VBox>
                </content>

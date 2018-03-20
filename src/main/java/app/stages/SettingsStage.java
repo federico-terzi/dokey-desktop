@@ -22,6 +22,7 @@ import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import system.CacheManager;
 import system.ResourceUtils;
+import system.SettingsManager;
 import system.StartupManager;
 import system.model.Application;
 import system.model.ApplicationManager;
@@ -32,13 +33,15 @@ import java.util.*;
 
 public class SettingsStage extends Stage {
     private ApplicationManager applicationManager;
+    private SettingsManager settingsManager;
     private OnSettingsCloseListener onSettingsCloseListener;
 
     private SettingsController controller;
 
     public SettingsStage(ApplicationManager applicationManager, ResourceBundle resourceBundle,
-                         OnSettingsCloseListener onSettingsCloseListener) throws IOException {
+                         SettingsManager settingsManager, OnSettingsCloseListener onSettingsCloseListener) throws IOException {
         this.applicationManager = applicationManager;
+        this.settingsManager = settingsManager;
         this.onSettingsCloseListener = onSettingsCloseListener;
 
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceUtils.getResource("/layouts/settings_dialog.fxml").toURI().toURL());
@@ -133,6 +136,12 @@ public class SettingsStage extends Stage {
                 new Thread(startupTask).start();
             }
         });
+
+        // DOKEY SEARCH
+        controller.enableDokeySearchCheckbox.setSelected(settingsManager.isDokeySearchEnabled());
+        controller.enableDokeySearchCheckbox.selectedProperty().addListener(((observable, oldValue, value) -> {
+            settingsManager.setDokeySearchEnabled(value);
+        }));
 
         // CLEAR CACHE
         controller.clearCacheBtn.setOnAction(new EventHandler<ActionEvent>() {

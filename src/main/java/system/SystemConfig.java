@@ -151,6 +151,11 @@ public class SystemConfig {
     }
 
     @Bean
+    public SettingsManager settingsManager() {
+        return new SettingsManager();
+    }
+
+    @Bean
     public DependencyResolver dependencyResolver() {
         return new DependencyResolver() {
             @Override

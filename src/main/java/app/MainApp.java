@@ -69,6 +69,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private ADBManager adbManager;
     private SystemManager systemManager;
     private DaemonMonitor daemonMonitor;
+    private SettingsManager settingsManager;
 
     private ServerSocket serverSocket;  // This is the server socket later used by the EngineServer
 
@@ -245,6 +246,9 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         quickCommandManager = context.getBean(QuickCommandManager.class);
         quickCommandManager.requestQuickCommands();
 
+        // Get the settings manager
+        settingsManager = context.getBean(SettingsManager.class);
+
         // load the applications
         loadApplications();
 
@@ -379,9 +383,11 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
         // Register the global event listeners
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_EDITOR_REQUEST_EVENT, openEditorRequestListener);
+        BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.ENABLE_DOKEY_SEARCH_PROPERTY_CHANGED, enableDokeySearchChangedListener);
 
-        // Register global hot keys
-        registerHotKeys();
+        // Register global hot keys if enabled
+        if (settingsManager.isDokeySearchEnabled())
+            registerHotKeys();
 
         if (openEditor) {
             openEditor(null);
@@ -674,6 +680,23 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
             Platform.runLater(() -> {
                 openEditor(targetApp);
             });
+        }
+    };
+
+    /**
+     * Called when the user request to enable/disable the dokey search hotkey.
+     */
+    private BroadcastManager.BroadcastListener enableDokeySearchChangedListener = new BroadcastManager.BroadcastListener() {
+        @Override
+        public void onBroadcastReceived(Serializable param) {
+            Boolean isEnabled = (Boolean) param;
+
+            // Change the hotkey registration based on the value
+            if (isEnabled) {
+                registerHotKeys();
+            }else{
+                provider.reset();
+            }
         }
     };
 }

@@ -20,6 +20,8 @@ public class BroadcastManager {
 
     public static final int OPEN_SHORTCUT_PAGE_FOR_APPLICATION_EVENT = 50;
 
+    public static final int ENABLE_DOKEY_SEARCH_PROPERTY_CHANGED = 100;
+
 
     // internal variables
     private static BroadcastManager instance = null;
