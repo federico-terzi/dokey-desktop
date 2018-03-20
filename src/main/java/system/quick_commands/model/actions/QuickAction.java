@@ -95,6 +95,7 @@ public abstract class QuickAction {
      */
     public enum Type {
         APP(ApplicationAction.class),
+        FOLDER(FolderAction.class),
         WEB_LINK(WebLinkAction.class);
 
         private Class<? extends QuickAction> actionClass;

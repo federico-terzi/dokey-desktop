@@ -19,6 +19,7 @@ import system.quick_commands.QuickCommandManager;
 import system.quick_commands.model.DependencyResolver;
 import system.quick_commands.model.actions.QuickAction;
 import system.quick_commands.model.creators.ApplicationActionCreator;
+import system.quick_commands.model.creators.FolderActionCreator;
 import system.quick_commands.model.creators.QuickActionCreator;
 import system.quick_commands.model.creators.WebLinkActionCreator;
 
@@ -205,6 +206,9 @@ public class CommandEditorStage extends AbstractStage<CommandEditorController> {
 
         QuickActionCreator urlCreator = new WebLinkActionCreator(resolver, resourceBundle);
         actionCreators.put(urlCreator.getActionType(), urlCreator);
+
+        QuickActionCreator folderCreator = new FolderActionCreator(resolver, resourceBundle);
+        actionCreators.put(folderCreator.getActionType(), folderCreator);
     }
 
     /**
