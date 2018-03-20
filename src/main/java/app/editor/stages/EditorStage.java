@@ -210,10 +210,11 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 if (controller.searchSectionTextField.isManaged()) {
                     sectionQuery = null;
                     controller.searchSectionTextField.setText(null);
-                    // populateSectionListView(); TODO
+                    requestSectionList();
                     controller.searchSectionTextField.setManaged(false);
                 } else {
                     controller.searchSectionTextField.setManaged(true);
+                    controller.searchSectionTextField.requestFocus();
                 }
             }
         });
@@ -244,8 +245,13 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         // Listener for the search query
         controller.searchSectionTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             sectionQuery = newValue;
-            // populateSectionListView();  TODO
+            requestSectionList();
         });
+        controller.searchSectionTextField.focusedProperty().addListener(((observable, oldValue, newValue) -> {
+            if (newValue == false) {
+                controller.searchBtn.fire();
+            }
+        }));
 
         // Drag layout files listener for importing
         controller.getContentBox().setOnDragOver(new EventHandler<DragEvent>() {
@@ -339,14 +345,14 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 });
 
                 // If there is a search query, filter the results
-                if (sectionQuery != null) {
+                if (sectionQuery != null && !sectionQuery.trim().isEmpty()) {
                     sectionStream = sectionStream.filter(section -> {
                         if (section.getRelatedAppId() != null) {
                             Application app = applicationManager.getApplication(section.getRelatedAppId());
                             return app.getName().toLowerCase().contains(sectionQuery.toLowerCase());
                         }
 
-                        return true;
+                        return false;
                     });
                 }
 
