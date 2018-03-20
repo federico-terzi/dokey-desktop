@@ -1,5 +1,6 @@
 package system.MS
 
+import com.sun.jna.platform.win32.Kernel32
 import com.sun.jna.platform.win32.User32
 import com.sun.jna.platform.win32.WinDef.HWND
 import com.sun.jna.platform.win32.WinUser
@@ -19,8 +20,6 @@ class MSWindow(titleText: String, application:Application?,
      * Focus on a system.window
      */
     override fun focusWindow() : Boolean{
-        appActivate()
-
         User32.INSTANCE.SetForegroundWindow(hwnd)
 
         // Restoring it if minimized
@@ -28,6 +27,8 @@ class MSWindow(titleText: String, application:Application?,
         User32.INSTANCE.GetWindowPlacement(hwnd, winplace)
         if (winplace.showCmd == 2)  // MINIMIZED
             User32.INSTANCE.ShowWindow(hwnd, 9)  // Restore
+
+        appActivate()
 
         return true
     }
@@ -48,8 +49,6 @@ class MSWindow(titleText: String, application:Application?,
             // Execute the process
             val proc = runtime.exec(arrayOf("cscript", "/nologo", scriptPath, PID.toString()))
 
-            // Wait for the process to complete
-            proc.waitFor()
         } catch (e: IOException) {
             e.printStackTrace()
         }

@@ -402,9 +402,6 @@ public class EngineService implements LinkManager.OnKeyboardShortcutReceivedList
             // Send a broadcast event
             BroadcastManager.getInstance().sendBroadcast(BroadcastManager.OPEN_EDITOR_REQUEST_EVENT, specificApplication);
 
-            // Focus the dokey app
-            appManager.focusDokey();
-
             return CommandPacket.RESPONSE_OK;
         }
 

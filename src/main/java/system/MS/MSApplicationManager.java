@@ -138,9 +138,6 @@ public class MSApplicationManager extends ApplicationManager {
         // Try to open the application until a timeout occurs
         while ((System.currentTimeMillis()-initialTime) < OPEN_APPLICATION_TIMEOUT && !hasBeenOpened) {
             if (isApplicationOpen) {
-                // Attach to the foreground thread to gain focus rights
-                enableFocusWorkaround();
-
                 firstOpenWindow.focusWindow();
             }else{
                 // Get the requested application

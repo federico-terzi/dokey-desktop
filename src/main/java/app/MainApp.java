@@ -459,6 +459,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
     private void openEditor(String targetApp) {
         if (isEditorOpen) {
+            appManager.focusDokey();
+
             // If the editor is already open, just select the requested app
             editorStage.selectSection(targetApp);
             return;
@@ -665,7 +667,9 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         @Override
         public void onBroadcastReceived(Serializable param) {
             String targetApp = (String) param;
-            Platform.runLater(() -> openEditor(targetApp));
+            Platform.runLater(() -> {
+                openEditor(targetApp);
+            });
         }
     };
 }
