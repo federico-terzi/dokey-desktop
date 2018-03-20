@@ -479,6 +479,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
     private void openSettings() {
         if (isSettingsOpen) {
+            appManager.focusDokey();
+
             return;
         }
 
@@ -495,6 +497,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
     private void openCommandEditor() {
         if (isCommandEditorOpen) {
+            appManager.focusDokey();
+
             return;
         }
 
