@@ -175,32 +175,16 @@ public class SettingsStage extends Stage {
                 }
             }
         });
-
-        // load the licenses
-        loadLicenses();
+        // View licenses btn
+        controller.viewLicensesBtn.setOnAction(event -> {
+            applicationManager.openWebLink("https://dokey.io/credits.html");
+        });
 
         // Load the external applications
         loadExternalApplications();
 
         // Load start on startup status
         controller.startupCheckbox.setSelected(StartupManager.getInstance().isAutomaticStartupEnabled());
-    }
-
-    private void loadLicenses() {
-        InputStream fis = SettingsStage.class.getResourceAsStream("/assets/licenses.txt");
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-            String line = null;
-            StringBuilder sb = new StringBuilder();
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-                sb.append('\n');
-            }
-            controller.licensesTextArea.setText(sb.toString());
-            fis.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void loadExternalApplications() {

@@ -99,8 +99,11 @@
                      <children>
                         <Label text="Dokey was made by the Rocket Guys ( alias for Matteo and Federico )." />
                         <Label text="The application uses open-source software and image assets to work." />
-                        <Label text="The licenses are shown below:  " />
-                        <TextArea fx:id="licensesTextArea" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefRowCount="100" />
+                        <Button fx:id="viewLicensesBtn" mnemonicParsing="false" text="View Licenses">
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                        </Button>
                      </children>
                   </VBox>
                </content>

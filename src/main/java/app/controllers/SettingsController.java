@@ -12,8 +12,8 @@ public class SettingsController {
     public ListView externalAppListView;
     public Button clearCacheBtn;
     public CheckBox startupCheckbox;
-    public TextArea licensesTextArea;
     public CheckBox enableDokeySearchCheckbox;
+    public Button viewLicensesBtn;
 
     @FXML
     private ResourceBundle resources;
