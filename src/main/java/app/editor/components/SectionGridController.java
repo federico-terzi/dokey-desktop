@@ -101,11 +101,8 @@ public class SectionGridController {
      */
     public void invalidate() {
         container.getChildren().clear();
-
-        new Thread(() -> {
-            Node view = createView();
-            Platform.runLater(() -> render(view));
-        }).start();
+        Node view = createView();
+        render(view);
     }
 
     /**
