@@ -9,6 +9,7 @@ public class MainLauncher {
     public static void main(String args[]) {
         // If mac, hide the dock icon
         if (OSValidator.isMac()) {
+            System.setProperty("apple.awt.application.name", "Dokey");
             System.setProperty("apple.awt.UIElement", "true");
         }
 
