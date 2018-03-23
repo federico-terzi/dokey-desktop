@@ -308,15 +308,19 @@ public class MSApplicationManager extends ApplicationManager {
 
     @Override
     public boolean focusSearch() {
-        if (getActivePID() == startupManager.getPID())
+        HWND dokeyHwnd = User32.INSTANCE.FindWindow(null, "Dokey Search");
+        HWND foregroundHwnd = User32.INSTANCE.GetForegroundWindow();
+
+        // Check if dokey is already the foreground process
+        if (dokeyHwnd.getPointer().equals(foregroundHwnd.getPointer())) {
             return false;
+        }
 
         // Search bar wasn't focused, the workaround is simple
         // Get the search bar window rect, and then simulate a click on it
         // to focus the window.
 
         // Get the dokey window rect
-        HWND dokeyHwnd = User32.INSTANCE.FindWindow(null, "Dokey Search");
         WinDef.RECT dokeyRect = new WinDef.RECT();
         User32.INSTANCE.GetWindowRect(dokeyHwnd, dokeyRect);
 
