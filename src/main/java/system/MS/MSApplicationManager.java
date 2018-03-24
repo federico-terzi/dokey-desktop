@@ -17,6 +17,7 @@ import system.StartupManager;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.model.Window;
+import utils.CaseInsensitiveMap;
 import utils.IconManager;
 
 import javax.imageio.ImageIO;
@@ -44,7 +45,7 @@ public class MSApplicationManager extends ApplicationManager {
     public static String APP_CACHE_FILENAME = "appcache.txt";
 
     // This map will hold the applications, associated with their executable path
-    private Map<String, Application> applicationMap = new HashMap<>();
+    private CaseInsensitiveMap<Application> applicationMap = new CaseInsensitiveMap<>();
 
     // Used to focus the explorer window after a folder request.
     private Application explorerApp = null;
@@ -713,7 +714,7 @@ public class MSApplicationManager extends ApplicationManager {
         String[] extensionsToMatch = new String[]{"lnk"};
 
         // Initialize the application maps
-        applicationMap = new HashMap<>();
+        applicationMap = new CaseInsensitiveMap<>();
 
         // Create a list that will hold all the link files
         List<File> linkFileList = new ArrayList<>();
