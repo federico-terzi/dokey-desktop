@@ -2,9 +2,7 @@ package system.search.results;
 
 import javafx.scene.image.Image;
 import system.search.SearchEngine;
-import utils.ImageResolver;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ResourceBundle;
@@ -13,7 +11,7 @@ public class GoogleSearchResult extends AbstractResult {
     private String query;
 
     public GoogleSearchResult(SearchEngine searchEngine, ResourceBundle resourceBundle, String query, Image defaultImage) {
-        super(searchEngine, resourceBundle, defaultImage);
+        super(searchEngine, resourceBundle, defaultImage, 100);
         this.query = query;
         this.isIcon = false;
     }

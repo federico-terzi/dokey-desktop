@@ -1,6 +1,5 @@
 package system.search.results;
 
-import javafx.scene.image.Image;
 import net.model.KeyboardKeys;
 import org.apache.commons.codec.digest.DigestUtils;
 import section.model.Item;
@@ -11,7 +10,6 @@ import system.model.Application;
 import system.model.ApplicationManager;
 import system.search.SearchEngine;
 import system.section.SectionInfoResolver;
-import utils.ImageResolver;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -27,7 +25,7 @@ public class ShortcutResult extends AbstractResult {
 
     public ShortcutResult(SearchEngine searchEngine, ResourceBundle resourceBundle, ApplicationManager appManager,
                           SectionInfoResolver sectionInfoResolver, Section section, ShortcutItem item) {
-        super(searchEngine, resourceBundle, null);
+        super(searchEngine, resourceBundle, null, 1000);
         this.appManager = appManager;
         this.sectionInfoResolver = sectionInfoResolver;
         this.section = section;

@@ -16,7 +16,7 @@ import java.util.List;
  * This class is responsible of passing the query to all agents and retrieving the results.
  */
 public class SearchEngine implements ApplicationContextAware{
-    public static final int MAX_RESULTS = 6; // Maximum number of results
+    public static final int MAX_RESULTS = 20; // Maximum number of results
 
     private ApplicationContext context;
     private ApplicationManager applicationManager;

@@ -4,7 +4,6 @@ import javafx.scene.image.Image;
 import system.bookmarks.Bookmark;
 import system.model.ApplicationManager;
 import system.search.SearchEngine;
-import utils.ImageResolver;
 
 import java.util.ResourceBundle;
 
@@ -14,7 +13,7 @@ public class BookmarkResult extends AbstractResult {
 
     public BookmarkResult(SearchEngine searchEngine, ResourceBundle resourceBundle, Bookmark bookmark,
                           ApplicationManager applicationManager, Image defaultImage) {
-        super(searchEngine, resourceBundle, defaultImage);
+        super(searchEngine, resourceBundle, defaultImage, 200);
         this.bookmark = bookmark;
         this.applicationManager = applicationManager;
     }

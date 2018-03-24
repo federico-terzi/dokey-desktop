@@ -2,7 +2,6 @@ package system.search.results;
 
 import javafx.scene.image.Image;
 import system.search.SearchEngine;
-import utils.ImageResolver;
 
 import java.math.BigDecimal;
 import java.util.ResourceBundle;
@@ -13,7 +12,7 @@ public class CalculatorResult extends AbstractResult {
 
     public CalculatorResult(SearchEngine searchEngine, ResourceBundle resourceBundle, String query, BigDecimal result,
                             Image defaultImage) {
-        super(searchEngine, resourceBundle, defaultImage);
+        super(searchEngine, resourceBundle, defaultImage, 20000);
         this.expression = query;
         this.result = result;
     }

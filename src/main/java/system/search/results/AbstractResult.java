@@ -1,6 +1,7 @@
 package system.search.results;
 
 import javafx.scene.image.Image;
+import org.jetbrains.annotations.NotNull;
 import system.search.SearchEngine;
 
 import java.util.ResourceBundle;
@@ -8,17 +9,19 @@ import java.util.ResourceBundle;
 /**
  * This class represents a generic search result
  */
-public abstract class AbstractResult {
+public abstract class AbstractResult implements Comparable<AbstractResult> {
     protected SearchEngine searchEngine;
     protected ResourceBundle resourceBundle;
 
     protected boolean isIcon = true;  // Should be true if the result image is an icon, and should change color when selected
     protected Image defaultImage; // The default image for this category
+    protected int priority;  // High number means high priority in the list
 
-    protected AbstractResult(SearchEngine searchEngine, ResourceBundle resourceBundle, Image defaultImage) {
+    protected AbstractResult(SearchEngine searchEngine, ResourceBundle resourceBundle, Image defaultImage, int priority) {
         this.searchEngine = searchEngine;
         this.resourceBundle = resourceBundle;
         this.defaultImage = defaultImage;
+        this.priority = priority;
     }
 
     public abstract String getTitle();
@@ -48,5 +51,10 @@ public abstract class AbstractResult {
 
     public Image getDefaultImage() {
         return defaultImage;
+    }
+
+    @Override
+    public int compareTo(@NotNull AbstractResult o) {
+        return Integer.compare(priority, o.priority);
     }
 }

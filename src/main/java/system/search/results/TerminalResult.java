@@ -2,7 +2,6 @@ package system.search.results;
 
 import javafx.scene.image.Image;
 import system.search.SearchEngine;
-import utils.ImageResolver;
 
 import java.util.ResourceBundle;
 
@@ -10,7 +9,7 @@ public class TerminalResult extends AbstractResult {
     private String command;
 
     public TerminalResult(SearchEngine searchEngine, ResourceBundle resourceBundle, String query, Image defaultImage) {
-        super(searchEngine, resourceBundle, defaultImage);
+        super(searchEngine, resourceBundle, defaultImage, 20002);
         this.command = query.substring(1).trim();
     }
 

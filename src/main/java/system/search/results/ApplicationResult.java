@@ -5,14 +5,13 @@ import system.model.Application;
 import system.search.SearchEngine;
 import utils.ImageResolver;
 
-import java.io.File;
 import java.util.ResourceBundle;
 
 public class ApplicationResult extends AbstractResult {
     private Application application;
 
     public ApplicationResult(SearchEngine searchEngine, ResourceBundle resourceBundle, Application application) {
-        super(searchEngine, resourceBundle, null);
+        super(searchEngine, resourceBundle, null, 10000);
         this.application = application;
         this.isIcon = false;
     }

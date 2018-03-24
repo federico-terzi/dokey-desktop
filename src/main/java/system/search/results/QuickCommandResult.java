@@ -1,7 +1,6 @@
 package system.search.results;
 
 import javafx.scene.image.Image;
-import system.model.ApplicationManager;
 import system.quick_commands.QuickCommand;
 import system.quick_commands.model.DependencyResolver;
 import system.search.SearchEngine;
@@ -14,7 +13,7 @@ public class QuickCommandResult extends AbstractResult {
 
     public QuickCommandResult(SearchEngine searchEngine, ResourceBundle resourceBundle, QuickCommand quickCommand,
                               DependencyResolver dependencyResolver, Image defaultImage) {
-        super(searchEngine, resourceBundle, defaultImage);
+        super(searchEngine, resourceBundle, defaultImage, 30000);
         this.quickCommand = quickCommand;
         this.dependencyResolver = dependencyResolver;
     }

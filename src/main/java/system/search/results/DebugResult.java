@@ -3,7 +3,6 @@ package system.search.results;
 import javafx.scene.image.Image;
 import system.DebugManager;
 import system.search.SearchEngine;
-import utils.ImageResolver;
 
 import java.util.ResourceBundle;
 
@@ -13,7 +12,7 @@ public class DebugResult extends AbstractResult {
 
     public DebugResult(SearchEngine searchEngine, ResourceBundle resourceBundle, DebugManager debugManager, String query,
                        Image defaultImage) {
-        super(searchEngine, resourceBundle, defaultImage);
+        super(searchEngine, resourceBundle, defaultImage, 20001);
         this.debugManager = debugManager;
         this.command = query.substring(2).trim();
     }
