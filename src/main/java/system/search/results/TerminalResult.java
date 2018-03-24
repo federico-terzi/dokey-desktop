@@ -6,10 +6,14 @@ import system.search.SearchEngine;
 import java.util.ResourceBundle;
 
 public class TerminalResult extends AbstractResult {
+    // This field is used in the search bar to display the filter label
+    // It refers to the resource bundle id
+    public static final String SEARCH_FILDER_RESOURCE_ID = "terminal_category";
+
     private String command;
 
     public TerminalResult(SearchEngine searchEngine, ResourceBundle resourceBundle, String query, Image defaultImage) {
-        super(searchEngine, resourceBundle, defaultImage, 20002);
+        super(searchEngine, resourceBundle, defaultImage);
         this.command = query.substring(1).trim();
     }
 

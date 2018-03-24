@@ -7,12 +7,16 @@ import system.search.SearchEngine;
 import java.util.ResourceBundle;
 
 public class DebugResult extends AbstractResult {
+    // This field is used in the search bar to display the filter label
+    // It refers to the resource bundle id
+    public static final String SEARCH_FILDER_RESOURCE_ID = "debug_category";
+
     private final DebugManager debugManager;
     private String command;
 
     public DebugResult(SearchEngine searchEngine, ResourceBundle resourceBundle, DebugManager debugManager, String query,
                        Image defaultImage) {
-        super(searchEngine, resourceBundle, defaultImage, 20001);
+        super(searchEngine, resourceBundle, defaultImage);
         this.debugManager = debugManager;
         this.command = query.substring(2).trim();
     }

@@ -8,10 +8,14 @@ import utils.ImageResolver;
 import java.util.ResourceBundle;
 
 public class ApplicationResult extends AbstractResult {
+    // This field is used in the search bar to display the filter label
+    // It refers to the resource bundle id
+    public static final String SEARCH_FILDER_RESOURCE_ID = "application_category";
+
     private Application application;
 
     public ApplicationResult(SearchEngine searchEngine, ResourceBundle resourceBundle, Application application) {
-        super(searchEngine, resourceBundle, null, 10000);
+        super(searchEngine, resourceBundle, null);
         this.application = application;
         this.isIcon = false;
     }

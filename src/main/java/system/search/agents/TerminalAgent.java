@@ -3,7 +3,6 @@ package system.search.agents;
 import system.model.ApplicationManager;
 import system.search.SearchEngine;
 import system.search.results.AbstractResult;
-import system.search.results.GoogleSearchResult;
 import system.search.results.TerminalResult;
 import utils.ImageResolver;
 
@@ -15,7 +14,7 @@ public class TerminalAgent extends AbstractAgent {
     private ApplicationManager applicationManager;
 
     public TerminalAgent(SearchEngine searchEngine, ResourceBundle resourceBundle, ApplicationManager applicationManager) {
-        super(searchEngine, resourceBundle);
+        super(searchEngine, resourceBundle, TerminalResult.class);
 
         this.applicationManager = applicationManager;
 

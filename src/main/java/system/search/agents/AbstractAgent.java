@@ -16,12 +16,14 @@ public abstract class AbstractAgent {
 
     protected SearchEngine searchEngine;
     protected ResourceBundle resourceBundle;
+    protected Class<? extends AbstractResult> resultClass;  // The class of result produced by this agent
 
     protected Image defaultImage = null;  // The default image for this category
 
-    public AbstractAgent(SearchEngine searchEngine, ResourceBundle resourceBundle) {
+    public AbstractAgent(SearchEngine searchEngine, ResourceBundle resourceBundle, Class<? extends AbstractResult> resultClass) {
         this.searchEngine = searchEngine;
         this.resourceBundle = resourceBundle;
+        this.resultClass = resultClass;
     }
 
     /**
@@ -39,4 +41,8 @@ public abstract class AbstractAgent {
      * @return a List of results.
      */
     public abstract List<? extends AbstractResult> getResults(String query);
+
+    public Class<? extends AbstractResult> getResultClass() {
+        return resultClass;
+    }
 }

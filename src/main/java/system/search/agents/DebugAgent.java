@@ -1,11 +1,9 @@
 package system.search.agents;
 
 import system.DebugManager;
-import system.model.ApplicationManager;
 import system.search.SearchEngine;
 import system.search.results.AbstractResult;
 import system.search.results.DebugResult;
-import system.search.results.TerminalResult;
 import utils.ImageResolver;
 
 import java.util.ArrayList;
@@ -16,7 +14,7 @@ public class DebugAgent extends AbstractAgent {
     private final DebugManager debugManager;
 
     public DebugAgent(SearchEngine searchEngine, ResourceBundle resourceBundle, DebugManager debugManager) {
-        super(searchEngine, resourceBundle);
+        super(searchEngine, resourceBundle, DebugResult.class);
         this.debugManager = debugManager;
 
         this.defaultImage = ImageResolver.getInstance().getImage(DebugAgent.class.getResourceAsStream("/assets/bug.png"), 32);

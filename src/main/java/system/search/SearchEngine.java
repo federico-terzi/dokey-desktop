@@ -6,18 +6,16 @@ import org.springframework.context.ApplicationContextAware;
 import system.model.ApplicationManager;
 import system.search.agents.*;
 import system.search.results.AbstractResult;
-import system.search.results.CalculatorResult;
-import system.search.results.GoogleSearchResult;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class is responsible of passing the query to all agents and retrieving the results.
  */
 public class SearchEngine implements ApplicationContextAware{
-    public static final int MAX_RESULTS = 20; // Maximum number of results
-
     private ApplicationContext context;
     private ApplicationManager applicationManager;
 
@@ -38,6 +36,9 @@ public class SearchEngine implements ApplicationContextAware{
      * Register all the agents
      */
     private void registerAgents() {
+        // The priority for the search agent is determined by its position in the list.
+        // The first elements are processed before the last ones.
+
         agents.add(context.getBean(ApplicationAgent.class));
         agents.add(context.getBean(CalculatorAgent.class));
         agents.add(context.getBean(TerminalAgent.class));
@@ -52,23 +53,19 @@ public class SearchEngine implements ApplicationContextAware{
         if (listener == null)  // Listener check
             return;
 
-        // TODO: multithreaded
-
         new Thread(() -> {
-            List<AbstractResult> results = new ArrayList<>();
+            Map<Class<? extends AbstractResult>, List<? extends AbstractResult>> results = new HashMap<>();
 
             // Make sure the query is not empty
             if (!query.trim().isEmpty()) {
                 // For each agent, request the results
                 for (AbstractAgent agent : agents) {
                     if (agent.validate(query)) {
-                        for (AbstractResult result : agent.getResults(query)) {
-                            if (results.size() < MAX_RESULTS) {
-                                results.add(result);
-                                listener.onQueryResult(results);
-                            }else{
-                                break;
-                            }
+                        List<? extends AbstractResult> agentResults = agent.getResults(query);
+
+                        if (agentResults.size() > 0) {
+                            results.put(agent.getResultClass(), agentResults);
+                            listener.onQueryResult(results);
                         }
                     }
                 }
@@ -79,7 +76,7 @@ public class SearchEngine implements ApplicationContextAware{
     }
 
     public interface OnQueryResultListener {
-        void onQueryResult(List<AbstractResult> results);
+        void onQueryResult(Map<Class<? extends AbstractResult>, List<? extends AbstractResult>> results);
     }
 
     public ApplicationManager getApplicationManager() {

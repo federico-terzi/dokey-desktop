@@ -5,8 +5,6 @@ import system.search.SearchEngine;
 import system.search.results.AbstractResult;
 import system.search.results.ApplicationResult;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -15,7 +13,7 @@ public class ApplicationAgent extends AbstractAgent {
     private ApplicationManager applicationManager;
 
     public ApplicationAgent(SearchEngine searchEngine, ResourceBundle resourceBundle, ApplicationManager applicationManager) {
-        super(searchEngine, resourceBundle);
+        super(searchEngine, resourceBundle, ApplicationResult.class);
 
         this.applicationManager = applicationManager;
     }

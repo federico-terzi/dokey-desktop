@@ -18,6 +18,10 @@ import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
 public class ShortcutResult extends AbstractResult {
+    // This field is used in the search bar to display the filter label
+    // It refers to the resource bundle id
+    public static final String SEARCH_FILDER_RESOURCE_ID = "shortcut_category";
+
     private ApplicationManager appManager;
     private SectionInfoResolver sectionInfoResolver;
     private Section section;
@@ -25,7 +29,7 @@ public class ShortcutResult extends AbstractResult {
 
     public ShortcutResult(SearchEngine searchEngine, ResourceBundle resourceBundle, ApplicationManager appManager,
                           SectionInfoResolver sectionInfoResolver, Section section, ShortcutItem item) {
-        super(searchEngine, resourceBundle, null, 1000);
+        super(searchEngine, resourceBundle, null);
         this.appManager = appManager;
         this.sectionInfoResolver = sectionInfoResolver;
         this.section = section;

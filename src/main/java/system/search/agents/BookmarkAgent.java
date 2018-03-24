@@ -4,7 +4,6 @@ import system.bookmarks.BookmarkManager;
 import system.model.ApplicationManager;
 import system.search.SearchEngine;
 import system.search.results.AbstractResult;
-import system.search.results.ApplicationResult;
 import system.search.results.BookmarkResult;
 import utils.ImageResolver;
 
@@ -18,7 +17,7 @@ public class BookmarkAgent extends AbstractAgent {
 
     public BookmarkAgent(SearchEngine searchEngine, ResourceBundle resourceBundle, BookmarkManager bookmarkManager,
                          ApplicationManager applicationManager) {
-        super(searchEngine, resourceBundle);
+        super(searchEngine, resourceBundle, BookmarkResult.class);
 
         this.bookmarkManager = bookmarkManager;
         this.applicationManager = applicationManager;

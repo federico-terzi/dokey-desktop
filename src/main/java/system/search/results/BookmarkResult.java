@@ -8,12 +8,16 @@ import system.search.SearchEngine;
 import java.util.ResourceBundle;
 
 public class BookmarkResult extends AbstractResult {
+    // This field is used in the search bar to display the filter label
+    // It refers to the resource bundle id
+    public static final String SEARCH_FILDER_RESOURCE_ID = "bookmark_category";
+
     private Bookmark bookmark;
     private ApplicationManager applicationManager;
 
     public BookmarkResult(SearchEngine searchEngine, ResourceBundle resourceBundle, Bookmark bookmark,
                           ApplicationManager applicationManager, Image defaultImage) {
-        super(searchEngine, resourceBundle, defaultImage, 200);
+        super(searchEngine, resourceBundle, defaultImage);
         this.bookmark = bookmark;
         this.applicationManager = applicationManager;
     }

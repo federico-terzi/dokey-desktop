@@ -1,12 +1,9 @@
 package system.search.agents;
 
-import system.quick_commands.QuickCommand;
 import system.quick_commands.QuickCommandManager;
-import system.model.ApplicationManager;
 import system.quick_commands.model.DependencyResolver;
 import system.search.SearchEngine;
 import system.search.results.AbstractResult;
-import system.search.results.BookmarkResult;
 import system.search.results.QuickCommandResult;
 import utils.ImageResolver;
 
@@ -20,7 +17,7 @@ public class QuickCommandAgent extends AbstractAgent {
 
     public QuickCommandAgent(SearchEngine searchEngine, ResourceBundle resourceBundle, QuickCommandManager quickCommandManager,
                              DependencyResolver dependencyResolver) {
-        super(searchEngine, resourceBundle);
+        super(searchEngine, resourceBundle, QuickCommandResult.class);
 
         this.quickCommandManager = quickCommandManager;
         this.dependencyResolver = dependencyResolver;

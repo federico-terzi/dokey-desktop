@@ -6,7 +6,6 @@ import section.model.ShortcutItem;
 import system.model.ApplicationManager;
 import system.search.SearchEngine;
 import system.search.results.AbstractResult;
-import system.search.results.ApplicationResult;
 import system.search.results.ShortcutResult;
 import system.section.SectionInfoResolver;
 import system.section.SectionManager;
@@ -14,7 +13,6 @@ import system.section.SectionManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class ShortcutAgent extends AbstractAgent {
     private ApplicationManager applicationManager;
@@ -23,7 +21,7 @@ public class ShortcutAgent extends AbstractAgent {
 
     public ShortcutAgent(SearchEngine searchEngine, ResourceBundle resourceBundle, ApplicationManager applicationManager,
                          SectionManager sectionManager, SectionInfoResolver sectionInfoResolver) {
-        super(searchEngine, resourceBundle);
+        super(searchEngine, resourceBundle, ShortcutResult.class);
 
         this.applicationManager = applicationManager;
         this.sectionManager = sectionManager;

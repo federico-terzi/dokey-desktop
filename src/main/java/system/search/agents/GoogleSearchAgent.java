@@ -5,25 +5,20 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import system.model.ApplicationManager;
 import system.search.SearchEngine;
 import system.search.results.AbstractResult;
-import system.search.results.ApplicationResult;
 import system.search.results.GoogleSearchResult;
 import utils.ImageResolver;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class GoogleSearchAgent extends AbstractAgent {
     private ApplicationManager applicationManager;
 
     public GoogleSearchAgent(SearchEngine searchEngine, ResourceBundle resourceBundle, ApplicationManager applicationManager) {
-        super(searchEngine, resourceBundle);
+        super(searchEngine, resourceBundle, GoogleSearchResult.class);
 
         this.applicationManager = applicationManager;
 
@@ -91,7 +86,10 @@ public class GoogleSearchAgent extends AbstractAgent {
                 @Override
                 public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
                     if (localName.equals("suggestion")) {
-                        result.add(atts.getValue("data"));
+                        String res = atts.getValue("data");
+                        // Filter out the results equal to query
+                        if (!res.equals(query))
+                            result.add(res);
                     }
                 }
 

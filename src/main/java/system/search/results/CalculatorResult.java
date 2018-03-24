@@ -7,12 +7,16 @@ import java.math.BigDecimal;
 import java.util.ResourceBundle;
 
 public class CalculatorResult extends AbstractResult {
+    // This field is used in the search bar to display the filter label
+    // It refers to the resource bundle id
+    public static final String SEARCH_FILDER_RESOURCE_ID = "calculator_category";
+
     private String expression;
     private BigDecimal result;
 
     public CalculatorResult(SearchEngine searchEngine, ResourceBundle resourceBundle, String query, BigDecimal result,
                             Image defaultImage) {
-        super(searchEngine, resourceBundle, defaultImage, 20000);
+        super(searchEngine, resourceBundle, defaultImage);
         this.expression = query;
         this.result = result;
     }

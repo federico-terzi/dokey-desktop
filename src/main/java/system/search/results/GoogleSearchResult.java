@@ -8,10 +8,14 @@ import java.net.URLEncoder;
 import java.util.ResourceBundle;
 
 public class GoogleSearchResult extends AbstractResult {
+    // This field is used in the search bar to display the filter label
+    // It refers to the resource bundle id
+    public static final String SEARCH_FILDER_RESOURCE_ID = "google_search_category";
+
     private String query;
 
     public GoogleSearchResult(SearchEngine searchEngine, ResourceBundle resourceBundle, String query, Image defaultImage) {
-        super(searchEngine, resourceBundle, defaultImage, 100);
+        super(searchEngine, resourceBundle, defaultImage);
         this.query = query;
         this.isIcon = false;
     }

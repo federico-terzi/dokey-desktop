@@ -1,7 +1,6 @@
 package system.search.agents;
 
 import com.udojava.evalex.Expression;
-import system.model.ApplicationManager;
 import system.search.SearchEngine;
 import system.search.results.AbstractResult;
 import system.search.results.CalculatorResult;
@@ -14,7 +13,7 @@ import java.util.ResourceBundle;
 
 public class CalculatorAgent extends AbstractAgent {
     public CalculatorAgent(SearchEngine searchEngine, ResourceBundle resourceBundle) {
-        super(searchEngine, resourceBundle);
+        super(searchEngine, resourceBundle, CalculatorResult.class);
 
         this.defaultImage = ImageResolver.getInstance().getImage(CalculatorAgent.class.getResourceAsStream("/assets/light.png"), 32);
 

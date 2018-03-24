@@ -8,12 +8,16 @@ import system.search.SearchEngine;
 import java.util.ResourceBundle;
 
 public class QuickCommandResult extends AbstractResult {
+    // This field is used in the search bar to display the filter label
+    // It refers to the resource bundle id
+    public static final String SEARCH_FILDER_RESOURCE_ID = "quick_commands_category";
+
     private QuickCommand quickCommand;
     private DependencyResolver dependencyResolver;
 
     public QuickCommandResult(SearchEngine searchEngine, ResourceBundle resourceBundle, QuickCommand quickCommand,
                               DependencyResolver dependencyResolver, Image defaultImage) {
-        super(searchEngine, resourceBundle, defaultImage, 30000);
+        super(searchEngine, resourceBundle, defaultImage);
         this.quickCommand = quickCommand;
         this.dependencyResolver = dependencyResolver;
     }
