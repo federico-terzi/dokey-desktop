@@ -122,7 +122,7 @@ public class GoogleSearchAgent extends AbstractAgent {
             InputSource is = new InputSource(new InputStreamReader(new URL(url).openStream(), "ISO-8859-1"));
             is.setEncoding("ISO-8859-1");
             myReader.parse(is);
-        } catch (Exception e) {e.printStackTrace();}
+        } catch (Exception e) {}
 
         return result;
     }

@@ -34,7 +34,7 @@
                   <Insets top="8.0" />
                </HBox.margin>
             </TextField>
-            <VBox alignment="CENTER_RIGHT" prefWidth="150.0">
+            <VBox fx:id="filterBox" alignment="CENTER_RIGHT" prefWidth="150.0" HBox.hgrow="NEVER">
                <children>
                   <Label fx:id="filterLabel" styleClass="filter-label">
                      <VBox.margin>

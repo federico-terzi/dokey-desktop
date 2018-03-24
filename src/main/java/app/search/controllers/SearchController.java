@@ -10,4 +10,5 @@ public class SearchController {
     public ListView resultListView;
     public VBox rootNode;
     public Label filterLabel;
+    public VBox filterBox;
 }

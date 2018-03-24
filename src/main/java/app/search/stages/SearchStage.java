@@ -76,6 +76,10 @@ public class SearchStage extends Stage {
         controller = (SearchController) fxmlLoader.getController();
         controller.resultListView.setManaged(false);
 
+        // Hide the filter box
+        controller.filterBox.setManaged(true);
+        controller.filterBox.setVisible(true);
+
         // Setup the list cells
         Image fallback = ImageResolver.getInstance().getImage(SearchStage.class.getResourceAsStream("/assets/photo.png"), 32);
         controller.resultListView.setCellFactory(new Callback<ListView<AbstractResult>, ListCell<AbstractResult>>() {
@@ -197,15 +201,15 @@ public class SearchStage extends Stage {
                     String filterText = resourceBundle.getString(labelID);
                     if (filterText != null) {
                         controller.filterLabel.setText(filterText);
-                        controller.filterLabel.setManaged(true);
-                        controller.filterLabel.setVisible(true);
+                        controller.filterBox.setManaged(true);
+                        controller.filterBox.setVisible(true);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }else{  // hide the filter label
-                controller.filterLabel.setManaged(false);
-                controller.filterLabel.setVisible(false);
+                controller.filterBox.setManaged(false);
+                controller.filterBox.setVisible(false);
             }
         });
 
