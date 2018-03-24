@@ -230,7 +230,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             @Override
             public void handle(ActionEvent event) {
                 // Open the help page in the browser
-                applicationManager.openWebLink(MainApp.DOCS_URL);
+                applicationManager.openWebLink(MainApp.EDITOR_DOCS_URL);
             }
         });
 
