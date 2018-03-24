@@ -207,15 +207,7 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         controller.searchBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (controller.searchSectionTextField.isManaged()) {
-                    sectionQuery = null;
-                    controller.searchSectionTextField.setText(null);
-                    requestSectionList();
-                    controller.searchSectionTextField.setManaged(false);
-                } else {
-                    controller.searchSectionTextField.setManaged(true);
-                    controller.searchSectionTextField.requestFocus();
-                }
+                showSearchBar();
             }
         });
         controller.toggleAppsBtn.setOnAction(new EventHandler<ActionEvent>() {
@@ -249,7 +241,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
         });
         controller.searchSectionTextField.focusedProperty().addListener(((observable, oldValue, newValue) -> {
             if (newValue == false) {
-                controller.searchBtn.fire();
+                sectionQuery = null;
+                hideSearchBar();
             }
         }));
 
@@ -432,7 +425,8 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
                 loadSection(activeSection);
                 controller.getSectionsListView().getSelectionModel().select(newActiveSection.get());
             } else {
-                loadSection(sections.get(0));  // Load the first
+                if (sections.size() > 0)
+                    loadSection(sections.get(0));  // Load the first
             }
         }
 
@@ -837,6 +831,16 @@ public class EditorStage extends Stage implements OnSectionModifiedListener {
             alert.show();
         }
         return null;
+    }
+
+    private void showSearchBar() {
+        controller.searchSectionTextField.setText(null);
+        controller.searchSectionTextField.setManaged(true);
+        controller.searchSectionTextField.requestFocus();
+    }
+
+    private void hideSearchBar() {
+        controller.searchSectionTextField.setManaged(false);
     }
 
     // EVENTS
