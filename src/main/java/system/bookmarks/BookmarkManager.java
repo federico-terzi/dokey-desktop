@@ -68,9 +68,21 @@ public class BookmarkManager {
         if (query.isEmpty() || !areBookmarksLoaded())
             return new ArrayList<>();
 
+        // Divide the query into subqueries to
+        // search each word individually
+        String[] subQueries = query.split("[^\\d\\w]");
+
         return bookmarks.stream().filter((bookmark -> {
-            return bookmark.title.toLowerCase().contains(query) ||
-                    bookmark.url.toLowerCase().contains(query);
+            boolean isContained = true;
+
+            for (String q : subQueries) {
+                if (!bookmark.title.toLowerCase().contains(q) && !bookmark.url.toLowerCase().contains(q)) {
+                    isContained = false;
+                    break;
+                }
+            }
+
+            return isContained;
         })).limit(limit).collect(Collectors.toList());
     }
 }
