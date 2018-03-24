@@ -13,6 +13,9 @@ public class SettingsManager {
     // Settings properties
     public static final String ENABLE_DOKEY_SEARCH = "ENABLE_DOKEY_SEARCH";
 
+    // Default settings
+    public static final String DEFAULT_ENABLE_DOKEY_SEARCH = String.valueOf(true);
+
     private Properties properties = new Properties();
 
     // Create the logger
@@ -21,7 +24,7 @@ public class SettingsManager {
     public SettingsManager() {
         if (!getSettingsFile().isFile()) {  // NO settings file available.
             // Default settings
-            properties.setProperty(ENABLE_DOKEY_SEARCH, String.valueOf(true));
+            properties.setProperty(ENABLE_DOKEY_SEARCH, DEFAULT_ENABLE_DOKEY_SEARCH);
 
             // Save the default settings
             savePreferences();
@@ -68,7 +71,7 @@ public class SettingsManager {
      * @return true if dokey search is enabled, false otherwise.
      */
     public boolean isDokeySearchEnabled() {
-        return Boolean.valueOf(properties.getProperty(ENABLE_DOKEY_SEARCH));
+        return Boolean.valueOf(properties.getProperty(ENABLE_DOKEY_SEARCH, DEFAULT_ENABLE_DOKEY_SEARCH));
     }
 
     /**
