@@ -8,6 +8,7 @@ import system.search.results.AbstractResult;
 import system.search.results.GoogleSearchResult;
 import utils.ImageResolver;
 
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -118,8 +119,10 @@ public class GoogleSearchAgent extends AbstractAgent {
 
                 }
             });
-            myReader.parse(new InputSource(new URL(url).openStream()));
-        } catch (Exception e) {}
+            InputSource is = new InputSource(new InputStreamReader(new URL(url).openStream(), "ISO-8859-1"));
+            is.setEncoding("ISO-8859-1");
+            myReader.parse(is);
+        } catch (Exception e) {e.printStackTrace();}
 
         return result;
     }
