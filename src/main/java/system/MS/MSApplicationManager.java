@@ -36,8 +36,7 @@ import java.util.logging.Logger;
 import static com.sun.jna.platform.WindowUtils.getIconSize;
 
 public class MSApplicationManager extends ApplicationManager {
-    public static final int OPEN_APPLICATION_TIMEOUT = 2000;  // Timeout of the application open requests
-    public static final int OPEN_APPLICATION_CHECK_INTERVAL = 300;  // How often to check that the app is effectively open.
+    public static final int OPEN_APPLICATION_CHECK_INTERVAL = 300;  // Delay to check that the app is effectively open.
 
     private static final int MAX_TITLE_LENGTH = 1024;
 
@@ -116,9 +115,6 @@ public class MSApplicationManager extends ApplicationManager {
         // Get the currently active application PID
         int activePID = getActivePID();
 
-        // Get the time at the beginning of the open application try
-        long initialTime = System.currentTimeMillis();
-
         // Get windows to find out if application is already open
         List<Window> openWindows = getWindowList();
 
@@ -135,9 +131,10 @@ public class MSApplicationManager extends ApplicationManager {
         }
 
         boolean hasBeenOpened = false;
+        boolean hasAltTabWorkaroundBeenTried = false;
 
         // Try to open the application until a timeout occurs
-        while ((System.currentTimeMillis()-initialTime) < OPEN_APPLICATION_TIMEOUT && !hasBeenOpened) {
+        while (!hasBeenOpened) {
             if (isApplicationOpen) {
                 firstOpenWindow.focusWindow();
             }else{
@@ -172,8 +169,14 @@ public class MSApplicationManager extends ApplicationManager {
                 }
 
                 // Try send the ALT-TAB shortcut to unlock the situation
-                triggerAppSwitch();
-                LOG.info("WIN LOCK DETECTED: trying with ALT-TAB...");
+                if (!hasAltTabWorkaroundBeenTried) {
+                    triggerAppSwitch();
+                    hasAltTabWorkaroundBeenTried = true;
+                    LOG.info("WIN LOCK DETECTED: trying with ALT-TAB...");
+                }else{
+                    LOG.info("Cannot open requested application...");
+                    return false;
+                }
             }else{
                 hasBeenOpened = true;
                 break;
