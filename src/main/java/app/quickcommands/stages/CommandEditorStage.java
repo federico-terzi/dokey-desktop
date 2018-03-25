@@ -13,14 +13,17 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.apache.commons.lang3.StringUtils;
+import system.BroadcastManager;
 import system.model.ApplicationManager;
 import system.quick_commands.QuickCommand;
 import system.quick_commands.QuickCommandManager;
 import system.quick_commands.model.DependencyResolver;
 import system.quick_commands.model.actions.QuickAction;
+import system.quick_commands.model.actions.WebLinkAction;
 import system.quick_commands.model.creators.*;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 
 public class CommandEditorStage extends AbstractStage<CommandEditorController> {
@@ -124,6 +127,7 @@ public class CommandEditorStage extends AbstractStage<CommandEditorController> {
 
         // Close window listener
         setOnCloseRequest(event -> {
+            // Notify the listener
             if (onCommandEditorCloseListener != null) {
                 onCommandEditorCloseListener.onClosed();
             }
@@ -357,5 +361,24 @@ public class CommandEditorStage extends AbstractStage<CommandEditorController> {
 
     public interface OnCommandEditorCloseListener {
         void onClosed();
+    }
+
+    /**
+     * Create a new command with the given url and open it in the editor section.
+     * @param url the url to add
+     */
+    public void insertNewWebLinkCommand(String url) {
+        isCurrentANewCommand = true;
+        currentCommand = new QuickCommand(true);
+        currentActionType = QuickAction.Type.WEB_LINK;
+        WebLinkAction action = new WebLinkAction();
+        action.setUrl(url);
+        currentCommand.setAction(action);
+
+        createActionBox();
+        renderFields();
+
+        // Focus the command text field
+        controller.commandTextField.requestFocus();
     }
 }

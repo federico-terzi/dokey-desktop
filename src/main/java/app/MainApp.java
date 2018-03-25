@@ -76,6 +76,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
 
     private InitializationStage initializationStage;
     private EditorStage editorStage = null;
+    private SettingsStage settingsStage = null;
+    private CommandEditorStage commandEditorStage = null;
     private SearchStage searchStage;
 
     private ResourceBundle resourceBundle;
@@ -90,9 +92,6 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     private RandomAccessFile lockFile = null;
 
     // Status variables
-    private boolean isEditorOpen = false;
-    private boolean isSettingsOpen = false;
-    private boolean isCommandEditorOpen = false;
     private int connectedClientsCount = 0;  // How many clients are currently connected
 
     // Argument parameters
@@ -387,6 +386,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_SETTINGS_REQUEST_EVENT, openSettingsRequestListener);
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_COMMANDS_REQUEST_EVENT, openCommandsRequestListener);
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.ENABLE_DOKEY_SEARCH_PROPERTY_CHANGED, enableDokeySearchChangedListener);
+        BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.ADD_URL_TO_QUICK_COMMANDS_EVENT, addURLToQuickCommandsListener);
 
         // Register global hot keys if enabled
         if (settingsManager.isDokeySearchEnabled())
@@ -467,7 +467,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     }
 
     private void openEditor(String targetApp) {
-        if (isEditorOpen) {
+        if (editorStage != null) {
             appManager.focusDokey();
 
             // If the editor is already open, just select the requested app
@@ -475,9 +475,8 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
             return;
         }
 
-        isEditorOpen = true;
         editorStage = context.getBean(EditorStage.class, targetApp,
-                (EditorStage.OnEditorEventListener) () -> isEditorOpen = false);
+                (EditorStage.OnEditorEventListener) () -> editorStage = null);
         editorStage.show();
     }
 
@@ -487,15 +486,14 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     }
 
     private void openSettings() {
-        if (isSettingsOpen) {
+        if (settingsStage != null) {
             appManager.focusDokey();
 
             return;
         }
 
-        isSettingsOpen = true;
-        SettingsStage settingsStage = context.getBean(SettingsStage.class,
-                (SettingsStage.OnSettingsCloseListener) () -> isSettingsOpen = false);
+        settingsStage = context.getBean(SettingsStage.class,
+                (SettingsStage.OnSettingsCloseListener) () -> settingsStage = null);
         settingsStage.show();
     }
 
@@ -505,15 +503,14 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
     }
 
     private void openCommandEditor() {
-        if (isCommandEditorOpen) {
+        if (commandEditorStage != null) {
             appManager.focusDokey();
 
             return;
         }
 
-        isCommandEditorOpen = true;
-        CommandEditorStage commandEditorStage = context.getBean(CommandEditorStage.class,
-                (CommandEditorStage.OnCommandEditorCloseListener) () -> isCommandEditorOpen = false);
+        commandEditorStage = context.getBean(CommandEditorStage.class,
+                (CommandEditorStage.OnCommandEditorCloseListener) () -> commandEditorStage = null);
         commandEditorStage.show();
     }
 
@@ -719,6 +716,23 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
             }else{
                 provider.reset();
             }
+        }
+    };
+
+    /**
+     * Called when the user request to add an url to the quick commands.
+     */
+    private BroadcastManager.BroadcastListener addURLToQuickCommandsListener = new BroadcastManager.BroadcastListener() {
+        @Override
+        public void onBroadcastReceived(Serializable param) {
+            String url = (String) param;
+            if (url != null)
+                Platform.runLater(() -> {
+                    openCommandEditor();
+                    if (commandEditorStage != null) {
+                        commandEditorStage.insertNewWebLinkCommand(url);
+                    }
+                });
         }
     };
 }

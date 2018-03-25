@@ -20,6 +20,8 @@ public class BroadcastManager {
     public static final int OPEN_SETTINGS_REQUEST_EVENT = 21;
     public static final int OPEN_COMMANDS_REQUEST_EVENT = 22;
 
+    public static final int ADD_URL_TO_QUICK_COMMANDS_EVENT = 30;
+
     public static final int OPEN_SHORTCUT_PAGE_FOR_APPLICATION_EVENT = 50;
 
     public static final int ENABLE_DOKEY_SEARCH_PROPERTY_CHANGED = 100;

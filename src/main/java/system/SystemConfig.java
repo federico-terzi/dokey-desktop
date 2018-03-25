@@ -220,4 +220,9 @@ public class SystemConfig {
     public QuickCommandAgent quickCommandAgent() throws UnsupportedOperatingSystemException {
         return new QuickCommandAgent(searchEngine(), resourceBundle(), quickCommandManager(), dependencyResolver());
     }
+
+    @Bean
+    public AddUrlToQuickCommandsAgent addUrlToQuickCommandsAgent() throws UnsupportedOperatingSystemException {
+        return new AddUrlToQuickCommandsAgent(searchEngine(), resourceBundle());
+    }
 }

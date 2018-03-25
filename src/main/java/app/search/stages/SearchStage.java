@@ -272,6 +272,7 @@ public class SearchStage extends Stage {
      */
     private void registerResultPriorityList() {
         resultPriorityList.add(QuickCommandResult.class);
+        resultPriorityList.add(AddUrlToQuickCommandsResult.class);
         resultPriorityList.add(CalculatorResult.class);
         resultPriorityList.add(TerminalResult.class);
         resultPriorityList.add(DebugResult.class);
