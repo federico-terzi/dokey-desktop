@@ -24,6 +24,7 @@ import system.quick_commands.model.DependencyResolver;
 import system.quick_commands.model.actions.QuickAction;
 import system.quick_commands.model.actions.WebLinkAction;
 import system.quick_commands.model.creators.*;
+import system.quick_commands.model.importer.QuickCommandImporter;
 
 import java.io.*;
 import java.util.*;
@@ -117,6 +118,9 @@ public class CommandEditorStage extends AbstractStage<CommandEditorController> {
         });
         controller.exportBtn.setOnAction(event -> {
             exportCommands();
+        });
+        controller.importBtn.setOnAction(event -> {
+            importCommands();
         });
 
         // Clear action button
@@ -398,7 +402,7 @@ public class CommandEditorStage extends AbstractStage<CommandEditorController> {
         output.put("commands", array);
 
         try {
-            // Write the json section to the file
+            // Write the json to the file
             FileOutputStream fos = new FileOutputStream(destFile);
             PrintWriter pw = new PrintWriter(fos);
             pw.write(output.toString());
@@ -407,6 +411,27 @@ public class CommandEditorStage extends AbstractStage<CommandEditorController> {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Show a dialog to select the file and start the importing process.
+     */
+    public void importCommands() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle(resourceBundle.getString("import_commands"));
+
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Dokey Quick Command Format (*.dqcf)", "*.dqcf");
+        fileChooser.getExtensionFilters().add(extFilter);
+        File importFile = fileChooser.showOpenDialog(CommandEditorStage.this);
+
+        if (importFile != null) {
+            // Initialize the Quick Command importer.
+            QuickCommandImporter importer = new QuickCommandImporter(importFile, quickCommandManager, applicationManager);
+            importer.importCommands();
+
+            // Reload the list
+            requestQuickCommandsList();
         }
     }
 

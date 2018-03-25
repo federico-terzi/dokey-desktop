@@ -181,6 +181,20 @@ public class QuickCommandManager {
     }
 
     /**
+     * Get the command with the given command id.
+     * @param id the command id.
+     * @return the corresponding QuickCommand if found, null otherwise.
+     */
+    public QuickCommand getCommandFromID(String id) {
+        for (QuickCommand command : commands) {
+            if (command.getId().equals(id)) {
+                return command;
+            }
+        }
+        return null;
+    }
+
+    /**
      * @param quickCommand
      * @return the File associated with the given command.
      */

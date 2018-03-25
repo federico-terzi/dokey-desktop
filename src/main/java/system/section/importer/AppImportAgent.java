@@ -2,14 +2,7 @@ package system.section.importer;
 
 import section.model.AppItem;
 import section.model.Item;
-import system.model.Application;
-import system.model.ApplicationManager;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import system.ApplicationPathResolver;
 
 /**
  * This class analyzes the AppItem to make sure it is valid.

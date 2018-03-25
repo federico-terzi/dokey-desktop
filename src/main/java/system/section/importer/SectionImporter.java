@@ -1,6 +1,7 @@
 package system.section.importer;
 
 import section.model.*;
+import system.ApplicationPathResolver;
 import system.model.ApplicationManager;
 import system.section.SectionManager;
 import utils.OSValidator;

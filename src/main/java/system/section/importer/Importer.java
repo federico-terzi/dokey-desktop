@@ -1,6 +1,6 @@
 package system.section.importer;
 
-import system.model.ApplicationManager;
+import system.ApplicationPathResolver;
 
 /**
  * This class should give the ImportAgents access to resources like the ApplicationManager

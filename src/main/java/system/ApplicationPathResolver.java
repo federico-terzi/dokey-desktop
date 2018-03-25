@@ -1,4 +1,4 @@
-package system.section.importer;
+package system;
 
 import system.model.Application;
 import system.model.ApplicationManager;
