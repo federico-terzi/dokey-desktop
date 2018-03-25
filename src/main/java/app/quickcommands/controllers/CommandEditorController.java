@@ -15,4 +15,6 @@ public class CommandEditorController {
     public Button removeCommandBtn;
     public VBox actionBox;
     public Button helpBtn;
+    public Button exportBtn;
+    public Button importBtn;
 }

@@ -10,8 +10,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import json.JSONArray;
+import json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import system.BroadcastManager;
 import system.model.ApplicationManager;
@@ -22,8 +25,7 @@ import system.quick_commands.model.actions.QuickAction;
 import system.quick_commands.model.actions.WebLinkAction;
 import system.quick_commands.model.creators.*;
 
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 
 public class CommandEditorStage extends AbstractStage<CommandEditorController> {
@@ -112,6 +114,9 @@ public class CommandEditorStage extends AbstractStage<CommandEditorController> {
                 resetFields();
                 requestQuickCommandsList();
             });
+        });
+        controller.exportBtn.setOnAction(event -> {
+            exportCommands();
         });
 
         // Clear action button
@@ -361,6 +366,48 @@ public class CommandEditorStage extends AbstractStage<CommandEditorController> {
 
     public interface OnCommandEditorCloseListener {
         void onClosed();
+    }
+
+    /**
+     * Export the selected commands
+     */
+    private void exportCommands() {
+        // Make sure it's not empty
+        if (controller.tableView.getSelectionModel().getSelectedItems().size() == 0)
+            // TODO add alert dialog to warn user that no commands are selected.
+            return;
+
+        // Show the save dialog
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle(resourceBundle.getString("export_commands"));
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Dokey Quick Command Format (*.dqcf)", "*.dqcf");
+        fileChooser.getExtensionFilters().add(extFilter);
+        File destFile = fileChooser.showSaveDialog(CommandEditorStage.this);
+
+        if (destFile == null)
+            return;
+
+        // Save the commands
+        JSONArray array = new JSONArray();
+        for(Object commandObj : controller.tableView.getSelectionModel().getSelectedItems()) {
+            QuickCommand command = (QuickCommand) commandObj;
+            array.put(command.json());
+        }
+
+        JSONObject output = new JSONObject();
+        output.put("commands", array);
+
+        try {
+            // Write the json section to the file
+            FileOutputStream fos = new FileOutputStream(destFile);
+            PrintWriter pw = new PrintWriter(fos);
+            pw.write(output.toString());
+            pw.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

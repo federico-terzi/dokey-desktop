@@ -47,6 +47,30 @@
                     <Tooltip text="%remove_command" />
                 </tooltip>
             </Button>
+            <Button fx:id="exportBtn" mnemonicParsing="false">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <image>
+                            <Image url="/assets/toolbar_icons/export.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <tooltip>
+                    <Tooltip text="%export_commands" />
+                </tooltip>
+            </Button>
+            <Button fx:id="importBtn" mnemonicParsing="false">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <image>
+                            <Image url="/assets/toolbar_icons/inex.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <tooltip>
+                    <Tooltip text="%import_commands" />
+                </tooltip>
+            </Button>
             <Pane HBox.hgrow="ALWAYS" />
             <Button fx:id="helpBtn" mnemonicParsing="false">
                 <graphic>
