@@ -1,3 +1,5 @@
+package tests;
+
 import system.MS.MSIconExtractor;
 
 public class IconTestMain {

@@ -1,3 +1,5 @@
+package tests;
+
 import net.model.DeviceInfo;
 import system.adb.ADBConnection;
 import system.adb.ADBManager;

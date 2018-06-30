@@ -1,3 +1,4 @@
+package tests;
 
 import com.sun.jna.*;
 import com.sun.jna.ptr.IntByReference;

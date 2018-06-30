@@ -1,3 +1,5 @@
+package tests;
+
 import net.DEManager;
 import net.LinkManager;
 import net.discovery.ClientDiscoveryDaemon;

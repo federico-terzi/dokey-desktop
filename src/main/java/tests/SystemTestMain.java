@@ -1,3 +1,5 @@
+package tests;
+
 import system.MS.MSIconExtractor;
 import system.SystemManager;
 import utils.MSKeyboardTyper;

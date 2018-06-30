@@ -1,3 +1,5 @@
+package tests;
+
 import system.StartupManager;
 import system.SystemManager;
 

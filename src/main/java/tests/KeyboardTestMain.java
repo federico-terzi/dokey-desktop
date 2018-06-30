@@ -1,3 +1,5 @@
+package tests;
+
 import net.model.KeyboardKeys;
 import system.KeyboardManager;
 import system.model.ApplicationManager;
