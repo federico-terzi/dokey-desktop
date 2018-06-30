@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListCell;
@@ -13,6 +14,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
@@ -22,10 +24,7 @@ import system.search.results.*;
 import utils.ImageResolver;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SearchStage extends Stage {
@@ -35,6 +34,9 @@ public class SearchStage extends Stage {
     private SearchController controller;
     private ResourceBundle resourceBundle;
     private SearchEngine searchEngine;
+
+    private int screenCenterX;
+    private int screenCenterY;
 
     /**
      * This map is used to store image caches
@@ -186,8 +188,40 @@ public class SearchStage extends Stage {
 
         controller.resultListView.setItems(observableResults);
 
-        Platform.runLater(() -> sizeToScene());
-        Platform.runLater(() -> controller.queryTextField.requestFocus());
+        preInitialize();
+    }
+
+    /**
+     * Actions that must be done before showing the bar to initialize it to its empty state.
+     */
+    public void preInitialize() {
+        // Reset the result data structures
+        currentResults = new HashMap<>();
+        observableResults.clear();
+
+        resultFilter = null;
+
+        // Reset the query text field to an empty string
+        controller.queryTextField.setText("");
+
+        renderResults();
+    }
+
+    /**
+     * Actions that must be done after showing the bar to initialize it.
+     */
+    public void postInitialize() {
+        Platform.runLater(() -> positionBarOnScreen());
+    }
+
+    /**
+     * Position the bar in the correct position of the screen
+     */
+    private void positionBarOnScreen() {
+        // Calculate the correct coordinates for the center of the screen
+        Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+        setX((primScreenBounds.getWidth() - getWidth()) / 2);
+        setY((primScreenBounds.getHeight() - getHeight()) / 4 * 1);
     }
 
     private void renderResults() {

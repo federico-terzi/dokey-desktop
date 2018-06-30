@@ -69,7 +69,7 @@ public class MSApplicationManager extends ApplicationManager {
         // Initialize the robot
         try {
             robot = new Robot();
-            robot.setAutoDelay(40);
+            robot.setAutoDelay(5);
             robot.setAutoWaitForIdle(true);
         } catch (AWTException e) {
             e.printStackTrace();
