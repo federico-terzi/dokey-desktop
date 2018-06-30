@@ -2,6 +2,9 @@ package app.search.stages;
 
 import app.search.controllers.SearchController;
 import app.search.listcells.ResultListCell;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.subjects.PublishSubject;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,6 +29,7 @@ import utils.ImageResolver;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class SearchStage extends Stage {
     public static final int MAX_RESULTS = 6; // Maximum number of results
@@ -34,9 +38,6 @@ public class SearchStage extends Stage {
     private SearchController controller;
     private ResourceBundle resourceBundle;
     private SearchEngine searchEngine;
-
-    private int screenCenterX;
-    private int screenCenterY;
 
     /**
      * This map is used to store image caches
@@ -59,6 +60,9 @@ public class SearchStage extends Stage {
 
     // The current results for the given query
     private Map<Class<? extends AbstractResult>, List<? extends AbstractResult>> currentResults;
+
+    // This subject is used to debounce the display of results, to avoid flickering
+    private PublishSubject<ArrayList<AbstractResult>> resultSubject = PublishSubject.create();
 
     public SearchStage(ResourceBundle resourceBundle, SearchEngine searchEngine) throws IOException {
         this.resourceBundle = resourceBundle;
@@ -96,7 +100,7 @@ public class SearchStage extends Stage {
             searchEngine.requestQuery(newValue.trim(), (results) -> {
                 currentResults = results;
 
-                renderResults();
+                elaborateResults();
             });
         });
         // If someone deselects the textfield, re select it
@@ -135,7 +139,7 @@ public class SearchStage extends Stage {
             } else if (event.getCode() == KeyCode.ESCAPE) { // Close the search stage or remove filter
                 if (resultFilter != null) {  // REMOVE FILTER
                     resultFilter = null;
-                    renderResults();
+                    elaborateResults();
                 }else{  // CLOSE
                     close();
                 }
@@ -155,7 +159,7 @@ public class SearchStage extends Stage {
                         }
                     }
                     resultFilter = userFilters.get(index);
-                    renderResults();
+                    elaborateResults();
                 }else{
                     if (controller.resultListView.getSelectionModel().getSelectedItem() != null) {
                         Class<? extends AbstractResult> selectedClass = (Class<? extends AbstractResult>) controller.resultListView.getSelectionModel().getSelectedItem().getClass();
@@ -163,7 +167,7 @@ public class SearchStage extends Stage {
                         // for example, the terminal cannot be filtered
                         if (userFilters.contains(selectedClass)) {
                             resultFilter = selectedClass;
-                            renderResults();
+                            elaborateResults();
                         }
                     }
                 }
@@ -188,6 +192,44 @@ public class SearchStage extends Stage {
 
         controller.resultListView.setItems(observableResults);
 
+        // Setup the debouncing mechanism to avoid flickering when displaying the results
+        resultSubject.debounce(100, TimeUnit.MILLISECONDS).subscribe(new Observer<ArrayList<AbstractResult>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(ArrayList<AbstractResult> priorityResults) {
+                // Update the list view
+                Platform.runLater(() -> {
+                    observableResults.setAll(priorityResults);
+
+                    // Select the first item
+                    if (priorityResults.size() > 0) {
+                        controller.resultListView.getSelectionModel().select(0);
+                    }
+
+                    // Set the height based on the list view
+                    controller.resultListView.setPrefHeight(priorityResults.size() * ResultListCell.ROW_HEIGHT);
+
+                    // Show the list view and refresh stage size to fit all contents
+                    controller.resultListView.setManaged(true);
+                    sizeToScene();
+                });
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+
         preInitialize();
     }
 
@@ -204,14 +246,21 @@ public class SearchStage extends Stage {
         // Reset the query text field to an empty string
         controller.queryTextField.setText("");
 
-        renderResults();
+        elaborateResults();
     }
 
     /**
      * Actions that must be done after showing the bar to initialize it.
      */
     public void postInitialize() {
-        Platform.runLater(() -> positionBarOnScreen());
+        // Reset the height of the list box so that it contains no elements
+        controller.resultListView.setPrefHeight(0);
+
+        // Resize the scene to fit the listview
+        sizeToScene();
+
+        // Center the bar in the screen
+        positionBarOnScreen();
     }
 
     /**
@@ -224,7 +273,7 @@ public class SearchStage extends Stage {
         setY((primScreenBounds.getHeight() - getHeight()) / 4 * 1);
     }
 
-    private void renderResults() {
+    private void elaborateResults() {
         // Render filter label
         Platform.runLater(() -> {
             // Show the filter label
@@ -283,22 +332,8 @@ public class SearchStage extends Stage {
             }
         }
 
-        // Update the list view
-        Platform.runLater(() -> {
-            observableResults.setAll(priorityResults);
-
-            // Select the first item
-            if (priorityResults.size() > 0) {
-                controller.resultListView.getSelectionModel().select(0);
-            }
-
-            // Set the height based on the list view
-            controller.resultListView.setPrefHeight(priorityResults.size() * ResultListCell.ROW_HEIGHT);
-
-            // Show the list view and refresh stage size to fit all contents
-            controller.resultListView.setManaged(true);
-            sizeToScene();
-        });
+        // Signal the new results
+        resultSubject.onNext(priorityResults);
     }
 
     /**
