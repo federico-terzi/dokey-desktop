@@ -1,7 +1,5 @@
-package system;
+package system.keyboard;
 
-import net.model.KeyboardKeys;
-import utils.MSKeyboardTyper;
 import utils.OSValidator;
 
 import java.awt.Robot;

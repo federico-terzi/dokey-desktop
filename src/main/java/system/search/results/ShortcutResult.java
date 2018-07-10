@@ -5,7 +5,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import section.model.Item;
 import section.model.Section;
 import section.model.ShortcutItem;
-import system.KeyboardManager;
+import system.keyboard.KeyboardManager;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.search.SearchEngine;

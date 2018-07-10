@@ -1,12 +1,8 @@
 import net.model.KeyboardKeys;
-import system.KeyboardManager;
-import system.model.ApplicationManager;
-import system.model.Window;
+import system.keyboard.KeyboardManager;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class KeyboardTestMain {
     public static void main(String[] args) {

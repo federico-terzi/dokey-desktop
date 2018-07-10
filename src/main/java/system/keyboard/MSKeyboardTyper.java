@@ -1,4 +1,4 @@
-package utils;
+package system.keyboard;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;

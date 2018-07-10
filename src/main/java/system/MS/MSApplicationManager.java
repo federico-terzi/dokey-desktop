@@ -11,14 +11,12 @@ import com.sun.jna.win32.W32APIOptions;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import system.CacheManager;
-import system.KeyboardManager;
 import system.ResourceUtils;
 import system.StartupManager;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.model.Window;
 import utils.CaseInsensitiveMap;
-import utils.IconManager;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
