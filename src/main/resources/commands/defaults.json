@@ -1,0 +1,11 @@
+[
+  {
+    "id": 0,
+    "type": "simple",
+    "title": "Open Windows Bar",
+    "desc": "Open the Windows Start menu bar",
+    "category": "ks",
+    "iconId": "static:grid",
+    "lastEdit": -1
+  }
+]

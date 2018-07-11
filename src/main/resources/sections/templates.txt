@@ -1,3 +1,0 @@
-Photoshop.exe=photoshop.json
-chrome.exe=chrome.json
-idea64.exe=intellij.exe.json

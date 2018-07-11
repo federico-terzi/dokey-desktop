@@ -20,6 +20,8 @@ class CommandManager(val modelParser: ModelParser, storageManager: StorageManage
         // TODO: Add command templates and automatic importing at startup based on the user system ( installed apps, ecc )
 
         loadCommands()
+
+
     }
 
     /**
@@ -45,5 +47,19 @@ class CommandManager(val modelParser: ModelParser, storageManager: StorageManage
 
     override fun getCommand(id: Int): Command? {
         return commandMap[id]
+    }
+
+    /**
+     * Return all the commands t
+     */
+    fun searchCommands(query : String? = null) : Collection<Command> {
+        if (query == null) {
+            return commandMap.values
+        }else{
+            return commandMap.values.filter {
+                        it.title?.contains(query, true) ?: false ||
+                        it.description?.contains(query, true) ?: false
+            }
+        }
     }
 }

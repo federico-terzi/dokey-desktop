@@ -1,0 +1,11 @@
+[
+  {
+    "id": 0,
+    "type": "simple",
+    "title": "New Tab",
+    "desc": "Open a New Tab in Google Chrome",
+    "category": "ks",
+    "iconId": "static:new",
+    "lastEdit": -1
+  }
+]

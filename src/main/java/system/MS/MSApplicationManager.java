@@ -1038,7 +1038,7 @@ public class MSApplicationManager extends ApplicationManager {
             e.printStackTrace();
         }
 
-        // Native method had an exception, use the fallback methods.
+        // Exe method had an exception, use the fallback methods.
 
         // The icon can be obtained in two ways, but using powershell the
         // resulting image is better ( higher resolution ).
