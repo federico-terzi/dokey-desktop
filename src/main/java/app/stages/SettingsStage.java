@@ -20,7 +20,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
-import system.CacheManager;
+import system.StorageManager;
 import system.ResourceUtils;
 import system.SettingsManager;
 import system.StartupManager;
@@ -147,9 +147,9 @@ public class SettingsStage extends Stage {
         controller.clearCacheBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                CacheManager cacheManager = CacheManager.getInstance();
+                StorageManager storageManager = StorageManager.getInstance();
 
-                boolean result = cacheManager.clearCache();
+                boolean result = storageManager.clearCache();
                 if (result) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle(resourceBundle.getString("cache_deleted"));

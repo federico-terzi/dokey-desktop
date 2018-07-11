@@ -5,8 +5,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import json.JSONObject;
 import json.JSONTokener;
 import org.apache.commons.io.FileUtils;
-import section.model.*;
-import system.CacheManager;
+import system.StorageManager;
 import system.ResourceUtils;
 import system.section.importer.SectionWrapper;
 
@@ -17,7 +16,6 @@ import java.util.*;
  * The SectionManager is used to manage sections.
  */
 public class SectionManager {
-    public static final String SECTION_FOLDER_NAME = "sections";
     public static final String TEMPLATE_DB_FILENAME = "templates.txt";
 
     public static final int DEFAULT_PAGE_ROWS = 4;
@@ -46,7 +44,7 @@ public class SectionManager {
     public List<Section> getSections(OnSectionProgressListener listener) {
         List<Section> output = new ArrayList<>();
         // Get the section directory
-        File userSectionDir = CacheManager.getInstance().getSectionDir();
+        File userSectionDir = StorageManager.getInstance().getSectionDir();
 
         int total = userSectionDir.listFiles().length;
         int current = 0;
@@ -241,7 +239,7 @@ public class SectionManager {
      */
     private File getLaunchpadSectionFile() {
         // Get the section directory
-        File userSectionDir = CacheManager.getInstance().getSectionDir();
+        File userSectionDir = StorageManager.getInstance().getSectionDir();
 
         // Get the section file
         File sectionFile = new File(userSectionDir, "launchpad.json");
@@ -267,7 +265,7 @@ public class SectionManager {
      */
     private File getSystemSectionFile() {
         // Get the section directory
-        File userSectionDir = CacheManager.getInstance().getSectionDir();
+        File userSectionDir = StorageManager.getInstance().getSectionDir();
 
         // Get the section file
         File sectionFile = new File(userSectionDir, "system.json");
@@ -303,7 +301,7 @@ public class SectionManager {
         String appPathHash = DigestUtils.md5Hex(appPath);
 
         // Get the section directory
-        File userSectionDir = CacheManager.getInstance().getSectionDir();
+        File userSectionDir = StorageManager.getInstance().getSectionDir();
 
         // Get the section file
         File sectionFile = new File(userSectionDir, appPathHash + ".json");

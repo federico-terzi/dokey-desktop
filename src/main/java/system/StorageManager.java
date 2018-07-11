@@ -2,8 +2,8 @@ package system;
 
 
 import org.apache.commons.io.FileUtils;
+import system.commands.CommandManager;
 import system.model.ApplicationManager;
-import system.quick_commands.QuickCommandManager;
 import system.section.SectionManager;
 import utils.OSValidator;
 
@@ -15,40 +15,75 @@ import static system.MS.MSApplicationManager.START_MENU_CACHE_FILENAME;
 import static system.model.ApplicationManager.INITIALIZED_CHECK_FILENAME;
 
 /**
- * Used to manage cache files and folders
+ * Used to manage files and folders
  */
-public class CacheManager {
-    private static CacheManager ourInstance = new CacheManager();
+public class StorageManager {
+    // Name of the cache directory created in the home of the user
+    public static final String STORAGE_DIRECTORY_NAME = ".dokey";
+    public static final String CACHE_DIRECTORY_NAME = "cache";
 
-    public static CacheManager getInstance() {
+    // Specific directory names
+    // PERSISTENT
+    public static final String SECTION_DIRECTORY_NAME = "sections";
+    public static final String COMMAND_DIRECTORY_NAME = "commands";
+
+    // CACHED
+    public static final String ICON_CACHE_DIRECTORY_NAME = "icons";
+    public static final String WEB_CACHE_DIRECTORY_NAME = "webcache";
+
+    private static StorageManager ourInstance = new StorageManager();
+
+    public static StorageManager getInstance() {
         return ourInstance;
     }
 
+    private File storageDir;
     private File cacheDir;
     private File iconCacheDir;
     private File webCacheDir;
     private File sectionDir;
-    private File quickCommandsDir;
+    private File commandDir;
 
-    private CacheManager() {
+    private StorageManager() {
+        storageDir = loadStorageDir();
         cacheDir = loadCacheDir();
+
         iconCacheDir = loadIconCacheDir();
         webCacheDir = loadWebCacheDir();
         sectionDir = loadSectionDir();
-        quickCommandsDir = loadQuickCommandsDir();
+        commandDir = loadCommandDir();
+    }
+
+    /**
+     * Create and retrieve the storage directory.
+     *
+     * @return the Storage directory used to save files.
+     */
+    public File loadStorageDir() {
+        // Get the user home directory
+        File homeDir = getUserHomeDir();
+
+        // Get the cache directory
+        File storageDir = new File(homeDir, STORAGE_DIRECTORY_NAME);
+
+        // If it doesn't exists, createRequest it
+        if (!storageDir.isDirectory()) {
+            storageDir.mkdir();
+        }
+
+        return storageDir;
     }
 
     /**
      * Create and retrieve the cache directory.
      *
-     * @return the Cache directory used to save files.
+     * @return the Cache directory used to save images.
      */
     public File loadCacheDir() {
-        // Get the user home directory
-        File homeDir = new File(System.getProperty("user.home"));
+        File storageDir = loadStorageDir();
 
         // Get the cache directory
-        File cacheDir = new File(homeDir, ApplicationManager.CACHE_DIRECTORY_NAME);
+        File cacheDir = new File(storageDir, CACHE_DIRECTORY_NAME);
 
         // If it doesn't exists, createRequest it
         if (!cacheDir.isDirectory()) {
@@ -64,10 +99,10 @@ public class CacheManager {
      * @return the Image Cache directory used to save images.
      */
     public File loadIconCacheDir() {
-        File cacheDir = loadCacheDir();
+        File cacheDir = getCacheDir();
 
-        // Get the icon cache directory
-        File iconCacheDir = new File(cacheDir, ApplicationManager.ICON_CACHE_DIRECTORY_NAME);
+        // Get the cache directory
+        File iconCacheDir = new File(cacheDir, ICON_CACHE_DIRECTORY_NAME);
 
         // If it doesn't exists, createRequest it
         if (!iconCacheDir.isDirectory()) {
@@ -85,8 +120,8 @@ public class CacheManager {
     private File loadWebCacheDir() {
         File cacheDir = loadCacheDir();
 
-        // Get the icon cache directory
-        File webCacheDir = new File(cacheDir, WebLinkResolver.WEB_CACHE_DIRNAME);
+        // Get the cache directory
+        File webCacheDir = new File(cacheDir, WEB_CACHE_DIRECTORY_NAME);
 
         // If it doesn't exists, createRequest it
         if (!webCacheDir.isDirectory()) {
@@ -102,10 +137,10 @@ public class CacheManager {
      * @return the Section Cache directory.
      */
     public File loadSectionDir() {
-        File cacheDir = loadCacheDir();
+        File storageDir = loadStorageDir();
 
-        // Get the icon cache directory
-        File sectionDir = new File(cacheDir, SectionManager.SECTION_FOLDER_NAME);
+        // Get the cache directory
+        File sectionDir = new File(storageDir, SECTION_DIRECTORY_NAME);
 
         // If it doesn't exists, createRequest it
         if (!sectionDir.isDirectory()) {
@@ -116,70 +151,42 @@ public class CacheManager {
     }
 
     /**
-     * Create and retrieve the quick commands directory.
+     * Create and retrieve the commands directory.
      *
      * @return the quick commands directory.
      */
-    public File loadQuickCommandsDir() {
-        File cacheDir = loadCacheDir();
+    public File loadCommandDir() {
+        File storageDir = loadStorageDir();
 
-        // Get the icon cache directory
-        File quickCommandsDir = new File(cacheDir, QuickCommandManager.QUICK_COMMANDS_DIR_NAME);
+        // Get the cache directory
+        File commandDir = new File(storageDir, COMMAND_DIRECTORY_NAME);
 
         // If it doesn't exists, createRequest it
-        if (!quickCommandsDir.isDirectory()) {
-            quickCommandsDir.mkdir();
+        if (!commandDir.isDirectory()) {
+            commandDir.mkdir();
         }
 
-        return quickCommandsDir;
+        return commandDir;
     }
 
     /**
-     * Clear the app cache, by deleting the icons and the cached apps.
-     * SECTIONS WILL NOT BE DELETED
+     * Clear the app cache.
+     * SECTIONS AND COMMANDS WILL NOT BE DELETED
      * @return true if succeeded, false otherwise.
      */
     public boolean clearCache() {
         boolean result = true;
 
-        // Delete the icon folder
-        File iconDir = getIconCacheDir();
-        if (iconDir.isDirectory()) {
-            try {
-                FileUtils.deleteDirectory(iconDir);
-            } catch (IOException e) {
-                e.printStackTrace();
-                result = false;
-            }
-        }
-
-        // Delete the web cache
-        File webDir = getWebCacheDir();
-        if (webDir.isDirectory()) {
-            try {
-                FileUtils.deleteDirectory(webDir);
-            } catch (IOException e) {
-                e.printStackTrace();
-                result = false;
-            }
-        }
-
-        // Delete the app cache files
-        if (OSValidator.isWindows()) {
-            File appCache = new File(getCacheDir(), APP_CACHE_FILENAME);
-            if (appCache.isFile()) {
-                result = result && appCache.delete();
-            }
-
-            File startMenuCache = new File(getCacheDir(), START_MENU_CACHE_FILENAME);
-            if (startMenuCache.isFile()) {
-                result = result && startMenuCache.delete();
-            }
-
+        // Delete the cache folder
+        try {
+            FileUtils.deleteDirectory(cacheDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+            result = false;
         }
 
         // Delete the initialized check
-        File initializedFile = new File(cacheDir, INITIALIZED_CHECK_FILENAME);
+        File initializedFile = new File(storageDir, INITIALIZED_CHECK_FILENAME);
         if (initializedFile.isFile()) {
             result = result & initializedFile.delete();
         }
@@ -198,8 +205,8 @@ public class CacheManager {
         return homeDir;
     }
 
-    public File getCacheDir() {
-        return cacheDir;
+    public File getStorageDir() {
+        return storageDir;
     }
 
     public File getIconCacheDir() {
@@ -214,7 +221,11 @@ public class CacheManager {
         return webCacheDir;
     }
 
-    public File getQuickCommandsDir() {
-        return quickCommandsDir;
+    public File getCommandDir() {
+        return commandDir;
+    }
+
+    public File getCacheDir() {
+        return cacheDir;
     }
 }

@@ -24,8 +24,6 @@ import java.util.logging.Logger;
  * This class is used to get the attributes from a given url.
  */
 public class WebLinkResolver {
-    public static final String WEB_CACHE_DIRNAME = "webcache";
-
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
 
@@ -268,7 +266,7 @@ public class WebLinkResolver {
      */
     private File getImageFromCache(String imageUrl) {
         // Get the web cache folder
-        File webCacheDir = CacheManager.getInstance().getWebCacheDir();
+        File webCacheDir = StorageManager.getInstance().getWebCacheDir();
 
         // Generate the name
         String urlHash = DigestUtils.md5Hex(imageUrl);

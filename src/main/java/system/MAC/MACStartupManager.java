@@ -3,8 +3,7 @@ package system.MAC;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import org.apache.commons.io.FileUtils;
-import system.CacheManager;
-import system.ResourceUtils;
+import system.StorageManager;
 import system.StartupManager;
 
 import java.io.*;
@@ -113,7 +112,7 @@ public class MACStartupManager extends StartupManager {
      */
     private File createPlistFile(String executablePath) {
         // Create the file in the cache directory
-        File cacheDir = CacheManager.getInstance().getCacheDir();
+        File cacheDir = StorageManager.getInstance().getStorageDir();
         File startupPlistFile = new File(cacheDir, STARTUP_PLIST_FILENAME);
 
         // If the file already exists, delete it

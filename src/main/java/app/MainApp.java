@@ -149,7 +149,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
         LOG.addHandler(consoleHandler);
 
         // Configure the file handler
-        File logFile = new File(CacheManager.getInstance().getCacheDir(), LOG_FILENAME);
+        File logFile = new File(StorageManager.getInstance().getStorageDir(), LOG_FILENAME);
         try {
             FileHandler fileHandler = new FileHandler(logFile.getAbsolutePath());
             LOG.addHandler(fileHandler);
@@ -426,7 +426,7 @@ public class MainApp extends Application implements EngineWorker.OnDeviceConnect
      * @return true if already running, false otherwise.
      */
     private boolean checkIfDokeyIsAlreadyRunning() {
-        final File inputFile = new File(CacheManager.getInstance().getCacheDir(), LOCK_FILENAME);
+        final File inputFile = new File(StorageManager.getInstance().getStorageDir(), LOCK_FILENAME);
         try {
             lockFile = new RandomAccessFile(inputFile, "rw");
             final FileChannel fc = lockFile.getChannel();

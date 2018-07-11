@@ -3,7 +3,7 @@ package system.quick_commands;
 import json.JSONException;
 import json.JSONObject;
 import json.JSONTokener;
-import system.CacheManager;
+import system.StorageManager;
 import system.quick_commands.model.actions.DokeyAction;
 import system.quick_commands.model.actions.WebLinkAction;
 
@@ -44,7 +44,7 @@ public class QuickCommandManager {
         commandMap = new HashMap<>();
 
         // Get the quickcommands directory
-        File userCommandsDir = CacheManager.getInstance().getQuickCommandsDir();
+        File userCommandsDir = StorageManager.getInstance().getCommandDir();
 
         // Go through all user command files
         for (File commandFile : userCommandsDir.listFiles()) {
@@ -200,7 +200,7 @@ public class QuickCommandManager {
      */
     private File getCommandFile(QuickCommand quickCommand) {
         // Obtain the quick command file
-        return new File(CacheManager.getInstance().getQuickCommandsDir(), quickCommand.getId()+".json");
+        return new File(StorageManager.getInstance().getCommandDir(), quickCommand.getId()+".json");
     }
 
     /**

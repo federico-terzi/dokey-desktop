@@ -2,9 +2,8 @@ package system.bookmarks;
 
 import json.JSONObject;
 import json.JSONTokener;
-import system.CacheManager;
+import system.StorageManager;
 import system.exceptions.UnsupportedOperatingSystemException;
-import system.section.importer.SectionWrapper;
 import utils.OSValidator;
 
 import java.io.File;
@@ -23,10 +22,10 @@ public class ChromeBookmarkImportAgent implements BookmarkImportAgent{
     public ChromeBookmarkImportAgent() throws UnsupportedOperatingSystemException {
         // Calculate the correct bookmark file path
         if (OSValidator.isWindows()) {
-            googleDir = new File(CacheManager.getInstance().getUserHomeDir(),
+            googleDir = new File(StorageManager.getInstance().getUserHomeDir(),
                     "AppData/Local/Google/Chrome/User Data/");
         }else if (OSValidator.isMac()) {
-            googleDir = new File(CacheManager.getInstance().getUserHomeDir(),
+            googleDir = new File(StorageManager.getInstance().getUserHomeDir(),
                     "Library/Application Support/Google/Chrome/");
         }else{
             throw new UnsupportedOperatingSystemException("This OS is not valid. YET.");

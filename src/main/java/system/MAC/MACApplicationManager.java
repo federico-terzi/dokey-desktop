@@ -1,7 +1,7 @@
 package system.MAC;
 
 import com.sun.jna.Pointer;
-import system.CacheManager;
+import system.StorageManager;
 import system.ResourceUtils;
 import system.StartupManager;
 import system.model.Application;
@@ -735,7 +735,7 @@ public class MACApplicationManager extends ApplicationManager {
         String appID = Application.Companion.getHashIDForExecutablePath(appPath);
 
         // Get the icon file
-        return new File(CacheManager.getInstance().getIconCacheDir(), appID + ".png");
+        return new File(StorageManager.getInstance().getIconCacheDir(), appID + ".png");
     }
 
     /**

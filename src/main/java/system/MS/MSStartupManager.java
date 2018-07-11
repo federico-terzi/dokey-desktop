@@ -1,20 +1,16 @@
 package system.MS;
 
 import com.sun.jna.Native;
-import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.*;
 import com.sun.jna.ptr.PointerByReference;
 import com.sun.jna.win32.StdCallLibrary;
-import com.sun.jna.ptr.ByReference;
 import org.apache.commons.io.FileUtils;
-import system.CacheManager;
+import system.StorageManager;
 import system.ResourceUtils;
 import system.StartupManager;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 public class MSStartupManager extends StartupManager {
     public static final String STARTUP_LINK_FILENAME = "dokey.lnk";
@@ -71,7 +67,7 @@ public class MSStartupManager extends StartupManager {
      */
     private File createLinkFile(String executablePath) {
         // Create the file in the cache directory
-        File cacheDir = CacheManager.getInstance().getCacheDir();
+        File cacheDir = StorageManager.getInstance().getStorageDir();
         File startupLinkFile = new File(cacheDir, STARTUP_LINK_FILENAME);
 
         // If the file already exists, delete it

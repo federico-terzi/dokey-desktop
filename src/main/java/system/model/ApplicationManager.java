@@ -1,16 +1,12 @@
 package system.model;
 
-import system.CacheManager;
-import system.model.Window;
+import system.StorageManager;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ApplicationManager {
-    // Name of the cache directory created in the home of the user
-    public static final String CACHE_DIRECTORY_NAME = ".dokey";
-    public static final String ICON_CACHE_DIRECTORY_NAME = "icons";
     public static final String EXTERNAL_APP_LIST_FILENAME = "externalapps.txt";
     public static final String INITIALIZED_CHECK_FILENAME = "initialized.txt";
 
@@ -118,12 +114,12 @@ public abstract class ApplicationManager {
      */
     public List<String> loadExternalAppPaths() {
         // Get the cache manager
-        CacheManager cacheManager = CacheManager.getInstance();
+        StorageManager storageManager = StorageManager.getInstance();
 
         List<String> output = new ArrayList<>();
 
         // Get the external app list file
-        File externalAppsFile = new File(cacheManager.getCacheDir(), EXTERNAL_APP_LIST_FILENAME);
+        File externalAppsFile = new File(storageManager.getStorageDir(), EXTERNAL_APP_LIST_FILENAME);
 
         // If the file exists, read it
         if (externalAppsFile.isFile()) {
@@ -157,10 +153,10 @@ public abstract class ApplicationManager {
     public boolean addExternalApplication(String executablePath) {
         if (!isApplicationAlreadyPresent(executablePath)) {
             // Get the cache manager
-            CacheManager cacheManager = CacheManager.getInstance();
+            StorageManager storageManager = StorageManager.getInstance();
 
             // Get the external app list file
-            File externalAppsFile = new File(cacheManager.getCacheDir(), EXTERNAL_APP_LIST_FILENAME);
+            File externalAppsFile = new File(storageManager.getStorageDir(), EXTERNAL_APP_LIST_FILENAME);
 
             // Open the file
             try (FileWriter fw = new FileWriter(externalAppsFile, true)) {
@@ -197,10 +193,10 @@ public abstract class ApplicationManager {
             // Write the list again
 
             // Get the cache manager
-            CacheManager cacheManager = CacheManager.getInstance();
+            StorageManager storageManager = StorageManager.getInstance();
 
             // Get the external app list file
-            File externalAppsFile = new File(cacheManager.getCacheDir(), EXTERNAL_APP_LIST_FILENAME);
+            File externalAppsFile = new File(storageManager.getStorageDir(), EXTERNAL_APP_LIST_FILENAME);
 
             // Open the file
             try (FileWriter fw = new FileWriter(externalAppsFile, false)) {
@@ -228,7 +224,7 @@ public abstract class ApplicationManager {
      * @return true if initialized, false otherwise.
      */
     public boolean isInitialized() {
-        File cacheDir = CacheManager.getInstance().getCacheDir();
+        File cacheDir = StorageManager.getInstance().getStorageDir();
         File initializedFile = new File(cacheDir, INITIALIZED_CHECK_FILENAME);
         return initializedFile.isFile();
     }
@@ -239,7 +235,7 @@ public abstract class ApplicationManager {
      * @return true if succeeded, false otherwise.
      */
     public boolean setInitialized() {
-        File cacheDir = CacheManager.getInstance().getCacheDir();
+        File cacheDir = StorageManager.getInstance().getStorageDir();
         File initializedFile = new File(cacheDir, INITIALIZED_CHECK_FILENAME);
 
         // If already present

@@ -62,7 +62,7 @@ public class SettingsManager {
      * @return the file where settings are saved to.
      */
     private File getSettingsFile() {
-        return new File(CacheManager.getInstance().getCacheDir(), SETTINGS_FILENAME);
+        return new File(StorageManager.getInstance().getStorageDir(), SETTINGS_FILENAME);
     }
 
     // Specific properties
