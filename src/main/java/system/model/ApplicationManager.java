@@ -1,6 +1,6 @@
 package system.model;
 
-import system.StorageManager;
+import system.storage.StorageManager;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -108,14 +108,17 @@ public abstract class ApplicationManager {
         void onApplicationsLoaded();
     }
 
+    protected StorageManager storageManager;
+
+    public ApplicationManager(StorageManager storageManager) {
+        this.storageManager = storageManager;
+    }
+
     /**
      * Load and return the application list of the user configured external applications
      * @return a List of executable path strings.
      */
     public List<String> loadExternalAppPaths() {
-        // Get the cache manager
-        StorageManager storageManager = StorageManager.getInstance();
-
         List<String> output = new ArrayList<>();
 
         // Get the external app list file
@@ -152,9 +155,6 @@ public abstract class ApplicationManager {
      */
     public boolean addExternalApplication(String executablePath) {
         if (!isApplicationAlreadyPresent(executablePath)) {
-            // Get the cache manager
-            StorageManager storageManager = StorageManager.getInstance();
-
             // Get the external app list file
             File externalAppsFile = new File(storageManager.getStorageDir(), EXTERNAL_APP_LIST_FILENAME);
 
@@ -192,9 +192,6 @@ public abstract class ApplicationManager {
 
             // Write the list again
 
-            // Get the cache manager
-            StorageManager storageManager = StorageManager.getInstance();
-
             // Get the external app list file
             File externalAppsFile = new File(storageManager.getStorageDir(), EXTERNAL_APP_LIST_FILENAME);
 
@@ -224,7 +221,7 @@ public abstract class ApplicationManager {
      * @return true if initialized, false otherwise.
      */
     public boolean isInitialized() {
-        File cacheDir = StorageManager.getInstance().getStorageDir();
+        File cacheDir = storageManager.getCacheDir();
         File initializedFile = new File(cacheDir, INITIALIZED_CHECK_FILENAME);
         return initializedFile.isFile();
     }
@@ -235,7 +232,7 @@ public abstract class ApplicationManager {
      * @return true if succeeded, false otherwise.
      */
     public boolean setInitialized() {
-        File cacheDir = StorageManager.getInstance().getStorageDir();
+        File cacheDir = storageManager.getCacheDir();
         File initializedFile = new File(cacheDir, INITIALIZED_CHECK_FILENAME);
 
         // If already present

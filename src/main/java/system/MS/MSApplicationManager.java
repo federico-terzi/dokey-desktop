@@ -10,9 +10,9 @@ import com.sun.jna.win32.StdCallLibrary;
 import com.sun.jna.win32.W32APIOptions;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import system.StorageManager;
+import system.storage.StorageManager;
 import system.ResourceUtils;
-import system.StartupManager;
+import system.startup.StartupManager;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.model.Window;
@@ -56,7 +56,9 @@ public class MSApplicationManager extends ApplicationManager {
 
     private StartupManager startupManager;
 
-    public MSApplicationManager(StartupManager startupManager) {
+    public MSApplicationManager(StorageManager storageManager, StartupManager startupManager) {
+        super(storageManager);
+
         this.startupManager = startupManager;
 
         // Check if powershell is enabled in this machine
@@ -990,7 +992,7 @@ public class MSApplicationManager extends ApplicationManager {
         String appID = Application.Companion.getHashIDForExecutablePath(executablePath);
 
         // Get the icon file
-        return new File(StorageManager.getInstance().getIconCacheDir(), appID + ".png");
+        return new File(storageManager.getIconCacheDir(), appID + ".png");
     }
 
     /**
@@ -1289,9 +1291,6 @@ public class MSApplicationManager extends ApplicationManager {
      * @param executablePath the destination file the lnk file points to
      */
     private void writeLnkDestinationToCache(String lnkFilePath, String executablePath) {
-        // Get the cache manager
-        StorageManager storageManager = StorageManager.getInstance();
-
         // Get the cache destination file
         File cacheFile = new File(storageManager.getCacheDir(), START_MENU_CACHE_FILENAME);
 
@@ -1315,9 +1314,6 @@ public class MSApplicationManager extends ApplicationManager {
      * @param iconPath path to the app icon.
      */
     private void writeAppToCache(String executablePath, String iconPath) {
-        // Get the cache manager
-        StorageManager storageManager = StorageManager.getInstance();
-
         // Get the cache destination file
         File cacheFile = new File(storageManager.getCacheDir(), APP_CACHE_FILENAME);
 
@@ -1348,8 +1344,6 @@ public class MSApplicationManager extends ApplicationManager {
      * @return a map containing the association < LnkPath, CachedApp >
      */
     private Map<String, String> loadLnkDestinationCacheMap() {
-        StorageManager storageManager = StorageManager.getInstance();
-
         // Get the cache destination file
         File cacheFile = new File(storageManager.getCacheDir(), START_MENU_CACHE_FILENAME);
 
@@ -1381,8 +1375,6 @@ public class MSApplicationManager extends ApplicationManager {
      * @return a map containing the association < ExecutablePath, CachedApp >
      */
     private Map<String, MSCachedApplication> loadAppCacheMap() {
-        StorageManager storageManager = StorageManager.getInstance();
-
         // Get the cache destination file
         File cacheFile = new File(storageManager.getCacheDir(), APP_CACHE_FILENAME);
 

@@ -1,6 +1,7 @@
 package system;
 
 import system.model.ApplicationManager;
+import system.storage.StorageManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,16 +12,18 @@ import java.util.Map;
  */
 public class DebugManager {
     private ApplicationManager appManager;
+    private StorageManager storageManager;
 
     // This map will hold all the possible commands
     private Map<String, OnCommandListener> commands = new HashMap<>();
 
-    public DebugManager(ApplicationManager appManager) {
+    public DebugManager(ApplicationManager appManager, StorageManager storageManager) {
         this.appManager = appManager;
+        this.storageManager = storageManager;
 
         // Register the commands
         commands.put("dir", () -> {  // OPEN DOKEY FOLDER
-           appManager.openFolder(StorageManager.getInstance().getStorageDir().getAbsolutePath());
+           appManager.openFolder(storageManager.getStorageDir().getAbsolutePath());
         });
         commands.put("e", () -> {  // OPEN DOKEY EDITOR
             BroadcastManager.getInstance().sendBroadcast(BroadcastManager.OPEN_EDITOR_REQUEST_EVENT, null);

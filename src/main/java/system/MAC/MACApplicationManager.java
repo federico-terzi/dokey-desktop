@@ -1,9 +1,9 @@
 package system.MAC;
 
 import com.sun.jna.Pointer;
-import system.StorageManager;
+import system.storage.StorageManager;
 import system.ResourceUtils;
-import system.StartupManager;
+import system.startup.StartupManager;
 import system.model.Application;
 import system.model.ApplicationManager;
 import system.model.Window;
@@ -30,7 +30,9 @@ public class MACApplicationManager extends ApplicationManager {
 
     private Application terminalApp = null;
 
-    public MACApplicationManager(StartupManager startupManager){
+    public MACApplicationManager(StorageManager storageManager, StartupManager startupManager){
+        super(storageManager);
+
         this.startupManager = startupManager;
     }
 
@@ -735,7 +737,7 @@ public class MACApplicationManager extends ApplicationManager {
         String appID = Application.Companion.getHashIDForExecutablePath(appPath);
 
         // Get the icon file
-        return new File(StorageManager.getInstance().getIconCacheDir(), appID + ".png");
+        return new File(storageManager.getIconCacheDir(), appID + ".png");
     }
 
     /**

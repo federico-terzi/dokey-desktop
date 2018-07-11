@@ -1,5 +1,7 @@
 package system;
 
+import system.storage.StorageManager;
+
 import java.io.*;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -17,11 +19,14 @@ public class SettingsManager {
     public static final String DEFAULT_ENABLE_DOKEY_SEARCH = String.valueOf(true);
 
     private Properties properties = new Properties();
+    private StorageManager storageManager;
 
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
 
-    public SettingsManager() {
+    public SettingsManager(StorageManager storageManager) {
+        this.storageManager = storageManager;
+
         if (!getSettingsFile().isFile()) {  // NO settings file available.
             // Default settings
             properties.setProperty(ENABLE_DOKEY_SEARCH, DEFAULT_ENABLE_DOKEY_SEARCH);
@@ -62,7 +67,7 @@ public class SettingsManager {
      * @return the file where settings are saved to.
      */
     private File getSettingsFile() {
-        return new File(StorageManager.getInstance().getStorageDir(), SETTINGS_FILENAME);
+        return new File(storageManager.getStorageDir(), SETTINGS_FILENAME);
     }
 
     // Specific properties
