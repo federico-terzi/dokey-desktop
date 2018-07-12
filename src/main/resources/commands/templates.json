@@ -1,6 +1,6 @@
 [
   {
     "appName": "chrome.exe",
-    "list": "chrome.json"
+    "file": "chrome.json"
   }
 ]

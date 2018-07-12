@@ -9,30 +9,76 @@ import system.storage.StorageManager
 import java.io.File
 import java.io.FileInputStream
 
-class CommandManager(val modelParser: ModelParser, storageManager: StorageManager) : CommandResolver {
+class CommandManager(val modelParser: ModelParser, storageManager: StorageManager,
+                     val commandTemplateLoader: CommandTemplateLoader) : CommandResolver {
     // Load the command directory, where all the command files are saved
     val commandDir = storageManager.commandDir
 
     // This structure will hold all the commands, associated with their IDs
     val commandMap = mutableMapOf<Int, Command>()
 
-    init {
-        // TODO: Add command templates and automatic importing at startup based on the user system ( installed apps, ecc )
+    /**
+     * Load all the commands.
+     * NOTE: it must be called after the application manager has been initialized.
+     */
+    fun initialize() {
+        var (userCommands, maxId) = loadCommands()
+        val templateCommands = commandTemplateLoader.getCompatibleCommandTemplates()
 
-        loadCommands()
+        val conflictMap = mutableMapOf<Int, MutableList<Command>>()
+        userCommands.forEach { command ->
+            val hash = command.contentHash()
+            var conflicting = false
 
+            if (conflictMap[hash] != null && conflictMap[hash]!!.any { it.contentEquals(command) }) {
+                conflicting = true
+            }
 
+            if (!conflicting) {
+                conflictMap[hash] = mutableListOf(command)
+                commandMap[command.id!!] = command
+            }
+        }
+
+        templateCommands.forEach { template ->
+            val hash = template.contentHash()
+            var conflicting = false
+
+            if (conflictMap[hash] != null && conflictMap[hash]!!.any { it.contentEquals(template) }) {
+                conflicting = true
+            }
+
+            if (!conflicting) {
+                template.id = ++maxId
+                commandMap[maxId] = template
+                addTemplateToCommands(template)
+            }
+        }
     }
+
+
 
     /**
      * Load all the saved commands
      */
-    private fun loadCommands() {
+    private fun loadCommands() : Pair<List<Command>, Int> {
+        val commands = mutableListOf<Command>()
+
+        var maxId = 0
+
         for (file in commandDir.listFiles()) {
             val command = readCommandFromFile(file)
-            commandMap[command.id!!] = command
+            commands.add(command)
+
+            if (command.id!! > maxId) {
+                maxId = command.id!!
+            }
         }
+
+        return Pair(commands, maxId)
     }
+
+    private fun addTemplateToCommands(template: Command) {}
 
     /**
      * Read and parse the command from the specified JSON file
