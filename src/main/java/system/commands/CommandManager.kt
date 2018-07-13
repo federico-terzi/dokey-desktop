@@ -8,8 +8,14 @@ import model.parser.ModelParser
 import system.storage.StorageManager
 import java.io.File
 import java.io.FileInputStream
+import java.io.IOException
+import java.io.FileNotFoundException
+import java.io.PrintWriter
+import java.io.FileOutputStream
 
-class CommandManager(val modelParser: ModelParser, storageManager: StorageManager,
+
+
+class CommandManager(val modelParser: ModelParser, val storageManager: StorageManager,
                      val commandTemplateLoader: CommandTemplateLoader) : CommandResolver {
     // Load the command directory, where all the command files are saved
     val commandDir = storageManager.commandDir
@@ -19,6 +25,8 @@ class CommandManager(val modelParser: ModelParser, storageManager: StorageManage
 
     /**
      * Load all the commands.
+     * It loads all the user commands and template commands, then it compares them
+     * to inject the compatible templates that are not already present.
      * NOTE: it must be called after the application manager has been initialized.
      */
     fun initialize() {
@@ -51,7 +59,7 @@ class CommandManager(val modelParser: ModelParser, storageManager: StorageManage
             if (!conflicting) {
                 template.id = ++maxId
                 commandMap[maxId] = template
-                addTemplateToCommands(template)
+                saveCommand(template)
             }
         }
     }
@@ -78,7 +86,33 @@ class CommandManager(val modelParser: ModelParser, storageManager: StorageManage
         return Pair(commands, maxId)
     }
 
-    private fun addTemplateToCommands(template: Command) {}
+    @Synchronized
+    fun saveCommand(command: Command) : Boolean {
+        val destFile = File(storageManager.commandDir, "${command.id}.json")
+        command.lastEdit = System.currentTimeMillis()
+        return writeCommandToFile(command, destFile)
+    }
+
+    @Synchronized
+    private fun writeCommandToFile(command: Command, dest: File) : Boolean {
+        try {
+            // Write the json command to the file
+            val fos = FileOutputStream(dest)
+            val pw = PrintWriter(fos)
+            val commandJson = command.json()
+            pw.write(commandJson.toString())
+            pw.close()
+
+            return true
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+
+        return false
+    }
 
     /**
      * Read and parse the command from the specified JSON file
