@@ -1,0 +1,10 @@
+[
+  {
+    "appName": "chrome.exe",
+    "file": "chrome.json"
+  },
+  {
+    "appName": "photoshop.exe",
+    "file": "photoshop.json"
+  }
+]

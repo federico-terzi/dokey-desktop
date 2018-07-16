@@ -2,16 +2,17 @@ package system.commands
 
 import model.command.Command
 import system.model.ApplicationManager
-import java.util.StringTokenizer
-import jdk.nashorn.internal.runtime.ScriptingFunctions.readLine
 import json.JSONArray
 import json.JSONObject
 import json.JSONTokener
 import model.parser.ModelParser
 import system.ResourceUtils
+import system.commands.general.AppRelatedCommand
+import system.storage.StorageManager
 import java.io.*
 
-class CommandTemplateLoader(val appManager: ApplicationManager, val modelParser: ModelParser) {
+class AppCommandLoader(val appManager: ApplicationManager, val modelParser: ModelParser,
+                       val storageManager: StorageManager) {
     val templateMap = mutableMapOf<String, TemplateEntry>()
 
     data class TemplateEntry(val appName : String, val file: String)
@@ -31,7 +32,8 @@ class CommandTemplateLoader(val appManager: ApplicationManager, val modelParser:
             val executableName = executableFile.name
 
             if (templateMap.containsKey(executableName)) {
-                val appCommands = loadCommandsFromTemplateFile(templateMap[executableName]!!.file)
+                val appCommands = loadCommandsFromTemplateFile(templateMap[executableName]!!.file,
+                        application.executablePath)
                 commands.addAll(appCommands)
             }
         }
@@ -39,7 +41,7 @@ class CommandTemplateLoader(val appManager: ApplicationManager, val modelParser:
         return commands
     }
 
-    private fun loadCommandsFromTemplateFile(file : String) : List<Command> {
+    private fun loadCommandsFromTemplateFile(file : String, executablePath: String) : List<Command> {
         // Get the template file
         val templateFile = ResourceUtils.getResource("/commands/$file")
 
@@ -52,6 +54,11 @@ class CommandTemplateLoader(val appManager: ApplicationManager, val modelParser:
 
         for (jsonObj in jsonArray) {
             val command = commandParser.fromJSON(jsonObj as JSONObject)
+
+            // Set the specific application path
+            command as AppRelatedCommand
+            command.app = executablePath
+
             commands.add(command)
         }
 
@@ -63,21 +70,25 @@ class CommandTemplateLoader(val appManager: ApplicationManager, val modelParser:
      */
     private fun loadTemplates() {
         // Get the template file
-        val templateDb = ResourceUtils.getResource("/commands/templates.json")
+        val templateDb = ResourceUtils.getResource("/commands/apps.json")
 
         // Read all the file and populate the map
         try {
-            val reader = BufferedReader(InputStreamReader(FileInputStream(templateDb)))
+            val fis = FileInputStream(templateDb)
+            val tokener = JSONTokener(fis)
+            val jsonArray = JSONArray(tokener)
 
-            reader.useLines { lines -> lines.forEach {line ->
-                val json = JSONObject(line)
+            val commands = mutableListOf<Command>()
+
+            for (json in jsonArray) {
+                json as JSONObject
 
                 val appName = json.getString("appName")
                 val file = json.getString("file")
 
                 val templateEntry = TemplateEntry(appName, file)
                 templateMap[appName] = templateEntry
-            }}
+            }
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
         } catch (e: IOException) {

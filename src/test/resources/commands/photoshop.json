@@ -1,0 +1,10 @@
+[
+  {
+    "type": "simple",
+    "title": "New Document",
+    "desc": "Create a new document in photoshop",
+    "category": "ks",
+    "iconId": "static:new",
+    "value": ""
+  }
+]

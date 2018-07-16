@@ -1,8 +1,6 @@
 package system.commands.general
 
-import model.command.SimpleCommand
-
-class KeyboardShortcutCommand : SimpleCommand() {
+class KeyboardShortcutCommand : SimpleAppRelatedCommand() {
     init {
         category = "ks"  // Keyboard Shortcut
     }
