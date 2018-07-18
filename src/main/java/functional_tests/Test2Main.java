@@ -1,3 +1,4 @@
+package functional_tests;
 
 import com.sun.jna.Pointer;
 import system.MAC.MACUtils;

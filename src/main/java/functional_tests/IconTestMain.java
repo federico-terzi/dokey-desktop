@@ -1,4 +1,4 @@
-
+package functional_tests;
 
 public class IconTestMain {
     public static void main(String[] args) {

@@ -1,3 +1,4 @@
+package functional_tests;
 
 import system.bookmarks.ChromeBookmarkImportAgent;
 import system.exceptions.UnsupportedOperatingSystemException;

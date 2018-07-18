@@ -243,7 +243,7 @@ public class MSApplicationManager extends ApplicationManager {
 
             // Also focus the explorer.exe application to bring it to front.
             if (explorerApp != null) {
-                openApplication(explorerApp.getExecutablePath());
+                openApplication(explorerApp.getExecutablePath(), false);
             }
 
             return true;
