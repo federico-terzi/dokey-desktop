@@ -1,5 +1,8 @@
 package system.commands.general
 
+import system.commands.annotations.ExecutableCommand
+
+@ExecutableCommand
 class KeyboardShortcutCommand : SimpleAppRelatedCommand() {
     init {
         category = "ks"  // Keyboard Shortcut

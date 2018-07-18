@@ -1,7 +1,7 @@
-package system.commands.handler
+package system
 
 import system.model.ApplicationManager
 
-interface CommandContext {
+interface DokeyContext {
     val applicationManager : ApplicationManager
 }

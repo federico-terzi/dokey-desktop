@@ -1,12 +1,13 @@
 package system.commands.handler
 
 import model.command.Command
+import system.DokeyContext
 
-abstract class CommandHandler<T: Command>(val context: CommandContext) {
+abstract class CommandHandler<T: Command>(val context: DokeyContext) {
     fun handleCommand(command: Command) {
         command as T
         handleInternal(command)
     }
 
-    abstract fun handleInternal(command: T)
+    protected abstract fun handleInternal(command: T)
 }
