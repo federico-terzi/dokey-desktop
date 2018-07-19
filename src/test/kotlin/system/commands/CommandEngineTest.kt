@@ -1,19 +1,15 @@
 package system.commands
 
 import org.junit.jupiter.api.*
-import system.DokeyContext
-import system.MockDokeyContext
+import system.MockGeneralContext
 import system.commands.handler.MockFolderCommandHandler
-import system.model.ApplicationManager
-import system.storage.StorageManager
-import system.storage.StorageManagerTest
 
 class CommandEngineTest {
     var commandEngine : CommandEngine? = null
 
     @BeforeEach
     fun setUp() {
-        commandEngine = CommandEngine(MockDokeyContext())
+        commandEngine = CommandEngine(MockGeneralContext())
     }
 
     @AfterEach

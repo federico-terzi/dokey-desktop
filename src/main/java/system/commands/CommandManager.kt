@@ -6,6 +6,7 @@ import model.command.Command
 import model.component.CommandResolver
 import model.parser.ModelParser
 import model.parser.command.CommandParser
+import system.commands.loader.ApplicationLoader
 import system.storage.StorageManager
 import java.io.File
 import java.io.FileInputStream
@@ -17,7 +18,7 @@ import java.io.FileOutputStream
 
 
 class CommandManager(val commandParser: CommandParser, val storageManager: StorageManager,
-                     val appCommandLoader: AppCommandLoader) : CommandResolver {
+                     val applicationLoader: ApplicationLoader) : CommandResolver {
     // Load the command directory, where all the command files are saved
     val commandDir = storageManager.commandDir
 
@@ -32,7 +33,7 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
      */
     fun initialize() {
         var (userCommands, maxId) = loadCommands()
-        val templateCommands = appCommandLoader.getCompatibleCommandTemplates()
+        val templateCommands = applicationLoader.getCompatibleCommandTemplates()
 
         val conflictMap = mutableMapOf<Int, MutableList<Command>>()
         userCommands.forEach { command ->

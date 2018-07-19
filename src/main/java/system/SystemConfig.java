@@ -2,7 +2,6 @@ package system;
 
 import app.MainApp;
 import model.parser.ModelParser;
-import model.parser.command.CategoryCommandParser;
 import model.parser.command.CommandParser;
 import model.parser.component.ComponentParser;
 import model.parser.component.RuntimeComponentParser;
@@ -21,7 +20,7 @@ import system.keyboard.MACKeyboardManager;
 import system.keyboard.MSKeyboardManager;
 import system.parsers.RuntimeCommandParser;
 import system.parsers.RuntimeModelParser;
-import system.search.SearchContext;
+import system.context.SearchContext;
 import system.search.SearchEngine;
 import system.startup.MACStartupManager;
 import system.MAC.MACSystemManager;

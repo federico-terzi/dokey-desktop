@@ -1,7 +1,7 @@
 package system.search.results
 
 import javafx.scene.image.Image
-import system.search.SearchContext
+import system.context.SearchContext
 
 abstract class AbstractResult(val context: SearchContext) {
     // Should be true if the result image is an icon, and should change color when selected

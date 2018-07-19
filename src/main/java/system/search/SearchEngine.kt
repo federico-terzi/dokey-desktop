@@ -2,13 +2,12 @@ package system.search
 
 import org.reflections.Reflections
 import org.springframework.context.ApplicationContext
-import system.DokeyContext
+import system.context.SearchContext
 import system.model.ApplicationManager
 import system.search.agents.*
 import system.search.annotations.RegisterAgent
 import system.search.results.AbstractResult
 
-import java.util.HashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadPoolExecutor
 

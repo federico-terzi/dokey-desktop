@@ -2,7 +2,7 @@ package system.search.results
 
 import javafx.scene.image.Image
 import model.command.Command
-import system.search.SearchContext
+import system.context.SearchContext
 import utils.ImageResolver
 
 class CommandResult(context: SearchContext, val command: Command) : AbstractResult(context) {

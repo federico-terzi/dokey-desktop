@@ -1,18 +1,18 @@
-package system.commands
+package system.commands.loader
 
-import model.command.Command
-import system.model.ApplicationManager
 import json.JSONArray
 import json.JSONObject
 import json.JSONTokener
-import model.parser.ModelParser
+import model.command.Command
 import system.ResourceUtils
 import system.commands.general.AppRelatedCommand
-import system.storage.StorageManager
-import java.io.*
+import system.context.CommandTemplateContext
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.io.IOException
 
-class AppCommandLoader(val appManager: ApplicationManager, val modelParser: ModelParser,
-                       val storageManager: StorageManager) {
+class ApplicationLoader(val context: CommandTemplateContext) : Loader {
     val templateMap = mutableMapOf<String, TemplateEntry>()
 
     data class TemplateEntry(val appName : String, val file: String)

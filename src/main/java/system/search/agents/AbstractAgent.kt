@@ -1,6 +1,6 @@
 package system.search.agents
 
-import system.search.SearchContext
+import system.context.SearchContext
 import system.search.results.AbstractResult
 
 abstract class AbstractAgent(val context: SearchContext) {
