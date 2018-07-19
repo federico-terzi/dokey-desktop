@@ -4,21 +4,13 @@ import json.JSONObject
 import json.JSONTokener
 import model.command.Command
 import model.component.CommandResolver
-import model.parser.ModelParser
 import model.parser.command.CommandParser
-import system.commands.loader.ApplicationLoader
 import system.storage.StorageManager
-import java.io.File
-import java.io.FileInputStream
-import java.io.IOException
-import java.io.FileNotFoundException
-import java.io.PrintWriter
-import java.io.FileOutputStream
-
+import java.io.*
 
 
 class CommandManager(val commandParser: CommandParser, val storageManager: StorageManager,
-                     val applicationLoader: ApplicationLoader) : CommandResolver {
+                     val templateLoader: CommandTemplateLoader) : CommandResolver {
     // Load the command directory, where all the command files are saved
     val commandDir = storageManager.commandDir
 
@@ -33,7 +25,7 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
      */
     fun initialize() {
         var (userCommands, maxId) = loadCommands()
-        val templateCommands = applicationLoader.getCompatibleCommandTemplates()
+        val templateCommands = templateLoader.getTemplateCommands()
 
         val conflictMap = mutableMapOf<Int, MutableList<Command>>()
         userCommands.forEach { command ->

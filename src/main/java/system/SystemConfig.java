@@ -1,7 +1,6 @@
 package system;
 
 import app.MainApp;
-import model.parser.ModelParser;
 import model.parser.command.CommandParser;
 import model.parser.component.ComponentParser;
 import model.parser.component.RuntimeComponentParser;
@@ -13,23 +12,23 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import system.MAC.MACApplicationManager;
+import system.MAC.MACSystemManager;
+import system.MS.MSApplicationManager;
+import system.MS.MSSystemManager;
+import system.bookmarks.BookmarkManager;
 import system.commands.CommandEngine;
 import system.commands.CommandManager;
+import system.commands.CommandTemplateLoader;
+import system.context.GeneralContext;
+import system.exceptions.UnsupportedOperatingSystemException;
 import system.keyboard.KeyboardManager;
 import system.keyboard.MACKeyboardManager;
 import system.keyboard.MSKeyboardManager;
+import system.model.ApplicationManager;
 import system.parsers.RuntimeCommandParser;
-import system.parsers.RuntimeModelParser;
-import system.context.SearchContext;
 import system.search.SearchEngine;
 import system.startup.MACStartupManager;
-import system.MAC.MACSystemManager;
-import system.MS.MSApplicationManager;
 import system.startup.MSStartupManager;
-import system.MS.MSSystemManager;
-import system.bookmarks.BookmarkManager;
-import system.exceptions.UnsupportedOperatingSystemException;
-import system.model.ApplicationManager;
 import system.startup.StartupManager;
 import system.storage.StorageManager;
 import utils.IconManager;
@@ -147,7 +146,7 @@ public class SystemConfig {
 
     @Bean
     public CommandEngine commandEngine() {
-        return new CommandEngine()
+        return new CommandEngine(generalContext());
     }
 
     @Bean
@@ -172,7 +171,62 @@ public class SystemConfig {
 
     @Bean
     public CommandManager commandManager() {
-        return new CommandManager(commandParser(), storageManager())
+        return new CommandManager(commandParser(), storageManager(), commandTemplateLoader());
+    }
+
+    @Bean
+    public CommandTemplateLoader commandTemplateLoader() {
+        return new CommandTemplateLoader(generalContext());
+    }
+
+    public GeneralContext generalContext() {
+        return new GeneralContext() {
+            @NotNull
+            @Override
+            public KeyboardManager getKeyboardManager() {
+                try {
+                    return keyboardManager();
+                } catch (UnsupportedOperatingSystemException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            @NotNull
+            @Override
+            public StorageManager getStorageManager() {
+                return storageManager();
+            }
+
+            @NotNull
+            @Override
+            public CommandParser getCommandParser() {
+                return commandParser();
+            }
+
+            @NotNull
+            @Override
+            public ApplicationManager getApplicationManager() {
+                try {
+                    return applicationManager();
+                } catch (UnsupportedOperatingSystemException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            @NotNull
+            @Override
+            public CommandManager getCommandManager() {
+                return commandManager();
+            }
+
+            @NotNull
+            @Override
+            public CommandEngine getCommandEngine() {
+                return commandEngine();
+            }
+        };
     }
 
 //    @Bean
@@ -241,31 +295,7 @@ public class SystemConfig {
     // SEARCH
     @Bean
     public SearchEngine searchEngine() throws UnsupportedOperatingSystemException {
-        return new SearchEngine(applicationManager());
-    }
-
-    @Bean
-    public SearchContext searchContext() throws UnsupportedOperatingSystemException {
-        ApplicationManager applicationManager = applicationManager();
-        return new SearchContext() {
-            @NotNull
-            @Override
-            public ApplicationManager getApplicationManager() {
-                return applicationManager;
-            }
-
-            @NotNull
-            @Override
-            public CommandManager getCommandManager() {
-                return command;
-            }
-
-            @NotNull
-            @Override
-            public CommandEngine getCommandEngine() {
-                return null;
-            }
-        }
+        return new SearchEngine(applicationManager(), generalContext());
     }
 //
 //    @Bean

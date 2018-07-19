@@ -14,9 +14,7 @@ import java.util.concurrent.ThreadPoolExecutor
 /**
  * This class is responsible of passing the query to all agents and retrieving the results.
  */
-class SearchEngine(val applicationManager: ApplicationManager) {
-    private var context: ApplicationContext? = null
-
+class SearchEngine(val applicationManager: ApplicationManager, val context: SearchContext) {
     private val agents = mutableListOf<AbstractAgent>()
 
     private val executor : ThreadPoolExecutor = Executors.newFixedThreadPool(4) as ThreadPoolExecutor
@@ -35,7 +33,7 @@ class SearchEngine(val applicationManager: ApplicationManager) {
         val unorderedAgents = mutableListOf<Pair<AbstractAgent, Int>>()
         agentsClasses.forEach { agentClass ->
             val agentAnnotation = agentClass.getAnnotation(RegisterAgent::class.java) as RegisterAgent
-            val agent = agentClass.getConstructor(SearchContext::class.java).newInstance()
+            val agent = agentClass.getConstructor(SearchContext::class.java).newInstance(context)
             unorderedAgents.add(Pair<AbstractAgent, Int>(agent as AbstractAgent, agentAnnotation.priority))
         }
         // Reorder the agents based on priority and add them to the list

@@ -5,6 +5,7 @@ import json.JSONObject
 import json.JSONTokener
 import model.command.Command
 import system.ResourceUtils
+import system.commands.annotations.RegisterLoader
 import system.commands.general.AppRelatedCommand
 import system.context.CommandTemplateContext
 import java.io.File
@@ -12,7 +13,8 @@ import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.IOException
 
-class ApplicationLoader(val context: CommandTemplateContext) : Loader {
+@RegisterLoader
+class ApplicationSpecificCommandLoader(val context: CommandTemplateContext) : CommandLoader {
     val templateMap = mutableMapOf<String, TemplateEntry>()
 
     data class TemplateEntry(val appName : String, val file: String)
@@ -21,13 +23,10 @@ class ApplicationLoader(val context: CommandTemplateContext) : Loader {
         loadTemplates()
     }
 
-    /**
-     * Return the list of command templates compatible with the current system.
-     */
-    fun getCompatibleCommandTemplates() : List<Command> {
+    override fun getTemplateCommands(): List<Command> {
         val commands = mutableListOf<Command>()
 
-        for (application in appManager.applicationList) {
+        for (application in context.applicationManager.applicationList) {
             val executableFile = File(application.executablePath)
             val executableName = executableFile.name
 
@@ -45,7 +44,7 @@ class ApplicationLoader(val context: CommandTemplateContext) : Loader {
         // Get the template file
         val templateFile = ResourceUtils.getResource("/commands/$file")
 
-        val commandParser = modelParser.commandParser
+        val commandParser = context.commandParser
         val fis = FileInputStream(templateFile)
         val tokener = JSONTokener(fis)
         val jsonArray = JSONArray(tokener)
