@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import system.*;
 import system.adb.ADBManager;
 import system.bookmarks.BookmarkManager;
+import system.commands.CommandManager;
 import system.model.ApplicationManager;
 import system.startup.StartupManager;
 import system.storage.StorageManager;
@@ -69,6 +70,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     private SettingsManager settingsManager;
     private StartupManager startupManager;
     private StorageManager storageManager;
+    private CommandManager commandManager;
 
     private ServerSocket serverSocket;  // This is the server socket later used by the EngineServer
 
@@ -243,9 +245,9 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         bookmarkManager = context.getBean(BookmarkManager.class);
         bookmarkManager.startImport();
 
-//        // Initialize quick command manager
-//        quickCommandManager = context.getBean(QuickCommandManager.class);
-//        quickCommandManager.requestQuickCommands();
+        // Initialize command manager
+        commandManager = context.getBean(CommandManager.class);
+        commandManager.initialize();
 
         // Get the settings manager
         settingsManager = context.getBean(SettingsManager.class);
