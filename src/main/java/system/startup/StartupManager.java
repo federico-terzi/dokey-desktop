@@ -4,8 +4,6 @@ package system.startup;
  * This manager is used to subscribe the app to the startup mechanism.
  */
 public abstract class StartupManager {
-    private static StartupManager instance = null;
-
     // This will be filled with the executable path of the application
     protected String executablePath;
 

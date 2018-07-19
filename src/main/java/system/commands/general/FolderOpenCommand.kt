@@ -1,9 +1,9 @@
 package system.commands.general
 
 import model.command.SimpleCommand
-import system.commands.annotations.ExecutableCommand
+import system.commands.annotations.RegisterCommand
 
-@ExecutableCommand
+@RegisterCommand
 class FolderOpenCommand : SimpleCommand() {
     init {
         category = "folderopen"

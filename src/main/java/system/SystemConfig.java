@@ -4,6 +4,9 @@ import app.MainApp;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import system.MAC.MACApplicationManager;
+import system.keyboard.KeyboardManager;
+import system.keyboard.MACKeyboardManager;
+import system.keyboard.MSKeyboardManager;
 import system.startup.MACStartupManager;
 import system.MAC.MACSystemManager;
 import system.MS.MSApplicationManager;
@@ -65,6 +68,20 @@ public class SystemConfig {
             return new MSStartupManager(storageManager());
         }else if (OSValidator.isMac()) {  // MAC OSX
             return new MACStartupManager(storageManager());
+        }
+        throw new UnsupportedOperatingSystemException("This Operating system is not supported by Dokey");
+    }
+
+    /**
+     * @return the correct KeyboardManager instance based on the operating system.
+     * @throws UnsupportedOperatingSystemException
+     */
+    @Bean
+    public KeyboardManager keyboardManager() throws UnsupportedOperatingSystemException {
+        if (OSValidator.isWindows()) {  // WINDOWS
+            return new MSKeyboardManager();
+        }else if (OSValidator.isMac()) {  // MAC OSX
+            return new MACKeyboardManager();
         }
         throw new UnsupportedOperatingSystemException("This Operating system is not supported by Dokey");
     }

@@ -7,6 +7,7 @@ import system.app_manager.MockApplicationManager
 import system.commands.general.SimpleAppRelatedCommand
 import system.commands.general.KeyboardShortcutCommand
 import system.model.ApplicationManager
+import system.model_parser.RuntimeModelParser
 import system.storage.StorageManager
 import system.storage.StorageManagerTest
 
@@ -19,8 +20,7 @@ class AppCommandLoaderTest {
     fun setUp() {
         storageManager = StorageManagerTest.createMockStorageManager()
         appManager = MockApplicationManager(storageManager!!)
-        appCommandLoader = AppCommandLoader(appManager!!, DesktopModelParser(MockCommandResolver(), listOf(MockFolderCommand::class.java,
-                KeyboardShortcutCommand::class.java)),
+        appCommandLoader = AppCommandLoader(appManager!!, RuntimeModelParser(MockCommandResolver()),
                 storageManager!!)
     }
 
