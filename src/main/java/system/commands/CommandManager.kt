@@ -132,13 +132,18 @@ class CommandManager(val modelParser: ModelParser, val storageManager: StorageMa
     /**
      * Return all the commands t
      */
-    fun searchCommands(query : String? = null) : Collection<Command> {
+    fun searchCommands(query : String? = null, limit: Int = 0) : Collection<Command> {
         if (query == null) {
             return commandMap.values
         }else{
-            return commandMap.values.filter {
+            val filteringFunction : (Command) -> Boolean = {
                         it.title?.contains(query, true) ?: false ||
                         it.description?.contains(query, true) ?: false
+            }
+            if (limit > 0) {
+                return commandMap.values.filter(filteringFunction).take(limit)
+            }else{
+                return commandMap.values.filter(filteringFunction)
             }
         }
     }
