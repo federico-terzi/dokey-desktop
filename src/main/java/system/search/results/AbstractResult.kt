@@ -10,6 +10,8 @@ abstract class AbstractResult(val context: SearchContext) {
     abstract val title : String
     abstract val description : String?
 
+    abstract fun executeAction()
+
     // If all results of a category have the same icon, this will be set.
     open val staticImage : Image? = null
 

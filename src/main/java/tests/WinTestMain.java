@@ -1,8 +1,7 @@
-package functional_tests;
+package tests;
 
 import system.bookmarks.ChromeBookmarkImportAgent;
 import system.exceptions.UnsupportedOperatingSystemException;
-import system.storage.StorageManager;
 
 import java.io.IOException;
 

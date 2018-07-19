@@ -13,4 +13,8 @@ class CommandResult(context: SearchContext, val command: Command) : AbstractResu
 
     override val staticImage: Image?  // TODO Change
         get() = ImageResolver.getInstance().getImage(CommandResult::class.java.getResourceAsStream("/assets/google.png"), 32);
+
+    override fun executeAction() {
+        context.commandEngine.execute(command)
+    }
 }

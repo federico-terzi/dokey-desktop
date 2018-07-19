@@ -1,13 +1,4 @@
-package functional_tests
-
-import system.DokeyContext
-import system.MS.MSApplicationManager
-import system.commands.CommandEngine
-import system.commands.general.FolderOpenCommand
-import system.model.ApplicationManager
-import system.startup.MSStartupManager
-import system.storage.BaseDirectoryStorageManager
-import system.storage.StorageManager
+package tests
 
 fun main(args : Array<String>) {
     val commandEngineTest = CommandEngineTest()

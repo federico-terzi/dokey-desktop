@@ -1,15 +1,8 @@
-package functional_tests;
+package tests;
 
-import net.model.DeviceInfo;
 import system.adb.ADBConnection;
-import system.adb.ADBManager;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 
 public class ADBTestMain {
     public static void main(String[] args) {

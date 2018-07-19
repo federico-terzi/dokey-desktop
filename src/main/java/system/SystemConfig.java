@@ -1,12 +1,28 @@
 package system;
 
 import app.MainApp;
+import model.parser.ModelParser;
+import model.parser.command.CategoryCommandParser;
+import model.parser.command.CommandParser;
+import model.parser.component.ComponentParser;
+import model.parser.component.RuntimeComponentParser;
+import model.parser.page.DefaultPageParser;
+import model.parser.page.PageParser;
+import model.parser.section.DefaultSectionParser;
+import model.parser.section.SectionParser;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import system.MAC.MACApplicationManager;
+import system.commands.CommandEngine;
+import system.commands.CommandManager;
 import system.keyboard.KeyboardManager;
 import system.keyboard.MACKeyboardManager;
 import system.keyboard.MSKeyboardManager;
+import system.parsers.RuntimeCommandParser;
+import system.parsers.RuntimeModelParser;
+import system.search.SearchContext;
+import system.search.SearchEngine;
 import system.startup.MACStartupManager;
 import system.MAC.MACSystemManager;
 import system.MS.MSApplicationManager;
@@ -130,6 +146,36 @@ public class SystemConfig {
         throw new UnsupportedOperatingSystemException("This Operating system is not supported by Dokey");
     }
 
+    @Bean
+    public CommandEngine commandEngine() {
+        return new CommandEngine()
+    }
+
+    @Bean
+    public CommandParser commandParser() {
+        return new RuntimeCommandParser();
+    }
+
+    @Bean
+    public ComponentParser componentParser() {
+        return new RuntimeComponentParser(commandManager());
+    }
+
+    @Bean
+    public PageParser pageParser() {
+        return new DefaultPageParser(componentParser());
+    }
+
+    @Bean
+    public SectionParser sectionParser() {
+        return new DefaultSectionParser(pageParser());
+    }
+
+    @Bean
+    public CommandManager commandManager() {
+        return new CommandManager(commandParser(), storageManager())
+    }
+
 //    @Bean
 //    @Lazy
 //    public EngineServer engineServer(ServerSocket serverSocket){
@@ -193,11 +239,35 @@ public class SystemConfig {
 //        };
 //    }
 
-//    // SEARCH
-//    @Bean
-//    public SearchEngine searchEngine() throws UnsupportedOperatingSystemException {
-//        return new SearchEngine(applicationManager());
-//    }
+    // SEARCH
+    @Bean
+    public SearchEngine searchEngine() throws UnsupportedOperatingSystemException {
+        return new SearchEngine(applicationManager());
+    }
+
+    @Bean
+    public SearchContext searchContext() throws UnsupportedOperatingSystemException {
+        ApplicationManager applicationManager = applicationManager();
+        return new SearchContext() {
+            @NotNull
+            @Override
+            public ApplicationManager getApplicationManager() {
+                return applicationManager;
+            }
+
+            @NotNull
+            @Override
+            public CommandManager getCommandManager() {
+                return command;
+            }
+
+            @NotNull
+            @Override
+            public CommandEngine getCommandEngine() {
+                return null;
+            }
+        }
+    }
 //
 //    @Bean
 //    public ApplicationAgent applicationAgent() throws UnsupportedOperatingSystemException {

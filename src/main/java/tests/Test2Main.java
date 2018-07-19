@@ -1,8 +1,7 @@
-package functional_tests;
+package tests;
 
 import com.sun.jna.Pointer;
 import system.MAC.MACUtils;
-import system.model.Application;
 
 import java.io.IOException;
 

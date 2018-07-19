@@ -1,15 +1,14 @@
-package system.model_parser
+package system.parsers
 
 import model.command.Command
-import model.component.CommandResolver
-import model.parser.DesktopModelParser
+import model.parser.command.CategoryCommandParser
 import org.reflections.Reflections
 import system.commands.annotations.RegisterCommand
 
 /**
- * Model Parser that automatically get registered commands using reflection
+ * Command Parser that automatically get registered commands using reflection
  */
-class RuntimeModelParser(commandResolver: CommandResolver) : DesktopModelParser(commandResolver, getRegisteredCommands()) {
+class RuntimeCommandParser() : CategoryCommandParser(getRegisteredCommands()) {
     companion object {
         fun getRegisteredCommands() : List<Class<out Command>> {
             val commandList = mutableListOf<Class<out Command>>()

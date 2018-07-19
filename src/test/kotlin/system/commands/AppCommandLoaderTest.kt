@@ -1,13 +1,11 @@
 package system.commands
 
-import model.parser.DesktopModelParser
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertTrue
 import system.app_manager.MockApplicationManager
 import system.commands.general.SimpleAppRelatedCommand
-import system.commands.general.KeyboardShortcutCommand
 import system.model.ApplicationManager
-import system.model_parser.RuntimeModelParser
+import system.parsers.RuntimeModelParser
 import system.storage.StorageManager
 import system.storage.StorageManagerTest
 

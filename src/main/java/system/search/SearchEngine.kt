@@ -36,7 +36,7 @@ class SearchEngine(val applicationManager: ApplicationManager) {
         val unorderedAgents = mutableListOf<Pair<AbstractAgent, Int>>()
         agentsClasses.forEach { agentClass ->
             val agentAnnotation = agentClass.getAnnotation(RegisterAgent::class.java) as RegisterAgent
-            val agent = agentClass.getConstructor(DokeyContext::class.java).newInstance()
+            val agent = agentClass.getConstructor(SearchContext::class.java).newInstance()
             unorderedAgents.add(Pair<AbstractAgent, Int>(agent as AbstractAgent, agentAnnotation.priority))
         }
         // Reorder the agents based on priority and add them to the list

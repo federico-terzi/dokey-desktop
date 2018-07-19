@@ -1,4 +1,4 @@
-package functional_tests;
+package tests;
 
 public class SystemTestMain {
     public static void main(String[] args) {

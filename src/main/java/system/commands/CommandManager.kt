@@ -5,6 +5,7 @@ import json.JSONTokener
 import model.command.Command
 import model.component.CommandResolver
 import model.parser.ModelParser
+import model.parser.command.CommandParser
 import system.storage.StorageManager
 import java.io.File
 import java.io.FileInputStream
@@ -15,7 +16,7 @@ import java.io.FileOutputStream
 
 
 
-class CommandManager(val modelParser: ModelParser, val storageManager: StorageManager,
+class CommandManager(val commandParser: CommandParser, val storageManager: StorageManager,
                      val appCommandLoader: AppCommandLoader) : CommandResolver {
     // Load the command directory, where all the command files are saved
     val commandDir = storageManager.commandDir
@@ -118,7 +119,7 @@ class CommandManager(val modelParser: ModelParser, val storageManager: StorageMa
      * Read and parse the command from the specified JSON file
      */
     private fun readCommandFromFile(commandFile : File) : Command {
-        val commandParser = modelParser.commandParser
+        val commandParser = commandParser
         val fis = FileInputStream(commandFile)
         val tokener = JSONTokener(fis)
         val jsonContent = JSONObject(tokener)
