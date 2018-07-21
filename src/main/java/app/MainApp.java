@@ -258,6 +258,9 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         // load the applications
         loadApplications();
 
+        // Initialize the search bar for the first invocation
+        searchStage = context.getBean(SearchStage.class);
+
         // Add the shutdownPC hook
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             LOG.info("Stopping all services...");
@@ -528,13 +531,13 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
 
     @Override
     public void onSearchOpenRequest() {
-        if (searchStage == null || !searchStage.isShowing()) {
-            searchStage = context.getBean(SearchStage.class);
+        if (!searchStage.isShowing()) {
+            searchStage.preInitialize();
             searchStage.show();
+            searchStage.postInitialize();
             appManager.focusSearch();
         }else{
             searchStage.hide();
-            searchStage = null;
         }
     }
 
