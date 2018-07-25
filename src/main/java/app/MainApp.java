@@ -245,10 +245,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         bookmarkManager = context.getBean(BookmarkManager.class);
         bookmarkManager.startImport();
 
-        // Initialize command manager
-        commandManager = context.getBean(CommandManager.class);
-        commandManager.initialize();
-
         // Get the settings manager
         settingsManager = context.getBean(SettingsManager.class);
 
@@ -357,6 +353,10 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         if (initializationStage != null) {
             initializationStage.hide();
         }
+
+        // Initialize command manager
+        commandManager = context.getBean(CommandManager.class);
+        commandManager.initialize();
 
         // Update the tray icon status
         trayIconManager.setTrayIconStatus(resourceBundle.getString("starting_service"));

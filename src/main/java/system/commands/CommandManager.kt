@@ -7,6 +7,7 @@ import model.component.CommandResolver
 import model.parser.command.CommandParser
 import system.storage.StorageManager
 import java.io.*
+import java.util.logging.Logger
 
 
 class CommandManager(val commandParser: CommandParser, val storageManager: StorageManager,
@@ -17,6 +18,8 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
     // This structure will hold all the commands, associated with their IDs
     val commandMap = mutableMapOf<Int, Command>()
 
+    val LOG = Logger.getGlobal()
+
     /**
      * Load all the commands.
      * It loads all the user commands and template commands, then it compares them
@@ -26,6 +29,8 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
     fun initialize() {
         var (userCommands, maxId) = loadCommands()
         val templateCommands = templateLoader.getTemplateCommands()
+
+        LOG.info("Loaded ${userCommands.size} user commands, joining with ${templateCommands.size} templates...")
 
         val conflictMap = mutableMapOf<Int, MutableList<Command>>()
         userCommands.forEach { command ->

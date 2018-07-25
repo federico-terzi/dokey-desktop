@@ -3,8 +3,10 @@ package system.search.results
 import javafx.scene.image.Image
 import model.command.Command
 import system.context.SearchContext
+import system.search.annotations.FilterableResult
 import utils.ImageResolver
 
+@FilterableResult
 class CommandResult(context: SearchContext, val command: Command) : AbstractResult(context) {
     override val title: String
         get() = command.title!!

@@ -1,21 +1,21 @@
 package system.search
 
 import org.reflections.Reflections
-import org.springframework.context.ApplicationContext
 import system.context.SearchContext
 import system.model.ApplicationManager
-import system.search.agents.*
+import system.search.agents.Agent
+import system.search.agents.RegisteredAgent
 import system.search.annotations.RegisterAgent
-import system.search.results.AbstractResult
-
+import system.search.results.Result
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadPoolExecutor
+import kotlin.reflect.KClass
 
 /**
  * This class is responsible of passing the query to all agents and retrieving the results.
  */
 class SearchEngine(val applicationManager: ApplicationManager, val context: SearchContext) {
-    private val agents = mutableListOf<AbstractAgent>()
+    private val agents = mutableListOf<RegisteredAgent>()
 
     private val executor : ThreadPoolExecutor = Executors.newFixedThreadPool(4) as ThreadPoolExecutor
 
@@ -30,18 +30,17 @@ class SearchEngine(val applicationManager: ApplicationManager, val context: Sear
         // Load all the command handlers dynamically in order of priority
         val reflections = Reflections("system.search.agents")
         val agentsClasses = reflections.getTypesAnnotatedWith(RegisterAgent::class.java)
-        val unorderedAgents = mutableListOf<Pair<AbstractAgent, Int>>()
         agentsClasses.forEach { agentClass ->
             val agentAnnotation = agentClass.getAnnotation(RegisterAgent::class.java) as RegisterAgent
-            val agent = agentClass.getConstructor(SearchContext::class.java).newInstance(context)
-            unorderedAgents.add(Pair<AbstractAgent, Int>(agent as AbstractAgent, agentAnnotation.priority))
+            val agent = agentClass.getConstructor(SearchContext::class.java).newInstance(context) as Agent
+            val registeredAgent = RegisteredAgent(agent, agentAnnotation.priority, agentAnnotation.resultClass)
+            agents.add(registeredAgent)
         }
-        // Reorder the agents based on priority and add them to the list
-        unorderedAgents.sortBy { it.second }
-        unorderedAgents.forEach { this.agents.add(it.first) }
+        // Reorder the agents based on priority
+        agents.sortBy { it.priority }
     }
 
-    fun requestQuery(query: String, listener: OnQueryResultListener) {
+    fun requestQuery(query: String, listener: (query: String, category: KClass<out Result>, results: List<out Result>) -> Unit) {
         // Reset the executor queue with previous requests
         executor.queue.clear()
 
@@ -50,14 +49,10 @@ class SearchEngine(val applicationManager: ApplicationManager, val context: Sear
                 executor.execute(Runnable {
                     val agentResults = agent.getResults(query)
                     if (agentResults.isNotEmpty()) {
-                        listener.onResultUpdate(query, agent.resultClass, agentResults)
+                        listener(query, agent.resultClass, agentResults)
                     }
                 })
             }
         }
-    }
-
-    interface OnQueryResultListener {
-        fun onResultUpdate(query: String, category: Class<out AbstractResult>, results: List<out AbstractResult>)
     }
 }
