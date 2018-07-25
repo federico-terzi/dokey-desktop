@@ -6,6 +6,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import system.image.ImageResolver;
 import system.search.results.AbstractResult;
 
 import java.util.ResourceBundle;
@@ -21,12 +22,12 @@ public class ResultListCell extends ListCell<AbstractResult> {
 
     private ResourceBundle resourceBundle;
     private Image fallback;
-    private ConcurrentHashMap<String, Image> imageCacheMap;
+    private ImageResolver imageResolver;
 
-    public ResultListCell(ResourceBundle resourceBundle, Image fallback, ConcurrentHashMap<String, Image> imageCacheMap) {
+    public ResultListCell(ResourceBundle resourceBundle, Image fallback, ImageResolver imageResolver) {
         this.resourceBundle = resourceBundle;
         this.fallback = fallback;
-        this.imageCacheMap = imageCacheMap;
+        this.imageResolver = imageResolver;
 
         setPrefHeight(ROW_HEIGHT);
 
@@ -63,27 +64,13 @@ public class ResultListCell extends ListCell<AbstractResult> {
         title.setText(result.getTitle());
         description.setText(result.getDescription());
 
-//        String resultHash = result.getHash();
-//        if (result.getDefaultImage() != null) {  // Default image available
-//            image.setImage(result.getDefaultImage());
-//        }else if (resultHash != null && imageCacheMap.containsKey(resultHash)) {
-//            // If the image is available in the cache, display it immediately
-//            image.setImage(imageCacheMap.get(resultHash));
-//        }else{
-//            // If not, show the fallback image and request it.
-//            image.setImage(fallback);  // Image fallback
-//
-//            // Request the image
-//            result.requestImage((resImage, hashID) -> {
-//                image.setImage(resImage);
-//
-//                // Update the cache
-//                if (hashID != null) {
-//                    imageCacheMap.put(hashID, resImage);
-//                }
-//            });
-//        }
-//
+        Image resolvedImage = imageResolver.resolveImage(result.getImageId(), 32);
+        if (resolvedImage != null) {
+            image.setImage(resolvedImage);
+        }else{
+            image.setImage(fallback);
+        }
+
 //        // Set up selected result image behaviour
 //        image.getStyleClass().clear();
 //        if (result.isIcon()) {

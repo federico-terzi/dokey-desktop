@@ -22,12 +22,11 @@ import javafx.stage.StageStyle
 import javafx.util.Callback
 import org.reflections.Reflections
 import system.ResourceUtils
+import system.image.ImageResolver
 import system.search.SearchEngine
 import system.search.annotations.FilterableResult
 import system.search.annotations.RegisterAgent
-import system.search.results.*
-import utils.ImageResolver
-
+import system.search.results.Result
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -35,7 +34,8 @@ import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 
 class SearchStage @Throws(IOException::class)
-constructor(private val resourceBundle: ResourceBundle, private val searchEngine: SearchEngine) : Stage() {
+constructor(private val resourceBundle: ResourceBundle, private val searchEngine: SearchEngine,
+            private val imageResolver: ImageResolver) : Stage() {
 
     private val controller: SearchController
 
@@ -87,8 +87,8 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
         controller.filterBox.isVisible = true
 
         // Setup the list cells
-        val fallback = ImageResolver.getInstance().getImage(SearchStage::class.java.getResourceAsStream("/assets/photo.png"), 32)
-        controller.resultListView.cellFactory = Callback<ListView<Any>, ListCell<Any>> { ResultListCell(resourceBundle, fallback, imageCacheMap) as ListCell<Any> }
+        val fallback = ImageResolver.getImage(SearchStage::class.java.getResourceAsStream("/assets/photo.png"), 32)
+        controller.resultListView.cellFactory = Callback<ListView<Any>, ListCell<Any>> { ResultListCell(resourceBundle, fallback, imageResolver) as ListCell<Any> }
 
         // Setup the text field search callbacks
         controller.queryTextField.textProperty().addListener { _, _, searchQuery ->

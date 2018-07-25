@@ -65,8 +65,7 @@
     -fx-background-color: transparent;
 }
 .list-view .list-cell:filled:selected{
-    /*-fx-background-color: -primaryLightColor;*/
-    -fx-background-color: -primaryColor;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #42E695, #3BB2B8);
 }
 
 .list-view .list-cell:filled:selected .dokey-search-result-icon{
@@ -76,9 +75,9 @@
 .list-view .list-cell:filled:selected .dokey-search-result-image{
     -fx-effect: none;
 }
-.list-view .list-cell:filled:selected .label{
-    -fx-text-fill: -primaryTextColor;
-}
+/*.list-view .list-cell:filled:selected .label{*/
+    /*-fx-text-fill: -primaryTextColor;*/
+/*}*/
 
 .list-view .scroll-bar .increment-arrow,
 .list-view .scroll-bar .decrement-arrow,

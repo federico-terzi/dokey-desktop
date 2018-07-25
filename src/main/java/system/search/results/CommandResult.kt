@@ -1,10 +1,8 @@
 package system.search.results
 
-import javafx.scene.image.Image
 import model.command.Command
 import system.context.SearchContext
 import system.search.annotations.FilterableResult
-import utils.ImageResolver
 
 @FilterableResult
 class CommandResult(context: SearchContext, val command: Command) : AbstractResult(context) {
@@ -13,10 +11,12 @@ class CommandResult(context: SearchContext, val command: Command) : AbstractResu
     override val description: String?
         get() = command.description
 
-    override val staticImage: Image?  // TODO Change
-        get() = ImageResolver.getInstance().getImage(CommandResult::class.java.getResourceAsStream("/assets/google.png"), 32);
+    override val imageId: String?
+        get() = command.iconId
 
     override fun executeAction() {
         context.commandEngine.execute(command)
     }
+
+
 }

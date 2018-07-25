@@ -21,6 +21,7 @@ import system.commands.CommandManager;
 import system.commands.CommandTemplateLoader;
 import system.context.GeneralContext;
 import system.exceptions.UnsupportedOperatingSystemException;
+import system.image.ImageResolver;
 import system.keyboard.KeyboardManager;
 import system.keyboard.MACKeyboardManager;
 import system.keyboard.MSKeyboardManager;
@@ -177,6 +178,11 @@ public class SystemConfig {
     @Bean
     public CommandTemplateLoader commandTemplateLoader() {
         return new CommandTemplateLoader(generalContext());
+    }
+
+    @Bean
+    public ImageResolver imageResolver() {
+        return new ImageResolver(generalContext());
     }
 
     public GeneralContext generalContext() {

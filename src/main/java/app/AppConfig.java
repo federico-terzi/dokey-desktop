@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 import system.SettingsManager;
 import system.SystemConfig;
+import system.image.ImageResolver;
 import system.model.ApplicationManager;
 import system.search.SearchEngine;
 import system.startup.StartupManager;
@@ -34,6 +35,7 @@ public class AppConfig {
     @Autowired private SettingsManager settingsManager;
     @Autowired private StartupManager startupManager;
     @Autowired private StorageManager storageManager;
+    @Autowired private ImageResolver imageResolver;
 
 
     @Bean
@@ -64,6 +66,6 @@ public class AppConfig {
     @Bean
     @Scope("prototype")
     public SearchStage searchStage() throws IOException {
-        return new SearchStage(resourceBundle, searchEngine);
+        return new SearchStage(resourceBundle, searchEngine, imageResolver);
     }
 }

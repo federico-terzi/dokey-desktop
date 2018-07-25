@@ -1,9 +1,8 @@
 package app;
 
-import app.notifications.NotificationFactory;
 import app.search.stages.SearchStage;
-import app.stages.SettingsStage;
 import app.stages.InitializationStage;
+import app.stages.SettingsStage;
 import com.tulskiy.keymaster.common.HotKey;
 import com.tulskiy.keymaster.common.HotKeyListener;
 import com.tulskiy.keymaster.common.Provider;
@@ -11,8 +10,6 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -29,7 +26,6 @@ import system.commands.CommandManager;
 import system.model.ApplicationManager;
 import system.startup.StartupManager;
 import system.storage.StorageManager;
-import utils.ImageResolver;
 
 import javax.swing.*;
 import java.io.*;
@@ -37,7 +33,6 @@ import java.net.ServerSocket;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.*;
@@ -191,9 +186,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
             LOG.severe("Error opening socket. "+e1.toString());
             System.exit(4);
         }
-
-        // Initialize image resolver based on the screen DPI
-        ImageResolver.getInstance().setDpi(Screen.getPrimary().getDpi());
 
         // Setup spring
         context = new AnnotationConfigApplicationContext(AppConfig.class);
