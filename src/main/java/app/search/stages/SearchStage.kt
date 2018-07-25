@@ -62,7 +62,7 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
     private var currentResults: MutableMap<KClass<out Result>, List<Result>>? = null
 
     // This subject is used to debounce the display of results, to avoid flickering
-    private val resultSubject = PublishSubject.create<ArrayList<Result>>()
+    private val resultSubject = PublishSubject.create<List<Result>>()
 
     private var currentQuery: String? = null
 
@@ -94,11 +94,17 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
         controller.queryTextField.textProperty().addListener { _, _, searchQuery ->
             currentQuery = searchQuery
 
-            searchEngine.requestQuery(searchQuery.trim()) { query, category, results ->
-                // Make sure the result is relative to the current query
-                if (currentQuery == query) {
-                    currentResults!![category] = results
-                    elaborateResults()
+            // Reset the current result set
+            currentResults?.clear()
+            elaborateResults()
+
+            if (!searchQuery.isBlank()) {
+                searchEngine.requestQuery(searchQuery.trim()) { query, category, results ->
+                    // Make sure the result is relative to the current query
+                    if (currentQuery == query) {
+                        currentResults!![category] = results
+                        elaborateResults()
+                    }
                 }
             }
         }
@@ -135,7 +141,7 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
                 event.consume()
             } else if (event.code == KeyCode.ENTER) {  // Execute action and close the stage
                 val result = controller.resultListView.selectionModel.selectedItem as Result
-                executeSearch(result)
+                result.executeAction()
             } else if (event.code == KeyCode.ESCAPE) { // Close the search stage or remove filter
                 if (resultFilter != null) {  // REMOVE FILTER
                     resultFilter = null
@@ -182,7 +188,7 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
         // Result list view click listener, execute the corresponding action
         controller.resultListView.setOnMouseClicked { event ->
             val result = controller.resultListView.selectionModel.selectedItem as Result
-            executeSearch(result)
+            result.executeAction()
         }
 
         registerResultPriorityList()
@@ -191,12 +197,12 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
         controller.resultListView.setItems(observableResults)
 
         // Setup the debouncing mechanism to avoid flickering when displaying the results
-        resultSubject.debounce(100, TimeUnit.MILLISECONDS).subscribe(object : Observer<ArrayList<Result>> {
+        resultSubject.debounce(50, TimeUnit.MILLISECONDS).subscribe(object : Observer<List<Result>> {
             override fun onSubscribe(d: Disposable) {
 
             }
 
-            override fun onNext(priorityResults: ArrayList<Result>) {
+            override fun onNext(priorityResults: List<Result>) {
                 // Update the list view
                 Platform.runLater {
                     observableResults.setAll(priorityResults)
@@ -294,6 +300,11 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
         if (currentResults == null)
             return
 
+        if (currentResults!!.isEmpty()) {
+            // Signal the empty list
+            resultSubject.onNext(listOf<Result>())
+        }
+
         val priorityResults = ArrayList<Result>(20)
 
         // If the results has more than one category, limit the results for each one
@@ -356,13 +367,6 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
         val resultClasses = reflections.getTypesAnnotatedWith(FilterableResult::class.java)
         resultClasses.forEach { resultClass ->
             userFilters.add((resultClass as Class<out Result>).kotlin)
-        }
-    }
-
-    private fun executeSearch(result: Result?) {
-        if (result != null) {
-            Thread { result.executeAction() }.start()
-            close()
         }
     }
 

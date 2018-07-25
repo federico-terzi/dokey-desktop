@@ -6,5 +6,21 @@
     "category": "ks",
     "iconId": "static:new",
     "value": "CTRL+T"
+  },
+  {
+    "type": "simple",
+    "title": "New Window",
+    "desc": "Open a New Window in Google Chrome",
+    "category": "ks",
+    "iconId": "static:new",
+    "value": "CTRL+N"
+  },
+  {
+    "type": "simple",
+    "title": "Close Tab",
+    "desc": "Close the current Tab in Google Chrome",
+    "category": "ks",
+    "iconId": "static:new",
+    "value": "CTRL+W"
   }
 ]

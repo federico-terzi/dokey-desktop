@@ -26,13 +26,13 @@ abstract class AbstractKeyboardManager : KeyboardManager {
 
         // Press all the keys
         for (keyCode in keyCodeList) {
-            robot.delay(3)
+            robot.delay(10)
             pressKey(keyCode)
         }
 
         // Release all the keys
         for (keyCode in keyCodeList) {
-            robot.delay(3)
+            robot.delay(10)
             releaseKey(keyCode)
         }
     }

@@ -8,6 +8,11 @@ import system.commands.general.KeyboardShortcutCommand
 class KeyboardShortcutCommandHandler(context: GeneralContext) : CommandHandler<KeyboardShortcutCommand>(context) {
     override fun handleInternal(command: KeyboardShortcutCommand) {
         command.shortcut?.let {
+            // If the shortcut is associated with an application, open it
+            command.app?.let {
+                context.applicationManager.openApplication(command.app)
+            }
+
             context.keyboardManager.sendKeystroke(it)
         }
     }
