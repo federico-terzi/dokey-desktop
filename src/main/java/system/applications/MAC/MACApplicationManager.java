@@ -1,4 +1,4 @@
-package system.MAC;
+package system.applications.MAC;
 
 import com.sun.jna.Pointer;
 import system.storage.StorageManager;

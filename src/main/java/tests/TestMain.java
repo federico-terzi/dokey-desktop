@@ -3,8 +3,8 @@
 //import com.sun.jna.ptr.IntByReference;
 //import com.sun.jna.ptr.PointerByReference;
 //import org.apache.commons.lang3.time.StopWatch;
-//import system.MAC.MACApplicationManager;
-//import system.MAC.MACUtils;
+//import system.applications.MAC.MACApplicationManager;
+//import system.applications.MAC.MACUtils;
 //import system.model.Application;
 //
 //import java.util.List;

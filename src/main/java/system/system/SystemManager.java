@@ -1,4 +1,4 @@
-package system;
+package system.system;
 
 /**
  * This interface can be used to dispatch some system specific commands

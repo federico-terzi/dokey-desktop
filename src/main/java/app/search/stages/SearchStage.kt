@@ -39,11 +39,6 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
 
     private val controller: SearchController
 
-    /**
-     * This map is used to store image caches
-     */
-    private val imageCacheMap = ConcurrentHashMap<String, Image>()
-
     // In this list are registered the priority of the results in the search bar
     // The first elements are displayed first
     private val resultPriorityList = mutableListOf<KClass<out Result>>()
@@ -180,8 +175,8 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
             }
         }
         // Detect if window lose focus
-        focusedProperty().addListener { observable, oldValue, newValue ->
-            if (newValue == false)
+        focusedProperty().addListener { _, _, isFocused ->
+            if (isFocused == false)
                 close()
         }
 

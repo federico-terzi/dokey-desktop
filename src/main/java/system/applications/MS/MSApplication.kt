@@ -1,12 +1,11 @@
-package system.MAC
+package system.applications.MS
 
 import system.model.Application
-import java.io.File
 
 /**
  * Represents an application installed in the system
  */
-class MACApplication(name: String, executablePath: String, iconPath: String?) :
+class MSApplication(name: String, executablePath: String, iconPath: String?) :
         Application(name, executablePath, iconPath) {
 
     /**
@@ -17,7 +16,7 @@ class MACApplication(name: String, executablePath: String, iconPath: String?) :
 
         // Execute the process
         try {
-            val proc = runtime.exec(arrayOf("open", executablePath))
+            val proc = runtime.exec(arrayOf(executablePath))
             return true
         }catch (e : Exception) {
             e.printStackTrace()

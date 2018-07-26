@@ -1,7 +1,7 @@
-package system.MAC;
+package system.system;
 
 import system.ResourceUtils;
-import system.SystemManager;
+import system.system.SystemManager;
 
 import java.io.IOException;
 

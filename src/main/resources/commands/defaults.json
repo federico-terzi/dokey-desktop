@@ -1,11 +1,18 @@
 [
   {
-    "id": 0,
     "type": "simple",
     "title": "Open Windows Bar",
     "desc": "Open the Windows Start menu bar",
     "category": "ks",
     "iconId": "static:grid",
-    "lastEdit": -1
+    "value": "WIN"
+  },
+  {
+    "type": "simple",
+    "title": "Open Dokey Docs",
+    "desc": "Open the Dokey Documentation Website",
+    "category": "url",
+    "iconId": "static:web",
+    "value": "https://dokey.io/docs/"
   }
 ]

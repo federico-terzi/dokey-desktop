@@ -1,5 +1,7 @@
 package system.commands.general
 
-interface AppRelatedCommand {
+import model.command.Command
+
+interface AppRelatedCommand : Command {
     var app : String?
 }

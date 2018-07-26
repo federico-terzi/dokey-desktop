@@ -1,7 +1,7 @@
 package tests;
 
 import com.sun.jna.Pointer;
-import system.MAC.MACUtils;
+import system.applications.MAC.MACUtils;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package system.MS;
+package system.applications.MS;
 
 import com.sun.jna.Memory;
 import com.sun.jna.Native;

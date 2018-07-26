@@ -11,7 +11,6 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import net.discovery.ServerDiscoveryDaemon;
 import net.model.DeviceInfo;
@@ -24,8 +23,10 @@ import system.adb.ADBManager;
 import system.bookmarks.BookmarkManager;
 import system.commands.CommandManager;
 import system.model.ApplicationManager;
+import system.section.SectionManager;
 import system.startup.StartupManager;
 import system.storage.StorageManager;
+import system.system.SystemManager;
 
 import javax.swing.*;
 import java.io.*;
@@ -66,6 +67,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     private StartupManager startupManager;
     private StorageManager storageManager;
     private CommandManager commandManager;
+    private SectionManager sectionManager;
 
     private ServerSocket serverSocket;  // This is the server socket later used by the EngineServer
 
@@ -349,6 +351,10 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         // Initialize command manager
         commandManager = context.getBean(CommandManager.class);
         commandManager.initialize();
+
+        // Initialize the section manager
+        sectionManager = context.getBean(SectionManager.class);
+        sectionManager.initialize();
 
         // Update the tray icon status
         trayIconManager.setTrayIconStatus(resourceBundle.getString("starting_service"));

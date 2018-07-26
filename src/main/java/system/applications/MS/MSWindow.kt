@@ -1,16 +1,12 @@
-package system.MS
+package system.applications.MS
 
-import com.sun.jna.platform.win32.Kernel32
 import com.sun.jna.platform.win32.User32
 import com.sun.jna.platform.win32.WinDef.HWND
 import com.sun.jna.platform.win32.WinUser
 import system.ResourceUtils
 import system.model.Application
 import system.model.Window
-import java.io.BufferedReader
 import java.io.IOException
-import java.io.InputStreamReader
-import javax.swing.Icon
 
 class MSWindow(titleText: String, application:Application?,
                val PID: Int, val hwnd: HWND)

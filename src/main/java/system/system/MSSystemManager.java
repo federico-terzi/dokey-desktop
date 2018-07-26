@@ -1,6 +1,6 @@
-package system.MS;
+package system.system;
 
-import system.SystemManager;
+import system.system.SystemManager;
 import com.sun.jna.platform.win32.*;
 import com.sun.jna.platform.win32.WinDef.HWND;
 

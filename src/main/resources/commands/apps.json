@@ -2,5 +2,9 @@
   {
     "appName": "chrome.exe",
     "file": "chrome.json"
+  },
+  {
+    "appName": "idea64.exe",
+    "file": "idea.json"
   }
 ]

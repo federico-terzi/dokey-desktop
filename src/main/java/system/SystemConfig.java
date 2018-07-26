@@ -11,10 +11,11 @@ import model.parser.section.SectionParser;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import system.MAC.MACApplicationManager;
-import system.MAC.MACSystemManager;
-import system.MS.MSApplicationManager;
-import system.MS.MSSystemManager;
+import system.applications.MAC.MACApplicationManager;
+import system.section.SectionManager;
+import system.system.MACSystemManager;
+import system.applications.MS.MSApplicationManager;
+import system.system.MSSystemManager;
 import system.bookmarks.BookmarkManager;
 import system.commands.CommandEngine;
 import system.commands.CommandManager;
@@ -32,6 +33,7 @@ import system.startup.MACStartupManager;
 import system.startup.MSStartupManager;
 import system.startup.StartupManager;
 import system.storage.StorageManager;
+import system.system.SystemManager;
 import utils.IconManager;
 import utils.OSValidator;
 
@@ -116,10 +118,10 @@ public class SystemConfig {
         return new ActiveApplicationsDaemon(applicationManager(), daemonMonitor());
     }
 
-//    @Bean
-//    public SectionManager sectionManager() {
-//        return new SectionManager();
-//    }
+    @Bean
+    public SectionManager sectionManager() {
+        return new SectionManager(storageManager(), sectionParser(), commandManager());
+    }
 
     @Bean
     public BookmarkManager bookmarkManager() {

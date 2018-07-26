@@ -5,6 +5,7 @@ import json.JSONTokener
 import model.command.Command
 import model.component.CommandResolver
 import model.parser.command.CommandParser
+import system.commands.general.AppRelatedCommand
 import system.storage.StorageManager
 import java.io.*
 import java.util.logging.Logger
@@ -145,5 +146,13 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
                 return commandMap.values.filter(filteringFunction)
             }
         }
+    }
+
+    fun getAppRelatedCommands() : Collection<AppRelatedCommand> {
+        return commandMap.values.filter { it is AppRelatedCommand }.map { it as AppRelatedCommand }.filter { it.app != null }
+    }
+
+    fun getCommandsForApp(appPath: String) : Collection<AppRelatedCommand> {
+        return getAppRelatedCommands().filter { it.app == appPath }
     }
 }

@@ -1,4 +1,4 @@
-package system.MAC
+package system.applications.MAC
 
 import system.ResourceUtils
 import system.model.Application

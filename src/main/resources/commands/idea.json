@@ -1,0 +1,16 @@
+[
+  {
+    "type": "simple",
+    "title": "Commit Changes",
+    "desc": "Commit Changes to Version Control",
+    "category": "ks",
+    "value": "CTRL+K"
+  },
+  {
+    "type": "simple",
+    "title": "Open Terminal",
+    "desc": "Open Terminal Panel",
+    "category": "ks",
+    "value": "ALT+F12"
+  }
+]
