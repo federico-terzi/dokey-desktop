@@ -32,6 +32,10 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
         sections.forEach { sectionCache[it.id!!] = it }
     }
 
+    fun getSections() : Collection<Section> {
+        return sectionCache.values
+    }
+
     private fun loadSections(): Collection<Section> {
         val sections = mutableListOf<Section>()
 

@@ -40,9 +40,21 @@
                     </tooltip>
                  </Button>
                  <Pane HBox.hgrow="ALWAYS" id="filler_pane"/>
+                 <Button fx:id="settings_btn" mnemonicParsing="false">
+                    <graphic>
+                       <ImageView fitHeight="20" fitWidth="20">
+                          <image>
+                             <Image url="/assets/toolbar_icons/settings.png" />
+                          </image>
+                       </ImageView>
+                    </graphic>
+                    <tooltip>
+                       <Tooltip text="%settings" />
+                    </tooltip>
+                 </Button>
               </items>
             </ToolBar>
-            <ScrollPane id="app_scroll_pane" hbarPolicy="NEVER" pannable="true" prefHeight="40.0" vbarPolicy="NEVER">
+            <ScrollPane id="app_scroll_pane" hbarPolicy="NEVER" pannable="true" prefHeight="50.0" vbarPolicy="NEVER">
                <content>
                   <HBox id="app_box" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" fx:id="app_box">
 
