@@ -4,7 +4,7 @@
     "title": "Open Windows Bar",
     "desc": "Open the Windows Start menu bar",
     "category": "ks",
-    "iconId": "static:grid",
+    "iconId": "static:grid_on",
     "value": "WIN"
   },
   {
