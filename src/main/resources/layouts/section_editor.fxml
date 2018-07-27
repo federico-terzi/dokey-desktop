@@ -9,7 +9,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
 
-<BorderPane prefHeight="701.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.editor.controllers.EditorController">
+<BorderPane prefHeight="701.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.control_panel.controllers.EditorController">
   <center>
     <SplitPane fx:id="splitPane" dividerPositions="0.2541225626740946" focusTraversable="true" styleClass="split-pane">
       <items>

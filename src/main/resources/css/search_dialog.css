@@ -65,7 +65,7 @@
     -fx-background-color: transparent;
 }
 .list-view .list-cell:filled:selected{
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #42E695, #3BB2B8);
+    -fx-background-color: -green-gradient;
 }
 
 .list-view .list-cell:filled:selected .dokey-search-result-icon{

@@ -1,5 +1,6 @@
 package app;
 
+import app.control_panel.ControlPanelStage;
 import app.search.stages.SearchStage;
 import app.stages.SettingsStage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +10,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 import system.SettingsManager;
 import system.SystemConfig;
+import system.commands.CommandManager;
 import system.image.ImageResolver;
 import system.model.ApplicationManager;
 import system.search.SearchEngine;
+import system.section.SectionManager;
 import system.startup.StartupManager;
 import system.storage.StorageManager;
 
@@ -36,7 +39,8 @@ public class AppConfig {
     @Autowired private StartupManager startupManager;
     @Autowired private StorageManager storageManager;
     @Autowired private ImageResolver imageResolver;
-
+    @Autowired private SectionManager sectionManager;
+    @Autowired private CommandManager commandManager;
 
     @Bean
     public TrayIconManager trayIconManager()
@@ -44,12 +48,11 @@ public class AppConfig {
         return new TrayIconManager(resourceBundle);
     }
 
-//    @Bean
-//    @Scope("prototype")
-//    public EditorStage editorStage(String targetApp, EditorStage.OnEditorEventListener onEditorEventListener) throws IOException {
-//        return new EditorStage(applicationManager, sectionManager, shortcutIconManager, webLinkResolver,
-//                onEditorEventListener, resourceBundle, targetApp);
-//    }
+    @Bean
+    @Scope("prototype")
+    public ControlPanelStage controlPanelStage() throws IOException {
+        return new ControlPanelStage(resourceBundle, sectionManager, commandManager, imageResolver);
+    }
 
     @Bean
     @Scope("prototype")

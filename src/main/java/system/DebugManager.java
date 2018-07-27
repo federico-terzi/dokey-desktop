@@ -26,7 +26,7 @@ public class DebugManager {
            appManager.openFolder(storageManager.getStorageDir().getAbsolutePath());
         });
         commands.put("e", () -> {  // OPEN DOKEY EDITOR
-            BroadcastManager.getInstance().sendBroadcast(BroadcastManager.OPEN_EDITOR_REQUEST_EVENT, null);
+            BroadcastManager.getInstance().sendBroadcast(BroadcastManager.OPEN_CONTROL_PANEL_REQUEST_EVENT, null);
         });
     }
 

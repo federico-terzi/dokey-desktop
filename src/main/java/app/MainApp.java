@@ -1,5 +1,6 @@
 package app;
 
+import app.control_panel.ControlPanelStage;
 import app.search.stages.SearchStage;
 import app.stages.InitializationStage;
 import app.stages.SettingsStage;
@@ -72,7 +73,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     private ServerSocket serverSocket;  // This is the server socket later used by the EngineServer
 
     private InitializationStage initializationStage;
-//    private EditorStage editorStage = null;
+    private ControlPanelStage controlPanelStage;
     private SettingsStage settingsStage = null;
 //    private CommandEditorStage commandEditorStage = null;
     private SearchStage searchStage;
@@ -94,7 +95,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     // Argument parameters
     private static boolean isFirstStartup = true;  // If true, it means that the app is opened for the first time.
     private static boolean isAutomaticStartup = false;  // If true, it means that the app is started automatically by the system.
-    private static boolean openEditor = false;  // If true, at startup the editor is open;
+    private static boolean openControlPanel = false;  // If true, at startup the control panel is open;
     private static boolean openSettings = false;  // If true, at startup the settings is open;
     private static boolean openCommandEditor = false;  // If true, at startup the command editor is opened;
     private static boolean ignoreLanguage = false;  // If true, force the language to be english.
@@ -120,8 +121,8 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         for (String arg : args) {
             if (arg.equals("-startup")) {
                 isAutomaticStartup = true;
-            }else if (arg.equals("-editor")) {
-                openEditor = true;
+            }else if (arg.equals("-cpanel")) {
+                openControlPanel = true;
             }else if (arg.equals("-ceditor")) {
                 openCommandEditor = true;
             }else if (arg.equals("-settings")) {
@@ -389,7 +390,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         trayIconManager.setLoading(false);
 
         // Register the global event listeners
-        BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_EDITOR_REQUEST_EVENT, openEditorRequestListener);
+        BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_CONTROL_PANEL_REQUEST_EVENT, openControlPanelRequestListener);
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_SETTINGS_REQUEST_EVENT, openSettingsRequestListener);
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_COMMANDS_REQUEST_EVENT, openCommandsRequestListener);
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.ENABLE_DOKEY_SEARCH_PROPERTY_CHANGED, enableDokeySearchChangedListener);
@@ -399,8 +400,8 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         if (settingsManager.isDokeySearchEnabled())
             registerHotKeys();
 
-        if (openEditor) {
-            openEditor(null);
+        if (openControlPanel) {
+            openControlPanel(null);
         }
         if (openSettings) {
             openSettings();
@@ -473,23 +474,22 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         activeApplicationsDaemon.stopDaemon();
     }
 
-    private void openEditor(String targetApp) {
-//        if (editorStage != null) {
-//            appManager.focusDokey();
-//
-//            // If the editor is already open, just select the requested app
+    private void openControlPanel(String targetApp) {
+        if (controlPanelStage != null) {
+            appManager.focusDokey();
+
+//            // If the control panel is already open, just select the requested app
 //            editorStage.selectSection(targetApp);
 //            return;
-//        }
-//
-//        editorStage = context.getBean(EditorStage.class, targetApp,
-//                (EditorStage.OnEditorEventListener) () -> editorStage = null);
-//        editorStage.show();
+        }
+
+        controlPanelStage = context.getBean(ControlPanelStage.class);  // TODO: add close listener to reset controlPanelStage variable
+        controlPanelStage.show();
     }
 
     @Override
     public void onEditorOpenRequest() {
-        openEditor(null);
+        openControlPanel(null);
     }
 
     private void openSettings() {
@@ -680,12 +680,12 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     /**
      * Called when the user request to open the editor from the app.
      */
-    private BroadcastManager.BroadcastListener openEditorRequestListener = new BroadcastManager.BroadcastListener() {
+    private BroadcastManager.BroadcastListener openControlPanelRequestListener = new BroadcastManager.BroadcastListener() {
         @Override
         public void onBroadcastReceived(Serializable param) {
             String targetApp = (String) param;
             Platform.runLater(() -> {
-                openEditor(targetApp);
+                openControlPanel(targetApp);
             });
         }
     };

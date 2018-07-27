@@ -9,4 +9,9 @@
     -secondaryDarkColor: #357597;
     -secondaryLightColor: #9ad5fb;
     -secondaryTextColor: #000000;
+
+    -start-green-gradient: #42E695;
+    -stop-green-gradient: #3BB2B8;
+
+    -green-gradient: linear-gradient(to bottom right, -start-green-gradient, -stop-green-gradient);
 }

@@ -1,0 +1,51 @@
+@import "colors.css";
+
+.root {
+    -fx-background-radius: 10px;
+    -fx-opacity: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0, 0.3), 20, 0, 4, 4);
+    -fx-padding: 20px;
+    -fx-background-insets: 20;
+    -fx-background-color: white;
+}
+
+#top-section {
+    -fx-background-radius: 10px 10px 0 0;
+    -fx-background-color: linear-gradient(to bottom right, -start-green-gradient, -stop-green-gradient);
+    -fx-padding: 0;
+}
+
+.tool-bar {
+    -fx-background-color: transparent;
+    -fx-padding: 0px;
+    -fx-pref-height: 20px;
+    -fx-spacing: 0px;
+}
+
+.tool-bar .button:focused {
+    -fx-background-color: transparent;
+}
+
+.tool-bar .button {
+    -fx-background-color: white;
+    -fx-background-radius: 0 0 0 3px;
+    -fx-padding: 5px;
+    -fx-border-insets: 0;
+}
+
+.tool-bar #filler_pane {
+    -fx-background-color: white;
+    -fx-padding: 1px;
+}
+
+#app_scroll_pane {
+    -fx-background-color: transparent;
+}
+
+#app_scroll_pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+#app_scroll_pane #app_box {
+    -fx-background-color: transparent;
+}

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="594.0" prefWidth="402.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.control_panel.controllers.ControlPanelController">
+   <top>
+      <VBox BorderPane.alignment="CENTER" id="top-section">
+         <children>
+            <ToolBar prefHeight="40.0" prefWidth="200.0">
+              <items>
+                 <Button fx:id="send_files_tab_btn" mnemonicParsing="false" styleClass="tab-selected">
+                    <graphic>
+                       <ImageView fitHeight="20" fitWidth="20">
+                          <image>
+                             <Image url="/assets/toolbar_icons/new_file.png" />
+                          </image>
+                       </ImageView>
+                    </graphic>
+                    <tooltip>
+                       <Tooltip text="%send_files" />
+                    </tooltip>
+                 </Button>
+                 <Button fx:id="layouts_tab_btn" mnemonicParsing="false">
+                    <graphic>
+                       <ImageView fitHeight="20" fitWidth="20">
+                          <image>
+                             <Image url="/assets/toolbar_icons/new_file.png" />
+                          </image>
+                       </ImageView>
+                    </graphic>
+                    <tooltip>
+                       <Tooltip text="%send_files" />
+                    </tooltip>
+                 </Button>
+                 <Pane HBox.hgrow="ALWAYS" id="filler_pane"/>
+              </items>
+            </ToolBar>
+            <ScrollPane id="app_scroll_pane" hbarPolicy="NEVER" pannable="true" prefHeight="40.0" vbarPolicy="NEVER">
+               <content>
+                  <HBox id="app_box" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" fx:id="app_box">
+
+                  </HBox>
+               </content>
+            </ScrollPane>
+         </children>
+      </VBox>
+   </top>
+</BorderPane>

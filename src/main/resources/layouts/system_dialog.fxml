@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.paint.*?>
 
-<BorderPane prefHeight="349.0" prefWidth="344.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.editor.controllers.SystemDialogController">
+<BorderPane prefHeight="349.0" prefWidth="344.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.control_panel.controllers.SystemDialogController">
   <bottom>
     <ToolBar>
       <items>
