@@ -16,7 +16,8 @@
 }
 
 .tool-bar {
-    -fx-background-color: transparent;
+    -fx-background-radius: 10px 10px 0 0;
+    -fx-background-color: white;
     -fx-padding: 0px;
     -fx-pref-height: 20px;
     -fx-spacing: 0px;
@@ -27,15 +28,12 @@
 }
 
 .tool-bar .button {
-    -fx-background-color: white;
-    -fx-background-radius: 0 0 0 3px;
+    -fx-background-color: transparent;
     -fx-padding: 5px;
-    -fx-border-insets: 0;
 }
 
 .tool-bar #filler_pane {
-    -fx-background-color: white;
-    -fx-padding: 1px;
+    -fx-background-color: transparent;
 }
 
 #app_scroll_pane {
