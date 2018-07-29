@@ -12,9 +12,6 @@ open class DragButton(val context : GridContext) : Button() {
     var onComponentDragListener: OnComponentDragListener? = null
 
     init {
-        // Set the button properties
-        setMaxSize(java.lang.Double.MAX_VALUE, java.lang.Double.MAX_VALUE)
-
         styleClass.add("drag-button")
 
         onDragOver = EventHandler { event ->

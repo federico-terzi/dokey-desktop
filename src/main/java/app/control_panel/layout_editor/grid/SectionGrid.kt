@@ -24,13 +24,12 @@ import java.util.*
 /**
  * This component will createView a Section into a Grid with button bar and animations.
  */
-class SectionGrid(val section: Section, val applicationManager: ApplicationManager,
+class SectionGrid(val section: Section,
                   val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
-                  val componentParser: ComponentParser, val commandManager: CommandManager) {
+                  val componentParser: ComponentParser, val commandManager: CommandManager)
+    : VBox() {
 
     private var _screenOrientation : ScreenOrientation = ScreenOrientation.PORTRAIT
-
-    private var container : VBox = VBox()
 
     var screenOrientation : ScreenOrientation
         get() = _screenOrientation
@@ -56,7 +55,7 @@ class SectionGrid(val section: Section, val applicationManager: ApplicationManag
      * Trigger a re-rendering of the grid
      */
     fun invalidate() {
-        container.children.clear()
+        this.children.clear()
         val view = createView()
         render(view)
     }
@@ -65,8 +64,8 @@ class SectionGrid(val section: Section, val applicationManager: ApplicationManag
      * Render the view and display it.
      */
     private fun render(view: Node) {
-        container.children.clear()
-        container.children.add(view)
+        this.children.clear()
+        this.children.add(view)
 
         activePane = view
     }
@@ -77,9 +76,6 @@ class SectionGrid(val section: Section, val applicationManager: ApplicationManag
     private fun createView(): Node {
         // Create the tabpane for the pages and set it up
         val tabPane = TabPane()
-        tabPane.minWidth = getWidth(screenOrientation).toDouble()
-        tabPane.prefWidth = getWidth(screenOrientation).toDouble()
-        tabPane.maxWidth = getWidth(screenOrientation).toDouble()
 
         // This map will hold the tabPane contents for each tab.
         // used for the slide animation when changing tab
@@ -139,6 +135,16 @@ class SectionGrid(val section: Section, val applicationManager: ApplicationManag
             }
         }
 
+        val tabPaneController = TabPaneController(tabPane, tabContent, object : TabPaneController.OnTabListener{
+            override fun onTabSelected(index: Int) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onAddTab() {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+        });
        /* // This listener is used by the tab pane controller to select/add tabs
         val onTabListener = object : TabPaneController.OnTabListener() {
             fun onTabSelected(index: Int) {
@@ -153,6 +159,7 @@ class SectionGrid(val section: Section, val applicationManager: ApplicationManag
 
         val currentPane = VBox()
         currentPane.children.add(tabPane)
+        currentPane.children.add(tabPaneController)
 
         // If the active page is contained in the current section, select the tab
         if (section.pages!!.contains(activePage)) {

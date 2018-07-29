@@ -1,6 +1,7 @@
 package app.control_panel
 
 import app.control_panel.controllers.ControlPanelController
+import app.control_panel.layout_editor.LayoutEditorLoader
 import javafx.event.EventHandler
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
@@ -11,13 +12,9 @@ import javafx.scene.paint.Color
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 import system.ResourceUtils
-import system.commands.CommandManager
-import system.image.ImageResolver
-import system.section.SectionManager
 import java.util.*
 
-class ControlPanelStage(val resourceBundle: ResourceBundle, val sectionManager: SectionManager,
-                        val commandManager: CommandManager, val imageResolver: ImageResolver) : Stage() {
+class ControlPanelStage(val resourceBundle: ResourceBundle, val layoutEditorLoader: LayoutEditorLoader) : Stage() {
     private val controller : ControlPanelController
 
     private var xOffset = 0.0;
@@ -52,5 +49,8 @@ class ControlPanelStage(val resourceBundle: ResourceBundle, val sectionManager: 
                 this@ControlPanelStage.setY(event.getScreenY() - yOffset)
             }
         })
+        
+        layoutEditorLoader.load { controller.content_box.children.add(it) }
+
     }
 }

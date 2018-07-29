@@ -1,6 +1,7 @@
 package app;
 
 import app.control_panel.ControlPanelStage;
+import app.control_panel.layout_editor.LayoutEditorLoader;
 import app.control_panel.layout_editor.grid.SectionGrid;
 import app.search.stages.SearchStage;
 import app.stages.SettingsStage;
@@ -22,6 +23,7 @@ import system.startup.StartupManager;
 import system.storage.StorageManager;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.ResourceBundle;
 
 /**
@@ -55,7 +57,7 @@ public class AppConfig {
     @Bean
     @Scope("prototype")
     public ControlPanelStage controlPanelStage() throws IOException {
-        return new ControlPanelStage(resourceBundle, sectionManager, commandManager, imageResolver);
+        return new ControlPanelStage(resourceBundle, layoutEditorLoader());
     }
 
     @Bean
@@ -78,8 +80,9 @@ public class AppConfig {
 
     @Bean
     @Scope("prototype")
-    public SectionGrid sectionGrid(Section section) throws IOException {
-        return new SectionGrid(section, applicationManager, imageResolver,
-                resourceBundle, componentParser, commandManager);
+    public LayoutEditorLoader layoutEditorLoader() throws IOException {
+        return new LayoutEditorLoader(sectionManager, imageResolver, resourceBundle, componentParser, commandManager);
     }
+
+
 }

@@ -1,0 +1,61 @@
+.drag-button {
+    -fx-border-insets: 10px;
+}
+
+.empty-btn {
+    -fx-background-color: transparent;
+    -fx-background-insets: 10px;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-border-style: solid;
+    -fx-border-width: 2px;
+    -fx-border-color: -light-gray;
+    -fx-padding: 10px;
+}
+
+.empty-btn .image-view{
+    -fx-effect: innershadow( one-pass-box , -light-gray , 7 , 1 , 1 , 1 );
+}
+
+.empty-btn:hover {
+    -fx-opacity: 1;
+    /*-fx-background-color: -primaryLightColor;*/
+    -fx-border-color: black;
+}
+
+.empty-btn:hover .image-view{
+    -fx-effect: innershadow( gaussian , black, 7 , 1 , 1 , 1 );
+}
+
+.component-btn {
+    -fx-background-color: transparent;
+    -fx-background-insets: 4px;
+    -fx-background-radius: 4px;
+    -fx-opacity: 1;
+    -fx-text-fill: black;
+}
+
+.component-btn .label{
+    -fx-text-fill: black;
+}
+
+.invalid-btn {
+    /*-fx-background-color: rgba(255,86, 86,0.2);*/
+    -fx-opacity: 0.2;
+}
+
+.component-btn:hover {
+    -fx-effect: innershadow( gaussian , rgba(255,255,255,0.2), 70 , 1 , 1 , 1 );
+}
+
+.drag-entered {
+    -fx-background-color: -secondaryColor;
+}
+
+.drag-entered-danger {
+    -fx-background-color: #b85152;
+}
+
+.selected {
+    -fx-background-color: #dada67;
+}

@@ -55,6 +55,8 @@ class ComponentGrid(val componentMatrix: Array<Array<Component?>>,
      * Setup the GridPane constraint to have equally large buttons
      */
     private fun setupConstraints() {
+        this.prefHeight = 700.0
+
         for (rowIndex in 0 until orientedRowCount) {
             val rc = RowConstraints()
             rc.vgrow = Priority.ALWAYS // allow row to grow

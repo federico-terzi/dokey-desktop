@@ -64,4 +64,7 @@
          </children>
       </VBox>
    </top>
+   <center>
+      <VBox fx:id="content_box" id="content_box"></VBox>
+   </center>
 </BorderPane>
