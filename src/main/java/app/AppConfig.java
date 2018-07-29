@@ -1,8 +1,11 @@
 package app;
 
 import app.control_panel.ControlPanelStage;
+import app.control_panel.layout_editor.grid.SectionGrid;
 import app.search.stages.SearchStage;
 import app.stages.SettingsStage;
+import model.parser.component.ComponentParser;
+import model.section.Section;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,6 +44,7 @@ public class AppConfig {
     @Autowired private ImageResolver imageResolver;
     @Autowired private SectionManager sectionManager;
     @Autowired private CommandManager commandManager;
+    @Autowired private ComponentParser componentParser;
 
     @Bean
     public TrayIconManager trayIconManager()
@@ -70,5 +74,12 @@ public class AppConfig {
     @Scope("prototype")
     public SearchStage searchStage() throws IOException {
         return new SearchStage(resourceBundle, searchEngine, imageResolver);
+    }
+
+    @Bean
+    @Scope("prototype")
+    public SectionGrid sectionGrid(Section section) throws IOException {
+        return new SectionGrid(section, applicationManager, imageResolver,
+                resourceBundle, componentParser, commandManager);
     }
 }
