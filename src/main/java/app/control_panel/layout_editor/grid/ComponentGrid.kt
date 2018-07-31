@@ -4,6 +4,7 @@ import app.control_panel.layout_editor.grid.button.ComponentButton
 import app.control_panel.layout_editor.grid.button.DragButton
 import app.control_panel.layout_editor.grid.button.EmptyButton
 import app.control_panel.layout_editor.model.ScreenOrientation
+import javafx.geometry.HPos
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
 import javafx.scene.layout.ColumnConstraints
@@ -49,6 +50,8 @@ class ComponentGrid(val componentMatrix: Array<Array<Component?>>,
         render()
 
         setupConstraints()
+
+        this.styleClass.add("component-grid")
     }
 
     /**
@@ -243,6 +246,7 @@ class ComponentGrid(val componentMatrix: Array<Array<Component?>>,
 
         // Add the component to the grid
         this.add(button, gridCol, gridRow, 1, 1)
+        GridPane.setHalignment(button, HPos.CENTER)
     }
 
     /**

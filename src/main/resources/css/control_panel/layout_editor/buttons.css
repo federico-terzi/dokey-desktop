@@ -1,16 +1,19 @@
 .drag-button {
-    -fx-border-insets: 10px;
+    -fx-border-insets: 2px;
+    -fx-pref-height: 40px;
+    -fx-pref-width: 90px;
 }
 
 .empty-btn {
     -fx-background-color: transparent;
     -fx-background-insets: 10px;
-    -fx-background-radius: 6px;
-    -fx-border-radius: 6px;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 10px;
     -fx-border-style: solid;
     -fx-border-width: 2px;
+    -fx-border-insets: 15px;
     -fx-border-color: -light-gray;
-    -fx-padding: 10px;
+    -fx-padding: 0px;
 }
 
 .empty-btn .image-view{
@@ -24,7 +27,7 @@
 }
 
 .empty-btn:hover .image-view{
-    -fx-effect: innershadow( gaussian , black, 7 , 1 , 1 , 1 );
+    -fx-effect: innershadow( one-pass-box , black, 7 , 1 , 1 , 1 );
 }
 
 .component-btn {
@@ -48,10 +51,14 @@
     -fx-effect: innershadow( gaussian , rgba(255,255,255,0.2), 70 , 1 , 1 , 1 );
 }
 
-.drag-entered {
-    -fx-background-color: -secondaryColor;
+.drag-entered{
+    -fx-background-color: -green-gradient;
+    -fx-border-color: white;
 }
 
+.drag-entered .image-view{
+    -fx-effect: innershadow( one-pass-box , white, 7 , 1 , 1 , 1 );
+}
 .drag-entered-danger {
     -fx-background-color: #b85152;
 }

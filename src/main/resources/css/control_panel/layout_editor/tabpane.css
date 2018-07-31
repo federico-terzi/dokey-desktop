@@ -1,0 +1,37 @@
+@import "../../colors.css";
+
+.tab-pane
+{
+    -fx-tab-min-width:50px;
+    -fx-tab-max-height: 0 ;
+}
+
+.tab-pane:top .tab-content-area {
+    -fx-background-color: transparent;
+}
+
+.tab-pane .tab-header-area {
+    visibility: hidden ;
+}
+
+.tab-pane-controller {
+    -fx-background-color: transparent;
+}
+
+.tab-pane-controller .button{
+    -fx-background-color: transparent;
+    -fx-opacity: 0.8;
+    -fx-padding: 0px 5px 20px 5px;
+}
+
+.tab-pane-controller .button .image-view{
+    -fx-effect: innershadow( one-pass-box , -light-gray , 70 , 1 , 1 , 1 );
+}
+
+.tab-pane-controller .button .dot-selected{
+    -fx-effect: innershadow( one-pass-box , black, 70 , 1 , 1 , 1 );
+}
+
+.tab-pane-controller .button:hover{
+    -fx-opacity: 1;
+}

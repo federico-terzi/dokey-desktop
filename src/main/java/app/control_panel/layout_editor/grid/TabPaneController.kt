@@ -38,10 +38,10 @@ class TabPaneController(private val tabPane: TabPane, private val tabContent: Ma
                     }
                 }
             })
-            val image = ImageResolver.getImage(TabPaneController::class.java.getResourceAsStream("/assets/circle_full.png"), 16)
+            val image = ImageResolver.getImage(TabPaneController::class.java.getResourceAsStream("/assets/circle_full.png"), 8)
             val imageView = ImageView(image)
-            imageView.fitHeight = 16.0
-            imageView.fitWidth = 16.0
+            imageView.fitHeight = 8.0
+            imageView.fitWidth = 8.0
             if (tab.isSelected) {
                 imageView.getStyleClass().add("dot-selected")
             } else {
@@ -72,10 +72,10 @@ class TabPaneController(private val tabPane: TabPane, private val tabContent: Ma
                 }
             }
         })
-        val image = ImageResolver.getImage(TabPaneController::class.java.getResourceAsStream("/assets/add_white.png"), 16)
+        val image = ImageResolver.getImage(TabPaneController::class.java.getResourceAsStream("/assets/add_white.png"), 8)
         val imageView = ImageView(image)
-        imageView.fitWidth = 16.0
-        imageView.fitHeight = 16.0
+        imageView.fitWidth = 8.0
+        imageView.fitHeight = 8.0
         addBtn.setGraphic(imageView)
         this.children.add(addBtn)
 

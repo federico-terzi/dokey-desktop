@@ -1,12 +1,5 @@
 @import "colors.css";
-
-@font-face {
-    src: url('../font/NunitoSans-Light.ttf');
-}
-
-@font-face {
-    src: url('../font/NunitoSans-Bold.ttf');
-}
+@import "font.css";
 
 .root {
     -fx-background-color: -primaryTextColor;
