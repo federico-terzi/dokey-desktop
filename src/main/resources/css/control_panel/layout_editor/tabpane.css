@@ -35,3 +35,25 @@
 .tab-pane-controller .button:hover{
     -fx-opacity: 1;
 }
+
+.app_scroll_pane_container {
+    -fx-background-color: linear-gradient(to bottom right, -start-green-gradient, -stop-green-gradient);
+}
+
+.app_scroll_pane {
+    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+    -fx-padding: 5px;
+}
+
+.app_scroll_pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.app_scroll_pane .hbox {
+    -fx-background-color: transparent;
+}
+
+.app_scroll_pane .button {
+    -fx-background-color: transparent;
+}

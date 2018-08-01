@@ -81,7 +81,7 @@ public class AppConfig {
     @Bean
     @Scope("prototype")
     public LayoutEditorLoader layoutEditorLoader() throws IOException {
-        return new LayoutEditorLoader(sectionManager, imageResolver, resourceBundle, componentParser, commandManager);
+        return new LayoutEditorLoader(sectionManager, imageResolver, resourceBundle, componentParser, commandManager, applicationManager);
     }
 
 

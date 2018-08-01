@@ -6,14 +6,16 @@ import javafx.scene.Node
 import model.parser.component.ComponentParser
 import system.commands.CommandManager
 import system.image.ImageResolver
+import system.model.ApplicationManager
 import system.section.SectionManager
 import java.util.*
 
 class LayoutEditorLoader(val sectionManager: SectionManager, val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
-                         val componentParser: ComponentParser, val commandManager: CommandManager) : PanelLoader {
+                         val componentParser: ComponentParser, val commandManager: CommandManager,
+                         val applicationManager: ApplicationManager) : PanelLoader {
     override fun load(onLoadCompleted: (content: Node) -> Unit) {
-        val sectionGrid = SectionGrid(sectionManager.getSections().first(), imageResolver, resourceBundle, componentParser, commandManager)
+        val layoutEditorBox = LayoutEditorBox(sectionManager, imageResolver, resourceBundle, componentParser, commandManager, applicationManager)
 
-        onLoadCompleted(sectionGrid)
+        onLoadCompleted(layoutEditorBox)
     }
 }

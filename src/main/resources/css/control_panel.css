@@ -12,12 +12,6 @@
     -fx-font-family: "Nunito Sans Light";
 }
 
-#top-section {
-    -fx-background-radius: 10px 10px 0 0;
-    -fx-background-color: linear-gradient(to bottom right, -start-green-gradient, -stop-green-gradient);
-    -fx-padding: 0;
-}
-
 .tool-bar {
     -fx-background-radius: 10px 10px 0 0;
     -fx-background-color: white;
@@ -36,17 +30,5 @@
 }
 
 .tool-bar #filler_pane {
-    -fx-background-color: transparent;
-}
-
-#app_scroll_pane {
-    -fx-background-color: transparent;
-}
-
-#app_scroll_pane > .viewport {
-    -fx-background-color: transparent;
-}
-
-#app_scroll_pane #app_box {
     -fx-background-color: transparent;
 }

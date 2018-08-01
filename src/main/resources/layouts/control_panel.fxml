@@ -54,13 +54,6 @@
                  </Button>
               </items>
             </ToolBar>
-            <ScrollPane id="app_scroll_pane" hbarPolicy="NEVER" pannable="true" prefHeight="50.0" vbarPolicy="NEVER">
-               <content>
-                  <HBox id="app_box" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" fx:id="app_box">
-
-                  </HBox>
-               </content>
-            </ScrollPane>
          </children>
       </VBox>
    </top>

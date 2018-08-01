@@ -1,6 +1,6 @@
 .drag-button {
     -fx-border-insets: 2px;
-    -fx-pref-height: 40px;
+    -fx-pref-height: 10px;
     -fx-pref-width: 90px;
 }
 
@@ -48,7 +48,7 @@
 }
 
 .component-btn:hover {
-    -fx-effect: innershadow( gaussian , rgba(255,255,255,0.2), 70 , 1 , 1 , 1 );
+    -fx-effect: innershadow( one-pass-box , rgba(255,255,255,0.2), 70 , 1 , 1 , 1 );
 }
 
 .drag-entered{
