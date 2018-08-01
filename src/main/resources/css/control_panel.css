@@ -3,13 +3,17 @@
 @import "control_panel/layout_editor/layout_editor.css";
 
 .root {
+    -fx-padding: 20px;
+    -fx-font-family: "Nunito Sans Light";
+}
+
+#parent-box {
     -fx-background-radius: 10px;
     -fx-opacity: 1;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0, 0.3), 20, 0, 4, 4);
-    -fx-padding: 20px;
-    -fx-background-insets: 20;
+    -fx-background-insets: 20px;
+    -fx-border-insets: 20px;
     -fx-background-color: white;
-    -fx-font-family: "Nunito Sans Light";
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0, 0.3), 20, 0, 4, 4);
 }
 
 .tool-bar {

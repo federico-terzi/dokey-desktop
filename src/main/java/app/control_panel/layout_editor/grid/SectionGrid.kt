@@ -1,10 +1,7 @@
 package app.control_panel.layout_editor.grid
 
 import app.control_panel.layout_editor.model.ScreenOrientation
-import javafx.animation.FadeTransition
-import javafx.animation.ParallelTransition
-import javafx.animation.RotateTransition
-import javafx.animation.SequentialTransition
+import javafx.animation.*
 import javafx.scene.CacheHint
 import javafx.scene.Node
 import javafx.scene.control.Tab
@@ -45,7 +42,7 @@ class SectionGrid(val section: Section,
 
     var activePage : Page? = null
 
-    private var activePane : Node? = null
+    private var activePane : VBox? = null
 
     init {
         invalidate()
@@ -63,17 +60,18 @@ class SectionGrid(val section: Section,
     /**
      * Render the view and display it.
      */
-    private fun render(view: Node) {
+    private fun render(view: VBox) {
         this.children.clear()
         this.children.add(view)
 
         activePane = view
+
     }
 
     /**
      * Create the view with all the components into the container.
      */
-    private fun createView(): Node {
+    private fun createView(): VBox {
         // Create the tabpane for the pages and set it up
         val tabPane = TabPane()
 
@@ -209,7 +207,7 @@ class SectionGrid(val section: Section,
         SequentialTransition(ParallelTransition(rotate, fadeOut), fadeIn).play()
     }
 
-    private fun fadeIn() {
+    fun fadeIn() {
         activePane!!.setCache(true)
         activePane!!.setCacheHint(CacheHint.SPEED)
         val fadeIn = FadeTransition(
@@ -221,29 +219,8 @@ class SectionGrid(val section: Section,
     }
 
     companion object {
-        val PORTRAIT_HEIGHT = 450
-        val PORTRAIT_WIDTH = 350
-        val LANDSCAPE_HEIGHT = 350
-        val LANDSCAPE_WIDTH = 450
-
         private val ENTER_SECTION_FADE_DURATION = 0.2
         private val ROTATE_SECTION_DURATION = 0.2
-
-        fun getWidth(screenOrientation: ScreenOrientation?): Int {
-            return if (screenOrientation === ScreenOrientation.PORTRAIT) {
-                PORTRAIT_WIDTH
-            } else {
-                LANDSCAPE_WIDTH
-            }
-        }
-
-        fun getHeight(screenOrientation: ScreenOrientation): Int {
-            return if (screenOrientation === ScreenOrientation.PORTRAIT) {
-                PORTRAIT_HEIGHT
-            } else {
-                LANDSCAPE_HEIGHT
-            }
-        }
 
         private fun generateMatrix(page: Page): Array<Array<Component?>> {
             // Create the matrix

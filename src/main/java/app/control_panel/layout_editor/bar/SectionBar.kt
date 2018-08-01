@@ -1,7 +1,6 @@
 package app.control_panel.layout_editor.bar
 
 import app.control_panel.layout_editor.bar.selectors.*
-import app.control_panel.layout_editor.grid.SectionGrid
 import javafx.event.EventHandler
 import javafx.scene.control.Button
 import javafx.scene.control.ScrollPane
@@ -25,9 +24,9 @@ class SectionBar(val sectionManager: SectionManager, val applicationManager: App
     }
 
     private val appBox = HBox()
-    private val selectors : Collection<Selector>
+    private val selectors : List<Selector>
 
-    var onSectionClicked : ((Section) -> Unit)? = null
+    var onSectionClicked : ((Section, direction: Int) -> Unit)? = null
 
     init {
         this.styleClass.add("app_scroll_pane")
@@ -35,7 +34,6 @@ class SectionBar(val sectionManager: SectionManager, val applicationManager: App
         hbarPolicy = ScrollBarPolicy.NEVER
         vbarPolicy = ScrollBarPolicy.NEVER
         isPannable = true
-        prefViewportHeight = 320.0
 
         appBox.maxHeight = Double.MAX_VALUE
         appBox.maxWidth = Double.MAX_VALUE
@@ -59,7 +57,7 @@ class SectionBar(val sectionManager: SectionManager, val applicationManager: App
         selectors.sort()
         this.selectors = selectors
 
-        selectors.forEach { selector ->
+        selectors.forEachIndexed { index, selector ->
             val button = Button()
             val image = imageResolver.resolveImage(selector.imageId, 32)
             val imageView = ImageView(image)
@@ -69,8 +67,56 @@ class SectionBar(val sectionManager: SectionManager, val applicationManager: App
             appBox.children.add(button)
 
             button.onAction = EventHandler {
-                onSectionClicked?.invoke(selector.section)
+                val previousSelected : Int = selectors.indexOfFirst { it.selected }
+
+                // If the user clicks on the already selected one, do nothing
+                if (previousSelected != index) {
+                    val direction = calculateDirection(previousSelected, index)
+
+                    onSelectorSelected(selector, direction)
+                }
             }
+        }
+
+        // Automatically select the first one
+        onSelectorSelected(selectors.first(), 1)
+    }
+
+    fun selectSection(section: Section) {
+        val associatedSelectorIndex = selectors.indexOfFirst { it.section == section }
+        if (associatedSelectorIndex >= 0 ) {
+            selectSection(associatedSelectorIndex)
+        }
+    }
+
+    fun selectSection(index: Int) {
+        // Find the currently selected
+        val currentSelector = selectors.indexOfFirst { selector -> selector.selected }
+        val direction = calculateDirection(currentSelector, index)
+
+        val associatedSelector = selectors[index]
+        onSelectorSelected(associatedSelector, direction)
+    }
+
+    private fun onSelectorSelected(selector: Selector, direction: Int = 1) {
+        onSectionClicked?.invoke(selector.section, direction)
+
+        // Unselect previous selector
+        selectors.forEach { it.selected = false }
+
+        // Select the current one
+        selector.selected = true
+    }
+
+    private fun calculateDirection(previous: Int, current: Int) : Int {
+        return if (previous >= 0) {
+            if (previous > current) {
+                1
+            }else{
+                -1
+            }
+        }else{
+            1
         }
     }
 }

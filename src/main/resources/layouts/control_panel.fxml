@@ -9,55 +9,60 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="594.0" prefWidth="402.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.control_panel.controllers.ControlPanelController">
-   <top>
-      <VBox BorderPane.alignment="CENTER" id="top-section">
-         <children>
-            <ToolBar prefHeight="40.0" prefWidth="200.0">
-              <items>
-                 <Button fx:id="send_files_tab_btn" mnemonicParsing="false" styleClass="tab-selected">
-                    <graphic>
-                       <ImageView fitHeight="20" fitWidth="20">
-                          <image>
-                             <Image url="/assets/toolbar_icons/new_file.png" />
-                          </image>
-                       </ImageView>
-                    </graphic>
-                    <tooltip>
-                       <Tooltip text="%send_files" />
-                    </tooltip>
-                 </Button>
-                 <Button fx:id="layouts_tab_btn" mnemonicParsing="false">
-                    <graphic>
-                       <ImageView fitHeight="20" fitWidth="20">
-                          <image>
-                             <Image url="/assets/toolbar_icons/new_file.png" />
-                          </image>
-                       </ImageView>
-                    </graphic>
-                    <tooltip>
-                       <Tooltip text="%send_files" />
-                    </tooltip>
-                 </Button>
-                 <Pane HBox.hgrow="ALWAYS" id="filler_pane"/>
-                 <Button fx:id="settings_btn" mnemonicParsing="false">
-                    <graphic>
-                       <ImageView fitHeight="20" fitWidth="20">
-                          <image>
-                             <Image url="/assets/toolbar_icons/settings.png" />
-                          </image>
-                       </ImageView>
-                    </graphic>
-                    <tooltip>
-                       <Tooltip text="%settings" />
-                    </tooltip>
-                 </Button>
-              </items>
-            </ToolBar>
-         </children>
-      </VBox>
-   </top>
-   <center>
-      <VBox fx:id="content_box" id="content_box"></VBox>
-   </center>
-</BorderPane>
+
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" id="parent-box" fx:controller="app.control_panel.controllers.ControlPanelController">
+   <children>
+      <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="352.0">
+         <top>
+            <VBox id="top-section" BorderPane.alignment="CENTER">
+               <children>
+                  <ToolBar prefHeight="40.0" prefWidth="200.0">
+                    <items>
+                       <Button fx:id="send_files_tab_btn" mnemonicParsing="false" styleClass="tab-selected">
+                          <graphic>
+                             <ImageView fitHeight="20" fitWidth="20">
+                                <image>
+                                   <Image url="/assets/toolbar_icons/new_file.png" />
+                                </image>
+                             </ImageView>
+                          </graphic>
+                          <tooltip>
+                             <Tooltip text="%send_files" />
+                          </tooltip>
+                       </Button>
+                       <Button fx:id="layouts_tab_btn" mnemonicParsing="false">
+                          <graphic>
+                             <ImageView fitHeight="20" fitWidth="20">
+                                <image>
+                                   <Image url="/assets/toolbar_icons/new_file.png" />
+                                </image>
+                             </ImageView>
+                          </graphic>
+                          <tooltip>
+                             <Tooltip text="%send_files" />
+                          </tooltip>
+                       </Button>
+                       <Pane id="filler_pane" HBox.hgrow="ALWAYS" />
+                       <Button fx:id="settings_btn" mnemonicParsing="false">
+                          <graphic>
+                             <ImageView fitHeight="20" fitWidth="20">
+                                <image>
+                                   <Image url="/assets/toolbar_icons/settings.png" />
+                                </image>
+                             </ImageView>
+                          </graphic>
+                          <tooltip>
+                             <Tooltip text="%settings" />
+                          </tooltip>
+                       </Button>
+                    </items>
+                  </ToolBar>
+               </children>
+            </VBox>
+         </top>
+         <center>
+            <VBox id="content_box" fx:id="content_box" />
+         </center>
+      </BorderPane>
+   </children>
+</VBox>

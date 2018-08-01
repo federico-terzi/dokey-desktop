@@ -2,7 +2,11 @@ package app.control_panel.layout_editor
 
 import app.control_panel.layout_editor.grid.SectionGrid
 import app.control_panel.layout_editor.bar.SectionBar
+import javafx.animation.Interpolator
+import javafx.animation.SequentialTransition
+import javafx.animation.TranslateTransition
 import javafx.scene.layout.VBox
+import javafx.util.Duration
 import model.parser.component.ComponentParser
 import model.section.Section
 import system.commands.CommandManager
@@ -26,21 +30,44 @@ class LayoutEditorBox(val sectionManager: SectionManager, val imageResolver: Ima
 
         children.add(sectionBarContainer)
 
-        sectionBar.onSectionClicked = {
-            loadSection(it)
+        sectionBar.onSectionClicked = { section, direction ->
+            loadSection(section, direction = direction)
         }
 
-        loadSection(sectionManager.getSections().first())
+        // Select the first one
+        sectionBar.selectSection(0)
     }
 
-    private fun loadSection(section: Section) {
-        // Remove the previous section if present
-        if (sectionGrid != null) {
-            children.remove(sectionGrid)
-        }
+    private fun loadSection(section: Section, direction: Int = 1) {
+        val oldGrid = sectionGrid
 
         // Add the section to the screen
         sectionGrid = SectionGrid(section, imageResolver, resourceBundle, componentParser, commandManager)
-        children.add(sectionGrid)
+
+        // Remove the previous section if present
+        if (oldGrid != null) {
+            slideAnimation(oldGrid, sectionGrid!!, direction)
+        }else{
+            children.add(sectionGrid)
+        }
+    }
+
+    private fun slideAnimation(oldGrid : SectionGrid, newGrid : SectionGrid, direction: Int = 1) {
+        val SLIDE_DURATION = 0.1
+
+        val fadeOut = TranslateTransition(
+                Duration.seconds(SLIDE_DURATION), oldGrid)
+        fadeOut.interpolator = Interpolator.EASE_IN
+        fadeOut.byX = direction * oldGrid.width
+        fadeOut.setOnFinished { event -> children.add(newGrid); children.remove(oldGrid) }
+
+        val fadeIn = TranslateTransition(
+                Duration.seconds(SLIDE_DURATION), newGrid)
+        fadeIn.fromX = -direction * oldGrid.width
+        fadeIn.toX = 0.0
+
+        val crossFade = SequentialTransition(
+                fadeOut, fadeIn)
+        crossFade.play()
     }
 }
