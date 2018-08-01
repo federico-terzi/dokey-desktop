@@ -8,10 +8,7 @@ import app.stages.SettingsStage;
 import model.parser.component.ComponentParser;
 import model.section.Section;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.*;
 import system.SettingsManager;
 import system.SystemConfig;
 import system.commands.CommandManager;
@@ -55,6 +52,7 @@ public class AppConfig {
     }
 
     @Bean
+    @Lazy
     @Scope("prototype")
     public ControlPanelStage controlPanelStage() throws IOException {
         return new ControlPanelStage(resourceBundle, layoutEditorLoader());

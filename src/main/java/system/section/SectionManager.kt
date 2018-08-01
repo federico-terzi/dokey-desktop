@@ -26,12 +26,6 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
     // A cache that associates the section id with the section
     val sectionCache = mutableMapOf<String, Section>()
 
-    init {
-        // Load all the sections and populate the section cache
-        val sections = loadSections()
-        sections.forEach { sectionCache[it.id!!] = it }
-    }
-
     fun getSections() : Collection<Section> {
         return sectionCache.values
     }
@@ -78,6 +72,10 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
         if (!getSectionFile("system").isFile) {
             saveSection(generateSystemSection())
         }
+
+        // Load all the sections and populate the section cache
+        val sections = loadSections()
+        sections.forEach { sectionCache[it.id!!] = it }
     }
 
     private fun generateEmptyPage() : Page {
