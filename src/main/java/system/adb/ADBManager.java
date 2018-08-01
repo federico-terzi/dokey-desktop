@@ -166,7 +166,7 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
         Runtime runtime = Runtime.getRuntime();
         try {
             // Execute the adb process
-            Process proc = runtime.exec(new String[]{adbPath});
+            runtime.exec(new String[]{adbPath});
 
             return true;
         } catch (IOException e) {

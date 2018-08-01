@@ -87,7 +87,7 @@ public class MSApplicationManager extends ApplicationManager {
     private void disableForegroundLock() {
         // Change the foreground timeout
         //win32gui.SystemParametersInfo(win32con.SPI_SETFOREGROUNDLOCKTIMEOUT, 0, win32con.SPIF_SENDWININICHANGE | win32con.SPIF_UPDATEINIFILE)
-        int res = WUser32.INSTANCE.SystemParametersInfo(0x2001, 0, 0, 0x01 | 0x02);
+        WUser32.INSTANCE.SystemParametersInfo(0x2001, 0, 0, 0x01 | 0x02);
     }
 
     /**
@@ -290,7 +290,7 @@ public class MSApplicationManager extends ApplicationManager {
 
         try {
             // Execute the process
-            Process proc = runtime.exec(new String[]{"cmd", "/c", "start", "cmd.exe", "/k", command});
+            runtime.exec(new String[]{"cmd", "/c", "start", "cmd.exe", "/k", command});
 
             return true;
         } catch (IOException e) {
@@ -432,8 +432,6 @@ public class MSApplicationManager extends ApplicationManager {
         List<Application> apps = new ArrayList<>();
 
         User32.INSTANCE.EnumWindows(new WinUser.WNDENUMPROC() {
-            int count = 0;
-
             public boolean callback(HWND hwnd, Pointer arg1) {
                 char[] windowText = new char[512];
                 User32.INSTANCE.GetWindowText(hwnd, windowText, 512);
@@ -641,8 +639,6 @@ public class MSApplicationManager extends ApplicationManager {
         // Map<Integer, String> executablesMap = getExecutablePathsMap();
 
         User32.INSTANCE.EnumWindows(new WinUser.WNDENUMPROC() {
-            int count = 0;
-
             public boolean callback(HWND hwnd, Pointer arg1) {
                 char[] windowText = new char[512];
                 User32.INSTANCE.GetWindowText(hwnd, windowText, 512);
@@ -752,7 +748,6 @@ public class MSApplicationManager extends ApplicationManager {
 
                 String applicationName = file.getName().replace(".lnk", "");
                 String executablePath;
-                String iconPath = null;
 
                 // Try to load the executable path from the cache
                 if (lnkCacheMap.containsKey(file.getAbsolutePath())) {  // APP in cache
@@ -1171,12 +1166,12 @@ public class MSApplicationManager extends ApplicationManager {
         WinDef.HICON[] icons = new WinDef.HICON[10];
 
         // Extract the icons, 128x128 size. ( HIGHER SIZES GIVE PROBLEMS ).
-        WinNT.HRESULT hresult = ShellLib.INSTANCE.SHDefExtractIcon(executablePath,
-                0,
-                0,
-                icons,
-                null,
-                size);
+//        WinNT.HRESULT hresult = ShellLib.INSTANCE.SHDefExtractIcon(executablePath,
+//                0,
+//                0,
+//                icons,
+//                null,
+//                size);
         // Cycle through the icons.
         for (int j = 0; j<icons.length; j++) {
             // Get the icon

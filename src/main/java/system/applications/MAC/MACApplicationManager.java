@@ -160,7 +160,7 @@ public class MACApplicationManager extends ApplicationManager {
 
         try {
             // Execute the process
-            Process proc = runtime.exec(new String[]{"osascript", "-e", "tell application \"Terminal\" to do script \""+escapedCommand+"\""});
+            runtime.exec(new String[]{"osascript", "-e", "tell application \"Terminal\" to do script \""+escapedCommand+"\""});
 
             // Focus terminal app
             if (terminalApp != null)
@@ -845,7 +845,6 @@ public class MACApplicationManager extends ApplicationManager {
             String line = null;
 
             while ((line = br.readLine()) != null) {
-                String trimmedLine = line.trim();
                 // Check if line contains one of the icon attributes
                 if (line.contains("CFBundleIconFile") || line.contains("CFBundleIconName") ||
                         line.contains("CFBundleIconFiles") || line.contains("CFBundleIcons")) {

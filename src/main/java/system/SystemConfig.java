@@ -34,7 +34,6 @@ import system.startup.MSStartupManager;
 import system.startup.StartupManager;
 import system.storage.StorageManager;
 import system.system.SystemManager;
-import utils.IconManager;
 import utils.OSValidator;
 
 import java.util.Locale;
@@ -256,11 +255,6 @@ public class SystemConfig {
 //        return new EngineService(socket, applicationManager(), applicationSwitchDaemon(),
 //                systemManager(), activeApplicationsDaemon(), webLinkResolver(), onConnectionListener);
 //    }
-
-    @Bean
-    public IconManager iconManager() {
-        return new IconManager();
-    }
 
 //    @Bean
 //    public ShortcutIconManager shortcutIconManager() {

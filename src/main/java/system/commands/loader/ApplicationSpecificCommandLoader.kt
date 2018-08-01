@@ -58,8 +58,10 @@ class ApplicationSpecificCommandLoader(val context: CommandTemplateContext) : Co
             command as AppRelatedCommand
             command.app = executablePath
 
-            // Set the icon identifier
-            command.iconId = "app:$executablePath"
+            // Set the icon identifier if null
+            if (command.iconId == null) {
+                command.iconId = "app:$executablePath"
+            }
 
             commands.add(command)
         }

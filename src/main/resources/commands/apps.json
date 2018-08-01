@@ -6,5 +6,9 @@
   {
     "appName": "idea64.exe",
     "file": "idea.json"
+  },
+  {
+    "appName": "sublime_text.exe",
+    "file": "sublime_text.json"
   }
 ]

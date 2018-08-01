@@ -26,12 +26,6 @@ public class OSValidator {
 
     }
 
-    public static boolean isSolaris() {
-
-        return (OS.indexOf("sunos") >= 0);
-
-    }
-
     /**
      * @return the correct DeviceInfo.OS based on the current operating system.
      */

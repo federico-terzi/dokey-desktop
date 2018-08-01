@@ -1,0 +1,10 @@
+[
+  {
+    "type": "simple",
+    "title": "Command Palette",
+    "desc": "Open command palette in Sublime Text",
+    "category": "ks",
+    "iconId": "static:dns",
+    "value": "CTRL+SHIFT+P"
+  }
+]
