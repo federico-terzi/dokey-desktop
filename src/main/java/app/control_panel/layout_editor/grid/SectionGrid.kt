@@ -1,5 +1,6 @@
 package app.control_panel.layout_editor.grid
 
+import app.control_panel.layout_editor.GlobalKeyboardListener
 import app.control_panel.layout_editor.model.ScreenOrientation
 import javafx.animation.*
 import javafx.scene.CacheHint
@@ -14,7 +15,6 @@ import model.section.Section
 import javafx.util.Duration
 import system.commands.CommandManager
 import system.image.ImageResolver
-import system.model.ApplicationManager
 import java.util.*
 
 
@@ -23,7 +23,8 @@ import java.util.*
  */
 class SectionGrid(val section: Section,
                   val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
-                  val componentParser: ComponentParser, val commandManager: CommandManager)
+                  val componentParser: ComponentParser, val commandManager: CommandManager,
+                  val globalKeyboardListener: GlobalKeyboardListener)
     : VBox() {
 
     var onSectionModified : ((Section) -> Unit)? = null
@@ -84,7 +85,7 @@ class SectionGrid(val section: Section,
         // Add the pages
         for (page in section.pages!!) {
             // Create the page grid
-            val grid = ComponentGrid(generateMatrix(page), screenOrientation,
+            val grid = ComponentGrid(generateMatrix(page), screenOrientation, globalKeyboardListener,
                     resourceBundle, imageResolver, componentParser, commandManager)
 
             grid.onDeleteComponentRequest = { component ->

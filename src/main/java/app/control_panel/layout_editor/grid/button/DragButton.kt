@@ -2,6 +2,7 @@ package app.control_panel.layout_editor.grid.button
 
 import app.control_panel.layout_editor.grid.GridContext
 import javafx.event.EventHandler
+import javafx.scene.ImageCursor
 import javafx.scene.control.Button
 import javafx.scene.input.TransferMode
 import json.JSONObject
@@ -72,16 +73,16 @@ open class DragButton(val context : GridContext) : Button() {
         }
     }
 
-    fun setDragDestination(dragDestination: Boolean, overwriteDanger: Boolean) {
+    fun setDragDestination(dragDestination: Boolean, swapping: Boolean) {
         if (dragDestination) {
-            if (!overwriteDanger) {
+            if (!swapping) {
                 styleClass.add("drag-entered")
             } else {
-                styleClass.add("drag-entered-danger")
+                styleClass.add("drag-entered-swapping")
             }
         } else {
             styleClass.remove("drag-entered")
-            styleClass.remove("drag-entered-danger")
+            styleClass.remove("drag-entered-swapping")
         }
     }
 

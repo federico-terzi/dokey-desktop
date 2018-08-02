@@ -59,10 +59,13 @@
 .drag-entered .image-view{
     -fx-effect: innershadow( one-pass-box , white, 7 , 1 , 1 , 1 );
 }
-.drag-entered-danger {
-    -fx-background-color: #b85152;
+.drag-entered-swapping {
+    -fx-background-color: -green-gradient;
 }
 
 .selected {
-    -fx-background-color: #dada67;
+    -fx-border-color: -green-gradient;
+    -fx-border-radius: 6px;
+    -fx-border-width: 2px;
+    -fx-border-style: segments(5, 5) line-cap round;
 }

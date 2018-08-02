@@ -17,7 +17,9 @@ import system.section.SectionManager
 import java.util.*
 
 class LayoutEditorBox(val sectionManager: SectionManager, val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
-                      val componentParser: ComponentParser, val commandManager: CommandManager, val applicationManager: ApplicationManager) : VBox() {
+                      val componentParser: ComponentParser, val commandManager: CommandManager,
+                      val applicationManager: ApplicationManager, val globalKeyboardListener: GlobalKeyboardListener) : VBox() {
+
     val sectionBar : SectionBar
     var sectionGrid : SectionGrid? = null
     val sectionGridContainer : ScrollPane = ScrollPane()  // Used as a workaround to fix overflowing transitions
@@ -51,7 +53,7 @@ class LayoutEditorBox(val sectionManager: SectionManager, val imageResolver: Ima
         val oldGrid = sectionGrid
 
         // Create the section grid
-        sectionGrid = SectionGrid(section, imageResolver, resourceBundle, componentParser, commandManager)
+        sectionGrid = SectionGrid(section, imageResolver, resourceBundle, componentParser, commandManager, globalKeyboardListener)
         sectionGrid!!.onSectionModified = { section ->
             sectionManager.saveSection(section)
         }

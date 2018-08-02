@@ -1,6 +1,7 @@
 package app;
 
 import app.control_panel.ControlPanelStage;
+import app.control_panel.layout_editor.GlobalKeyboardListener;
 import app.control_panel.layout_editor.LayoutEditorLoader;
 import app.control_panel.layout_editor.grid.SectionGrid;
 import app.search.stages.SearchStage;
@@ -53,9 +54,8 @@ public class AppConfig {
 
     @Bean
     @Lazy
-    @Scope("prototype")
     public ControlPanelStage controlPanelStage() throws IOException {
-        return new ControlPanelStage(resourceBundle, layoutEditorLoader());
+        return new ControlPanelStage(sectionManager, imageResolver, resourceBundle, componentParser, commandManager, applicationManager);
     }
 
     @Bean
@@ -75,12 +75,5 @@ public class AppConfig {
     public SearchStage searchStage() throws IOException {
         return new SearchStage(resourceBundle, searchEngine, imageResolver);
     }
-
-    @Bean
-    @Scope("prototype")
-    public LayoutEditorLoader layoutEditorLoader() throws IOException {
-        return new LayoutEditorLoader(sectionManager, imageResolver, resourceBundle, componentParser, commandManager, applicationManager);
-    }
-
 
 }

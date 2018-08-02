@@ -1,12 +1,15 @@
 package app.control_panel.layout_editor.grid
 
+import app.control_panel.layout_editor.GlobalKeyboardListener
 import app.control_panel.layout_editor.grid.button.ComponentButton
 import app.control_panel.layout_editor.grid.button.DragButton
 import app.control_panel.layout_editor.grid.button.EmptyButton
+import app.control_panel.layout_editor.grid.button.SelectableButton
 import app.control_panel.layout_editor.model.ScreenOrientation
 import javafx.geometry.HPos
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
+import javafx.scene.input.KeyCode
 import javafx.scene.layout.ColumnConstraints
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.Priority
@@ -16,11 +19,13 @@ import model.component.CommandResolver
 import model.component.Component
 import model.parser.component.ComponentParser
 import system.image.ImageResolver
+import java.awt.event.KeyEvent
 import java.util.*
 
 
 class ComponentGrid(val componentMatrix: Array<Array<Component?>>,
-                    val screenOrientation: ScreenOrientation, override val resourceBundle: ResourceBundle,
+                    val screenOrientation: ScreenOrientation, val globalKeyboardListener: GlobalKeyboardListener,
+                    override val resourceBundle: ResourceBundle,
                     override val imageResolver: ImageResolver, override val componentParser: ComponentParser,
                     override val commandResolver: CommandResolver) : GridPane(), GridContext {
 
@@ -176,6 +181,15 @@ class ComponentGrid(val componentMatrix: Array<Array<Component?>>,
 
         }
 
+        current.setOnMouseClicked {
+            // If shift is not pressed, unselect all the other buttons
+            if (!globalKeyboardListener.isShiftPressed) {
+                unselectAllButtons()
+            }
+
+            current.selected = true
+        }
+
         addButtonToGridPane(col, row, current)
     }
 
@@ -233,13 +247,13 @@ class ComponentGrid(val componentMatrix: Array<Array<Component?>>,
 
             override fun onComponentDropping(component: Component): Boolean {
                 // Determine if the dropping can cause an overwrite.
-                var isDangerous = true
+                var isSwappable = true
                 if (button is EmptyButton) {
-                    isDangerous = false
+                    isSwappable = false
                 }
 
                 // Select the component
-                button.setDragDestination(true, isDangerous)
+                button.setDragDestination(true, isSwappable)
                 return false
             }
         }
@@ -269,6 +283,21 @@ class ComponentGrid(val componentMatrix: Array<Array<Component?>>,
         // Notify the listener
         if (notifyListener) {
             onDeleteComponentRequest?.invoke(component)
+        }
+    }
+
+    private fun unselectAllButtons() {
+        this.children.filter { it is SelectableButton }.forEach {
+            it as SelectableButton
+            it.selected = false
+        }
+    }
+
+    private fun deleteAllSelected() {
+        // Find all the selected buttons and delete the corresponding component for each of them
+        this.children.filter { it is ComponentButton && it.selected }.forEach {
+            it as ComponentButton
+            deleteComponent(it.associatedComponent, true)
         }
     }
 

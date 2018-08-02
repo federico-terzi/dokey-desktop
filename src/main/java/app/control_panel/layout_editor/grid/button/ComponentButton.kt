@@ -21,7 +21,7 @@ import utils.OSValidator
 import java.util.*
 
 
-class ComponentButton(context : GridContext, val associatedComponent : Component) : DragButton(context) {
+class ComponentButton(context : GridContext, val associatedComponent : Component) : SelectableButton(context) {
     var onComponentActionListener: OnComponentActionListener? = null
 
     init {
