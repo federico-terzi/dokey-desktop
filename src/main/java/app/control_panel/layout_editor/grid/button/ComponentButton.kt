@@ -54,9 +54,13 @@ class ComponentButton(context : GridContext, val associatedComponent : Component
         graphic = imageView
         contentDisplay = ContentDisplay.TOP
 
-        context.imageResolver.resolveImageAsync(command.iconId!!, 48) {image ->
+        context.imageResolver.resolveImageAsync(command.iconId!!, 48) {image, externalThread ->
             if (image != null) {
-                Platform.runLater {
+                if (externalThread) {
+                    Platform.runLater {
+                        imageView.image = image
+                    }
+                }else{
                     imageView.image = image
                 }
             }

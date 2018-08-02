@@ -41,7 +41,7 @@ class ImageResolver(context: ImageSourceContext) {
         return null  // Not found
     }
 
-    fun resolveImageAsync(imageId: String, size: Int, callback: (Image?) -> Unit) {
+    fun resolveImageAsync(imageId: String, size: Int, callback: (Image?, externalThread: Boolean) -> Unit) {
         // Extract the scheme from the imageId
         val (scheme, id) = extractSchemeAndIdentifier(imageId)
         if (sourceMap.containsKey(scheme)) {
@@ -51,11 +51,11 @@ class ImageResolver(context: ImageSourceContext) {
             if (imageSource.useAnotherThread) {
                 Thread {
                     val image = imageSource?.resolveImage(id, size)
-                    callback(image)
+                    callback(image, true)
                 }.start()
             }else{
                 // Ask the image source to resolve the image
-                callback(imageSource?.resolveImage(id, size))
+                callback(imageSource?.resolveImage(id, size), false)
             }
 
 
