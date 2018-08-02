@@ -4,7 +4,6 @@ import app.control_panel.layout_editor.GlobalKeyboardListener
 import app.control_panel.layout_editor.model.ScreenOrientation
 import javafx.animation.*
 import javafx.scene.CacheHint
-import javafx.scene.Node
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
 import javafx.scene.layout.VBox
@@ -14,6 +13,7 @@ import model.parser.component.ComponentParser
 import model.section.Section
 import javafx.util.Duration
 import system.commands.CommandManager
+import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
 import java.util.*
 
@@ -24,7 +24,8 @@ import java.util.*
 class SectionGrid(val section: Section,
                   val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                   val componentParser: ComponentParser, val commandManager: CommandManager,
-                  val globalKeyboardListener: GlobalKeyboardListener)
+                  val globalKeyboardListener: GlobalKeyboardListener,
+                  val dndCommandProcessor: DNDCommandProcessor)
     : VBox() {
 
     var onSectionModified : ((Section) -> Unit)? = null
@@ -85,7 +86,7 @@ class SectionGrid(val section: Section,
         // Add the pages
         for (page in section.pages!!) {
             // Create the page grid
-            val grid = ComponentGrid(generateMatrix(page), screenOrientation, globalKeyboardListener,
+            val grid = ComponentGrid(generateMatrix(page), screenOrientation, globalKeyboardListener, dndCommandProcessor,
                     resourceBundle, imageResolver, componentParser, commandManager)
 
             grid.onDeleteComponentRequest = { component ->

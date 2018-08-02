@@ -1,18 +1,15 @@
 package app;
 
 import app.control_panel.ControlPanelStage;
-import app.control_panel.layout_editor.GlobalKeyboardListener;
-import app.control_panel.layout_editor.LayoutEditorLoader;
-import app.control_panel.layout_editor.grid.SectionGrid;
 import app.search.stages.SearchStage;
 import app.stages.SettingsStage;
 import model.parser.component.ComponentParser;
-import model.section.Section;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import system.SettingsManager;
 import system.SystemConfig;
 import system.commands.CommandManager;
+import system.drag_and_drop.DNDCommandProcessor;
 import system.image.ImageResolver;
 import system.model.ApplicationManager;
 import system.search.SearchEngine;
@@ -21,7 +18,6 @@ import system.startup.StartupManager;
 import system.storage.StorageManager;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.ResourceBundle;
 
 /**
@@ -45,6 +41,7 @@ public class AppConfig {
     @Autowired private SectionManager sectionManager;
     @Autowired private CommandManager commandManager;
     @Autowired private ComponentParser componentParser;
+    @Autowired private DNDCommandProcessor dndCommandProcessor;
 
     @Bean
     public TrayIconManager trayIconManager()
@@ -55,7 +52,8 @@ public class AppConfig {
     @Bean
     @Lazy
     public ControlPanelStage controlPanelStage() throws IOException {
-        return new ControlPanelStage(sectionManager, imageResolver, resourceBundle, componentParser, commandManager, applicationManager);
+        return new ControlPanelStage(sectionManager, imageResolver, resourceBundle, componentParser, commandManager,
+                applicationManager, dndCommandProcessor);
     }
 
     @Bean

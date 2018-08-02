@@ -12,15 +12,13 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import system.applications.MAC.MACApplicationManager;
-import system.section.SectionManager;
-import system.system.MACSystemManager;
 import system.applications.MS.MSApplicationManager;
-import system.system.MSSystemManager;
 import system.bookmarks.BookmarkManager;
 import system.commands.CommandEngine;
 import system.commands.CommandManager;
 import system.commands.CommandTemplateLoader;
 import system.context.GeneralContext;
+import system.drag_and_drop.DNDCommandProcessor;
 import system.exceptions.UnsupportedOperatingSystemException;
 import system.image.ImageResolver;
 import system.keyboard.KeyboardManager;
@@ -29,10 +27,13 @@ import system.keyboard.MSKeyboardManager;
 import system.model.ApplicationManager;
 import system.parsers.RuntimeCommandParser;
 import system.search.SearchEngine;
+import system.section.SectionManager;
 import system.startup.MACStartupManager;
 import system.startup.MSStartupManager;
 import system.startup.StartupManager;
 import system.storage.StorageManager;
+import system.system.MACSystemManager;
+import system.system.MSSystemManager;
 import system.system.SystemManager;
 import utils.OSValidator;
 
@@ -125,6 +126,11 @@ public class SystemConfig {
     @Bean
     public BookmarkManager bookmarkManager() {
         return new BookmarkManager();
+    }
+
+    @Bean
+    public DNDCommandProcessor dndCommandProcessor() {
+        return new DNDCommandProcessor(commandManager());
     }
 
 //    @Bean

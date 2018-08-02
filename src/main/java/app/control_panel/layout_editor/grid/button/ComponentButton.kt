@@ -85,7 +85,7 @@ class ComponentButton(context : GridContext, val associatedComponent : Component
                 db.setDragView(snapshot, offsetX, offsetY)
 
                 val content = ClipboardContent()
-                content.putString(DragButton.Companion.DRAG_PREFIX + associatedComponent.json().toString())
+                content.putString(DragButton.Companion.COMPONENT_DRAG_PREFIX + associatedComponent.json().toString())
                 db.setContent(content)
 
                 event.consume()

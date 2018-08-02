@@ -9,7 +9,6 @@ import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
-import javafx.scene.input.KeyEvent
 import javafx.scene.input.MouseEvent
 import javafx.scene.paint.Color
 import javafx.stage.Stage
@@ -17,6 +16,7 @@ import javafx.stage.StageStyle
 import model.parser.component.ComponentParser
 import system.ResourceUtils
 import system.commands.CommandManager
+import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
 import system.model.ApplicationManager
 import system.section.SectionManager
@@ -24,7 +24,8 @@ import java.util.*
 
 class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                         val componentParser: ComponentParser, val commandManager: CommandManager,
-                        val applicationManager: ApplicationManager) : Stage(), GlobalKeyboardListener {
+                        val applicationManager: ApplicationManager,
+                        val dndCommandProcessor: DNDCommandProcessor) : Stage(), GlobalKeyboardListener {
 
     private val controller : ControlPanelController
 
@@ -32,7 +33,7 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
     private var yOffset = 0.0;
 
     private val layoutEditorTab = LayoutEditorTab(sectionManager, imageResolver, resourceBundle, componentParser,
-            commandManager, applicationManager, this)
+            commandManager, applicationManager, this, dndCommandProcessor)
 
     // This variable will hold the currently active control panel tab
     private var activeTab : ControlPanelTab

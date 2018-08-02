@@ -14,6 +14,7 @@ import javafx.util.Duration
 import model.parser.component.ComponentParser
 import model.section.Section
 import system.commands.CommandManager
+import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
 import system.model.ApplicationManager
 import system.section.SectionManager
@@ -21,7 +22,8 @@ import java.util.*
 
 class LayoutEditorTab(val sectionManager: SectionManager, val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                       val componentParser: ComponentParser, val commandManager: CommandManager,
-                      val applicationManager: ApplicationManager, val globalKeyboardListener: GlobalKeyboardListener) : ControlPanelTab() {
+                      val applicationManager: ApplicationManager, val globalKeyboardListener: GlobalKeyboardListener,
+                      val dndCommandProcessor: DNDCommandProcessor) : ControlPanelTab() {
     val sectionBar : SectionBar
     var sectionGrid : SectionGrid? = null
     val sectionGridContainer : ScrollPane = ScrollPane()  // Used as a workaround to fix overflowing transitions
@@ -63,7 +65,8 @@ class LayoutEditorTab(val sectionManager: SectionManager, val imageResolver: Ima
         val oldGrid = sectionGrid
 
         // Create the section grid
-        sectionGrid = SectionGrid(section, imageResolver, resourceBundle, componentParser, commandManager, globalKeyboardListener)
+        sectionGrid = SectionGrid(section, imageResolver, resourceBundle, componentParser, commandManager,
+                globalKeyboardListener, dndCommandProcessor)
         sectionGrid!!.onSectionModified = { section ->
             sectionManager.saveSection(section)
         }

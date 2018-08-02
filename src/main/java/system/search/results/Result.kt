@@ -12,4 +12,6 @@ interface Result {
     fun executeAction()
 
     val imageId : String?
+
+    fun generateDragAndDropPayload() : String?
 }

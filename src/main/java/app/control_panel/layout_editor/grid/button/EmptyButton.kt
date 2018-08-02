@@ -15,6 +15,7 @@ class EmptyButton(context : GridContext) : DragButton(context) {
     init {
         // Set up the button design
         styleClass.add("empty-btn")
+
         val image = ImageResolver.getImage(EmptyButton::class.java.getResourceAsStream("/assets/add_clean.png"), 24)
         val imageView = ImageView(image)
         imageView.setFitWidth(24.0)

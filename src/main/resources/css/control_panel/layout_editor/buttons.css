@@ -4,6 +4,8 @@
     -fx-pref-width: 80px;
 }
 
+/*Empty Button*/
+
 .empty-btn {
     -fx-background-color: transparent;
     -fx-background-insets: 10px;
@@ -22,13 +24,14 @@
 
 .empty-btn:hover {
     -fx-opacity: 1;
-    /*-fx-background-color: -primaryLightColor;*/
     -fx-border-color: black;
 }
 
 .empty-btn:hover .image-view{
     -fx-effect: innershadow( one-pass-box , black, 7 , 1 , 1 , 1 );
 }
+
+/*Component Button*/
 
 .component-btn {
     -fx-background-color: transparent;
@@ -51,17 +54,27 @@
     -fx-effect: innershadow( one-pass-box , rgba(255,255,255,0.2), 70 , 1 , 1 , 1 );
 }
 
+/*Drag and drop*/
+
 .drag-entered{
     -fx-background-color: -green-gradient;
-    -fx-border-color: white;
 }
 
 .drag-entered .image-view{
-    -fx-effect: innershadow( one-pass-box , white, 7 , 1 , 1 , 1 );
+    -fx-effect: innershadow( one-pass-box , white, 54 , 1 , 1 , 1 );
 }
-.drag-entered-swapping {
-    -fx-background-color: -green-gradient;
+
+.drag-entered{
+    -fx-text-fill: white;
 }
+
+.empty-btn.drag-entered  {
+    -fx-border-color: white;
+    -fx-background-insets: 4px;
+    -fx-background-radius: 4px;
+}
+
+/*Selection*/
 
 .selected {
     -fx-border-color: -green-gradient;

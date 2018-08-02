@@ -18,5 +18,7 @@ class CommandResult(context: SearchContext, val command: Command) : AbstractResu
         context.commandEngine.execute(command)
     }
 
-
+    override fun generateDragAndDropPayloadInternal(): String? {
+        return "command:${command.id}"
+    }
 }

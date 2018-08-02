@@ -18,6 +18,7 @@ import javafx.stage.Stage
 import model.component.CommandResolver
 import model.component.Component
 import model.parser.component.ComponentParser
+import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
 import java.awt.event.KeyEvent
 import java.util.*
@@ -25,6 +26,7 @@ import java.util.*
 
 class ComponentGrid(val componentMatrix: Array<Array<Component?>>,
                     val screenOrientation: ScreenOrientation, val globalKeyboardListener: GlobalKeyboardListener,
+                    override val dndCommandProcessor: DNDCommandProcessor,
                     override val resourceBundle: ResourceBundle,
                     override val imageResolver: ImageResolver, override val componentParser: ComponentParser,
                     override val commandResolver: CommandResolver) : GridPane(), GridContext {
@@ -58,6 +60,11 @@ class ComponentGrid(val componentMatrix: Array<Array<Component?>>,
         setupConstraints()
 
         this.styleClass.add("component-grid")
+
+        // When the background of the grid is clicked, unselect all buttons
+        setOnMouseClicked {
+            unselectAllButtons()
+        }
     }
 
     /**
@@ -203,59 +210,45 @@ class ComponentGrid(val componentMatrix: Array<Array<Component?>>,
      */
     private fun addButtonToGridPane(col: Int, row: Int, button: DragButton) {
         // Set up the drag and drop
-        button.onComponentDragListener = object : DragButton.OnComponentDragListener {
-            override fun onComponentDropped(newComponent: Component): Boolean {
-                var toBeSwapped : Optional<Component> = Optional.empty()
+        button.onComponentDropped = {newComponent ->
+            var toBeSwapped : Optional<Component> = Optional.empty()
 
-                // The component already present in the newComponent requested position. If null, the position is empty.
-                val alreadyPresentComponent = componentMatrix[col][row]
+            // The component already present in the newComponent requested position. If null, the position is empty.
+            val alreadyPresentComponent = componentMatrix[col][row]
 
-                if (alreadyPresentComponent != null && !newComponent.commandId!!.equals(alreadyPresentComponent!!.commandId!!)) {
-                    toBeSwapped = Optional.of(alreadyPresentComponent)
-                }
+            if (alreadyPresentComponent != null && !newComponent.commandId!!.equals(alreadyPresentComponent!!.commandId!!)) {
+                toBeSwapped = Optional.of(alreadyPresentComponent)
+            }
 
-                // If a component is present where the drop is going, swap them
-                if (toBeSwapped.isPresent()) {
-                    val oldComponent = toBeSwapped.get()
+            // If a component is present where the drop is going, swap them
+            if (toBeSwapped.isPresent()) {
+                val oldComponent = toBeSwapped.get()
 
-                    // Delete the component
-                    deleteComponent(oldComponent, true)
+                // Delete the component
+                deleteComponent(oldComponent, true)
 
-                    // Replace the oldComponent position with the new one
-                    oldComponent.x = newComponent.x
-                    oldComponent.y = newComponent.y
+                // Replace the oldComponent position with the new one
+                oldComponent.x = newComponent.x
+                oldComponent.y = newComponent.y
 
-                    componentMatrix[oldComponent.x!!][oldComponent.y!!] = oldComponent
-
-                    // Notify the listener
-                    onNewComponentRequest?.invoke(oldComponent)
-                }
-
-                // Change the component coordinates
-                newComponent.y = row
-                newComponent.x = col
-
-                componentMatrix[col][row] = newComponent
+                componentMatrix[oldComponent.x!!][oldComponent.y!!] = oldComponent
 
                 // Notify the listener
-                onNewComponentRequest?.invoke(newComponent)
-
-                render()
-
-                return true
+                onNewComponentRequest?.invoke(oldComponent)
             }
 
-            override fun onComponentDropping(component: Component): Boolean {
-                // Determine if the dropping can cause an overwrite.
-                var isSwappable = true
-                if (button is EmptyButton) {
-                    isSwappable = false
-                }
+            // Change the component coordinates
+            newComponent.y = row
+            newComponent.x = col
 
-                // Select the component
-                button.setDragDestination(true, isSwappable)
-                return false
-            }
+            componentMatrix[col][row] = newComponent
+
+            // Notify the listener
+            onNewComponentRequest?.invoke(newComponent)
+
+            render()
+
+            true
         }
 
         // Adjust the grid position based on the orientation
