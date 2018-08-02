@@ -16,7 +16,6 @@ import model.component.CommandResolver
 import model.component.Component
 import model.parser.component.ComponentParser
 import system.image.ImageResolver
-import java.lang.reflect.InvocationTargetException
 import java.util.*
 
 
@@ -24,7 +23,9 @@ class ComponentGrid(val componentMatrix: Array<Array<Component?>>,
                     val screenOrientation: ScreenOrientation, override val resourceBundle: ResourceBundle,
                     override val imageResolver: ImageResolver, override val componentParser: ComponentParser,
                     override val commandResolver: CommandResolver) : GridPane(), GridContext {
-    var onComponentSelectedListener: OnComponentSelectedListener? = null
+
+    var onNewComponentRequest: ((Component) -> Unit)? = null
+    var onDeleteComponentRequest : ((Component) -> Unit)? = null
 
     /**
      * @return the row count based on the current screen orientation.
@@ -190,23 +191,30 @@ class ComponentGrid(val componentMatrix: Array<Array<Component?>>,
         // Set up the drag and drop
         button.onComponentDragListener = object : DragButton.OnComponentDragListener {
             override fun onComponentDropped(newComponent: Component): Boolean {
-                var toBeDeleted : Optional<Component> = Optional.empty()
+                var toBeSwapped : Optional<Component> = Optional.empty()
 
                 // The component already present in the newComponent requested position. If null, the position is empty.
                 val alreadyPresentComponent = componentMatrix[col][row]
 
                 if (alreadyPresentComponent != null && !newComponent.commandId!!.equals(alreadyPresentComponent!!.commandId!!)) {
-                    toBeDeleted = Optional.of(alreadyPresentComponent)
+                    toBeSwapped = Optional.of(alreadyPresentComponent)
                 }
 
-                // If the component will overwrite a button, ask for confirmation
-                if (toBeDeleted.isPresent()) {
-                    if (!requestOverrideComponentsDialog()) {  // DONT OVERWRITE
-                        return false
-                    }
+                // If a component is present where the drop is going, swap them
+                if (toBeSwapped.isPresent()) {
+                    val oldComponent = toBeSwapped.get()
 
                     // Delete the component
-                    deleteComponent(toBeDeleted.get(), false)
+                    deleteComponent(oldComponent, true)
+
+                    // Replace the oldComponent position with the new one
+                    oldComponent.x = newComponent.x
+                    oldComponent.y = newComponent.y
+
+                    componentMatrix[oldComponent.x!!][oldComponent.y!!] = oldComponent
+
+                    // Notify the listener
+                    onNewComponentRequest?.invoke(oldComponent)
                 }
 
                 // Change the component coordinates
@@ -216,9 +224,7 @@ class ComponentGrid(val componentMatrix: Array<Array<Component?>>,
                 componentMatrix[col][row] = newComponent
 
                 // Notify the listener
-                if (onComponentSelectedListener != null) {
-                    onComponentSelectedListener!!.onNewComponentRequested(newComponent)
-                }
+                onNewComponentRequest?.invoke(newComponent)
 
                 render()
 
@@ -255,12 +261,14 @@ class ComponentGrid(val componentMatrix: Array<Array<Component?>>,
      * @param notifyListener if true, the listener will be notified of the deletion.
      */
     private fun deleteComponent(component: Component, notifyListener: Boolean) {
-        // Delete the component from the matrix
-        componentMatrix[component.x!!][component.y!!] = null
+        // Delete the component from the matrix, making sure that the component is the one requested
+        if (componentMatrix[component.x!!][component.y!!] == component) {
+            componentMatrix[component.x!!][component.y!!] = null
+        }
 
         // Notify the listener
-        if (onComponentSelectedListener != null && notifyListener) {
-            onComponentSelectedListener!!.onDeleteComponentRequested(component)
+        if (notifyListener) {
+            onDeleteComponentRequest?.invoke(component)
         }
     }
 
@@ -295,13 +303,5 @@ class ComponentGrid(val componentMatrix: Array<Array<Component?>>,
         this.prefWidth = width.toDouble()
         this.maxWidth = width.toDouble()
         this.minWidth = width.toDouble()
-    }
-
-    interface OnComponentSelectedListener {
-        fun onNewComponentRequested(component: Component)
-
-        fun onDeleteComponentRequested(component: Component)
-
-        fun onEditComponentRequested(component: Component)
     }
 }

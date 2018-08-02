@@ -2,7 +2,7 @@
 @import "font.css";
 
 .root {
-    -fx-background-color: -primaryTextColor;
+    -fx-background-color: white;
     -fx-background-radius: 3px;
     -fx-opacity: 1;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0, 0.15), 20, 0, 4, 4);

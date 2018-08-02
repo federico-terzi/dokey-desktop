@@ -26,6 +26,8 @@ class SectionGrid(val section: Section,
                   val componentParser: ComponentParser, val commandManager: CommandManager)
     : VBox() {
 
+    var onSectionModified : ((Section) -> Unit)? = null
+
     private var _screenOrientation : ScreenOrientation = ScreenOrientation.PORTRAIT
 
     var screenOrientation : ScreenOrientation
@@ -40,7 +42,7 @@ class SectionGrid(val section: Section,
             }
         }
 
-    var activePage : Page? = null
+    private var activePage : Page? = null
 
     private var activePane : VBox? = null
 
@@ -84,6 +86,16 @@ class SectionGrid(val section: Section,
             // Create the page grid
             val grid = ComponentGrid(generateMatrix(page), screenOrientation,
                     resourceBundle, imageResolver, componentParser, commandManager)
+
+            grid.onDeleteComponentRequest = { component ->
+                page.components?.remove(component)
+                onSectionModified?.invoke(section)
+            }
+
+            grid.onNewComponentRequest = {component ->
+                page.components?.add(component)
+                onSectionModified?.invoke(section)
+            }
 
             // Create the tab and add the page grid
             val tab = Tab()

@@ -42,8 +42,13 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
                 conflicting = true
             }
 
-            if (!conflicting) {
+            if (conflictMap[hash] == null) {
                 conflictMap[hash] = mutableListOf(command)
+            }else{
+                conflictMap[hash]!!.add(command)
+            }
+
+            if (!conflicting) {
                 commandMap[command.id!!] = command
             }
         }
@@ -54,6 +59,12 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
 
             if (conflictMap[hash] != null && conflictMap[hash]!!.any { it.contentEquals(template) }) {
                 conflicting = true
+            }else{
+                if (conflictMap[hash] == null) {
+                    conflictMap[hash] = mutableListOf(template)
+                }else{
+                    conflictMap[hash]!!.add(template)
+                }
             }
 
             if (!conflicting) {

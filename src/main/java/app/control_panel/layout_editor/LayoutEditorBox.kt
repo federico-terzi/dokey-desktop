@@ -50,10 +50,13 @@ class LayoutEditorBox(val sectionManager: SectionManager, val imageResolver: Ima
     private fun loadSection(section: Section, direction: Int = 1) {
         val oldGrid = sectionGrid
 
-        // Add the section to the screen
+        // Create the section grid
         sectionGrid = SectionGrid(section, imageResolver, resourceBundle, componentParser, commandManager)
+        sectionGrid!!.onSectionModified = { section ->
+            sectionManager.saveSection(section)
+        }
 
-        // Remove the previous section if present
+        // Replace the old grid with the new one, transitioning if necessary
         if (oldGrid != null) {
             slideAnimation(oldGrid, sectionGrid!!, direction)
         }else{
