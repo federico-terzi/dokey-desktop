@@ -4,6 +4,4 @@ import javafx.scene.input.KeyEvent
 
 interface GlobalKeyboardListener {
     var isShiftPressed : Boolean
-
-    var onGlobalKeyPress: ((event: KeyEvent) -> Unit)?
 }

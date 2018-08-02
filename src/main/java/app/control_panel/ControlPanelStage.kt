@@ -2,7 +2,7 @@ package app.control_panel
 
 import app.control_panel.controllers.ControlPanelController
 import app.control_panel.layout_editor.GlobalKeyboardListener
-import app.control_panel.layout_editor.LayoutEditorLoader
+import app.control_panel.layout_editor.LayoutEditorTab
 import javafx.event.EventHandler
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
@@ -15,7 +15,6 @@ import javafx.scene.paint.Color
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 import model.parser.component.ComponentParser
-import org.springframework.beans.factory.annotation.Autowired
 import system.ResourceUtils
 import system.commands.CommandManager
 import system.image.ImageResolver
@@ -32,11 +31,13 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
     private var xOffset = 0.0;
     private var yOffset = 0.0;
 
-    private val layoutEditorLoader = LayoutEditorLoader(sectionManager, imageResolver, resourceBundle, componentParser,
+    private val layoutEditorTab = LayoutEditorTab(sectionManager, imageResolver, resourceBundle, componentParser,
             commandManager, applicationManager, this)
 
+    // This variable will hold the currently active control panel tab
+    private var activeTab : ControlPanelTab
+
     override var isShiftPressed: Boolean = false
-    override var onGlobalKeyPress: ((event: KeyEvent) -> Unit)? = null
 
     init {
         val fxmlLoader = FXMLLoader(ResourceUtils.getResource("/layouts/control_panel.fxml")!!.toURI().toURL())
@@ -67,8 +68,12 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
                 this@ControlPanelStage.setY(event.getScreenY() - yOffset)
             }
         })
-        
-        layoutEditorLoader.load { controller.content_box.children.add(it) }
+
+        // Load the tabs
+        controller.content_box.children.add(layoutEditorTab)
+
+        activeTab = layoutEditorTab
+        activeTab.onFocus()
 
         // Keyboard listeners for detecting if a key is pressed or not
         scene.setOnKeyPressed {
@@ -81,7 +86,11 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
                 isShiftPressed = false
             }
 
-            onGlobalKeyPress?.invoke(it)
+            // Notify the active tab
+            activeTab.onGlobalKeyPress(it)
         }
+
+
+
     }
 }

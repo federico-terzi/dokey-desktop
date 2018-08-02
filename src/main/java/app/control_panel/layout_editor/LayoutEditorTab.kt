@@ -1,11 +1,14 @@
 package app.control_panel.layout_editor
 
+import app.control_panel.ControlPanelTab
 import app.control_panel.layout_editor.grid.SectionGrid
 import app.control_panel.layout_editor.bar.SectionBar
 import javafx.animation.Interpolator
 import javafx.animation.SequentialTransition
 import javafx.animation.TranslateTransition
 import javafx.scene.control.ScrollPane
+import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyEvent
 import javafx.scene.layout.VBox
 import javafx.util.Duration
 import model.parser.component.ComponentParser
@@ -16,10 +19,9 @@ import system.model.ApplicationManager
 import system.section.SectionManager
 import java.util.*
 
-class LayoutEditorBox(val sectionManager: SectionManager, val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
+class LayoutEditorTab(val sectionManager: SectionManager, val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                       val componentParser: ComponentParser, val commandManager: CommandManager,
-                      val applicationManager: ApplicationManager, val globalKeyboardListener: GlobalKeyboardListener) : VBox() {
-
+                      val applicationManager: ApplicationManager, val globalKeyboardListener: GlobalKeyboardListener) : ControlPanelTab() {
     val sectionBar : SectionBar
     var sectionGrid : SectionGrid? = null
     val sectionGridContainer : ScrollPane = ScrollPane()  // Used as a workaround to fix overflowing transitions
@@ -44,9 +46,17 @@ class LayoutEditorBox(val sectionManager: SectionManager, val imageResolver: Ima
         sectionBar.onSectionClicked = { section, direction ->
             loadSection(section, direction = direction)
         }
+    }
 
+    override fun onFocus() {
         // Select the first one
         sectionBar.selectSection(0)
+    }
+
+    override fun onGlobalKeyPress(event: KeyEvent) {
+        if (event.code == KeyCode.BACK_SPACE || event.code == KeyCode.DELETE) {
+            sectionGrid?.deleteSelected()
+        }
     }
 
     private fun loadSection(section: Section, direction: Int = 1) {

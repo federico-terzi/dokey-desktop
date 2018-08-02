@@ -286,19 +286,21 @@ class ComponentGrid(val componentMatrix: Array<Array<Component?>>,
         }
     }
 
-    private fun unselectAllButtons() {
+    fun unselectAllButtons() {
         this.children.filter { it is SelectableButton }.forEach {
             it as SelectableButton
             it.selected = false
         }
     }
 
-    private fun deleteAllSelected() {
+    fun deleteSelected() {
         // Find all the selected buttons and delete the corresponding component for each of them
         this.children.filter { it is ComponentButton && it.selected }.forEach {
             it as ComponentButton
             deleteComponent(it.associatedComponent, true)
         }
+
+        render()
     }
 
     /**

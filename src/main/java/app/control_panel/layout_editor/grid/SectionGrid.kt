@@ -44,8 +44,10 @@ class SectionGrid(val section: Section,
         }
 
     private var activePage : Page? = null
-
     private var activePane : VBox? = null
+
+    // This map will hold the component grid for each tab.
+    private var componentGrids = HashMap<Tab, ComponentGrid>()
 
     init {
         invalidate()
@@ -78,9 +80,7 @@ class SectionGrid(val section: Section,
         // Create the tabpane for the pages and set it up
         val tabPane = TabPane()
 
-        // This map will hold the tabPane contents for each tab.
-        // used for the slide animation when changing tab
-        val tabContent = HashMap<Tab, Node>()
+        componentGrids = HashMap<Tab, ComponentGrid>()
 
         // Add the pages
         for (page in section.pages!!) {
@@ -101,7 +101,7 @@ class SectionGrid(val section: Section,
             // Create the tab and add the page grid
             val tab = Tab()
             tab.content = grid
-            tabContent[tab] = grid
+            componentGrids[tab] = grid
 
             // Add the tab context menu
 //            val contextMenu = ContextMenu()
@@ -146,7 +146,7 @@ class SectionGrid(val section: Section,
             }
         }
 
-        val tabPaneController = TabPaneController(tabPane, tabContent, object : TabPaneController.OnTabListener{
+        val tabPaneController = TabPaneController(tabPane, componentGrids, object : TabPaneController.OnTabListener{
             override fun onTabSelected(index: Int) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
@@ -184,14 +184,10 @@ class SectionGrid(val section: Section,
     }
 
     /**
-     * Types of animation when loading a section
+     * Delete all selected commands from all the grids
      */
-    enum class SectionAnimationType {
-        NONE,
-        CROSSFADE,
-        ROTATION,
-        OPEN_BOTTOMBAR,
-        CLOSE_BOTTOMBAR
+    fun deleteSelected() {
+        componentGrids.values.forEach { it.deleteSelected() }
     }
 
     private fun rotate(angle: Int) {
