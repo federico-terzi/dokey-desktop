@@ -21,7 +21,7 @@
 .tab-pane-controller .button{
     -fx-background-color: transparent;
     -fx-opacity: 0.8;
-    -fx-padding: 0px 5px 20px 5px;
+    -fx-padding: 0px 5px 30px 5px;
 }
 
 .tab-pane-controller .button .image-view{
