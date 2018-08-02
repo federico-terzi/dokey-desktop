@@ -3,6 +3,7 @@
     "type": "simple",
     "title": "New Tab",
     "desc": "Open a New Tab in Google Chrome",
+    "iconId": "static:tab",
     "category": "ks",
     "value": "CTRL+T"
   },
@@ -10,6 +11,7 @@
     "type": "simple",
     "title": "New Window",
     "desc": "Open a New Window in Google Chrome",
+    "iconId": "static:desktop_windows",
     "category": "ks",
     "value": "CTRL+N"
   },
@@ -17,7 +19,96 @@
     "type": "simple",
     "title": "Close Tab",
     "desc": "Close the current Tab in Google Chrome",
+    "iconId": "static:tab_unselected",
     "category": "ks",
     "value": "CTRL+W"
+  },
+  {
+    "type": "simple",
+    "title": "Back",
+    "desc": "Navigate to the previous page in Google Chrome",
+    "iconId": "static:arrow_back",
+    "category": "ks",
+    "value": "ALT+LEFT"
+  },
+  {
+    "type": "simple",
+    "title": "Forward",
+    "desc": "Navigate forward in Google Chrome",
+    "iconId": "static:arrow_forward",
+    "category": "ks",
+    "value": "ALT+RIGHT"
+  },
+  {
+    "type": "simple",
+    "title": "Add to Favourites",
+    "desc": "Add the current page to the Favourites in Google Chrome",
+    "iconId": "static:stars",
+    "category": "ks",
+    "value": "CTRL+D"
+  },
+  {
+    "type": "simple",
+    "title": "Search in Page",
+    "desc": "Search something in the current page in Google Chrome",
+    "iconId": "static:search",
+    "category": "ks",
+    "value": "CTRL+F"
+  },
+  {
+    "type": "simple",
+    "title": "Favourites",
+    "desc": "Show Favourites in Google Chrome",
+    "iconId": "static:star",
+    "category": "ks",
+    "value": "CTRL+SHIFT+O"
+  },
+  {
+    "type": "simple",
+    "title": "Downloads",
+    "desc": "Show Downloads in Google Chrome",
+    "iconId": "static:file_download",
+    "category": "ks",
+    "value": "CTRL+J"
+  },
+  {
+    "type": "simple",
+    "title": "Developer Console",
+    "desc": "Developer console in Google Chrome",
+    "iconId": "static:code",
+    "category": "ks",
+    "value": "CTRL+SHIFT+I"
+  },
+  {
+    "type": "simple",
+    "title": "Incognito",
+    "desc": "Open a new window in Incognito Mode in Google Chrome",
+    "iconId": "static:face",
+    "category": "ks",
+    "value": "CTRL+SHIFT+N"
+  },
+  {
+    "type": "simple",
+    "title": "Print",
+    "desc": "Print the current page in Google Chrome",
+    "iconId": "static:print",
+    "category": "ks",
+    "value": "CTRL+P"
+  },
+  {
+    "type": "simple",
+    "title": "History",
+    "desc": "Show History in Google Chrome",
+    "iconId": "static:history",
+    "category": "ks",
+    "value": "CTRL+H"
+  },
+  {
+    "type": "simple",
+    "title": "History",
+    "desc": "Show History in Google Chrome",
+    "iconId": "static:history",
+    "category": "ks",
+    "value": "CTRL+H"
   }
 ]

@@ -2,3 +2,13 @@
     -fx-pref-height: 450px;
     -fx-padding: 0px 20px 0 20px;
 }
+
+.grid_scroll_pane_container {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.grid_scroll_pane_container > .viewport {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
