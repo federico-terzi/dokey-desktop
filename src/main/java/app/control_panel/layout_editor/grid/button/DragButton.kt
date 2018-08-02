@@ -6,10 +6,14 @@ import javafx.scene.control.Button
 import javafx.scene.input.TransferMode
 import json.JSONObject
 import model.component.Component
+import model.component.RuntimeComponent
 
 open class DragButton(val context : GridContext) : Button() {
 
     var onComponentDropped : ((Component) -> Boolean)? = null
+
+    var gridX : Int = -1
+    var gridY : Int = -1
 
     private var _dragDestination = false
     var dragDestination : Boolean
@@ -67,7 +71,21 @@ open class DragButton(val context : GridContext) : Button() {
                         success = it(component)
                     }
                 }else if(context.dndCommandProcessor.isCompatible(event.dragboard)) {  // EXTERNAL ELEMENT
-                    // TODO
+                    // Try to resolve the correct command basend on the clipboard data
+                    val command = context.dndCommandProcessor.resolve(event.dragboard)
+
+                    if (command != null) {
+                        // Create a component with the given command
+                        val component = RuntimeComponent(context.commandResolver)
+                        component.x = gridX
+                        component.y = gridY
+                        component.commandId = command.id
+
+                        // Notify the listener
+                        onComponentDropped?.let {
+                            success = it(component)
+                        }
+                    }
                 }
             }
 

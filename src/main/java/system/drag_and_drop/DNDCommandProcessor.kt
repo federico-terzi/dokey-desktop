@@ -25,6 +25,26 @@ class DNDCommandProcessor(val commandManager: CommandManager) {
     }
 
     fun resolve(dragboard: Dragboard) : Command? {
-        TODO()
+        if (dragboard.hasString() && dragboard.string.startsWith(dragAndDropPrefix)) {
+            val type = dragboard.string.split(":")[1]
+            val payload = dragboard.string.split("$dragAndDropPrefix:$type:")[1]
+            when (type) {
+                "command" -> {
+                    val commandId = payload.toInt()
+                    return commandManager.getCommand(commandId)
+                }
+            }
+        }else if(dragboard.hasFiles() && dragboard.files.size > 0) {
+            val file = dragboard.files[0]
+            if (file.isFile) {
+                TODO()
+            }else if(file.isDirectory) {
+                TODO()
+            }
+        }else if(dragboard.hasUrl() && dragboard.url.startsWith("http")) {
+            TODO()
+        }
+
+        return null
     }
 }

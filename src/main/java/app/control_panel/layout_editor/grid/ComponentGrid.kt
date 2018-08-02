@@ -169,6 +169,9 @@ class ComponentGrid(val componentMatrix: Array<Array<Component?>>,
         // Get the current button
         val current = ComponentButton(this, component)
 
+        current.gridX = col
+        current.gridY = row
+
         current.onComponentActionListener = object : ComponentButton.OnComponentActionListener {
             override fun onComponentEdit() {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
