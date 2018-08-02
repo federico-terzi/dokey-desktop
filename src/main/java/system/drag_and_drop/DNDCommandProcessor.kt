@@ -5,6 +5,9 @@ import model.command.Command
 import system.commands.CommandManager
 import system.commands.general.FileOpenCommand
 import system.commands.general.FolderOpenCommand
+import system.commands.general.UrlCommand
+import system.web.WebResolver
+import java.io.File
 
 class DNDCommandProcessor(val commandManager: CommandManager) {
     companion object {
@@ -29,7 +32,7 @@ class DNDCommandProcessor(val commandManager: CommandManager) {
     /**
      * Obtain ( or create ) a command from the given dragboard data
      */
-    fun resolve(dragboard: Dragboard) : Command? {
+    fun resolve(dragboard: Dragboard, callback: ((Command?) -> Unit)) : Unit {
         if (dragboard.hasString() && dragboard.string.startsWith(dragAndDropPrefix)) {
             // Extract the type and the payload from the dragboard data
             // The data is in this form: DOKEY_PAYLOAD:type:payload
@@ -38,32 +41,55 @@ class DNDCommandProcessor(val commandManager: CommandManager) {
             when (type) {
                 "command" -> {
                     val commandId = payload.toInt()
-                    return commandManager.getCommand(commandId)
+                    callback(commandManager.getCommand(commandId))
                 }
             }
         }else if(dragboard.hasFiles() && dragboard.files.size > 0) {
             val file = dragboard.files[0]
-            val absolutePath = file.absolutePath
-            val name = file.name
             if (file.isFile) {
-                val command = FileOpenCommand()
-                command.file = absolutePath
-                command.title = name
-                command.description = absolutePath
-                val finalCommand = commandManager.addCommand(command)
-                return finalCommand
+                callback(createFileCommand(file))
             }else if(file.isDirectory) {
-                val command = FolderOpenCommand()
-                command.folder = absolutePath
-                command.title = name
-                command.description = absolutePath
-                val finalCommand = commandManager.addCommand(command)
-                return finalCommand
+                callback(createFolderCommand(file))
             }
         }else if(dragboard.hasUrl() && dragboard.url.startsWith("http")) {
-            TODO()
+            val url = dragboard.url
+            Thread {
+                val urlCommand = createUrlCommand(url)
+                callback(urlCommand)
+            }.start()
         }
+    }
 
-        return null
+    private fun createFileCommand(file: File) : Command {
+        val absolutePath = file.absolutePath
+        val name = file.name
+
+        val command = FileOpenCommand()
+        command.file = absolutePath
+        command.title = name
+        command.description = absolutePath
+
+        return commandManager.addCommand(command)
+    }
+
+    private fun createFolderCommand(folder: File) : Command {
+        val absolutePath = folder.absolutePath
+        val name = folder.name
+
+        val command = FolderOpenCommand()
+        command.folder = absolutePath
+        command.title = name
+        command.description = absolutePath
+
+        return commandManager.addCommand(command)
+    }
+
+    private fun createUrlCommand(url: String) : Command {
+        val command = UrlCommand()
+        command.url = url
+        command.title = WebResolver.extractTitleFromUrl(url)
+        command.description = url
+
+        return commandManager.addCommand(command)
     }
 }

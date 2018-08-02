@@ -10,7 +10,13 @@ import java.lang.annotation.Target;
 public @interface RegisterSource {
     /**
      * The prefix of the image id that identifies a source
-     * @return
      */
     String scheme();
+
+    /**
+     * If true, when used in async mode, the image resolver will create another
+     * thread to serve the request. Useful when obtaining the image is
+     * a slow process ( for example when downloading the image from the web )
+     */
+    boolean useAnotherThread() default false;
 }

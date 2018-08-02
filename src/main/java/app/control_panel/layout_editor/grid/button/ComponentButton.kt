@@ -2,6 +2,7 @@ package app.control_panel.layout_editor.grid.button
 
 import app.control_panel.layout_editor.grid.GridContext
 import app.control_panel.layout_editor.grid.exception.CommandNotFoundException
+import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.scene.Cursor
 import javafx.scene.SnapshotParameters
@@ -41,16 +42,25 @@ class ComponentButton(context : GridContext, val associatedComponent : Component
             tooltip.text = it
             setTooltip(tooltip)
         }
+        context.imageResolver.resolveImage(command.iconId!!, 48)
 
-        val image : Image = context.imageResolver.resolveImage(command.iconId!!, 48)
-                ?: ImageResolver.getImage(ComponentButton::class.java.getResourceAsStream("/assets/image.png"), 48);
+        // Load the standard image first, then load the correct one asynchronously
+        val defaultImage : Image = ImageResolver.getImage(ComponentButton::class.java.getResourceAsStream("/assets/image.png"), 48);
 
         // Set up the image
-        val imageView = ImageView(image)
+        val imageView = ImageView(defaultImage)
         imageView.fitHeight = 48.0
         imageView.fitWidth = 48.0
         graphic = imageView
         contentDisplay = ContentDisplay.TOP
+
+        context.imageResolver.resolveImageAsync(command.iconId!!, 48) {image ->
+            if (image != null) {
+                Platform.runLater {
+                    imageView.image = image
+                }
+            }
+        }
 
         // Add the style
         styleClass.add("component-btn")

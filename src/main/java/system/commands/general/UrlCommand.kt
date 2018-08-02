@@ -13,5 +13,8 @@ class UrlCommand : SimpleCommand() {
         get() = this.value
         set(url) {
             value = url
+
+            // Set also the icon id based on the URL
+            iconId = "url:$url"
         }
 }

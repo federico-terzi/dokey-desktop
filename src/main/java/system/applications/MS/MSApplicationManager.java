@@ -239,7 +239,6 @@ public class MSApplicationManager extends ApplicationManager {
         try {
             // Execute the process
             Process proc = runtime.exec(new String[]{"explorer", filePath});
-            proc.waitFor();
 
 //            // Also focus the explorer.exe application to bring it to front.
 //            if (explorerApp != null) {
@@ -248,8 +247,6 @@ public class MSApplicationManager extends ApplicationManager {
 
             return true;
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return false;

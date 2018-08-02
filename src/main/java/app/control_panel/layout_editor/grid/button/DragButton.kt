@@ -1,6 +1,7 @@
 package app.control_panel.layout_editor.grid.button
 
 import app.control_panel.layout_editor.grid.GridContext
+import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.scene.control.Button
 import javafx.scene.input.TransferMode
@@ -72,18 +73,20 @@ open class DragButton(val context : GridContext) : Button() {
                     }
                 }else if(context.dndCommandProcessor.isCompatible(event.dragboard)) {  // EXTERNAL ELEMENT
                     // Try to resolve the correct command basend on the clipboard data
-                    val command = context.dndCommandProcessor.resolve(event.dragboard)
+                    val command = context.dndCommandProcessor.resolve(event.dragboard) { command ->
+                        if (command != null) {
+                            Platform.runLater {
+                                // Create a component with the given command
+                                val component = RuntimeComponent(context.commandResolver)
+                                component.x = gridX
+                                component.y = gridY
+                                component.commandId = command.id
 
-                    if (command != null) {
-                        // Create a component with the given command
-                        val component = RuntimeComponent(context.commandResolver)
-                        component.x = gridX
-                        component.y = gridY
-                        component.commandId = command.id
-
-                        // Notify the listener
-                        onComponentDropped?.let {
-                            success = it(component)
+                                // Notify the listener
+                                onComponentDropped?.let {
+                                    success = it(component)
+                                }
+                            }
                         }
                     }
                 }

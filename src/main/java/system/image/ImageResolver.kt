@@ -10,7 +10,12 @@ import java.io.InputStream
 import java.util.*
 
 class ImageResolver(context: ImageSourceContext) {
-    val sourceMap = mutableMapOf<String, ImageSource>()
+    val sourceMap = mutableMapOf<String, MetaImageSource>()
+
+    /**
+     * A wrapper around image source, used to add useful informations to the class
+     */
+    class MetaImageSource(imageSource: ImageSource, val useAnotherThread: Boolean) : ImageSource by imageSource
 
     init {
         // Load all the image sources using reflection
@@ -20,24 +25,41 @@ class ImageResolver(context: ImageSourceContext) {
             val annotation = handlerClass.getAnnotation(RegisterSource::class.java)
             annotation as RegisterSource
             val imageSource = handlerClass.getConstructor(ImageSourceContext::class.java).newInstance(context) as ImageSource
-            sourceMap[annotation.scheme] = imageSource
+            val metaImageSource = MetaImageSource(imageSource, annotation.useAnotherThread)
+            sourceMap[annotation.scheme] = metaImageSource
         }
     }
 
     fun resolveImage(imageId: String, size: Int) : Image? {
         // Extract the scheme from the imageId
-        // NOTE: the image id has this format "scheme:id"
-        val tokenizer = StringTokenizer(imageId, ":")
-        val scheme = tokenizer.nextToken()
+        val (scheme, id) = extractSchemeAndIdentifier(imageId)
         if (sourceMap.containsKey(scheme)) {
-            // Remove the scheme prefix and the : separator
-            val id = imageId.substring(scheme.length+1)
-
             // Ask the image source to resolve the image
             return sourceMap[scheme]?.resolveImage(id, size)
         }
 
         return null  // Not found
+    }
+
+    fun resolveImageAsync(imageId: String, size: Int, callback: (Image?) -> Unit) {
+        // Extract the scheme from the imageId
+        val (scheme, id) = extractSchemeAndIdentifier(imageId)
+        if (sourceMap.containsKey(scheme)) {
+            val imageSource: MetaImageSource = sourceMap[scheme]!!
+
+            // Check if the call should be executed in another thread or not
+            if (imageSource.useAnotherThread) {
+                Thread {
+                    val image = imageSource?.resolveImage(id, size)
+                    callback(image)
+                }.start()
+            }else{
+                // Ask the image source to resolve the image
+                callback(imageSource?.resolveImage(id, size))
+            }
+
+
+        }
     }
 
     companion object {
@@ -57,6 +79,16 @@ class ImageResolver(context: ImageSourceContext) {
             // Double the image size to adapt to High DPI displays
             val imageSize = (size*2).toDouble()
             return Image(imageFile.toURI().toString(), imageSize, imageSize, true, true)
+        }
+
+        fun extractSchemeAndIdentifier(imageId: String) : Pair<String, String> {
+            // Extract the scheme from the imageId
+            // NOTE: the image id has this format "scheme:id"
+            val tokenizer = StringTokenizer(imageId, ":")
+            val scheme = tokenizer.nextToken()
+            // Remove the scheme prefix and the : separator
+            val id = imageId.substring(scheme.length+1)
+            return Pair(scheme, id)
         }
     }
 }
