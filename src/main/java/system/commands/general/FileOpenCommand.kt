@@ -4,15 +4,15 @@ import model.command.SimpleCommand
 import system.commands.annotations.RegisterCommand
 
 @RegisterCommand
-class FolderOpenCommand : SimpleCommand() {
+class FileOpenCommand : SimpleCommand() {
     init {
-        category = "folderopen"
-        iconId = "static:folder_open"
+        category = "fileopen"
+        iconId = "static:insert_drive_file"
     }
 
-    var folder : String?
+    var file : String?
         get() = this.value
-        set(folder) {
-            value = folder
+        set(file) {
+            value = file
         }
 }

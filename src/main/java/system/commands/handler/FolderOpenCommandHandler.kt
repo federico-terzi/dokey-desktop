@@ -7,6 +7,6 @@ import system.commands.general.FolderOpenCommand
 @RegisterHandler(commandType = FolderOpenCommand::class)
 class FolderOpenCommandHandler(context: GeneralContext) : CommandHandler<FolderOpenCommand>(context) {
     override fun handleInternal(command: FolderOpenCommand) {
-        context.applicationManager.openFolder(command.folder)
+        context.applicationManager.open(command.folder)
     }
 }

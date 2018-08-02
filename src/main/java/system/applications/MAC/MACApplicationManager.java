@@ -102,10 +102,10 @@ public class MACApplicationManager extends ApplicationManager {
     }
 
     @Override
-    public boolean openFolder(String folderPath) {
-        // Make sure the folder exists
-        File folder = new File(folderPath);
-        if (!folder.isDirectory()) {
+    public boolean open(String filePath) {
+        // Make sure the file/folder exists
+        File file = new File(filePath);
+        if (!file.isDirectory() && !file.isFile()) {
             return false;
         }
 
@@ -113,7 +113,7 @@ public class MACApplicationManager extends ApplicationManager {
 
         try {
             // Execute the process
-            Process proc = runtime.exec(new String[]{"open", folderPath});
+            Process proc = runtime.exec(new String[]{"open", filePath});
             proc.waitFor();
 
             return true;

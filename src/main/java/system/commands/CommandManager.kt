@@ -21,6 +21,14 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
 
     val LOG = Logger.getGlobal()
 
+    // Maximum id of the system, used when adding a new command
+    private var maxId : Int = 0
+
+    // Used to detect conflicts between commands, it associates the contentHash
+    // of a command to a list of possible instances.
+    // This is useful to avoid adding commands equal in content.
+    private val conflictMap = mutableMapOf<Int, MutableList<Command>>()
+
     /**
      * Load all the commands.
      * It loads all the user commands and template commands, then it compares them
@@ -28,12 +36,11 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
      * NOTE: it must be called after the application manager has been initialized.
      */
     fun initialize() {
-        var (userCommands, maxId) = loadCommands()
+        var userCommands = loadCommands()
         val templateCommands = templateLoader.getTemplateCommands()
 
         LOG.info("Loaded ${userCommands.size} user commands, joining with ${templateCommands.size} templates...")
 
-        val conflictMap = mutableMapOf<Int, MutableList<Command>>()
         userCommands.forEach { command ->
             val hash = command.contentHash()
             var conflicting = false
@@ -80,10 +87,10 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
     /**
      * Load all the saved commands
      */
-    private fun loadCommands() : Pair<List<Command>, Int> {
+    private fun loadCommands() : List<Command> {
         val commands = mutableListOf<Command>()
 
-        var maxId = 0
+        maxId = 0
 
         for (file in commandDir.listFiles()) {
             val command = readCommandFromFile(file)
@@ -94,9 +101,49 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
             }
         }
 
-        return Pair(commands, maxId)
+        return commands
     }
 
+    /**
+     * Add and save a new command in the system.
+     * It searches for conflicts with the existing commands and,
+     * if the given command is already present in the system,
+     * return the old one. If the command is really new, a new id is
+     * given and the command is saved.
+     */
+    fun addCommand(command: Command) : Command {
+        val hash = command.contentHash()
+        var conflicting = false
+
+        if (conflictMap[hash] != null && conflictMap[hash]!!.any { it.contentEquals(command) }) {
+            conflicting = true
+        }
+
+        if (conflicting) {
+            // Find and retrieve the conflicting one
+            val conflictingCommand = conflictMap[hash]!!.filter { it.contentEquals(command) }.first()
+            return conflictingCommand
+        }else{
+            // Give an id to the current command
+            command.id = ++maxId
+            commandMap[command.id!!] = command
+            saveCommand(command)
+
+            // Add the command to the conflict map
+            if (conflictMap[hash] == null) {
+                conflictMap[hash] = mutableListOf(command)
+            }else{
+                conflictMap[hash]!!.add(command)
+            }
+
+            return command
+        }
+    }
+
+    /**
+     * Save the changes of an existing command.
+     * To add a NEW command, use addCommand() instead.
+     */
     @Synchronized
     fun saveCommand(command: Command) : Boolean {
         val destFile = File(storageManager.commandDir, "${command.id}.json")

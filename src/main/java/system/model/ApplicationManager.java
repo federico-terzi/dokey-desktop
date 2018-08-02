@@ -67,11 +67,11 @@ public abstract class ApplicationManager {
     public abstract File getApplicationIcon(String executablePath);
 
     /**
-     * Open the specified folder in the file explorer of the current OS.
-     * @param folderPath the path to the folder
+     * Open the specified file or folder in the file explorer of the current OS.
+     * @param filePath the path to the file/folder
      * @return true if succeeded, false otherwise.
      */
-    public abstract boolean openFolder(String folderPath);
+    public abstract boolean open(String filePath);
 
     /**
      * Open the specified url in the default browser.

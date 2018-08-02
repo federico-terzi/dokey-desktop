@@ -23,7 +23,7 @@ public class DebugManager {
 
         // Register the commands
         commands.put("dir", () -> {  // OPEN DOKEY FOLDER
-           appManager.openFolder(storageManager.getStorageDir().getAbsolutePath());
+           appManager.open(storageManager.getStorageDir().getAbsolutePath());
         });
         commands.put("e", () -> {  // OPEN DOKEY EDITOR
             BroadcastManager.getInstance().sendBroadcast(BroadcastManager.OPEN_CONTROL_PANEL_REQUEST_EVENT, null);

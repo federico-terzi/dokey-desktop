@@ -50,7 +50,7 @@ class MockApplicationManager(storageManager: StorageManager) : ApplicationManage
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun openFolder(folderPath: String?): Boolean {
+    override fun open(filePath: String?): Boolean {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

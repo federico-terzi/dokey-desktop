@@ -227,10 +227,10 @@ public class MSApplicationManager extends ApplicationManager {
     }
 
     @Override
-    public boolean openFolder(String folderPath) {
-        // Make sure the folder exists
-        File folder = new File(folderPath);
-        if (!folder.isDirectory()) {
+    public boolean open(String filePath) {
+        // Make sure it exists
+        File file = new File(filePath);
+        if (!file.isDirectory() && !file.isFile()) {
             return false;
         }
 
@@ -238,13 +238,13 @@ public class MSApplicationManager extends ApplicationManager {
 
         try {
             // Execute the process
-            Process proc = runtime.exec(new String[]{"explorer", folderPath});
+            Process proc = runtime.exec(new String[]{"explorer", filePath});
             proc.waitFor();
 
-            // Also focus the explorer.exe application to bring it to front.
-            if (explorerApp != null) {
-                openApplication(explorerApp.getExecutablePath(), false);
-            }
+//            // Also focus the explorer.exe application to bring it to front.
+//            if (explorerApp != null) {
+//                openApplication(explorerApp.getExecutablePath(), false);
+//            }
 
             return true;
         } catch (IOException e) {
