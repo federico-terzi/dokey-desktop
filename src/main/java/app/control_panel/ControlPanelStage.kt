@@ -3,6 +3,7 @@ package app.control_panel
 import app.control_panel.controllers.ControlPanelController
 import app.control_panel.layout_editor.GlobalKeyboardListener
 import app.control_panel.layout_editor.LayoutEditorTab
+import app.control_panel.layout_editor.appearance.AppearanceManager
 import app.tray_icon.TrayIconManager
 import javafx.event.EventHandler
 import javafx.fxml.FXMLLoader
@@ -26,7 +27,7 @@ import java.util.*
 class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                         val componentParser: ComponentParser, val commandManager: CommandManager,
                         val applicationManager: ApplicationManager,
-                        val dndCommandProcessor: DNDCommandProcessor, val trayIconManager: TrayIconManager) : Stage(), GlobalKeyboardListener {
+                        val dndCommandProcessor: DNDCommandProcessor, val appearanceManager: AppearanceManager) : Stage(), GlobalKeyboardListener {
 
     private val controller : ControlPanelController
 
@@ -53,10 +54,6 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
         controller = fxmlLoader.getController<Any>() as ControlPanelController
 
-        // Setup dialog position
-        setX(trayIconManager.iconX.toDouble())
-        setY(trayIconManager.iconY.toDouble())
-
         // Load the tabs
         controller.content_box.children.add(layoutEditorTab)
 
@@ -79,6 +76,7 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
         }
 
 
-
+        // Setup stage appearance
+        appearanceManager.positionStageOnScreen(this)
     }
 }
