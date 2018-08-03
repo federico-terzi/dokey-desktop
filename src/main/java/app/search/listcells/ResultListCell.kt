@@ -1,5 +1,6 @@
 package app.search.listcells
 
+import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.scene.Cursor
 import javafx.scene.SnapshotParameters
@@ -60,11 +61,18 @@ class ResultListCell(private val fallback: Image?, private val imageResolver: Im
         title.text = result.title
         description.text = result.description
 
-        val resolvedImage = imageResolver.resolveImage(result.imageId!!, 32)
-        if (resolvedImage != null) {
-            image.image = resolvedImage
-        } else {
-            image.image = fallback
+        image.image = fallback
+
+        imageResolver.resolveImageAsync(result.imageId!!, 32) {resolvedImage, externalThread ->
+            if (resolvedImage != null) {
+                if (externalThread) {
+                    Platform.runLater {
+                        image.image = resolvedImage
+                    }
+                }else{
+                    image.image = resolvedImage
+                }
+            }
         }
 
         graphic = hBox

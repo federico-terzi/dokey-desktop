@@ -42,10 +42,9 @@ class ComponentButton(context : GridContext, val associatedComponent : Component
             tooltip.text = it
             setTooltip(tooltip)
         }
-        context.imageResolver.resolveImage(command.iconId!!, 48)
 
         // Load the standard image first, then load the correct one asynchronously
-        val defaultImage : Image = ImageResolver.getImage(ComponentButton::class.java.getResourceAsStream("/assets/image.png"), 48);
+        val defaultImage : Image = ImageResolver.getImage(ComponentButton::class.java.getResourceAsStream("/assets/image.png"), 48)
 
         // Set up the image
         val imageView = ImageView(defaultImage)

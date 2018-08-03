@@ -16,7 +16,7 @@ import java.net.URISyntaxException
 
 @RegisterSource(scheme = "url", useAnotherThread = true)
 class UrlImageSource(context: ImageSourceContext) : AbstractImageSource(context) {
-    override fun resolveImageInternal(id: String, size: Int): Image? {
+    override fun resolveImageFromCacheInternal(id: String, size: Int): Image? {
         // Calculate the hash of the requested url
         val hash = DigestUtils.md5Hex(id)
 
@@ -32,6 +32,18 @@ class UrlImageSource(context: ImageSourceContext) : AbstractImageSource(context)
             // Falling back to the default
             return ImageResolver.getImage(UrlImageSource::class.java.getResourceAsStream("/assets/world_black.png"), size)
         }
+
+        return null
+    }
+
+    override fun resolveImageInternal(id: String, size: Int): Image? {
+        println("$id ${Thread.currentThread().name}")
+
+        // Calculate the hash of the requested url
+        val hash = DigestUtils.md5Hex(id)
+
+        // Check if the image has already been cached
+        val cachedFile = File(context.storageManager.webCacheDir, "$hash.png")
 
         // Check if an high resolution icon for this website is available
         val highResImage = resolveHighResolutionIcon(id)

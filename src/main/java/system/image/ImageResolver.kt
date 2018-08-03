@@ -34,8 +34,14 @@ class ImageResolver(context: ImageSourceContext) {
         // Extract the scheme from the imageId
         val (scheme, id) = extractSchemeAndIdentifier(imageId)
         if (sourceMap.containsKey(scheme)) {
-            // Ask the image source to resolve the image
-            return sourceMap[scheme]?.resolveImage(id, size)
+            val imageSource: MetaImageSource = sourceMap[scheme]!!
+
+            val cachedImage = imageSource.resolveImageFromCache(id, size)
+            if (cachedImage != null) {
+                return cachedImage
+            }else{
+                return imageSource?.resolveImage(id, size)
+            }
         }
 
         return null  // Not found
@@ -47,18 +53,21 @@ class ImageResolver(context: ImageSourceContext) {
         if (sourceMap.containsKey(scheme)) {
             val imageSource: MetaImageSource = sourceMap[scheme]!!
 
-            // Check if the call should be executed in another thread or not
-            if (imageSource.useAnotherThread) {
-                Thread {
-                    val image = imageSource?.resolveImage(id, size)
-                    callback(image, true)
-                }.start()
+            val cachedImage = imageSource.resolveImageFromCache(id, size)
+            if (cachedImage != null) {
+                callback(cachedImage, false)
             }else{
-                // Ask the image source to resolve the image
-                callback(imageSource?.resolveImage(id, size), false)
+                // Check if the call should be executed in another thread or not
+                if (imageSource.useAnotherThread) {
+                    Thread {
+                        val image = imageSource?.resolveImage(id, size)
+                        callback(image, true)
+                    }.start()
+                }else{
+                    // Ask the image source to resolve the image
+                    callback(imageSource?.resolveImage(id, size), false)
+                }
             }
-
-
         }
     }
 
