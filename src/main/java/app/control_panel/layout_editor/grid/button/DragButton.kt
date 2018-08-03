@@ -1,10 +1,14 @@
 package app.control_panel.layout_editor.grid.button
 
 import app.control_panel.layout_editor.grid.GridContext
+import com.sun.scenario.effect.impl.prism.PrEffectHelper.render
+import javafx.animation.RotateTransition
 import javafx.application.Platform
 import javafx.event.EventHandler
+import javafx.scene.CacheHint
 import javafx.scene.control.Button
 import javafx.scene.input.TransferMode
+import javafx.util.Duration
 import json.JSONObject
 import model.component.Component
 import model.component.RuntimeComponent
@@ -26,6 +30,20 @@ open class DragButton(val context : GridContext) : Button() {
                 styleClass.remove("drag-entered")
             }
             _dragDestination = value
+        }
+
+    private var _loading : Boolean = false
+    var loading : Boolean
+        get() = _loading
+        set(value) {
+            if (value) {
+                val rotate = RotateTransition(Duration.seconds(2.5), this)
+                rotate.toAngle = 1080.0
+                rotate.play()
+            } else {
+                this.rotate = 0.0
+            }
+            _loading = value
         }
 
     init {
@@ -72,6 +90,8 @@ open class DragButton(val context : GridContext) : Button() {
                         success = it(component)
                     }
                 }else if(context.dndCommandProcessor.isCompatible(event.dragboard)) {  // EXTERNAL ELEMENT
+                    loading = true
+
                     // Try to resolve the correct command basend on the clipboard data
                     val command = context.dndCommandProcessor.resolve(event.dragboard) { command ->
                         if (command != null) {

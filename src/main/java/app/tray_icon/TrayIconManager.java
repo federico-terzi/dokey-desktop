@@ -1,14 +1,12 @@
-package app;
+package app.tray_icon;
 
+import app.MainApp;
 import javafx.application.Platform;
 import utils.OSValidator;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ResourceBundle;

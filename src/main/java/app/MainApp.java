@@ -4,6 +4,7 @@ import app.control_panel.ControlPanelStage;
 import app.search.stages.SearchStage;
 import app.stages.InitializationStage;
 import app.stages.SettingsStage;
+import app.tray_icon.TrayIconManager;
 import com.tulskiy.keymaster.common.HotKey;
 import com.tulskiy.keymaster.common.HotKeyListener;
 import com.tulskiy.keymaster.common.Provider;

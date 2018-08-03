@@ -32,5 +32,7 @@ class EmptyButton(context : GridContext) : DragButton(context) {
         setOnMouseClicked {
             onEmptyButtonClicked?.let { it() }
         }
+
+
     }
 }

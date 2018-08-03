@@ -3,6 +3,7 @@ package app;
 import app.control_panel.ControlPanelStage;
 import app.search.stages.SearchStage;
 import app.stages.SettingsStage;
+import app.tray_icon.TrayIconManager;
 import model.parser.component.ComponentParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
