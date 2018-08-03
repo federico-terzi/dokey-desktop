@@ -3,6 +3,7 @@ package app.control_panel
 import app.control_panel.controllers.ControlPanelController
 import app.control_panel.layout_editor.GlobalKeyboardListener
 import app.control_panel.layout_editor.LayoutEditorTab
+import app.tray_icon.TrayIconManager
 import javafx.event.EventHandler
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
@@ -25,12 +26,9 @@ import java.util.*
 class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                         val componentParser: ComponentParser, val commandManager: CommandManager,
                         val applicationManager: ApplicationManager,
-                        val dndCommandProcessor: DNDCommandProcessor) : Stage(), GlobalKeyboardListener {
+                        val dndCommandProcessor: DNDCommandProcessor, val trayIconManager: TrayIconManager) : Stage(), GlobalKeyboardListener {
 
     private val controller : ControlPanelController
-
-    private var xOffset = 0.0;
-    private var yOffset = 0.0;
 
     private val layoutEditorTab = LayoutEditorTab(sectionManager, imageResolver, resourceBundle, componentParser,
             commandManager, applicationManager, this, dndCommandProcessor)
@@ -55,20 +53,9 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
         controller = fxmlLoader.getController<Any>() as ControlPanelController
 
-        root.setOnMousePressed(object : EventHandler<MouseEvent> {
-            override fun handle(event: MouseEvent) {
-                xOffset = event.getSceneX()
-                yOffset = event.getSceneY()
-            }
-        })
-
-        //move around here
-        root.setOnMouseDragged(object : EventHandler<MouseEvent> {
-            override fun handle(event: MouseEvent) {
-                this@ControlPanelStage.setX(event.getScreenX() - xOffset)
-                this@ControlPanelStage.setY(event.getScreenY() - yOffset)
-            }
-        })
+        // Setup dialog position
+        setX(trayIconManager.iconX.toDouble())
+        setY(trayIconManager.iconY.toDouble())
 
         // Load the tabs
         controller.content_box.children.add(layoutEditorTab)

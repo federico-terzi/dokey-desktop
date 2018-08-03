@@ -41,8 +41,7 @@ import java.util.ResourceBundle;
 import java.util.logging.*;
 
 @Service
-public class MainApp extends Application implements ADBManager.OnUSBDeviceConnectedListener,
-        TrayIconManager.OnTrayActionListener{
+public class MainApp extends Application implements ADBManager.OnUSBDeviceConnectedListener{
 
     public static int DOKEY_MOBILE_MIN_VERSION = -1;  // Don't change here, modify it in the gradle
     public static int DOKEY_VERSION_NUMBER = -1;  // Don't change here, modify it in the gradle
@@ -205,7 +204,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
 
         // sets up the tray icon manager
         trayIconManager = context.getBean(TrayIconManager.class);
-        javax.swing.SwingUtilities.invokeLater(() -> trayIconManager.initialize(MainApp.this));
+        javax.swing.SwingUtilities.invokeLater(() -> trayIconManager.initialize());
 
         // Get the DaemonMonitor
         daemonMonitor = context.getBean(DaemonMonitor.class);
@@ -358,9 +357,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         sectionManager = context.getBean(SectionManager.class);
         sectionManager.initialize();
 
-        // Update the tray icon status
-        trayIconManager.setTrayIconStatus(resourceBundle.getString("starting_service"));
-
         // Start the engine server
         startEngineServer();
     }
@@ -387,7 +383,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
 //        engineServer.start();
 
         // Update the tray icon status
-        trayIconManager.setTrayIconStatus(resourceBundle.getString("not_connected"));
+        trayIconManager.setStatusText(resourceBundle.getString("not_connected"));
         trayIconManager.setLoading(false);
 
         // Register the global event listeners
@@ -488,7 +484,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         controlPanelStage.show();
     }
 
-    @Override
     public void onEditorOpenRequest() {
         openControlPanel(null);
     }
@@ -505,7 +500,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         settingsStage.show();
     }
 
-    @Override
     public void onSettingsOpenRequest() {
         openSettings();
     }
@@ -522,13 +516,11 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
 //        commandEditorStage.show();
     }
 
-    @Override
     public void onHelpOpenRequest() {
         // Open the docs in the browser
         appManager.openWebLink(DOCS_URL);
     }
 
-    @Override
     public void onSearchOpenRequest() {
         if (!searchStage.isShowing()) {
             searchStage.preInitialize();
@@ -540,7 +532,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         }
     }
 
-    @Override
     public void onQuickCommandsOpenRequest() {
         openCommandEditor();
     }
