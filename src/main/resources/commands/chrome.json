@@ -105,10 +105,66 @@
   },
   {
     "type": "simple",
-    "title": "History",
-    "desc": "Show History in Google Chrome",
-    "iconId": "static:history",
+    "title": "View Source",
+    "desc": "View the Source of the current page in Google Chrome",
+    "iconId": "static:code",
     "category": "ks",
-    "value": "CTRL+H"
+    "value": "CTRL+U"
+  },
+  {
+    "type": "simple",
+    "title": "Reload",
+    "desc": "Reload the current page in Google Chrome",
+    "iconId": "static:refresh",
+    "category": "ks",
+    "value": "CTRL+SHIFT+R"
+  },
+  {
+    "type": "simple",
+    "title": "Reopen Closed Tab",
+    "desc": "Reopen the last closed tab and jump to it in Google Chrome",
+    "iconId": "static:open_in_browser",
+    "category": "ks",
+    "value": "CTRL+SHIFT+T"
+  },
+  {
+    "type": "simple",
+    "title": "Toggle Bookmarks Bar",
+    "desc": "Show or hide the Bookmarks bar in Google Chrome",
+    "iconId": "static:space_bar",
+    "category": "ks",
+    "value": "CTRL+SHIFT+B"
+  },
+  {
+    "type": "simple",
+    "title": "Open Chrome Task Manager",
+    "desc": "Open the Google Chrome Task Manager",
+    "iconId": "static:reorder",
+    "category": "ks",
+    "value": "SHIFT+ESC"
+  },
+  {
+    "type": "simple",
+    "title": "Clear Browsing Data",
+    "desc": "Open the Clear Browsing Data options in Google Chrome",
+    "iconId": "static:change_history",
+    "category": "ks",
+    "value": "CTRL+SHIFT+DELETE"
+  },
+  {
+    "type": "simple",
+    "title": "Save Page",
+    "desc": "Open options to save the current page in Google Chrome",
+    "iconId": "static:save",
+    "category": "ks",
+    "value": "CTRL+S"
+  },
+  {
+    "type": "simple",
+    "title": "Fullscreen",
+    "desc": "Turn full-screen mode on or off in Google Chrome",
+    "iconId": "static:fullscreen",
+    "category": "ks",
+    "value": "F11"
   }
 ]

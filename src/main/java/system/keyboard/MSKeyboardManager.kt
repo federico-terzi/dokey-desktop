@@ -16,7 +16,7 @@ class MSKeyboardManager : AbstractKeyboardManager() {
          */
         fun isPatchedKey(keyCode: Int) : Boolean {
             // Check if it is an Arrow Key
-            return keyCode in 37..40
+            return keyCode in 37..40 || keyCode == 16
         }
 
         fun nativeKeyPress(keyCode: Int) {
