@@ -10,6 +10,8 @@ class CommandResult(context: SearchContext, val command: Command) : AbstractResu
         get() = command.title!!
     override val description: String?
         get() = command.description
+    override val extra: String?
+        get() = command.quickCommand
 
     override val imageId: String?
         get() = command.iconId

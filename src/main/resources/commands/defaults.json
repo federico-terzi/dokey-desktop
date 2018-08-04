@@ -13,6 +13,7 @@
     "desc": "Open the Dokey Documentation Website",
     "category": "url",
     "iconId": "static:web",
+    "quick": ":docs",
     "value": "https://dokey.io/docs/"
   }
 ]

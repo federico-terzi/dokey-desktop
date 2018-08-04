@@ -46,6 +46,11 @@
     -fx-font-family: "Nunito Sans Light";
     -fx-font-size: 12px;
 }
+.dokey-search-result-extra {
+    -fx-padding: 0 0 0 18;
+    -fx-font-family: "Nunito Sans Light";
+    -fx-font-size: 18px;
+}
 
 .list-view {
     -fx-background-color: transparent;

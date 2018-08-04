@@ -8,6 +8,7 @@ interface Result {
 
     val title : String
     val description : String?
+    val extra : String?
 
     fun executeAction()
 

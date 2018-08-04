@@ -196,10 +196,17 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
         if (query == null) {
             results.addAll(commandMap.values)
         }else{
-            val filteringFunction : (Command) -> Boolean = {
+            val filteringFunction : (Command) -> Boolean = if (query.startsWith(":")) {
+                { it: Command ->
+                    it.quickCommand?.startsWith(query, true) ?: false
+                }
+            }else{
+                { it: Command ->
                         it.title?.contains(query, true) ?: false ||
                         it.description?.contains(query, true) ?: false
+                }
             }
+
 
             if (activeApplication != null) {
                 // Find all the commands related to the app and then the not related ones

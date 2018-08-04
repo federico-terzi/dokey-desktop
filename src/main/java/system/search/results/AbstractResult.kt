@@ -10,6 +10,8 @@ abstract class AbstractResult(val context: SearchContext) : Result {
 
     override val imageId: String? = null
 
+    override val extra: String? = null
+
     override fun generateDragAndDropPayload(): String? {
         val internalPayload = generateDragAndDropPayloadInternal()
         if (internalPayload == null) {

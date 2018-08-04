@@ -86,7 +86,7 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
 
         // Setup the list cells
         val fallback = ImageResolver.getImage("/assets/photo.png", 32)
-        controller.resultListView.cellFactory = Callback<ListView<Any>, ListCell<Any>> { ResultListCell(fallback, imageResolver) as ListCell<Any> }
+        controller.resultListView.cellFactory = Callback<ListView<Any>, ListCell<Any>> { ResultListCell(this@SearchStage.width, fallback, imageResolver) as ListCell<Any> }
 
         // Setup the text field search callbacks
         controller.queryTextField.textProperty().addListener { _, _, searchQuery ->
