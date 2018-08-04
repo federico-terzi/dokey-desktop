@@ -1,6 +1,7 @@
 package app;
 
 import app.control_panel.ControlPanelStage;
+import app.control_panel.appearance.position.PositionResolver;
 import app.search.stages.SearchStage;
 import app.stages.InitializationStage;
 import app.stages.SettingsStage;
@@ -14,6 +15,7 @@ import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import kotlin.Unit;
 import net.discovery.ServerDiscoveryDaemon;
 import net.model.DeviceInfo;
 import net.model.ServerInfo;
@@ -69,6 +71,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     private StorageManager storageManager;
     private CommandManager commandManager;
     private SectionManager sectionManager;
+    private PositionResolver positionResolver;
 
     private ServerSocket serverSocket;  // This is the server socket later used by the EngineServer
 
@@ -192,10 +195,10 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
 
         // Setup spring
         context = new AnnotationConfigApplicationContext(AppConfig.class);
-        
+
         // Get the resource bundle
         resourceBundle = context.getBean(ResourceBundle.class);
-        
+
         // Set the MODENA theme
         setUserAgentStylesheet(STYLESHEET_MODENA);
 
@@ -205,6 +208,10 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         // sets up the tray icon manager
         trayIconManager = context.getBean(TrayIconManager.class);
         javax.swing.SwingUtilities.invokeLater(() -> trayIconManager.initialize());
+        trayIconManager.setOnTrayIconClicked(() -> {Platform.runLater(() -> onTrayIconClicked()); return Unit.INSTANCE;});
+
+        // Setup the position resolver
+        positionResolver = context.getBean(PositionResolver.class);
 
         // Get the DaemonMonitor
         daemonMonitor = context.getBean(DaemonMonitor.class);
@@ -259,6 +266,8 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
             LOG.info("Goodbye Dokey");
         }));
     }
+
+
 
     /**
      * Start the application loading process
@@ -357,6 +366,9 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         sectionManager = context.getBean(SectionManager.class);
         sectionManager.initialize();
 
+        // Initialize the control panel
+        controlPanelStage = context.getBean(ControlPanelStage.class);
+
         // Start the engine server
         startEngineServer();
     }
@@ -398,7 +410,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
             registerHotKeys();
 
         if (openControlPanel) {
-            openControlPanel(null);
+            showControlPanel();
         }
         if (openSettings) {
             openSettings();
@@ -471,21 +483,27 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         activeApplicationsDaemon.stopDaemon();
     }
 
-    private void openControlPanel(String targetApp) {
-        if (controlPanelStage != null) {
-            appManager.focusDokey();
-
-//            // If the control panel is already open, just select the requested app
-//            editorStage.selectSection(targetApp);
-//            return;
+    private void onTrayIconClicked() {
+        // Toggle show control panel visibility
+        if (controlPanelStage.isShowing()) {
+            hideControlPanel();
+        }else{
+            showControlPanel();
         }
+    }
 
-        controlPanelStage = context.getBean(ControlPanelStage.class);  // TODO: add close listener to reset controlPanelStage variable
+    private void showControlPanel() {
         controlPanelStage.show();
+        // Position the control panel in the correct position
+        positionResolver.positionStageOnScreen(controlPanelStage);
+    }
+
+    private void hideControlPanel() {
+        controlPanelStage.hide();
     }
 
     public void onEditorOpenRequest() {
-        openControlPanel(null);
+        showControlPanel();
     }
 
     private void openSettings() {
@@ -677,7 +695,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         public void onBroadcastReceived(Serializable param) {
             String targetApp = (String) param;
             Platform.runLater(() -> {
-                openControlPanel(targetApp);
+                showControlPanel();
             });
         }
     };

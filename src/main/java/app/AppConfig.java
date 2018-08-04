@@ -1,9 +1,9 @@
 package app;
 
 import app.control_panel.ControlPanelStage;
-import app.control_panel.layout_editor.appearance.AppearanceManager;
-import app.control_panel.layout_editor.appearance.MACAppearanceManager;
-import app.control_panel.layout_editor.appearance.MSAppearanceManager;
+import app.control_panel.appearance.position.PositionResolver;
+import app.control_panel.appearance.position.MACPositionResolver;
+import app.control_panel.appearance.position.MSPositionResolver;
 import app.search.stages.SearchStage;
 import app.stages.SettingsStage;
 import app.tray_icon.MSTrayIconManager;
@@ -62,11 +62,11 @@ public class AppConfig {
     }
 
     @Bean
-    public AppearanceManager appearanceManager() throws UnsupportedOperatingSystemException {
+    public PositionResolver appearanceManager() throws UnsupportedOperatingSystemException {
         if (OSValidator.isMac()) {
-            return new MACAppearanceManager(trayIconManager());
+            return new MACPositionResolver(trayIconManager());
         }else if (OSValidator.isWindows()) {
-            return new MSAppearanceManager(trayIconManager());
+            return new MSPositionResolver(trayIconManager());
         }
         throw new UnsupportedOperatingSystemException("This Operating system is not supported by Dokey");
     }
@@ -75,7 +75,7 @@ public class AppConfig {
     @Lazy
     public ControlPanelStage controlPanelStage() throws IOException, UnsupportedOperatingSystemException {
         return new ControlPanelStage(sectionManager, imageResolver, resourceBundle, componentParser, commandManager,
-                applicationManager, dndCommandProcessor, appearanceManager());
+                applicationManager, dndCommandProcessor);
     }
 
     @Bean

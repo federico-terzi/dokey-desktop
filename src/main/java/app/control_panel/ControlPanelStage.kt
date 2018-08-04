@@ -3,15 +3,11 @@ package app.control_panel
 import app.control_panel.controllers.ControlPanelController
 import app.control_panel.layout_editor.GlobalKeyboardListener
 import app.control_panel.layout_editor.LayoutEditorTab
-import app.control_panel.layout_editor.appearance.AppearanceManager
-import app.tray_icon.TrayIconManager
-import javafx.event.EventHandler
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
-import javafx.scene.input.MouseEvent
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 import javafx.stage.StageStyle
@@ -27,7 +23,7 @@ import java.util.*
 class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                         val componentParser: ComponentParser, val commandManager: CommandManager,
                         val applicationManager: ApplicationManager,
-                        val dndCommandProcessor: DNDCommandProcessor, val appearanceManager: AppearanceManager) : Stage(), GlobalKeyboardListener {
+                        val dndCommandProcessor: DNDCommandProcessor) : Stage(), GlobalKeyboardListener {
 
     private val controller : ControlPanelController
 
@@ -74,9 +70,5 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
             // Notify the active tab
             activeTab.onGlobalKeyPress(it)
         }
-
-
-        // Setup stage appearance
-        appearanceManager.positionStageOnScreen(this)
     }
 }
