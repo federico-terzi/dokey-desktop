@@ -192,12 +192,16 @@ class ComponentGrid(val componentMatrix: Array<Array<Component?>>,
         }
 
         current.setOnMouseClicked {
-            // If shift is not pressed, unselect all the other buttons
-            if (!globalKeyboardListener.isShiftPressed) {
-                unselectAllButtons()
-            }
+            if (!current.selected) {
+                // If shift is not pressed, unselect all the other buttons
+                if (!globalKeyboardListener.isShiftPressed) {
+                    unselectAllButtons()
+                }
 
-            current.selected = true
+                current.selected = true
+            }else{
+                current.selected = false
+            }
         }
 
         addButtonToGridPane(col, row, current)
