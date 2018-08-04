@@ -3,7 +3,7 @@ package system.context
 import system.bookmarks.BookmarkManager
 import system.commands.CommandEngine
 import system.commands.CommandManager
-import system.model.ApplicationManager
+import system.applications.ApplicationManager
 import java.util.*
 
 interface SearchContext {

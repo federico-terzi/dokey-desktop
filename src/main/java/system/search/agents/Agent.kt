@@ -1,5 +1,6 @@
 package system.search.agents
 
+import system.applications.Application
 import system.search.results.Result
 
 const val MAX_RESULTS_FOR_AGENT = 9
@@ -15,5 +16,5 @@ interface Agent {
     /**
      * Get all the search results for the given query.
      */
-    fun getResults(query: String) : List<out Result>
+    fun getResults(query: String, activeApplication: Application?) : List<out Result>
 }

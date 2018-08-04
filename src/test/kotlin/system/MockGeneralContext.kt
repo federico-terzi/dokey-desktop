@@ -7,7 +7,7 @@ import system.commands.MockCommandResolver
 import system.context.GeneralContext
 import system.keyboard.KeyboardManager
 import system.keyboard.MockKeyboardManager
-import system.model.ApplicationManager
+import system.applications.ApplicationManager
 import system.storage.StorageManager
 import system.storage.StorageManagerTest
 

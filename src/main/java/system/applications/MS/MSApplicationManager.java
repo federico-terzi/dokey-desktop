@@ -13,9 +13,9 @@ import org.apache.commons.lang3.StringUtils;
 import system.storage.StorageManager;
 import system.ResourceUtils;
 import system.startup.StartupManager;
-import system.model.Application;
-import system.model.ApplicationManager;
-import system.model.Window;
+import system.applications.Application;
+import system.applications.ApplicationManager;
+import system.applications.Window;
 import utils.CaseInsensitiveMap;
 
 import javax.imageio.ImageIO;

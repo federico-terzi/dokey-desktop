@@ -1,6 +1,6 @@
 package system;
 
-import system.model.ApplicationManager;
+import system.applications.ApplicationManager;
 import system.storage.StorageManager;
 
 import java.util.HashMap;

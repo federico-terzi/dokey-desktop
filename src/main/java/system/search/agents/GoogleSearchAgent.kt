@@ -2,9 +2,9 @@ package system.search.agents
 
 import org.xml.sax.*
 import org.xml.sax.helpers.XMLReaderFactory
+import system.applications.Application
 import system.context.SearchContext
 import system.search.annotations.RegisterAgent
-import system.search.results.CommandResult
 import system.search.results.GoogleSearchResult
 import system.search.results.Result
 import java.io.InputStreamReader
@@ -18,7 +18,7 @@ import java.util.ArrayList
 class GoogleSearchAgent(context: SearchContext) : AbstractAgent(context) {
     override fun validate(query: String): Boolean = true
 
-    override fun getResults(query: String): List<out Result> {
+    override fun getResults(query: String, activeApplication: Application?): List<out Result> {
         val actualSearchResult = GoogleSearchResult(context, query)
         val results = mutableListOf<GoogleSearchResult>(actualSearchResult)
         val googleResults = getSuggestions(query).forEach {

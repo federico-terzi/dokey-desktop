@@ -1,6 +1,6 @@
 package system.applications.MS
 
-import system.model.Application
+import system.applications.Application
 
 /**
  * Represents an application installed in the system

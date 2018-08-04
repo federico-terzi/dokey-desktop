@@ -1,4 +1,4 @@
-package system.model
+package system.applications
 
 abstract class Window {
     val titleText: String

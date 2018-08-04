@@ -1,8 +1,8 @@
 package system.applications.MAC
 
 import system.ResourceUtils
-import system.model.Application
-import system.model.Window
+import system.applications.Application
+import system.applications.Window
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader

@@ -26,7 +26,7 @@ import system.*;
 import system.adb.ADBManager;
 import system.bookmarks.BookmarkManager;
 import system.commands.CommandManager;
-import system.model.ApplicationManager;
+import system.applications.ApplicationManager;
 import system.section.SectionManager;
 import system.startup.StartupManager;
 import system.storage.StorageManager;
@@ -541,7 +541,10 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
 
     public void onSearchOpenRequest() {
         if (!searchStage.isShowing()) {
-            searchStage.preInitialize();
+            // Get the currently active application
+            system.applications.Application activeApplication = appManager.getActiveApplication();
+
+            searchStage.preInitialize(activeApplication);
             searchStage.show();
             searchStage.postInitialize();
             appManager.focusSearch();

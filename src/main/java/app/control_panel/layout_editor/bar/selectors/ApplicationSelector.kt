@@ -2,8 +2,7 @@ package app.control_panel.layout_editor.bar.selectors
 
 import model.section.ApplicationSection
 import model.section.Section
-import system.model.Application
-import system.model.ApplicationManager
+import system.applications.Application
 
 class ApplicationSelector(context: SelectorContext, section: Section) : Selector(context, section, 2) {
     val associatedApplication : Application

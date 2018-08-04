@@ -1,8 +1,9 @@
 package system.search
 
 import org.reflections.Reflections
+import system.applications.Application
 import system.context.SearchContext
-import system.model.ApplicationManager
+import system.applications.ApplicationManager
 import system.search.agents.Agent
 import system.search.agents.RegisteredAgent
 import system.search.annotations.RegisterAgent
@@ -40,14 +41,14 @@ class SearchEngine(val applicationManager: ApplicationManager, val context: Sear
         agents.sortByDescending { it.priority }
     }
 
-    fun requestQuery(query: String, listener: (query: String, category: KClass<out Result>, results: List<out Result>) -> Unit) {
+    fun requestQuery(query: String, activeApplication: Application?, listener: (query: String, category: KClass<out Result>, results: List<out Result>) -> Unit) {
         // Reset the executor queue with previous requests
         executor.queue.clear()
 
         for (agent in agents) {
             if (agent.validate(query)) {
-                executor.execute(Runnable {
-                    val agentResults = agent.getResults(query)
+                executor.execute({
+                    val agentResults = agent.getResults(query, activeApplication)
                     if (agentResults.isNotEmpty()) {
                         listener(query, agent.resultClass, agentResults)
                     }

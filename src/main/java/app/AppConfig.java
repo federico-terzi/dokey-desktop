@@ -18,7 +18,7 @@ import system.commands.CommandManager;
 import system.drag_and_drop.DNDCommandProcessor;
 import system.exceptions.UnsupportedOperatingSystemException;
 import system.image.ImageResolver;
-import system.model.ApplicationManager;
+import system.applications.ApplicationManager;
 import system.search.SearchEngine;
 import system.section.SectionManager;
 import system.startup.StartupManager;

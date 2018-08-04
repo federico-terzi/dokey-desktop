@@ -1,6 +1,6 @@
 package system.context
 
-import system.model.ApplicationManager
+import system.applications.ApplicationManager
 import system.storage.StorageManager
 
 interface ImageSourceContext {

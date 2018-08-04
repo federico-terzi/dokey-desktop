@@ -1,7 +1,7 @@
 package system.context
 
 import model.parser.command.CommandParser
-import system.model.ApplicationManager
+import system.applications.ApplicationManager
 import system.storage.StorageManager
 
 interface CommandTemplateContext {

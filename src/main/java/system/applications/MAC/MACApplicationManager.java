@@ -4,9 +4,9 @@ import com.sun.jna.Pointer;
 import system.storage.StorageManager;
 import system.ResourceUtils;
 import system.startup.StartupManager;
-import system.model.Application;
-import system.model.ApplicationManager;
-import system.model.Window;
+import system.applications.Application;
+import system.applications.ApplicationManager;
+import system.applications.Window;
 
 import java.io.*;
 import java.net.URL;

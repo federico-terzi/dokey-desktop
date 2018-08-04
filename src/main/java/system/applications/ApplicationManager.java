@@ -1,4 +1,4 @@
-package system.model;
+package system.applications;
 
 import system.storage.StorageManager;
 

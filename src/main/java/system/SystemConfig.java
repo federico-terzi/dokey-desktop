@@ -24,7 +24,7 @@ import system.image.ImageResolver;
 import system.keyboard.KeyboardManager;
 import system.keyboard.MACKeyboardManager;
 import system.keyboard.MSKeyboardManager;
-import system.model.ApplicationManager;
+import system.applications.ApplicationManager;
 import system.parsers.RuntimeCommandParser;
 import system.search.SearchEngine;
 import system.section.SectionManager;

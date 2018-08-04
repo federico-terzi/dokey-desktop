@@ -5,7 +5,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 
-import static system.model.ApplicationManager.INITIALIZED_CHECK_FILENAME;
+import static system.applications.ApplicationManager.INITIALIZED_CHECK_FILENAME;
 
 /**
  * Used to manage files and folders

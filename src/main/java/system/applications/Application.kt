@@ -1,4 +1,4 @@
-package system.model
+package system.applications
 
 import org.apache.commons.codec.digest.DigestUtils
 import system.ResourceUtils

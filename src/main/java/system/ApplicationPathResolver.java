@@ -1,7 +1,7 @@
 package system;
 
-import system.model.Application;
-import system.model.ApplicationManager;
+import system.applications.Application;
+import system.applications.ApplicationManager;
 
 import java.io.File;
 import java.util.HashMap;

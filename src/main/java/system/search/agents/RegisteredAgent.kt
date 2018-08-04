@@ -1,5 +1,6 @@
 package system.search.agents
 
+import system.applications.Application
 import system.search.results.Result
 import kotlin.reflect.KClass
 
@@ -12,7 +13,7 @@ class RegisteredAgent(val agent: Agent, val priority: Int, val resultClass: KCla
         return agent.validate(query)
     }
 
-    override fun getResults(query: String): List<out Result> {
-        return agent.getResults(query)
+    override fun getResults(query: String, activeApplication: Application?): List<out Result> {
+        return agent.getResults(query, activeApplication)
     }
 }

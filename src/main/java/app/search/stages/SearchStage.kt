@@ -22,6 +22,7 @@ import javafx.stage.StageStyle
 import javafx.util.Callback
 import org.reflections.Reflections
 import system.ResourceUtils
+import system.applications.Application
 import system.image.ImageResolver
 import system.search.SearchEngine
 import system.search.annotations.FilterableResult
@@ -29,7 +30,6 @@ import system.search.annotations.RegisterAgent
 import system.search.results.Result
 import java.io.IOException
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 
@@ -60,6 +60,9 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
     private val resultSubject = PublishSubject.create<List<Result>>()
 
     private var currentQuery: String? = null
+
+    // The application that was active before the bar was shown
+    private var activeApplication: Application? = null
 
     init {
         val fxmlLoader = FXMLLoader(ResourceUtils.getResource("/layouts/search_dialog.fxml")!!.toURI().toURL())
@@ -94,7 +97,7 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
             elaborateResults()
 
             if (!searchQuery.isBlank()) {
-                searchEngine.requestQuery(searchQuery.trim()) { query, category, results ->
+                searchEngine.requestQuery(searchQuery.trim(), activeApplication) { query, category, results ->
                     // Make sure the result is relative to the current query
                     if (currentQuery == query) {
                         currentResults!![category] = results
@@ -246,14 +249,12 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
 
             }
         })
-
-        preInitialize()
     }
 
     /**
      * Actions that must be done before showing the bar to initialize it to its empty state.
      */
-    fun preInitialize() {
+    fun preInitialize(activeApplication: Application?) {
         // Reset the result data structures
         currentResults = HashMap()
         observableResults.clear()
@@ -262,6 +263,8 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
 
         // Reset the query text field to an empty string
         controller.queryTextField.text = ""
+
+        this.activeApplication = activeApplication
 
         elaborateResults()
     }

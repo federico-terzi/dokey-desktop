@@ -1,6 +1,6 @@
 package system.app_manager
 
-import system.model.Application
+import system.applications.Application
 
 class MockApplication(name: String, executablePath: String, iconId: String?) : Application(name, executablePath, iconId) {
     override fun open(): Boolean {

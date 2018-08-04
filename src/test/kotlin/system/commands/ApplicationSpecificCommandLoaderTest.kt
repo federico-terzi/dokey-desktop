@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import system.app_manager.MockApplicationManager
 import system.commands.general.SimpleAppRelatedCommand
 import system.commands.loader.ApplicationSpecificCommandLoader
-import system.model.ApplicationManager
+import system.applications.ApplicationManager
 import system.parsers.RuntimeModelParser
 import system.storage.StorageManager
 import system.storage.StorageManagerTest

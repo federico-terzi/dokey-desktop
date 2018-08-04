@@ -8,7 +8,7 @@ import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
 import model.section.*
 import system.image.ImageResolver
-import system.model.ApplicationManager
+import system.applications.ApplicationManager
 import system.section.SectionManager
 
 class SectionBar(val sectionManager: SectionManager, val applicationManager: ApplicationManager, imageResolver: ImageResolver) : ScrollPane() {

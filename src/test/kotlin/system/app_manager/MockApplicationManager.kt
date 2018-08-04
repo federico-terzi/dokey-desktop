@@ -1,8 +1,8 @@
 package system.app_manager
 
-import system.model.Application
-import system.model.ApplicationManager
-import system.model.Window
+import system.applications.Application
+import system.applications.ApplicationManager
+import system.applications.Window
 import system.storage.StorageManager
 import java.io.File
 
