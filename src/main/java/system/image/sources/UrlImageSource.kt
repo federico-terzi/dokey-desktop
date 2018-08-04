@@ -37,8 +37,6 @@ class UrlImageSource(context: ImageSourceContext) : AbstractImageSource(context)
     }
 
     override fun resolveImageInternal(id: String, size: Int): Image? {
-        println("$id ${Thread.currentThread().name}")
-
         // Calculate the hash of the requested url
         val hash = DigestUtils.md5Hex(id)
 
