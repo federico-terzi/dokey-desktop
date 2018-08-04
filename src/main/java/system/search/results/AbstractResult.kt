@@ -20,4 +20,6 @@ abstract class AbstractResult(val context: SearchContext) : Result {
     }
 
     open fun generateDragAndDropPayloadInternal() : String? = null
+
+    override fun executeAction() {}
 }

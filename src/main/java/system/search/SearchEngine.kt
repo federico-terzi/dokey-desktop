@@ -37,7 +37,7 @@ class SearchEngine(val applicationManager: ApplicationManager, val context: Sear
             agents.add(registeredAgent)
         }
         // Reorder the agents based on priority
-        agents.sortBy { it.priority }
+        agents.sortByDescending { it.priority }
     }
 
     fun requestQuery(query: String, listener: (query: String, category: KClass<out Result>, results: List<out Result>) -> Unit) {

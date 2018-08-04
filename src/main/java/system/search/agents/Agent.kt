@@ -2,6 +2,8 @@ package system.search.agents
 
 import system.search.results.Result
 
+const val MAX_RESULTS_FOR_AGENT = 6
+
 interface Agent {
     /**
      * This method is called before getResults() to make sure this agent

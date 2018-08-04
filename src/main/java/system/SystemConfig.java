@@ -196,6 +196,18 @@ public class SystemConfig {
         return new GeneralContext() {
             @NotNull
             @Override
+            public BookmarkManager getBookmarkManager() {
+                return bookmarkManager();
+            }
+
+            @NotNull
+            @Override
+            public ResourceBundle getResourceBundle() {
+                return resourceBundle();
+            }
+
+            @NotNull
+            @Override
             public KeyboardManager getKeyboardManager() {
                 try {
                     return keyboardManager();

@@ -98,7 +98,14 @@ class ResultListCell(private val fallback: Image?, private val imageResolver: Im
                 db.setDragView(snapshot, offsetX, offsetY)
 
                 val content = ClipboardContent()
-                content.putString(dragAndDropPayload)
+                // Put the content in the clipboard data,
+                // Note: a workaround is needed when using an URL
+                if (dragAndDropPayload.startsWith("http")) {
+                    content.putUrl(dragAndDropPayload)
+                }else{
+                    content.putString(dragAndDropPayload)
+                }
+
                 db.setContent(content)
 
                 event.consume()
@@ -108,6 +115,9 @@ class ResultListCell(private val fallback: Image?, private val imageResolver: Im
 
                 event.consume()
             }
+        }else{
+            onDragDone = null
+            onDragDetected = null
         }
     }
 

@@ -349,7 +349,7 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
             unorderedAgents.add(Pair<KClass<out Result>, Int>(agentAnnotation.resultClass, agentAnnotation.priority))
         }
         // Reorder the agents based on priority and add them to the list
-        unorderedAgents.sortBy { it.second }
+        unorderedAgents.sortByDescending { it.second }
         unorderedAgents.forEach { resultPriorityList.add(it.first) }
     }
 
