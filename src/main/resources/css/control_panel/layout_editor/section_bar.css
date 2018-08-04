@@ -1,5 +1,6 @@
 .app_scroll_pane_container {
     -fx-background-color: linear-gradient(to bottom right, -start-green-gradient, -stop-green-gradient);
+    -fx-effect: innershadow(gaussian, rgba(0,0,0, 0.1), 7, 0, 0, 3);
 }
 
 .app_scroll_pane {
@@ -22,7 +23,7 @@
 }
 
 .app-selector-vbox {
-    -fx-spacing: 5px;
+    -fx-spacing: 3px;
 }
 
 .app_scroll_pane .button:hover {
