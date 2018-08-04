@@ -19,7 +19,7 @@
 
 .app_scroll_pane .button {
     -fx-background-color: transparent;
-    -fx-padding: 5px 8px 0px 8px;
+    -fx-padding: 6px 8px 0px 8px;
 }
 
 .app-selector-vbox {
