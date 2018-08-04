@@ -82,6 +82,13 @@ class ImageResolver(context: ImageSourceContext) {
         }
 
         /**
+         * Get an Image object from the given resource path, adapting to High DPI displays
+         */
+        fun getImage(resourcePath: String, size: Int): Image {
+            return getImage(ImageResolver::class.java.getResourceAsStream(resourcePath), size)
+        }
+
+        /**
          * Get an Image object from the given File, adapting to High DPI displays
          */
         fun getImage(imageFile: File, size: Int): Image {

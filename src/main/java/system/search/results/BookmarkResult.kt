@@ -6,7 +6,7 @@ import system.context.SearchContext
 import system.search.annotations.FilterableResult
 import java.math.BigDecimal
 
-@FilterableResult
+@FilterableResult(filterName = "bookmark_category")
 class BookmarkResult(context: SearchContext, val bookmark: Bookmark) : AbstractResult(context) {
     override val title: String
         get() = bookmark.title

@@ -45,10 +45,10 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
 
     // Similar to the resultPriorityList, here are registered only the types of filter
     // the user can select. For example, the terminal filter cannot be selected by the user.
-    private val userFilters : MutableList<KClass<out Result>> = mutableListOf<KClass<out Result>>()
+    private val userFilters : MutableList<FilterEntry> = mutableListOf<FilterEntry>()
 
     // If this is set, only show the results of this category
-    private var resultFilter: KClass<out Result>? = null
+    private var resultFilter: FilterEntry? = null
 
     // The result list, when modified the listview updates
     private val observableResults = FXCollections.observableArrayList<Result>()
@@ -82,7 +82,7 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
         controller.filterBox.isVisible = true
 
         // Setup the list cells
-        val fallback = ImageResolver.getImage(SearchStage::class.java.getResourceAsStream("/assets/photo.png"), 32)
+        val fallback = ImageResolver.getImage("/assets/photo.png", 32)
         controller.resultListView.cellFactory = Callback<ListView<Any>, ListCell<Any>> { ResultListCell(fallback, imageResolver) as ListCell<Any> }
 
         // Setup the text field search callbacks
@@ -145,7 +145,8 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
                     close()
                 }
             } else if (event.code == KeyCode.TAB) {  // Filter results
-                if (controller.resultListView.selectionModel.selectedItem == null || (controller.resultListView.selectionModel.selectedItem as Result).javaClass == resultFilter) {
+                if (controller.resultListView.selectionModel.selectedItem == null ||
+                        (controller.resultListView.selectionModel.selectedItem as Result).javaClass.kotlin == resultFilter?.resultClass) {
                     var index = 0
                     if (resultFilter != null) {
                         val nextIndex = userFilters.indexOf(resultFilter!!) + 1
@@ -161,11 +162,12 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
                     elaborateResults()
                 } else {
                     if (controller.resultListView.selectionModel.selectedItem != null) {
-                        val selectedClass = controller.resultListView.selectionModel.selectedItem.javaClass as KClass<out Result>
+                        val selectedClass = (controller.resultListView.selectionModel.selectedItem.javaClass as Class<out Result>).kotlin
                         // Make sure the selected item is filterable from the user
                         // for example, the terminal cannot be filtered
-                        if (userFilters.contains(selectedClass)) {
-                            resultFilter = selectedClass
+                        val filterEntry = userFilters.find {it.resultClass == selectedClass}
+                        if (filterEntry != null) {
+                            resultFilter = filterEntry
                             elaborateResults()
                         }
                     }
@@ -200,19 +202,39 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
             override fun onNext(priorityResults: List<Result>) {
                 // Update the list view
                 Platform.runLater {
-                    observableResults.setAll(priorityResults)
+                    // Render filter label
+                    if (resultFilter != null) {
+                        // Get the filter text
+                        try {
+                            controller.filterLabel.text = resultFilter?.labelText
+                            controller.filterBox.isManaged = true
+                            controller.filterBox.isVisible = true
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
 
-                    // Select the first item
-                    if (priorityResults.size > 0) {
-                        controller.resultListView.selectionModel.selectIndex(0)
+                    } else {  // hide the filter label
+                        controller.filterBox.isManaged = false
+                        controller.filterBox.isVisible = false
                     }
 
-                    // Set the height based on the list view
-                    controller.resultListView.prefHeight = (priorityResults.size * ResultListCell.ROW_HEIGHT).toDouble()
+                    // Render results
+                    val emptySearch = (currentQuery == null) || (currentQuery != null && currentQuery!!.isBlank())
+                    if (priorityResults.isNotEmpty() || emptySearch) {
+                        observableResults.setAll(priorityResults)
 
-                    // Show the list view and refresh stage size to fit all contents
-                    controller.resultListView.isManaged = true
-                    sizeToScene()
+                        // Select the first item
+                        if (priorityResults.size > 0) {
+                            controller.resultListView.selectionModel.selectIndex(0)
+                        }
+
+                        // Set the height based on the list view
+                        controller.resultListView.prefHeight = (priorityResults.size * ResultListCell.ROW_HEIGHT).toDouble()
+
+                        // Show the list view and refresh stage size to fit all contents
+                        controller.resultListView.isManaged = true
+                        sizeToScene()
+                    }
                 }
             }
 
@@ -269,29 +291,6 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
     }
 
     private fun elaborateResults() {
-//        // Render filter label
-//        Platform.runLater {
-//            // Show the filter label
-//            if (resultFilter != null) {
-//                // Get the filter text
-//                try {
-//                    val labelID = resultFilter!!.getDeclaredField("SEARCH_FILDER_RESOURCE_ID").get(null) as String
-//                    val filterText = resourceBundle.getString(labelID)
-//                    if (filterText != null) {
-//                        controller.filterLabel.text = filterText
-//                        controller.filterBox.isManaged = true
-//                        controller.filterBox.isVisible = true
-//                    }
-//                } catch (e: Exception) {
-//                    e.printStackTrace()
-//                }
-//
-//            } else {  // hide the filter label
-//                controller.filterBox.isManaged = false
-//                controller.filterBox.isVisible = false
-//            }
-//        }
-
         if (currentResults == null)
             return
 
@@ -307,8 +306,8 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
 
         // If there is a result filter, only show those results
         if (resultFilter != null) {
-            if (currentResults!!.containsKey(resultFilter!!)) {
-                for (result in currentResults!![resultFilter!!]!!) {
+            if (currentResults!!.containsKey(resultFilter!!.resultClass)) {
+                for (result in currentResults!![resultFilter!!.resultClass]!!) {
                     if (priorityResults.size < MAX_RESULTS) {
                         priorityResults.add(result)
                     }
@@ -361,12 +360,15 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
         val reflections = Reflections("system.search.results")
         val resultClasses = reflections.getTypesAnnotatedWith(FilterableResult::class.java)
         resultClasses.forEach { resultClass ->
-            userFilters.add((resultClass as Class<out Result>).kotlin)
+            val annotation = resultClass.getAnnotation(FilterableResult::class.java) as FilterableResult
+            userFilters.add(FilterEntry((resultClass as Class<out Result>).kotlin, resourceBundle.getString(annotation.filterName)))
         }
     }
 
+    data class FilterEntry(val resultClass : KClass<out Result>, val labelText: String)
+
     companion object {
-        val MAX_RESULTS = 6 // Maximum number of results
+        val MAX_RESULTS = 9 // Maximum number of results
         val MAX_RESULTS_FOR_AGENT = 3 // Maximum number of results for each agent
     }
 }

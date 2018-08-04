@@ -1,13 +1,10 @@
 package system.search.results
 
-import model.command.Command
-import system.bookmarks.Bookmark
 import system.context.SearchContext
 import system.search.annotations.FilterableResult
-import java.math.BigDecimal
 import java.net.URLEncoder
 
-@FilterableResult
+@FilterableResult(filterName = "google_search_category")
 class GoogleSearchResult(context: SearchContext, val query: String) : AbstractResult(context) {
     override val title: String
         get() = query

@@ -5,7 +5,6 @@ import system.context.SearchContext
 import system.search.annotations.FilterableResult
 import java.math.BigDecimal
 
-@FilterableResult
 class CalculatorResult(context: SearchContext, val query : String, val result: BigDecimal) : AbstractResult(context) {
     override val title: String
         get() = "$query = $result"
