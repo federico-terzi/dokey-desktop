@@ -2,26 +2,27 @@ package app.control_panel.layout_editor.bar
 
 import app.control_panel.layout_editor.bar.selectors.*
 import javafx.event.EventHandler
+import javafx.geometry.Pos
 import javafx.scene.control.Button
 import javafx.scene.control.ScrollPane
 import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
+import javafx.scene.layout.VBox
+import javafx.scene.shape.Rectangle
+import javafx.scene.shape.SVGPath
+import javafx.scene.shape.Shape
 import model.section.*
 import system.image.ImageResolver
 import system.applications.ApplicationManager
 import system.section.SectionManager
 
-class SectionBar(val sectionManager: SectionManager, val applicationManager: ApplicationManager, imageResolver: ImageResolver) : ScrollPane() {
+class SectionBar(val sectionManager: SectionManager, override val applicationManager: ApplicationManager,
+                 override val imageResolver: ImageResolver) : ScrollPane(), SelectorContext {
     private val selectorTypes = mapOf<Class<out Section>, Class<out Selector>>(
             LaunchpadSection::class.java to LaunchpadSelector::class.java,
             SystemSection::class.java to SystemSelector::class.java,
             DefaultApplicationSection::class.java to ApplicationSelector::class.java
     )
-
-    val selectorContext : SelectorContext = object : SelectorContext {
-        override val applicationManager: ApplicationManager
-            get() = this@SectionBar.applicationManager
-    }
 
     private val appBox = HBox()
     private val selectors : List<Selector>
@@ -47,7 +48,7 @@ class SectionBar(val sectionManager: SectionManager, val applicationManager: App
             if (selectorClass != null) {
                 try {
                     val selector = selectorClass.getConstructor(SelectorContext::class.java, Section::class.java)
-                            .newInstance(selectorContext, section)
+                            .newInstance(this, section)
                     selectors.add(selector)
                 }catch (ex: SelectorLoadingException) {
                     ex.printStackTrace()
@@ -58,15 +59,10 @@ class SectionBar(val sectionManager: SectionManager, val applicationManager: App
         this.selectors = selectors
 
         selectors.forEachIndexed { index, selector ->
-            val button = Button()
-            val image = imageResolver.resolveImage(selector.imageId, 32)
-            val imageView = ImageView(image)
-            imageView.fitHeight = 32.0
-            imageView.fitWidth = 32.0
-            button.setGraphic(imageView)
-            appBox.children.add(button)
+            selector.initialize()
+            appBox.children.add(selector)
 
-            button.onAction = EventHandler {
+            selector.onAction = EventHandler {
                 val previousSelected : Int = selectors.indexOfFirst { it.selected }
 
                 // If the user clicks on the already selected one, do nothing
@@ -102,7 +98,7 @@ class SectionBar(val sectionManager: SectionManager, val applicationManager: App
         onSectionClicked?.invoke(selector.section, direction)
 
         // Unselect previous selector
-        selectors.forEach { it.selected = false }
+        selectors.filter { it != selector }.forEach { it.selected = false }
 
         // Select the current one
         selector.selected = true

@@ -1,6 +1,7 @@
 @import "colors.css";
 @import "font.css";
 @import "control_panel/layout_editor/layout_editor.css";
+@import "control_panel/toolbar.css";
 
 .root {
     -fx-padding: 20px;
@@ -15,25 +16,4 @@
     /*-fx-border-insets: 20px;*/
     -fx-background-color: white;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0, 0.3), 20, 0, 4, 4);
-}
-
-.tool-bar {
-    -fx-background-radius: 10px 10px 0 0;
-    -fx-background-color: white;
-    -fx-padding: 4px 6px 4px 6px;
-    -fx-pref-height: 20px;
-    -fx-spacing: 4px;
-}
-
-.tool-bar .button:hover {
-    -fx-effect: innershadow( one-pass-box , -start-green-gradient, 70 , 1 , 1 , 1 );
-}
-
-.tool-bar .button {
-    -fx-background-color: transparent;
-    -fx-padding: 2px;
-}
-
-.tool-bar #filler_pane {
-    -fx-background-color: transparent;
 }
