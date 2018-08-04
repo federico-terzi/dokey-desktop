@@ -1,5 +1,7 @@
 package app.control_panel.layout_editor.grid
 
+import javafx.animation.SequentialTransition
+import javafx.animation.TranslateTransition
 import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.geometry.Pos
@@ -10,12 +12,13 @@ import javafx.scene.control.TabPane
 import javafx.scene.image.ImageView
 import javafx.scene.input.DragEvent
 import javafx.scene.layout.HBox
+import javafx.util.Duration
 import system.image.ImageResolver
 
 
 class TabPaneController(private val tabPane: TabPane, private val tabContent: Map<Tab, Node>,
                         private val listener: OnTabListener?)
-    :HBox() {
+    : HBox() {
     init {
         this.styleClass.add("tab-pane-controller")
         this.alignment = Pos.CENTER
@@ -38,7 +41,7 @@ class TabPaneController(private val tabPane: TabPane, private val tabContent: Ma
                     }
                 }
             })
-            val image = ImageResolver.getImage(TabPaneController::class.java.getResourceAsStream("/assets/circle_full.png"), 8)
+            val image = ImageResolver.getImage("/assets/circle_full.png", 8)
             val imageView = ImageView(image)
             imageView.fitHeight = 8.0
             imageView.fitWidth = 8.0
@@ -72,17 +75,18 @@ class TabPaneController(private val tabPane: TabPane, private val tabContent: Ma
                 }
             }
         })
-        val image = ImageResolver.getImage(TabPaneController::class.java.getResourceAsStream("/assets/add_white.png"), 8)
+        val image = ImageResolver.getImage("/assets/circle_full.png", 8)
         val imageView = ImageView(image)
         imageView.fitWidth = 8.0
         imageView.fitHeight = 8.0
+        imageView.styleClass.add("add-page-button")
         addBtn.setGraphic(imageView)
         this.children.add(addBtn)
 
         // Transition animation
-        /*tabPane.selectionModel
+        tabPane.selectionModel
                 .selectedItemProperty()
-                .addListener { obs, oldTab, newTab ->
+                .addListener { _, oldTab, newTab ->
                     val direction: Int
 
                     // Determine the slide direction
@@ -99,18 +103,18 @@ class TabPaneController(private val tabPane: TabPane, private val tabContent: Ma
                     newTab.content = oldContent
                     val fadeOut = TranslateTransition(
                             Duration.seconds(SLIDE_DURATION), oldContent)
-                    fadeOut.byX = direction * SectionGridController.PORTRAIT_WIDTH
+                    fadeOut.byX = direction * tabPane.width
 
                     val fadeIn = TranslateTransition(
                             Duration.seconds(SLIDE_DURATION), newContent)
-                    fadeIn.fromX = -direction * SectionGridController.PORTRAIT_WIDTH
+                    fadeIn.fromX = -direction * tabPane.width
                     fadeIn.toX = 0.0
                     fadeOut.setOnFinished { event -> newTab.content = newContent }
 
                     val crossFade = SequentialTransition(
                             fadeOut, fadeIn)
                     crossFade.play()
-                }*/
+                }
     }
 
     interface OnTabListener {
@@ -119,6 +123,6 @@ class TabPaneController(private val tabPane: TabPane, private val tabContent: Ma
     }
 
     companion object {
-        val SLIDE_DURATION = 0.15
+        val SLIDE_DURATION = 0.09
     }
 }

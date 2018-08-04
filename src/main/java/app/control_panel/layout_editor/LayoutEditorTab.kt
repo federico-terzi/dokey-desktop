@@ -11,6 +11,7 @@ import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.scene.layout.VBox
 import javafx.util.Duration
+import model.page.DefaultPage
 import model.parser.component.ComponentParser
 import model.section.Section
 import system.commands.CommandManager
@@ -20,13 +21,15 @@ import system.applications.ApplicationManager
 import system.section.SectionManager
 import java.util.*
 
+const val MAX_PAGES = 6
+
 class LayoutEditorTab(val sectionManager: SectionManager, val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                       val componentParser: ComponentParser, val commandManager: CommandManager,
                       val applicationManager: ApplicationManager, val globalKeyboardListener: GlobalKeyboardListener,
                       val dndCommandProcessor: DNDCommandProcessor) : ControlPanelTab() {
-    val sectionBar : SectionBar
-    var sectionGrid : SectionGrid? = null
-    val sectionGridContainer : ScrollPane = ScrollPane()  // Used as a workaround to fix overflowing transitions
+    val sectionBar: SectionBar
+    var sectionGrid: SectionGrid? = null
+    val sectionGridContainer: ScrollPane = ScrollPane()  // Used as a workaround to fix overflowing transitions
 
     init {
         // The section bar must be included in a box as a workaround to add the gradient background without
@@ -70,16 +73,30 @@ class LayoutEditorTab(val sectionManager: SectionManager, val imageResolver: Ima
         sectionGrid!!.onSectionModified = { section ->
             sectionManager.saveSection(section)
         }
+        sectionGrid!!.onRequestAddPage = { section ->
+            // Make sure to not exceed the limit
+            if (section.pages!!.size < MAX_PAGES) {
+                val newPage = DefaultPage()
+                newPage.components = mutableListOf()
+                newPage.colCount = SectionManager.DEFAULT_PAGE_COLS
+                newPage.rowCount = SectionManager.DEFAULT_PAGE_ROWS
+                section.pages!!.add(newPage)
+
+                sectionManager.saveSection(section)
+
+                sectionGrid!!.invalidate()
+            }
+        }
 
         // Replace the old grid with the new one, transitioning if necessary
         if (oldGrid != null) {
             slideAnimation(oldGrid, sectionGrid!!, direction)
-        }else{
+        } else {
             sectionGridContainer.content = sectionGrid
         }
     }
 
-    private fun slideAnimation(oldGrid : SectionGrid, newGrid : SectionGrid, direction: Int = 1) {
+    private fun slideAnimation(oldGrid: SectionGrid, newGrid: SectionGrid, direction: Int = 1) {
         val SLIDE_DURATION = 0.1
 
         val fadeOut = TranslateTransition(

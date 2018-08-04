@@ -38,8 +38,8 @@ open class DragButton(val context : GridContext) : Button() {
         set(value) {
             if (value) {
                 this.cacheHint = CacheHint.SPEED
-                val rotate = RotateTransition(Duration.seconds(2.5), this)
-                rotate.toAngle = 1080.0
+                val rotate = RotateTransition(Duration.seconds(5.0), this)
+                rotate.toAngle = 2080.0
                 rotate.play()
             } else {
                 this.rotate = 0.0

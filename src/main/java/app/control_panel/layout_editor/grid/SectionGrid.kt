@@ -29,6 +29,7 @@ class SectionGrid(val section: Section,
     : VBox() {
 
     var onSectionModified : ((Section) -> Unit)? = null
+    var onRequestAddPage : ((Section) -> Unit)? = null
 
     private var _screenOrientation : ScreenOrientation = ScreenOrientation.PORTRAIT
 
@@ -149,11 +150,12 @@ class SectionGrid(val section: Section,
 
         val tabPaneController = TabPaneController(tabPane, componentGrids, object : TabPaneController.OnTabListener{
             override fun onTabSelected(index: Int) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                tabPane.selectionModel.select(index)
+                activePage = section.pages?.get(index)  // Update the active page
             }
 
             override fun onAddTab() {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                onRequestAddPage?.invoke(section)
             }
 
         });

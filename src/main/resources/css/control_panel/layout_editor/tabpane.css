@@ -32,6 +32,10 @@
     -fx-effect: innershadow( one-pass-box , black, 70 , 1 , 1 , 1 );
 }
 
+.tab-pane-controller .button .add-page-button {
+    -fx-effect: innershadow( one-pass-box , -stop-green-gradient, 70 , 1 , 1 , 1 );
+}
+
 .tab-pane-controller .button:hover{
     -fx-opacity: 1;
 }
