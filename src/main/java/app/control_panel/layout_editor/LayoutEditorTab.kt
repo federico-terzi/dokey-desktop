@@ -6,6 +6,7 @@ import app.control_panel.layout_editor.bar.SectionBar
 import javafx.animation.Interpolator
 import javafx.animation.SequentialTransition
 import javafx.animation.TranslateTransition
+import javafx.scene.CacheHint
 import javafx.scene.control.ScrollPane
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
@@ -97,21 +98,29 @@ class LayoutEditorTab(val sectionManager: SectionManager, val imageResolver: Ima
     }
 
     private fun slideAnimation(oldGrid: SectionGrid, newGrid: SectionGrid, direction: Int = 1) {
+        newGrid.isCache = true
+        oldGrid.isCache = true
+        oldGrid.cacheHint = CacheHint.SPEED
+        newGrid.cacheHint = CacheHint.SPEED
+
         val SLIDE_DURATION = 0.1
 
         val fadeOut = TranslateTransition(
                 Duration.seconds(SLIDE_DURATION), oldGrid)
-        fadeOut.interpolator = Interpolator.EASE_IN
+        fadeOut.interpolator = Interpolator.EASE_BOTH
         fadeOut.byX = direction * oldGrid.width
         fadeOut.setOnFinished { event -> sectionGridContainer.content = newGrid }
 
         val fadeIn = TranslateTransition(
                 Duration.seconds(SLIDE_DURATION), newGrid)
+        fadeIn.interpolator = Interpolator.EASE_BOTH
         fadeIn.fromX = -direction * oldGrid.width
         fadeIn.toX = 0.0
 
         val crossFade = SequentialTransition(
                 fadeOut, fadeIn)
         crossFade.play()
+
+        crossFade.setOnFinished { newGrid.cacheHint = CacheHint.QUALITY; newGrid.isCache = false }
     }
 }

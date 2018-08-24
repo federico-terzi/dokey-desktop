@@ -159,17 +159,6 @@ class SectionGrid(val section: Section,
             }
 
         });
-       /* // This listener is used by the tab pane controller to select/add tabs
-        val onTabListener = object : TabPaneController.OnTabListener() {
-            fun onTabSelected(index: Int) {
-                tabPane.selectionModel.select(index)
-                activePage = section.getPages().get(index)  // Update the active page
-            }
-
-            fun onAddTab() {
-                sectionGridEventListener?.onRequestAddPage(section)
-            }
-        }*/
 
         val currentPane = VBox()
         currentPane.children.add(tabPane)
