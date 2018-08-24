@@ -47,8 +47,8 @@ class LayoutEditorTab(val sectionManager: SectionManager, val imageResolver: Ima
         sectionGridContainer.isFitToWidth = true
         children.add(sectionGridContainer)
 
-        sectionBar.onSectionClicked = { section, direction ->
-            loadSection(section, direction = direction)
+        sectionBar.onSectionClicked = { section ->
+            loadSection(section)
         }
     }
 
@@ -63,7 +63,7 @@ class LayoutEditorTab(val sectionManager: SectionManager, val imageResolver: Ima
         }
     }
 
-    private fun loadSection(section: Section, direction: Int = 1) {
+    private fun loadSection(section: Section) {
         val oldGrid = sectionGrid
 
         // Create the section grid

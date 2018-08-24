@@ -27,7 +27,7 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
     private val appBox = HBox()
     private val selectors : List<Selector>
 
-    var onSectionClicked : ((Section, direction: Int) -> Unit)? = null
+    var onSectionClicked : ((Section) -> Unit)? = null
 
     init {
         this.styleClass.add("app_scroll_pane")
@@ -62,20 +62,27 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
             selector.initialize()
             appBox.children.add(selector)
 
-            selector.onAction = EventHandler {
+            val changeAction : () -> Unit = {
                 val previousSelected : Int = selectors.indexOfFirst { it.selected }
 
                 // If the user clicks on the already selected one, do nothing
                 if (previousSelected != index) {
-                    val direction = calculateDirection(previousSelected, index)
-
-                    onSelectorSelected(selector, direction)
+                    onSelectorSelected(selector)
                 }
+            }
+
+            selector.onAction = EventHandler {
+                changeAction()
+            }
+
+            // Used when a user drag a file or url into another selector to focus the correct panel
+            selector.onDragEntered = EventHandler {
+                changeAction()
             }
         }
 
         // Automatically select the first one
-        onSelectorSelected(selectors.first(), 1)
+        onSelectorSelected(selectors.first())
     }
 
     fun selectSection(section: Section) {
@@ -88,31 +95,18 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
     fun selectSection(index: Int) {
         // Find the currently selected
         val currentSelector = selectors.indexOfFirst { selector -> selector.selected }
-        val direction = calculateDirection(currentSelector, index)
 
         val associatedSelector = selectors[index]
-        onSelectorSelected(associatedSelector, direction)
+        onSelectorSelected(associatedSelector)
     }
 
-    private fun onSelectorSelected(selector: Selector, direction: Int = 1) {
-        onSectionClicked?.invoke(selector.section, direction)
+    private fun onSelectorSelected(selector: Selector) {
+        onSectionClicked?.invoke(selector.section)
 
         // Unselect previous selector
         selectors.filter { it != selector }.forEach { it.selected = false }
 
         // Select the current one
         selector.selected = true
-    }
-
-    private fun calculateDirection(previous: Int, current: Int) : Int {
-        return if (previous >= 0) {
-            if (previous > current) {
-                1
-            }else{
-                -1
-            }
-        }else{
-            1
-        }
     }
 }
