@@ -3,9 +3,7 @@ package app.control_panel.layout_editor
 import app.control_panel.ControlPanelTab
 import app.control_panel.layout_editor.grid.SectionGrid
 import app.control_panel.layout_editor.bar.SectionBar
-import javafx.animation.Interpolator
-import javafx.animation.SequentialTransition
-import javafx.animation.TranslateTransition
+import javafx.animation.*
 import javafx.scene.CacheHint
 import javafx.scene.control.ScrollPane
 import javafx.scene.input.KeyCode
@@ -91,34 +89,34 @@ class LayoutEditorTab(val sectionManager: SectionManager, val imageResolver: Ima
 
         // Replace the old grid with the new one, transitioning if necessary
         if (oldGrid != null) {
-            slideAnimation(oldGrid, sectionGrid!!, direction)
+            slideAnimation(sectionGrid!!)
         } else {
             sectionGridContainer.content = sectionGrid
         }
     }
 
-    private fun slideAnimation(oldGrid: SectionGrid, newGrid: SectionGrid, direction: Int = 1) {
+    private fun slideAnimation(newGrid: SectionGrid) {
+        sectionGridContainer.content = newGrid
+
         newGrid.isCache = true
-        oldGrid.isCache = true
-        oldGrid.cacheHint = CacheHint.SPEED
         newGrid.cacheHint = CacheHint.SPEED
 
-        val SLIDE_DURATION = 0.1
+        val SLIDE_DURATION = 0.2
 
-        val fadeOut = TranslateTransition(
-                Duration.seconds(SLIDE_DURATION), oldGrid)
-        fadeOut.interpolator = Interpolator.EASE_BOTH
-        fadeOut.byX = direction * oldGrid.width
-        fadeOut.setOnFinished { event -> sectionGridContainer.content = newGrid }
+        val slideIn = TranslateTransition(
+                Duration.seconds(SLIDE_DURATION), newGrid)
+        slideIn.interpolator = Interpolator.EASE_BOTH
+        slideIn.fromY = 30.0
+        slideIn.toY = 0.0
 
-        val fadeIn = TranslateTransition(
+        val fadeIn = FadeTransition(
                 Duration.seconds(SLIDE_DURATION), newGrid)
         fadeIn.interpolator = Interpolator.EASE_BOTH
-        fadeIn.fromX = -direction * oldGrid.width
-        fadeIn.toX = 0.0
+        fadeIn.fromValue = 0.0
+        fadeIn.toValue = 1.0
 
-        val crossFade = SequentialTransition(
-                fadeOut, fadeIn)
+        val crossFade = ParallelTransition(
+                slideIn, fadeIn)
         crossFade.play()
 
         crossFade.setOnFinished { newGrid.cacheHint = CacheHint.QUALITY; newGrid.isCache = false }
