@@ -1,0 +1,20 @@
+.dokey-search-result-box {
+    -fx-padding: 5 10 5 10;
+}
+
+.dokey-search-result-title{
+    -fx-padding: 0 0 0 18;
+    -fx-font-family: "Nunito Sans Bold";
+    -fx-font-size: 14px;
+}
+
+.dokey-search-result-description {
+    -fx-padding: 0 0 0 18;
+    -fx-font-family: "Nunito Sans Light";
+    -fx-font-size: 12px;
+}
+.dokey-search-result-extra {
+    -fx-padding: 0 0 0 18;
+    -fx-font-family: "Nunito Sans Light";
+    -fx-font-size: 18px;
+}

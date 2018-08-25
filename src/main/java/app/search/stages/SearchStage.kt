@@ -9,7 +9,6 @@ import javafx.application.Platform
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
-import javafx.scene.control.MultipleSelectionModel
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
 import javafx.scene.paint.Color
@@ -29,12 +28,16 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 
+/**
+ * The Dokey Search stage.
+ */
 class SearchStage @Throws(IOException::class)
 constructor(private val resourceBundle: ResourceBundle, private val searchEngine: SearchEngine,
             private val imageResolver: ImageResolver) : Stage() {
 
     private val controller: SearchController
 
+    // This list view will hold the results of the search
     private val listView : SectionListView
 
     // Here are registered only the types of filter the user can select.
@@ -50,6 +53,7 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
     // This subject is used to debounce the display of results, to avoid flickering
     private val resultSubject = PublishSubject.create<SortedMap<ResultCategory, MutableList<Result>>>()
 
+    // Current search query
     private var currentQuery: String? = null
 
     // The application that was active before the bar was shown
@@ -260,9 +264,13 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
         // Calculate the correct coordinates for the center of the screen
         val primScreenBounds = Screen.getPrimary().visualBounds
         x = (primScreenBounds.width - width) / 2
-        y = (primScreenBounds.height - height) / 4 * 1
+        y = (primScreenBounds.height - height) / 6 * 1
     }
 
+    /**
+     * Elaborate the currentResults by grouping them into categories, ordering them
+     * based on the priority and trimming to the correct number of results per category.
+     */
     private fun elaborateResults() {
         if (currentResults == null)
             return
@@ -272,13 +280,15 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
             resultSubject.onNext(TreeMap<ResultCategory, MutableList<Result>>())
         }
 
-
+        // Add all the current results to the initial set of results
         var initialResults = mutableListOf<Result>()
         initialResults.addAll(currentResults!!)
 
+        // The maximum number of results for each agent, this will be recalculated later
         var maxNumberOfResultsForAgent = MAX_RESULTS
 
         if (resultFilter != null) {
+            // Filter the initial results based on the filtered category
             initialResults = initialResults.filter { it.category == resultFilter }.toMutableList()
         }else{
             // Calculate the number of maximum number of results for each agent dynamically
@@ -286,29 +296,35 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
             // Get the total number of categories to calculate the number of results for each category
             val totalNumberOfCategories = initialResults.map { it.category.name }.distinct().count()
 
+            // Clip the number of category to the MAX_DISPLAYED_CATEGORIES
             val numberOfCategories = if (totalNumberOfCategories > MAX_DISPLAYED_CATEGORIES)
                 MAX_DISPLAYED_CATEGORIES
             else
                 totalNumberOfCategories
 
+            // Calculate the maximum number of results based on the number of categories
             maxNumberOfResultsForAgent = if (numberOfCategories > 0 )
                 MAX_RESULTS / numberOfCategories
             else
                 MAX_RESULTS
         }
 
+        // This sorted map will hold the prioritized results
         val finalResults : SortedMap<ResultCategory, MutableList<Result>> = TreeMap<ResultCategory, MutableList<Result>>()
 
         var totalResultCount = 0
 
         for (result in initialResults) {
+            // Stop the process if the maximum number of results is reached
             if (totalResultCount > MAX_RESULTS) {
                 break
             }
 
+            // Initialize the list for the given category
             if (finalResults[result.category] == null) {
                 finalResults[result.category] = mutableListOf()
             }else{
+                // Clip the number of results for the given agent if exceeded
                 if (finalResults[result.category]!!.size > maxNumberOfResultsForAgent) {
                     continue
                 }
@@ -334,19 +350,10 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
         }
     }
 
-    data class FilterEntry(val resultClass : KClass<out Result>, val labelText: String)
-
     companion object {
         val MAX_RESULTS = 9 // Maximum number of results
-        val MAX_DISPLAYED_CATEGORIES = 4
+        val MAX_DISPLAYED_CATEGORIES = 4  // Maximum number of categories shown at once
 
-        val DIALOG_WIDTH = 700.0
+        val DIALOG_WIDTH = 700.0  // The width of the BAR
     }
-}
-
-/**
- * Workaround used to solve the select "Overload resolution ambiguity" problem.
- */
-fun <T> MultipleSelectionModel<T>.selectIndex(index : Int) {
-    this.select(index)
 }

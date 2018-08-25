@@ -1,0 +1,8 @@
+.dokey-search-separator-box {
+    -fx-padding: 5 10 5 12;
+}
+
+.dokey-search-separator-title {
+    -fx-font-family: "Nunito Sans Light";
+    -fx-font-size: 18px;
+}

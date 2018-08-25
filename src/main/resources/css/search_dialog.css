@@ -1,5 +1,6 @@
 @import "colors.css";
 @import "font.css";
+@import "search/listview/listview.css";
 
 .root {
     -fx-background-color: white;
@@ -29,71 +30,4 @@
 
 .text-field:focused {
     -fx-prompt-text-fill: derive(-fx-control-inner-background,-30%);
-}
-
-.dokey-search-result-box {
-    -fx-padding: 5 10 5 10;
-}
-
-.dokey-search-result-title{
-    -fx-padding: 0 0 0 18;
-    -fx-font-family: "Nunito Sans Bold";
-    -fx-font-size: 14px;
-}
-
-.dokey-search-result-description {
-    -fx-padding: 0 0 0 18;
-    -fx-font-family: "Nunito Sans Light";
-    -fx-font-size: 12px;
-}
-.dokey-search-result-extra {
-    -fx-padding: 0 0 0 18;
-    -fx-font-family: "Nunito Sans Light";
-    -fx-font-size: 18px;
-}
-
-.dokey-search-separator-box {
-    -fx-padding: 5 10 5 12;
-}
-
-.dokey-search-separator-title {
-    -fx-font-family: "Nunito Sans Light";
-    -fx-font-size: 18px;
-}
-
-.list-view {
-    -fx-background-color: transparent;
-}
-
-.list-view .list-cell:even {
-    -fx-background-color: transparent;
-}
-.list-view .list-cell:odd {
-    -fx-background-color: transparent;
-}
-.list-view .list-cell:filled:selected{
-    -fx-background-color: -green-gradient;
-}
-
-.list-view .list-cell:filled:selected .dokey-search-result-icon{
-    -fx-effect: innershadow( gaussian , -primaryTextColor , 7 , 1 , 1 , 1 );
-}
-
-.list-view .list-cell:filled:selected .dokey-search-result-image{
-    -fx-effect: none;
-}
-/*.list-view .list-cell:filled:selected .label{*/
-    /*-fx-text-fill: -primaryTextColor;*/
-/*}*/
-
-.list-view .scroll-bar .increment-arrow,
-.list-view .scroll-bar .decrement-arrow,
-.list-view .scroll-bar .increment-button,
-.list-view .scroll-bar .decrement-button {
-    -fx-padding:0;
-}
-
-.list-view {
-    -fx-background-insets: 0, 0;
-    -fx-padding: 0;
 }

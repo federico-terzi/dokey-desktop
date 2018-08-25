@@ -20,6 +20,9 @@ import system.image.ImageResolver
 import system.search.results.Result
 import utils.OSValidator
 
+/**
+ * This view adapter is used to render a result view into a list cell.
+ */
 class ResultViewAdapter(val imageResolver: ImageResolver, val fallback : Image) : ViewAdapter {
     private val hBox = HBox()
     private val image = ImageView()
@@ -52,13 +55,21 @@ class ResultViewAdapter(val imageResolver: ImageResolver, val fallback : Image) 
     }
 
     private fun populateFields(result: Result) {
+        // Load the text fields
         title.text = result.title
         description.text = result.description
         extraText.text = result.extra ?: ""
 
+        // Initially load the fallback image
         image.image = fallback
-
+        // Try to load the associated image asynchronously
         imageResolver.resolveImageAsync(result.imageId!!, 32) {resolvedImage, externalThread ->
+            /*
+            Check if the image has been loaded in a separate thread and, if so,
+            load the image in the imageview in the JavaFX Thread.
+            This control is useful because postponing the loading may cause
+            some flickering and we try to avoid it when possible.
+             */
             if (resolvedImage != null) {
                 if (externalThread) {
                     Platform.runLater {
@@ -83,6 +94,8 @@ class ResultViewAdapter(val imageResolver: ImageResolver, val fallback : Image) 
                 var offsetX = 0.0
                 var offsetY = 0.0
 
+                // Workaround to compensate the position offset in the
+                // Windows OS
                 if (OSValidator.isWindows()) {
                     offsetX = snapshot.width / 2
                     offsetY = snapshot.height / 2
@@ -109,6 +122,7 @@ class ResultViewAdapter(val imageResolver: ImageResolver, val fallback : Image) 
                 event.consume()
             }
         }else{
+            // Reset the drag and drop listeners
             hBox.onDragDone = null
             hBox.onDragDetected = null
         }

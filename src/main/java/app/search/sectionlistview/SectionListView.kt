@@ -10,6 +10,10 @@ import system.search.results.Result
 import system.search.results.ResultCategory
 import java.util.*
 
+/**
+ * This component extends ListView to implement the Category label feature used
+ * to distinguish between results
+ */
 class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolver) : ListView<ListViewEntry>() {
     private val results : ObservableList<ListViewEntry> = FXCollections.observableArrayList()
 
@@ -22,6 +26,7 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
 
         // Result list view click listener, execute the corresponding action
         setOnMouseClicked { event ->
+            // Make sure the clicked item is a result
             if (results[selectionModel.selectedIndex].isResult) {
                 getSelectedResult()?.executeAction()
             }else{
@@ -32,6 +37,9 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
         items = results
     }
 
+    /**
+     * Populate the list view with the given results.
+     */
     fun setResults(results: SortedMap<ResultCategory, MutableList<Result>>) {
         // Convert the given results to the observable list
         val finalResults = mutableListOf<ListViewEntry>()
@@ -44,14 +52,17 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
         this.results.setAll(finalResults)
     }
 
-    fun getComputedHeight() : Double {
-        return results.sumByDouble { it.getHeight()!! }
-    }
-
+    /**
+     * Adapt the height of the list view to the exact height that the cells occupies.
+     */
     fun adaptHeight() {
         prefHeight = getComputedHeight()
     }
 
+    /**
+     * Select the result corresponding to the given index, automatically
+     * ignoring the Separators items
+     */
     fun selectIndex(index: Int) {
         var count = 0
         for (i in 0 until results.size) {
@@ -67,6 +78,9 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
         }
     }
 
+    /**
+     * Select the first element of the next section.
+     */
     fun selectNextSection() {
         val currentCategory = getCurrentSection()
 
@@ -80,6 +94,10 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
         selectIndex(0)
     }
 
+    /**
+     * Get the index of the currently selected result, automatically
+     * correcting the count ignoring the separator items.
+     */
     fun getSelectedIndex() : Int {
         val realSelectedIndex = selectionModel.selectedIndex
         var count = 0
@@ -92,6 +110,9 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
         return count
     }
 
+    /**
+     * Get the section of the currently selected item.
+     */
     fun getCurrentSection() : String? {
         val currentlySelected = selectionModel.selectedIndex
         for (i in currentlySelected downTo 0) {
@@ -103,6 +124,9 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
         return null
     }
 
+    /**
+     * Get the category of the currently selected item.
+     */
     fun getCurrentCategory() : ResultCategory? {
         val currentlySelected = selectionModel.selectedItem as ListViewEntry
         if (currentlySelected != null && currentlySelected.isResult) {
@@ -112,11 +136,26 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
         return null
     }
 
+    /**
+     * Get the currently selected result.
+     */
     fun getSelectedResult() : Result? {
         return results[selectionModel.selectedIndex]?.result
     }
 
+    /**
+     * Get the total number of results in the list view, ignoring
+     * the separator items.
+     */
     fun getTotalItems() : Int {
         return results.filter { it.isResult }.count()
+    }
+
+    /**
+     * Calculate the height of the listview based on the sum of the individual
+     * list cells
+     */
+    private fun getComputedHeight() : Double {
+        return results.sumByDouble { it.getHeight()!! }
     }
 }

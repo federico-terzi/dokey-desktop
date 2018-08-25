@@ -8,6 +8,10 @@ import javafx.scene.layout.HBox
 import system.image.ImageResolver
 import system.search.results.Result
 
+/**
+ * Represents a general list view element in the SectionListView, capable of
+ * holding a result or a separator
+ */
 data class ListViewEntry(val category: String?, val result: Result?) {
     val isSeparator : Boolean
         get() = category != null
@@ -15,6 +19,9 @@ data class ListViewEntry(val category: String?, val result: Result?) {
     val isResult : Boolean
         get() = result != null
 
+    /**
+     * Return the correct view adapter based on the type of entry
+     */
     fun getViewAdapter(imageResolver: ImageResolver, fallback: Image) : ViewAdapter? {
         if (isSeparator) {
             return SeparatorViewAdapter()
@@ -25,6 +32,10 @@ data class ListViewEntry(val category: String?, val result: Result?) {
         return null
     }
 
+    /**
+     * Return the preferred height for the current list cell based on the
+     * entry type.
+     */
     fun getHeight() : Double? {
         if (isSeparator) {
             return 40.0
