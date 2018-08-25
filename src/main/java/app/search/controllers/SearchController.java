@@ -7,7 +7,6 @@ import javafx.scene.layout.VBox;
 
 public class SearchController {
     public TextField queryTextField;
-    public ListView resultListView;
     public VBox rootNode;
     public Label filterLabel;
     public VBox filterBox;

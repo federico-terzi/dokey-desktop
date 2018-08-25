@@ -1,25 +1,20 @@
 package app.search.stages
 
 import app.search.controllers.SearchController
-import app.search.listcells.ResultListCell
+import app.search.sectionlistview.SectionListView
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
 import javafx.application.Platform
-import javafx.collections.FXCollections
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
-import javafx.scene.control.ListCell
-import javafx.scene.control.ListView
 import javafx.scene.control.MultipleSelectionModel
 import javafx.scene.image.Image
-import javafx.scene.input.KeyCode
 import javafx.scene.paint.Color
 import javafx.stage.Screen
 import javafx.stage.Stage
 import javafx.stage.StageStyle
-import javafx.util.Callback
 import org.reflections.Reflections
 import system.ResourceUtils
 import system.applications.Application
@@ -39,6 +34,8 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
 
     private val controller: SearchController
 
+    private val listView : SectionListView
+
     // In this list are registered the priority of the results in the search bar
     // The first elements are displayed first
     private val resultPriorityList = mutableListOf<KClass<out Result>>()
@@ -50,14 +47,11 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
     // If this is set, only show the results of this category
     private var resultFilter: FilterEntry? = null
 
-    // The result list, when modified the listview updates
-    private val observableResults = FXCollections.observableArrayList<Result>()
-
     // The current results for the given query
     private var currentResults: MutableMap<KClass<out Result>, List<Result>>? = null
 
     // This subject is used to debounce the display of results, to avoid flickering
-    private val resultSubject = PublishSubject.create<List<Result>>()
+    private val resultSubject = PublishSubject.create<List<Pair<String, List<Result>>>>()
 
     private var currentQuery: String? = null
 
@@ -78,15 +72,15 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
         this.icons.add(Image(SearchStage::class.java.getResourceAsStream("/assets/icon.png")))
 
         controller = fxmlLoader.getController<Any>() as SearchController
-        controller.resultListView.isManaged = false
+
+        // Setup the listview
+        listView = SectionListView(this.width, imageResolver)
+        controller.rootNode.children.add(listView)
+        listView.isManaged = false
 
         // Hide the filter box
         controller.filterBox.isManaged = true
         controller.filterBox.isVisible = true
-
-        // Setup the list cells
-        val fallback = ImageResolver.getImage("/assets/photo.png", 32)
-        controller.resultListView.cellFactory = Callback<ListView<Any>, ListCell<Any>> { ResultListCell(this@SearchStage.width, fallback, imageResolver) as ListCell<Any> }
 
         // Setup the text field search callbacks
         controller.queryTextField.textProperty().addListener { _, _, searchQuery ->
@@ -116,68 +110,68 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
 
         // Setup keyboard events
         controller.queryTextField.setOnKeyPressed { event ->
-            val currentlySelected = controller.resultListView.selectionModel.selectedIndex
-            if (event.code == KeyCode.DOWN) {  // Select next element in the list
-                if (currentlySelected < controller.resultListView.items.size - 1) {
-                    controller.resultListView.selectionModel.selectIndex(currentlySelected + 1)
-                } else {  // Select the first
-                    if (controller.resultListView.items.size > 0) {
-                        controller.resultListView.selectionModel.selectIndex(0)
-                    }
-                }
-
-                event.consume()
-            } else if (event.code == KeyCode.UP) {  // Select previous element in the list
-                if (currentlySelected > 0) {
-                    controller.resultListView.selectionModel.selectIndex(currentlySelected - 1)
-                } else {  // Select the last one
-                    if (controller.resultListView.items.size > 0) {
-                        controller.resultListView.selectionModel.selectIndex(controller.resultListView.items.size - 1)
-                    }
-                }
-
-                event.consume()
-            } else if (event.code == KeyCode.ENTER) {  // Execute action and close the stage
-                val result = controller.resultListView.selectionModel.selectedItem as Result
-                result.executeAction()
-            } else if (event.code == KeyCode.ESCAPE) { // Close the search stage or remove filter
-                if (resultFilter != null) {  // REMOVE FILTER
-                    resultFilter = null
-                    elaborateResults()
-                } else {  // CLOSE
-                    close()
-                }
-            } else if (event.code == KeyCode.TAB) {  // Filter results
-                if (controller.resultListView.selectionModel.selectedItem == null ||
-                        (controller.resultListView.selectionModel.selectedItem as Result).javaClass.kotlin == resultFilter?.resultClass) {
-                    var index = 0
-                    if (resultFilter != null) {
-                        val nextIndex = userFilters.indexOf(resultFilter!!) + 1
-                        if (nextIndex != -1) {
-                            if (nextIndex >= userFilters.size) {
-                                index = 0
-                            } else {
-                                index = nextIndex
-                            }
-                        }
-                    }
-                    resultFilter = userFilters[index]
-                    elaborateResults()
-                } else {
-                    if (controller.resultListView.selectionModel.selectedItem != null) {
-                        val selectedClass = (controller.resultListView.selectionModel.selectedItem.javaClass as Class<out Result>).kotlin
-                        // Make sure the selected item is filterable from the user
-                        // for example, the terminal cannot be filtered
-                        val filterEntry = userFilters.find {it.resultClass == selectedClass}
-                        if (filterEntry != null) {
-                            resultFilter = filterEntry
-                            elaborateResults()
-                        }
-                    }
-                }
-
-                event.consume()
-            }
+            val currentlySelected = listView.selectionModel.selectedIndex
+//            if (event.code == KeyCode.DOWN) {  // Select next element in the list
+//                if (currentlySelected < controller.resultListView.items.size - 1) {
+//                    controller.resultListView.selectionModel.selectIndex(currentlySelected + 1)
+//                } else {  // Select the first
+//                    if (controller.resultListView.items.size > 0) {
+//                        controller.resultListView.selectionModel.selectIndex(0)
+//                    }
+//                }
+//
+//                event.consume()
+//            } else if (event.code == KeyCode.UP) {  // Select previous element in the list
+//                if (currentlySelected > 0) {
+//                    controller.resultListView.selectionModel.selectIndex(currentlySelected - 1)
+//                } else {  // Select the last one
+//                    if (controller.resultListView.items.size > 0) {
+//                        controller.resultListView.selectionModel.selectIndex(controller.resultListView.items.size - 1)
+//                    }
+//                }
+//
+//                event.consume()
+//            } else if (event.code == KeyCode.ENTER) {  // Execute action and close the stage
+//                val result = controller.resultListView.selectionModel.selectedItem as Result
+//                result.executeAction()
+//            } else if (event.code == KeyCode.ESCAPE) { // Close the search stage or remove filter
+//                if (resultFilter != null) {  // REMOVE FILTER
+//                    resultFilter = null
+//                    elaborateResults()
+//                } else {  // CLOSE
+//                    close()
+//                }
+//            } else if (event.code == KeyCode.TAB) {  // Filter results
+//                if (controller.resultListView.selectionModel.selectedItem == null ||
+//                        (controller.resultListView.selectionModel.selectedItem as Result).javaClass.kotlin == resultFilter?.resultClass) {
+//                    var index = 0
+//                    if (resultFilter != null) {
+//                        val nextIndex = userFilters.indexOf(resultFilter!!) + 1
+//                        if (nextIndex != -1) {
+//                            if (nextIndex >= userFilters.size) {
+//                                index = 0
+//                            } else {
+//                                index = nextIndex
+//                            }
+//                        }
+//                    }
+//                    resultFilter = userFilters[index]
+//                    elaborateResults()
+//                } else {
+//                    if (controller.resultListView.selectionModel.selectedItem != null) {
+//                        val selectedClass = (controller.resultListView.selectionModel.selectedItem.javaClass as Class<out Result>).kotlin
+//                        // Make sure the selected item is filterable from the user
+//                        // for example, the terminal cannot be filtered
+//                        val filterEntry = userFilters.find {it.resultClass == selectedClass}
+//                        if (filterEntry != null) {
+//                            resultFilter = filterEntry
+//                            elaborateResults()
+//                        }
+//                    }
+//                }
+//
+//                event.consume()
+//            }
         }
         // Detect if window lose focus
         focusedProperty().addListener { _, _, isFocused ->
@@ -186,23 +180,21 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
         }
 
         // Result list view click listener, execute the corresponding action
-        controller.resultListView.setOnMouseClicked { event ->
-            val result = controller.resultListView.selectionModel.selectedItem as Result
-            result.executeAction()
-        }
+//        controller.resultListView.setOnMouseClicked { event ->
+//            val result = controller.resultListView.selectionModel.selectedItem as Result
+//            result.executeAction()
+//        }
 
         registerResultPriorityList()
         registerUserFilterList()
 
-        controller.resultListView.setItems(observableResults)
-
         // Setup the debouncing mechanism to avoid flickering when displaying the results
-        resultSubject.debounce(50, TimeUnit.MILLISECONDS).subscribe(object : Observer<List<Result>> {
+        resultSubject.debounce(50, TimeUnit.MILLISECONDS).subscribe(object : Observer<List<Pair<String, List<Result>>>> {
             override fun onSubscribe(d: Disposable) {
 
             }
 
-            override fun onNext(priorityResults: List<Result>) {
+            override fun onNext(priorityResults: List<Pair<String, List<Result>>>) {
                 // Update the list view
                 Platform.runLater {
                     // Render filter label
@@ -224,18 +216,18 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
                     // Render results
                     val emptySearch = (currentQuery == null) || (currentQuery != null && currentQuery!!.isBlank())
                     if (priorityResults.isNotEmpty() || emptySearch) {
-                        observableResults.setAll(priorityResults)
+                        listView.setResults(priorityResults)
 
                         // Select the first item
                         if (priorityResults.size > 0) {
-                            controller.resultListView.selectionModel.selectIndex(0)
+                            listView.selectIndex(0)
                         }
 
                         // Set the height based on the list view
-                        controller.resultListView.prefHeight = (priorityResults.size * ResultListCell.ROW_HEIGHT).toDouble()
+                        listView.adaptHeight()
 
                         // Show the list view and refresh stage size to fit all contents
-                        controller.resultListView.isManaged = true
+                        listView.isManaged = true
                         sizeToScene()
                     }
                 }
@@ -257,7 +249,6 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
     fun preInitialize(activeApplication: Application?) {
         // Reset the result data structures
         currentResults = HashMap()
-        observableResults.clear()
 
         resultFilter = null
 
@@ -274,7 +265,7 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
      */
     fun postInitialize() {
         // Reset the height of the list box so that it contains no elements
-        controller.resultListView.prefHeight = 0.0
+        listView.prefHeight = 0.0
 
         // Resize the scene to fit the listview
         sizeToScene()
@@ -299,10 +290,10 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
 
         if (currentResults!!.isEmpty()) {
             // Signal the empty list
-            resultSubject.onNext(listOf<Result>())
+            resultSubject.onNext(emptyList())
         }
 
-        val priorityResults = ArrayList<Result>(20)
+        val priorityResults = mutableListOf<Pair<String, MutableList<Result>>>()
 
         // If the results has more than one category, limit the results for each one
         val limitResultsForCategory = currentResults!!.keys.size > 1
@@ -310,26 +301,36 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
         // If there is a result filter, only show those results
         if (resultFilter != null) {
             if (currentResults!!.containsKey(resultFilter!!.resultClass)) {
+                if (currentResults!![resultFilter!!.resultClass]!!.isNotEmpty()) {
+                    priorityResults.add(Pair(resultFilter!!.labelText, mutableListOf()))
+                }
                 for (result in currentResults!![resultFilter!!.resultClass]!!) {
-                    if (priorityResults.size < MAX_RESULTS) {
-                        priorityResults.add(result)
+                    if (priorityResults[0].second.size < MAX_RESULTS) {
+                        priorityResults[0].second.add(result)
                     }
                 }
             }
         } else {  // No filter, show all
+            var currentCategoryIndex = 0
+
             // Get the result for each result category
             for (resultClass in resultPriorityList) {
                 if (currentResults!!.containsKey(resultClass)) {
                     var currentResult = 0
 
+                    priorityResults.add(Pair(resultClass.toString(), mutableListOf())) // TODO change category title
+
                     for (result in currentResults!![resultClass]!!) {
-                        if ((currentResult < MAX_RESULTS_FOR_AGENT || !limitResultsForCategory) && priorityResults.size < MAX_RESULTS) {
-                            priorityResults.add(result)
+                        if ((currentResult < MAX_RESULTS_FOR_AGENT || !limitResultsForCategory)
+                                && priorityResults.size < MAX_RESULTS) {
+                            priorityResults[currentCategoryIndex].second.add(result)
                             currentResult++
                         } else {
                             break
                         }
                     }
+
+                    currentCategoryIndex++
                 }
             }
         }

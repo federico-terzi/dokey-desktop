@@ -126,9 +126,9 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
                 isAutomaticStartup = true;
             }else if (arg.equals("-cpanel")) {
                 openControlPanel = true;
-            }else if (arg.equals("-ceditor")) {
+            }else if (arg.equals("-ceditor")) {  // TODO: remove
                 openCommandEditor = true;
-            }else if (arg.equals("-settings")) {
+            }else if (arg.equals("-settings")) {  // TODO: remove
                 openSettings = true;
             }else if (arg.equals("-ignorelang")) {
                 ignoreLanguage = true;
