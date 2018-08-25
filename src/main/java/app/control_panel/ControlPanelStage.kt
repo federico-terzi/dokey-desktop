@@ -1,8 +1,11 @@
 package app.control_panel
 
+import app.control_panel.animations.StageOpacityTransition
+import app.control_panel.animations.StagePositionTransition
 import app.control_panel.controllers.ControlPanelController
 import app.control_panel.layout_editor.GlobalKeyboardListener
 import app.control_panel.layout_editor.LayoutEditorTab
+import javafx.animation.ParallelTransition
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
@@ -11,6 +14,7 @@ import javafx.scene.input.KeyCode
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 import javafx.stage.StageStyle
+import javafx.util.Duration
 import model.parser.component.ComponentParser
 import system.ResourceUtils
 import system.commands.CommandManager
@@ -70,5 +74,27 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
             // Notify the active tab
             activeTab.onGlobalKeyPress(it)
         }
+    }
+
+    fun animateIn() {
+        val fadeTransition = StageOpacityTransition(Duration.millis(200.0), this)
+        val positionTransition = StagePositionTransition(Duration.millis(200.0), this)
+        positionTransition.toY = this.y
+        positionTransition.fromY = this.y + 25
+
+        val transition = ParallelTransition(fadeTransition, positionTransition)
+        transition.play()
+    }
+
+    fun animateOut(onFinished: () -> Unit) {
+        val fadeTransition = StageOpacityTransition(Duration.millis(200.0), this)
+        fadeTransition.to = 0.0
+        val positionTransition = StagePositionTransition(Duration.millis(200.0), this)
+        positionTransition.toY = this.y + 25.0
+        positionTransition.fromY = this.y
+
+        val transition = ParallelTransition(fadeTransition, positionTransition)
+        transition.setOnFinished { onFinished() }
+        transition.play()
     }
 }

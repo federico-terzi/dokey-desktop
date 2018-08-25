@@ -140,6 +140,10 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
      * Get the currently selected result.
      */
     fun getSelectedResult() : Result? {
+        if (selectionModel.selectedIndex < 0) {
+            return null
+        }
+
         return results[selectionModel.selectedIndex]?.result
     }
 

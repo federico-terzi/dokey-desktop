@@ -496,10 +496,12 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         controlPanelStage.show();
         // Position the control panel in the correct position
         positionResolver.positionStageOnScreen(controlPanelStage);
+
+        controlPanelStage.animateIn();
     }
 
     private void hideControlPanel() {
-        controlPanelStage.hide();
+        controlPanelStage.animateOut(() -> {controlPanelStage.hide(); return Unit.INSTANCE;});
     }
 
     public void onEditorOpenRequest() {
