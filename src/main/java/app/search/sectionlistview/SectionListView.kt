@@ -58,6 +58,19 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
         }
     }
 
+    fun selectNextCategory() {
+        val currentCategory = getCurrentCategory()
+
+        for (i in selectionModel.selectedIndex until (results.size - 1)) {
+            if (results[i].isSeparator && results[i].category != currentCategory) {
+                selectionModel.select(i+1)
+                return
+            }
+        }
+
+        selectIndex(0)
+    }
+
     fun getSelectedIndex() : Int {
         val realSelectedIndex = selectionModel.selectedIndex
         var count = 0
@@ -68,5 +81,24 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
         }
 
         return count
+    }
+
+    fun getCurrentCategory() : String? {
+        val currentlySelected = selectionModel.selectedIndex
+        for (i in currentlySelected downTo 0) {
+            if (results[i].isSeparator) {
+                return results[i].category
+            }
+        }
+
+        return null
+    }
+
+    fun getSelectedResult() : Result? {
+        return results[selectionModel.selectedIndex]?.result
+    }
+
+    fun getTotalItems() : Int {
+        return results.filter { it.isResult }.count()
     }
 }

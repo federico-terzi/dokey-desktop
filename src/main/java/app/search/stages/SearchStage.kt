@@ -11,6 +11,7 @@ import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.control.MultipleSelectionModel
 import javafx.scene.image.Image
+import javafx.scene.input.KeyCode
 import javafx.scene.paint.Color
 import javafx.stage.Screen
 import javafx.stage.Stage
@@ -110,68 +111,44 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
 
         // Setup keyboard events
         controller.queryTextField.setOnKeyPressed { event ->
-            val currentlySelected = listView.selectionModel.selectedIndex
-//            if (event.code == KeyCode.DOWN) {  // Select next element in the list
-//                if (currentlySelected < controller.resultListView.items.size - 1) {
-//                    controller.resultListView.selectionModel.selectIndex(currentlySelected + 1)
-//                } else {  // Select the first
-//                    if (controller.resultListView.items.size > 0) {
-//                        controller.resultListView.selectionModel.selectIndex(0)
-//                    }
-//                }
-//
-//                event.consume()
-//            } else if (event.code == KeyCode.UP) {  // Select previous element in the list
-//                if (currentlySelected > 0) {
-//                    controller.resultListView.selectionModel.selectIndex(currentlySelected - 1)
-//                } else {  // Select the last one
-//                    if (controller.resultListView.items.size > 0) {
-//                        controller.resultListView.selectionModel.selectIndex(controller.resultListView.items.size - 1)
-//                    }
-//                }
-//
-//                event.consume()
-//            } else if (event.code == KeyCode.ENTER) {  // Execute action and close the stage
-//                val result = controller.resultListView.selectionModel.selectedItem as Result
-//                result.executeAction()
-//            } else if (event.code == KeyCode.ESCAPE) { // Close the search stage or remove filter
-//                if (resultFilter != null) {  // REMOVE FILTER
-//                    resultFilter = null
-//                    elaborateResults()
-//                } else {  // CLOSE
-//                    close()
-//                }
-//            } else if (event.code == KeyCode.TAB) {  // Filter results
-//                if (controller.resultListView.selectionModel.selectedItem == null ||
-//                        (controller.resultListView.selectionModel.selectedItem as Result).javaClass.kotlin == resultFilter?.resultClass) {
-//                    var index = 0
-//                    if (resultFilter != null) {
-//                        val nextIndex = userFilters.indexOf(resultFilter!!) + 1
-//                        if (nextIndex != -1) {
-//                            if (nextIndex >= userFilters.size) {
-//                                index = 0
-//                            } else {
-//                                index = nextIndex
-//                            }
-//                        }
-//                    }
-//                    resultFilter = userFilters[index]
-//                    elaborateResults()
-//                } else {
-//                    if (controller.resultListView.selectionModel.selectedItem != null) {
-//                        val selectedClass = (controller.resultListView.selectionModel.selectedItem.javaClass as Class<out Result>).kotlin
-//                        // Make sure the selected item is filterable from the user
-//                        // for example, the terminal cannot be filtered
-//                        val filterEntry = userFilters.find {it.resultClass == selectedClass}
-//                        if (filterEntry != null) {
-//                            resultFilter = filterEntry
-//                            elaborateResults()
-//                        }
-//                    }
-//                }
-//
-//                event.consume()
-//            }
+            val currentlySelected = listView.getSelectedIndex()
+            if (event.code == KeyCode.DOWN) {  // Select next element in the list
+                if (currentlySelected < listView.getTotalItems() - 1) {
+                    listView.selectIndex(listView.getSelectedIndex() + 1)
+                } else {  // Select the first
+                    if (listView.getTotalItems() > 0) {
+                        listView.selectIndex(0)
+                    }
+                }
+
+                event.consume()
+            } else if (event.code == KeyCode.UP) {  // Select previous element in the list
+                if (currentlySelected > 0) {
+                    listView.selectIndex(listView.getSelectedIndex() - 1)
+                } else {  // Select the last one
+                    if (listView.getTotalItems() > 0) {
+                        listView.selectIndex(listView.getTotalItems() - 1)
+                    }
+                }
+
+                event.consume()
+            }
+            else if (event.code == KeyCode.ENTER) {  // Execute action and close the stage
+                val result = listView.getSelectedResult()
+                result?.executeAction()
+            }
+            else if (event.code == KeyCode.ESCAPE) { // Close the search stage or remove filter
+                if (resultFilter != null) {  // REMOVE FILTER
+                    resultFilter = null
+                    elaborateResults()
+                } else {  // CLOSE
+                    close()
+                }
+            } else if (event.code == KeyCode.TAB) {  // Select next category
+                listView.selectNextCategory()
+
+                event.consume()
+            }
         }
         // Detect if window lose focus
         focusedProperty().addListener { _, _, isFocused ->
@@ -296,14 +273,28 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
 
         val initialResults = mutableListOf<Result>()
 
+        var maxNumberOfResultsForAgent = 1
+
         if (resultFilter != null) {
             initialResults.addAll(currentResults!!.filter { it.category == resultFilter })
         }else{
             initialResults.addAll(currentResults!!)
-        }
 
-        // If the results has more than one category, limit the results for each one
-        var limitResultsForCategory = currentResults!!.size > 1 && resultFilter == null
+            // Calculate the number of maximum number of results for each agent dynamically
+
+            // Get the total number of categories to calculate the number of results for each category
+            val totalNumberOfCategories = currentResults!!.map { it.category.name }.distinct().count()
+
+            val numberOfCategories = if (totalNumberOfCategories > MAX_DISPLAYED_CATEGORIES)
+                MAX_DISPLAYED_CATEGORIES
+            else
+                totalNumberOfCategories
+
+            maxNumberOfResultsForAgent = if (numberOfCategories > 0 )
+                MAX_RESULTS / numberOfCategories
+            else
+                MAX_RESULTS
+        }
 
         val finalResults : SortedMap<ResultCategory, MutableList<Result>> = TreeMap<ResultCategory, MutableList<Result>>()
 
@@ -317,7 +308,7 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
             if (finalResults[result.category] == null) {
                 finalResults[result.category] = mutableListOf()
             }else{
-                if (finalResults[result.category]!!.size >= MAX_RESULTS_FOR_AGENT) {
+                if (finalResults[result.category]!!.size > maxNumberOfResultsForAgent) {
                     continue
                 }
             }
@@ -347,7 +338,7 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
 
     companion object {
         val MAX_RESULTS = 9 // Maximum number of results
-        val MAX_RESULTS_FOR_AGENT = 3 // Maximum number of results for each agent
+        val MAX_DISPLAYED_CATEGORIES = 4
 
         val DIALOG_WIDTH = 700.0
     }
