@@ -6,7 +6,7 @@ import system.search.annotations.RegisterAgent
 import system.search.results.CommandResult
 import system.search.results.Result
 
-@RegisterAgent(priority = 50, resultClass = CommandResult::class)
+@RegisterAgent(priority = 50)
 class CommandAgent(context: SearchContext) : AbstractAgent(context) {
     override fun validate(query: String): Boolean = true
 

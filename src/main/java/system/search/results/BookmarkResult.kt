@@ -16,6 +16,8 @@ class BookmarkResult(context: SearchContext, val bookmark: Bookmark) : AbstractR
     override val imageId: String?
         get() = "asset:star"
 
+    override val category = ResultCategory(context.resourceBundle.getString("bookmark_category"), 40)
+
     override fun executeAction() {
         context.applicationManager.openWebLink(bookmark.url)
     }

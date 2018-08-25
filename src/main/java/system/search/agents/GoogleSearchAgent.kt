@@ -14,7 +14,7 @@ import java.util.ArrayList
 
 
 
-@RegisterAgent(priority = 30, resultClass = GoogleSearchResult::class)
+@RegisterAgent(priority = 30)
 class GoogleSearchAgent(context: SearchContext) : AbstractAgent(context) {
     override fun validate(query: String): Boolean = true
 

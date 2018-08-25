@@ -14,6 +14,8 @@ class GoogleSearchResult(context: SearchContext, val query: String) : AbstractRe
     override val imageId: String?
         get() = "asset:google"
 
+    override val category = ResultCategory(context.resourceBundle.getString("google_search_category"), 30)
+
     override fun executeAction() {
         context.applicationManager.openWebLink("https://www.google.it/search?q=${URLEncoder.encode(query, "UTF-8")}")
     }

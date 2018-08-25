@@ -8,7 +8,7 @@ import system.search.results.Result
 import system.search.results.CalculatorResult
 
 
-@RegisterAgent(priority = 100, resultClass = CalculatorResult::class)
+@RegisterAgent(priority = 100)
 class CalculatorAgent(context: SearchContext) : AbstractAgent(context) {
     override fun validate(query: String): Boolean {
         return query.matches(".*\\d+.*".toRegex());  // Check if query contains numbers

@@ -15,10 +15,4 @@ public @interface RegisterAgent {
      * @return
      */
     int priority();
-
-    /**
-     * Java class of the Result produced by this agent
-     * @return
-     */
-    Class<? extends Result> resultClass();
 }

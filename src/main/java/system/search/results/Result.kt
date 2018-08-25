@@ -14,5 +14,7 @@ interface Result {
 
     val imageId : String?
 
+    val category: ResultCategory
+
     fun generateDragAndDropPayload() : String?
 }

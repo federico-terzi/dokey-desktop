@@ -5,10 +5,10 @@ import system.search.results.Result
 import kotlin.reflect.KClass
 
 /**
- * This class implements the Decorator pattern to add priority and result class attributes to the agent class
+ * This class implements the Decorator pattern to add priority attribute to the agent class
  * dynamically at runtime
  */
-class RegisteredAgent(val agent: Agent, val priority: Int, val resultClass: KClass<out Result>) : Agent {
+class RegisteredAgent(val agent: Agent, val priority: Int) : Agent {
     override fun validate(query: String): Boolean {
         return agent.validate(query)
     }

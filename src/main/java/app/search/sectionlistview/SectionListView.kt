@@ -7,6 +7,8 @@ import javafx.scene.control.ListView
 import javafx.util.Callback
 import system.image.ImageResolver
 import system.search.results.Result
+import system.search.results.ResultCategory
+import java.util.*
 
 class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolver) : ListView<ListViewEntry>() {
     private val results : ObservableList<ListViewEntry> = FXCollections.observableArrayList()
@@ -17,14 +19,16 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
         cellFactory = Callback<ListView<ListViewEntry>, ListCell<ListViewEntry>> {
             ListViewCell(preferredWidth, fallback, imageResolver) as ListCell<ListViewEntry>
         }
+
+        items = results
     }
 
-    fun setResults(results: List<Pair<String, List<Result>>>) {
+    fun setResults(results: SortedMap<ResultCategory, MutableList<Result>>) {
         // Convert the given results to the observable list
         val finalResults = mutableListOf<ListViewEntry>()
         results.forEach {
-            finalResults.add(ListViewEntry(it.first, null))
-            it.second.forEach {
+            finalResults.add(ListViewEntry(it.key.name.toUpperCase(), null))
+            it.value.forEach {
                 finalResults.add(ListViewEntry(null, it))
             }
         }

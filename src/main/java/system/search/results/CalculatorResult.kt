@@ -11,6 +11,8 @@ class CalculatorResult(context: SearchContext, val query : String, val result: B
     override val description: String?
         get() = "${context.resourceBundle.getString("result_of_expression")} $result"
 
-    override val imageId: String?
+    override val category = ResultCategory(context.resourceBundle.getString("calculator_category"), 100)
+
+            override val imageId: String?
         get() = "asset:light"
 }

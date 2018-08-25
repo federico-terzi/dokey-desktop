@@ -34,14 +34,14 @@ class SearchEngine(val applicationManager: ApplicationManager, val context: Sear
         agentsClasses.forEach { agentClass ->
             val agentAnnotation = agentClass.getAnnotation(RegisterAgent::class.java) as RegisterAgent
             val agent = agentClass.getConstructor(SearchContext::class.java).newInstance(context) as Agent
-            val registeredAgent = RegisteredAgent(agent, agentAnnotation.priority, agentAnnotation.resultClass)
+            val registeredAgent = RegisteredAgent(agent, agentAnnotation.priority)
             agents.add(registeredAgent)
         }
         // Reorder the agents based on priority
         agents.sortByDescending { it.priority }
     }
 
-    fun requestQuery(query: String, activeApplication: Application?, listener: (query: String, category: KClass<out Result>, results: List<out Result>) -> Unit) {
+    fun requestQuery(query: String, activeApplication: Application?, listener: (query: String, results: List<out Result>) -> Unit) {
         // Reset the executor queue with previous requests
         executor.queue.clear()
 
@@ -50,7 +50,7 @@ class SearchEngine(val applicationManager: ApplicationManager, val context: Sear
                 executor.execute({
                     val agentResults = agent.getResults(query, activeApplication)
                     if (agentResults.isNotEmpty()) {
-                        listener(query, agent.resultClass, agentResults)
+                        listener(query, agentResults)
                     }
                 })
             }

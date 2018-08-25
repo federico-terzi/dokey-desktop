@@ -6,7 +6,7 @@ import system.search.annotations.RegisterAgent
 import system.search.results.BookmarkResult
 import system.search.results.Result
 
-@RegisterAgent(priority = 40, resultClass = BookmarkResult::class)
+@RegisterAgent(priority = 40)
 class BookmarkAgent(context: SearchContext) : AbstractAgent(context) {
     override fun validate(query: String): Boolean = true
 

@@ -23,6 +23,7 @@ import system.search.SearchEngine
 import system.search.annotations.FilterableResult
 import system.search.annotations.RegisterAgent
 import system.search.results.Result
+import system.search.results.ResultCategory
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -36,22 +37,18 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
 
     private val listView : SectionListView
 
-    // In this list are registered the priority of the results in the search bar
-    // The first elements are displayed first
-    private val resultPriorityList = mutableListOf<KClass<out Result>>()
-
     // Similar to the resultPriorityList, here are registered only the types of filter
     // the user can select. For example, the terminal filter cannot be selected by the user.
     private val userFilters : MutableList<FilterEntry> = mutableListOf<FilterEntry>()
 
     // If this is set, only show the results of this category
-    private var resultFilter: FilterEntry? = null
+    private var resultFilter: ResultCategory? = null
 
     // The current results for the given query
-    private var currentResults: MutableMap<KClass<out Result>, List<Result>>? = null
+    private var currentResults: MutableList<Result>? = null
 
     // This subject is used to debounce the display of results, to avoid flickering
-    private val resultSubject = PublishSubject.create<List<Pair<String, List<Result>>>>()
+    private val resultSubject = PublishSubject.create<SortedMap<ResultCategory, MutableList<Result>>>()
 
     private var currentQuery: String? = null
 
@@ -73,8 +70,11 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
 
         controller = fxmlLoader.getController<Any>() as SearchController
 
+        // Setup the bar width
+        controller.rootNode.prefWidth = DIALOG_WIDTH
+
         // Setup the listview
-        listView = SectionListView(this.width, imageResolver)
+        listView = SectionListView(DIALOG_WIDTH, imageResolver)
         controller.rootNode.children.add(listView)
         listView.isManaged = false
 
@@ -91,10 +91,10 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
             elaborateResults()
 
             if (!searchQuery.isBlank()) {
-                searchEngine.requestQuery(searchQuery.trim(), activeApplication) { query, category, results ->
+                searchEngine.requestQuery(searchQuery.trim(), activeApplication) { query, results ->
                     // Make sure the result is relative to the current query
                     if (currentQuery == query) {
-                        currentResults!![category] = results
+                        currentResults!!.addAll(results)
                         elaborateResults()
                     }
                 }
@@ -185,23 +185,23 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
 //            result.executeAction()
 //        }
 
-        registerResultPriorityList()
         registerUserFilterList()
 
         // Setup the debouncing mechanism to avoid flickering when displaying the results
-        resultSubject.debounce(50, TimeUnit.MILLISECONDS).subscribe(object : Observer<List<Pair<String, List<Result>>>> {
+        resultSubject.debounce(50, TimeUnit.MILLISECONDS)
+                .subscribe(object : Observer<SortedMap<ResultCategory, MutableList<Result>>> {
             override fun onSubscribe(d: Disposable) {
 
             }
 
-            override fun onNext(priorityResults: List<Pair<String, List<Result>>>) {
+            override fun onNext(results: SortedMap<ResultCategory, MutableList<Result>>) {
                 // Update the list view
                 Platform.runLater {
                     // Render filter label
                     if (resultFilter != null) {
                         // Get the filter text
                         try {
-                            controller.filterLabel.text = resultFilter?.labelText
+                            controller.filterLabel.text = resultFilter?.name
                             controller.filterBox.isManaged = true
                             controller.filterBox.isVisible = true
                         } catch (e: Exception) {
@@ -215,11 +215,11 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
 
                     // Render results
                     val emptySearch = (currentQuery == null) || (currentQuery != null && currentQuery!!.isBlank())
-                    if (priorityResults.isNotEmpty() || emptySearch) {
-                        listView.setResults(priorityResults)
+                    if (results.isNotEmpty() || emptySearch) {
+                        listView.setResults(results)
 
                         // Select the first item
-                        if (priorityResults.size > 0) {
+                        if (results.size > 0) {
                             listView.selectIndex(0)
                         }
 
@@ -248,7 +248,7 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
      */
     fun preInitialize(activeApplication: Application?) {
         // Reset the result data structures
-        currentResults = HashMap()
+        currentResults = mutableListOf()
 
         resultFilter = null
 
@@ -290,70 +290,44 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
 
         if (currentResults!!.isEmpty()) {
             // Signal the empty list
-            resultSubject.onNext(emptyList())
+            resultSubject.onNext(TreeMap<ResultCategory, MutableList<Result>>())
         }
 
-        val priorityResults = mutableListOf<Pair<String, MutableList<Result>>>()
+
+        val initialResults = mutableListOf<Result>()
+
+        if (resultFilter != null) {
+            initialResults.addAll(currentResults!!.filter { it.category == resultFilter })
+        }else{
+            initialResults.addAll(currentResults!!)
+        }
 
         // If the results has more than one category, limit the results for each one
-        val limitResultsForCategory = currentResults!!.keys.size > 1
+        var limitResultsForCategory = currentResults!!.size > 1 && resultFilter == null
 
-        // If there is a result filter, only show those results
-        if (resultFilter != null) {
-            if (currentResults!!.containsKey(resultFilter!!.resultClass)) {
-                if (currentResults!![resultFilter!!.resultClass]!!.isNotEmpty()) {
-                    priorityResults.add(Pair(resultFilter!!.labelText, mutableListOf()))
-                }
-                for (result in currentResults!![resultFilter!!.resultClass]!!) {
-                    if (priorityResults[0].second.size < MAX_RESULTS) {
-                        priorityResults[0].second.add(result)
-                    }
+        val finalResults : SortedMap<ResultCategory, MutableList<Result>> = TreeMap<ResultCategory, MutableList<Result>>()
+
+        var totalResultCount = 0
+
+        for (result in initialResults) {
+            if (totalResultCount > MAX_RESULTS) {
+                break
+            }
+
+            if (finalResults[result.category] == null) {
+                finalResults[result.category] = mutableListOf()
+            }else{
+                if (finalResults[result.category]!!.size >= MAX_RESULTS_FOR_AGENT) {
+                    continue
                 }
             }
-        } else {  // No filter, show all
-            var currentCategoryIndex = 0
 
-            // Get the result for each result category
-            for (resultClass in resultPriorityList) {
-                if (currentResults!!.containsKey(resultClass)) {
-                    var currentResult = 0
-
-                    priorityResults.add(Pair(resultClass.toString(), mutableListOf())) // TODO change category title
-
-                    for (result in currentResults!![resultClass]!!) {
-                        if ((currentResult < MAX_RESULTS_FOR_AGENT || !limitResultsForCategory)
-                                && priorityResults.size < MAX_RESULTS) {
-                            priorityResults[currentCategoryIndex].second.add(result)
-                            currentResult++
-                        } else {
-                            break
-                        }
-                    }
-
-                    currentCategoryIndex++
-                }
-            }
+            finalResults[result.category]!!.add(result)
+            totalResultCount++
         }
 
         // Signal the new results
-        resultSubject.onNext(priorityResults)
-    }
-
-    /**
-     * Register the result type priority in the list
-     */
-    private fun registerResultPriorityList() {
-        // Load all the priorities using reflection
-        val reflections = Reflections("system.search.agents")
-        val agentsClasses = reflections.getTypesAnnotatedWith(RegisterAgent::class.java)
-        val unorderedAgents = mutableListOf<Pair<KClass<out Result>, Int>>()
-        agentsClasses.forEach { agentClass ->
-            val agentAnnotation = agentClass.getAnnotation(RegisterAgent::class.java) as RegisterAgent
-            unorderedAgents.add(Pair<KClass<out Result>, Int>(agentAnnotation.resultClass, agentAnnotation.priority))
-        }
-        // Reorder the agents based on priority and add them to the list
-        unorderedAgents.sortByDescending { it.second }
-        unorderedAgents.forEach { resultPriorityList.add(it.first) }
+        resultSubject.onNext(finalResults)
     }
 
     /**
@@ -374,6 +348,8 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
     companion object {
         val MAX_RESULTS = 9 // Maximum number of results
         val MAX_RESULTS_FOR_AGENT = 3 // Maximum number of results for each agent
+
+        val DIALOG_WIDTH = 700.0
     }
 }
 
