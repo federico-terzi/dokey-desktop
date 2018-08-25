@@ -4,7 +4,7 @@ import system.context.SearchContext
 import system.search.annotations.FilterableResult
 import java.net.URLEncoder
 
-@FilterableResult(filterName = "google_search_category")
+@FilterableResult
 class GoogleSearchResult(context: SearchContext, val query: String) : AbstractResult(context) {
     override val title: String
         get() = query

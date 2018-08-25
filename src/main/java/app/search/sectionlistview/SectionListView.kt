@@ -20,6 +20,15 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
             ListViewCell(preferredWidth, fallback, imageResolver) as ListCell<ListViewEntry>
         }
 
+        // Result list view click listener, execute the corresponding action
+        setOnMouseClicked { event ->
+            if (results[selectionModel.selectedIndex].isResult) {
+                getSelectedResult()?.executeAction()
+            }else{
+                selectionModel.clearSelection()
+            }
+        }
+
         items = results
     }
 
@@ -27,7 +36,7 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
         // Convert the given results to the observable list
         val finalResults = mutableListOf<ListViewEntry>()
         results.forEach {
-            finalResults.add(ListViewEntry(it.key.name.toUpperCase(), null))
+            finalResults.add(ListViewEntry(it.key.name, null))
             it.value.forEach {
                 finalResults.add(ListViewEntry(null, it))
             }
@@ -36,7 +45,7 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
     }
 
     fun getComputedHeight() : Double {
-        return results.size * 55.0  // TODO: cambiare l'altezza
+        return results.sumByDouble { it.getHeight()!! }
     }
 
     fun adaptHeight() {
@@ -58,8 +67,8 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
         }
     }
 
-    fun selectNextCategory() {
-        val currentCategory = getCurrentCategory()
+    fun selectNextSection() {
+        val currentCategory = getCurrentSection()
 
         for (i in selectionModel.selectedIndex until (results.size - 1)) {
             if (results[i].isSeparator && results[i].category != currentCategory) {
@@ -83,12 +92,21 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
         return count
     }
 
-    fun getCurrentCategory() : String? {
+    fun getCurrentSection() : String? {
         val currentlySelected = selectionModel.selectedIndex
         for (i in currentlySelected downTo 0) {
             if (results[i].isSeparator) {
                 return results[i].category
             }
+        }
+
+        return null
+    }
+
+    fun getCurrentCategory() : ResultCategory? {
+        val currentlySelected = selectionModel.selectedItem as ListViewEntry
+        if (currentlySelected != null && currentlySelected.isResult) {
+            return currentlySelected.result?.category
         }
 
         return null

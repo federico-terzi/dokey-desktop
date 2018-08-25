@@ -24,4 +24,14 @@ data class ListViewEntry(val category: String?, val result: Result?) {
 
         return null
     }
+
+    fun getHeight() : Double? {
+        if (isSeparator) {
+            return 40.0
+        }else if (isResult) {
+            return 55.0
+        }
+
+        return null
+    }
 }

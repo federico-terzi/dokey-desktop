@@ -129,5 +129,4 @@ class ResultViewAdapter(val imageResolver: ImageResolver, val fallback : Image) 
     override fun getView(): HBox {
         return hBox
     }
-
 }

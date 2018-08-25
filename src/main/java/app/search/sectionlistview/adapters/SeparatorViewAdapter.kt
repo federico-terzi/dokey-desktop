@@ -9,6 +9,9 @@ class SeparatorViewAdapter : ViewAdapter {
     private val title = Label()
 
     init {
+        hBox.styleClass.add("dokey-search-separator-box")
+        title.styleClass.add("dokey-search-separator-title")
+
         hBox.children.add(title)
     }
 
@@ -31,5 +34,4 @@ class SeparatorViewAdapter : ViewAdapter {
     override fun getView(): HBox {
         return hBox
     }
-
 }

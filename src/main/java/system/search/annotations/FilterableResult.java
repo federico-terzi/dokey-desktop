@@ -7,10 +7,4 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface FilterableResult {
-    /**
-     * The name of the filter expressed as the id of the resource bundle.
-     * @return
-     */
-    String filterName();
-}
+public @interface FilterableResult {}

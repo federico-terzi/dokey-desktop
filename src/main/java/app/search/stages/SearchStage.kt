@@ -22,7 +22,6 @@ import system.applications.Application
 import system.image.ImageResolver
 import system.search.SearchEngine
 import system.search.annotations.FilterableResult
-import system.search.annotations.RegisterAgent
 import system.search.results.Result
 import system.search.results.ResultCategory
 import java.io.IOException
@@ -38,9 +37,9 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
 
     private val listView : SectionListView
 
-    // Similar to the resultPriorityList, here are registered only the types of filter
-    // the user can select. For example, the terminal filter cannot be selected by the user.
-    private val userFilters : MutableList<FilterEntry> = mutableListOf<FilterEntry>()
+    // Here are registered only the types of filter the user can select.
+    // For example, the terminal filter cannot be selected by the user.
+    private val filterableResults : MutableSet<KClass<out Result>> = mutableSetOf()
 
     // If this is set, only show the results of this category
     private var resultFilter: ResultCategory? = null
@@ -136,16 +135,25 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
             else if (event.code == KeyCode.ENTER) {  // Execute action and close the stage
                 val result = listView.getSelectedResult()
                 result?.executeAction()
-            }
-            else if (event.code == KeyCode.ESCAPE) { // Close the search stage or remove filter
+            } else if (event.code == KeyCode.ESCAPE) { // Close the search stage or remove filter
                 if (resultFilter != null) {  // REMOVE FILTER
                     resultFilter = null
                     elaborateResults()
                 } else {  // CLOSE
                     close()
                 }
+            } else if (event.code == KeyCode.ALT) { // Filter
+                val currentResult = listView.getSelectedResult()
+
+                if (currentResult != null) {
+                    if (resultFilter == null && filterableResults.contains(currentResult::class)) {
+                        resultFilter = currentResult.category
+                    }
+
+                    elaborateResults()
+                }
             } else if (event.code == KeyCode.TAB) {  // Select next category
-                listView.selectNextCategory()
+                listView.selectNextSection()
 
                 event.consume()
             }
@@ -156,13 +164,7 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
                 close()
         }
 
-        // Result list view click listener, execute the corresponding action
-//        controller.resultListView.setOnMouseClicked { event ->
-//            val result = controller.resultListView.selectionModel.selectedItem as Result
-//            result.executeAction()
-//        }
-
-        registerUserFilterList()
+        registerFilterableResults()
 
         // Setup the debouncing mechanism to avoid flickering when displaying the results
         resultSubject.debounce(50, TimeUnit.MILLISECONDS)
@@ -271,19 +273,18 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
         }
 
 
-        val initialResults = mutableListOf<Result>()
+        var initialResults = mutableListOf<Result>()
+        initialResults.addAll(currentResults!!)
 
-        var maxNumberOfResultsForAgent = 1
+        var maxNumberOfResultsForAgent = MAX_RESULTS
 
         if (resultFilter != null) {
-            initialResults.addAll(currentResults!!.filter { it.category == resultFilter })
+            initialResults = initialResults.filter { it.category == resultFilter }.toMutableList()
         }else{
-            initialResults.addAll(currentResults!!)
-
             // Calculate the number of maximum number of results for each agent dynamically
 
             // Get the total number of categories to calculate the number of results for each category
-            val totalNumberOfCategories = currentResults!!.map { it.category.name }.distinct().count()
+            val totalNumberOfCategories = initialResults.map { it.category.name }.distinct().count()
 
             val numberOfCategories = if (totalNumberOfCategories > MAX_DISPLAYED_CATEGORIES)
                 MAX_DISPLAYED_CATEGORIES
@@ -324,13 +325,12 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
     /**
      * Register the user filters.
      */
-    private fun registerUserFilterList() {
+    private fun registerFilterableResults() {
         // Load all the filterable result
         val reflections = Reflections("system.search.results")
         val resultClasses = reflections.getTypesAnnotatedWith(FilterableResult::class.java)
         resultClasses.forEach { resultClass ->
-            val annotation = resultClass.getAnnotation(FilterableResult::class.java) as FilterableResult
-            userFilters.add(FilterEntry((resultClass as Class<out Result>).kotlin, resourceBundle.getString(annotation.filterName)))
+            filterableResults.add((resultClass as Class<out Result>).kotlin)
         }
     }
 

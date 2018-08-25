@@ -5,7 +5,7 @@ import system.commands.general.AppRelatedCommand
 import system.context.SearchContext
 import system.search.annotations.FilterableResult
 
-@FilterableResult(filterName = "commands_category")
+@FilterableResult
 class CommandResult(context: SearchContext, val command: Command) : AbstractResult(context) {
     override val title: String
         get() = command.title!!
