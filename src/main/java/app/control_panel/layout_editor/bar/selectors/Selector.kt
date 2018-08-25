@@ -7,6 +7,7 @@ import javafx.scene.control.Button
 import javafx.scene.image.ImageView
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
+import javafx.scene.shape.Rectangle
 import javafx.scene.shape.SVGPath
 import javafx.util.Duration
 import model.section.Section
@@ -38,7 +39,7 @@ abstract class Selector(val context: SelectorContext, val section: Section, val 
             _selected = value
         }
 
-    private val selectorNode : SVGPath = SVGPath()
+    private val selectorNode : Rectangle = Rectangle()
 
     fun initialize() {
         val image = context.imageResolver.resolveImage(imageId, 32)
@@ -46,7 +47,11 @@ abstract class Selector(val context: SelectorContext, val section: Section, val 
         imageView.fitHeight = 32.0
         imageView.fitWidth = 32.0
 
-        selectorNode.content = "M25 48 L42 48 L33 40 Z"
+//        selectorNode.content = "M25 48 L42 48 L33 40 Z"
+        selectorNode.width = 27.0
+        selectorNode.height = 4.0
+        selectorNode.arcHeight = 5.0
+        selectorNode.arcWidth = 5.0
         selectorNode.fill = Color.WHITE
         selectorNode.opacity = 0.0
 
