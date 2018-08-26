@@ -1,5 +1,7 @@
 package app.control_panel.layout_editor.grid
 
+import javafx.animation.FadeTransition
+import javafx.animation.ParallelTransition
 import javafx.animation.SequentialTransition
 import javafx.animation.TranslateTransition
 import javafx.event.ActionEvent
@@ -19,14 +21,63 @@ import system.image.ImageResolver
 class TabPaneController(private val tabPane: TabPane, private val tabContent: Map<Tab, Node>,
                         private val listener: OnTabListener?)
     : HBox() {
+
+    private var isTransitioning = false
+
     init {
         this.styleClass.add("tab-pane-controller")
         this.alignment = Pos.CENTER
 
+        // Transition animation
+        tabPane.selectionModel
+                .selectedItemProperty()
+                .addListener { _, oldTab, newTab ->
+                    isTransitioning = true
+
+                    val direction: Int
+
+                    // Determine the slide direction
+                    if (tabPane.tabs.indexOf(newTab) > tabPane.tabs.indexOf(oldTab)) {
+                        direction = -1
+                    } else {
+                        direction = 1
+                    }
+
+                    oldTab.content = null
+                    val oldContent = tabContent[oldTab]
+                    val newContent = tabContent[newTab]
+
+                    newTab.content = oldContent
+                    val slideOut = TranslateTransition(
+                            Duration.seconds(SLIDE_DURATION), oldContent)
+                    slideOut.byX = direction * tabPane.width
+                    val fadeOut = FadeTransition(Duration.seconds(SLIDE_DURATION), oldContent)
+                    fadeOut.toValue = 0.0
+                    fadeOut.fromValue = 1.0
+
+                    val slideIn = TranslateTransition(
+                            Duration.seconds(SLIDE_DURATION), newContent)
+                    slideIn.fromX = -direction * tabPane.width
+                    slideIn.toX = 0.0
+                    val fadeIn = FadeTransition(Duration.seconds(SLIDE_DURATION), newContent)
+                    fadeIn.toValue = 1.0
+                    fadeIn.fromValue = 0.0
+
+                    slideOut.setOnFinished { event -> newTab.content = newContent }
+
+                    val crossFade = SequentialTransition(
+                            ParallelTransition(slideOut, fadeOut),
+                            ParallelTransition(slideIn, fadeIn))
+
+                    crossFade.setOnFinished { isTransitioning = false }
+
+                    crossFade.play()
+                }
+
         render()
     }
 
-    private fun render() {
+    fun render() {
         this.children.clear()
 
         var index = 0
@@ -82,39 +133,12 @@ class TabPaneController(private val tabPane: TabPane, private val tabContent: Ma
         imageView.styleClass.add("add-page-button")
         addBtn.setGraphic(imageView)
         this.children.add(addBtn)
+    }
 
-        // Transition animation
-        tabPane.selectionModel
-                .selectedItemProperty()
-                .addListener { _, oldTab, newTab ->
-                    val direction: Int
-
-                    // Determine the slide direction
-                    if (tabPane.tabs.indexOf(newTab) > tabPane.tabs.indexOf(oldTab)) {
-                        direction = -1
-                    } else {
-                        direction = 1
-                    }
-
-                    oldTab.content = null
-                    val oldContent = tabContent[oldTab]
-                    val newContent = tabContent[newTab]
-
-                    newTab.content = oldContent
-                    val fadeOut = TranslateTransition(
-                            Duration.seconds(SLIDE_DURATION), oldContent)
-                    fadeOut.byX = direction * tabPane.width
-
-                    val fadeIn = TranslateTransition(
-                            Duration.seconds(SLIDE_DURATION), newContent)
-                    fadeIn.fromX = -direction * tabPane.width
-                    fadeIn.toX = 0.0
-                    fadeOut.setOnFinished { event -> newTab.content = newContent }
-
-                    val crossFade = SequentialTransition(
-                            fadeOut, fadeIn)
-                    crossFade.play()
-                }
+    fun selectTab(index: Int) {
+        if (!isTransitioning) {
+            tabPane.selectionModel.select(index)
+        }
     }
 
     interface OnTabListener {
@@ -123,6 +147,6 @@ class TabPaneController(private val tabPane: TabPane, private val tabContent: Ma
     }
 
     companion object {
-        val SLIDE_DURATION = 0.09
+        val SLIDE_DURATION = 0.1
     }
 }

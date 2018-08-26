@@ -158,7 +158,22 @@ class SectionGrid(val section: Section,
                 onRequestAddPage?.invoke(section)
             }
 
-        });
+        })
+
+        tabPane.setOnScroll {
+            var scrolled = false
+            if (it.deltaX > 1) {
+                tabPaneController.selectTab(tabPane.selectionModel.selectedIndex-1)
+                scrolled = true
+            }else if (it.deltaX < -1) {
+                tabPaneController.selectTab(tabPane.selectionModel.selectedIndex+1)
+                scrolled = true
+            }
+            if (scrolled) {
+                activePage = section.pages?.get(tabPane.selectionModel.selectedIndex)
+                tabPaneController.render()
+            }
+        }
 
         val currentPane = VBox()
         currentPane.children.add(tabPane)
