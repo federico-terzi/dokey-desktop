@@ -22,6 +22,7 @@ import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
 import system.applications.ApplicationManager
 import system.section.SectionManager
+import utils.OSValidator
 import java.util.*
 
 class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
@@ -53,6 +54,9 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
         this.icons.add(Image(ControlPanelStage::class.java.getResourceAsStream("/assets/icon.png")))
 
         controller = fxmlLoader.getController<Any>() as ControlPanelController
+
+        // Initialize the style
+        initializeStyle()
 
         // Load the tabs
         controller.content_box.children.add(layoutEditorTab)
@@ -96,5 +100,13 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
         val transition = ParallelTransition(fadeTransition, positionTransition)
         transition.setOnFinished { onFinished() }
         transition.play()
+    }
+
+    private fun initializeStyle() {
+        if (OSValidator.isWindows()) {
+            this.scene.root.styleClass.add("windows-panel")
+        }else if (OSValidator.isMac()) {
+            this.scene.root.styleClass.add("mac-panel")
+        }
     }
 }

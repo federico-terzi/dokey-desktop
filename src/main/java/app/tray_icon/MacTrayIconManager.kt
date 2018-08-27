@@ -1,5 +1,6 @@
 package app.tray_icon
 
+import javafx.stage.Screen
 import java.awt.image.BufferedImage
 import java.util.*
 
@@ -12,7 +13,9 @@ class MacTrayIconManager(resourceBundle: ResourceBundle) : AbstractTrayIconManag
         defaultIcon = AbstractTrayIconManager.loadBufferedImage("/assets/tray/mac/icon.png")
 
         // Stimate the initial icon position
-        // TODO
+        val bounds = Screen.getPrimary().bounds
+        _iconX = bounds.width.toInt() - 250
+        _iconY = 20
     }
 
 }
