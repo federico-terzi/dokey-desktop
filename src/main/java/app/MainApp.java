@@ -207,7 +207,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
 
         // sets up the tray icon manager
         trayIconManager = context.getBean(TrayIconManager.class);
-        javax.swing.SwingUtilities.invokeLater(() -> trayIconManager.initialize());
+        trayIconManager.initialize();
         trayIconManager.setOnTrayIconClicked(() -> {Platform.runLater(() -> onTrayIconClicked()); return Unit.INSTANCE;});
 
         // Setup the position resolver

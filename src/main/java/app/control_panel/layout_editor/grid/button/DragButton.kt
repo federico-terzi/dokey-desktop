@@ -53,7 +53,7 @@ open class DragButton(val context : GridContext) : Button() {
         onDragOver = EventHandler { event ->
             if (event.gestureSource !== this@DragButton) {
                 if ((event.dragboard.hasString() && event.dragboard.string.startsWith(COMPONENT_DRAG_PREFIX)) || context.dndCommandProcessor.isCompatible(event.dragboard)) {
-                    event.acceptTransferModes(TransferMode.MOVE)
+                    event.acceptTransferModes(TransferMode.COPY, TransferMode.MOVE, TransferMode.LINK)
                 }
             }
 

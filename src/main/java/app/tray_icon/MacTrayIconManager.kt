@@ -14,7 +14,7 @@ class MacTrayIconManager(resourceBundle: ResourceBundle) : AbstractTrayIconManag
 
         // Stimate the initial icon position
         val bounds = Screen.getPrimary().bounds
-        _iconX = bounds.width.toInt() - 250
+        _iconX = bounds.width.toInt() - 280
         _iconY = 20
     }
 

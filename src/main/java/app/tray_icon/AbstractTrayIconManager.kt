@@ -39,7 +39,7 @@ abstract class AbstractTrayIconManager(val resourceBundle: ResourceBundle) : Tra
                                 updateIcon(rotateImage(loadingIcon, currentRotationAngle))
 
                             }
-                        });
+                        })
                     }
                 },
                         0L,
@@ -61,7 +61,7 @@ abstract class AbstractTrayIconManager(val resourceBundle: ResourceBundle) : Tra
         }
 
     private var currentRotationAngle = 0
-    private val rotationTimer = Timer()
+    private var rotationTimer = Timer()
 
     private var trayIcon: TrayIcon? = null
     private var trayIconSize : Int = 0
