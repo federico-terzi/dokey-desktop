@@ -137,8 +137,7 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
                 event.consume()
             }
             else if (event.code == KeyCode.ENTER) {  // Execute action and close the stage
-                val result = listView.getSelectedResult()
-                result?.executeAction()
+                listView.executeCurrentResult()
             } else if (event.code == KeyCode.ESCAPE) { // Close the search stage or remove filter
                 if (resultFilter != null) {  // REMOVE FILTER
                     resultFilter = null

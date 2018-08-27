@@ -42,7 +42,7 @@ class ApplicationSpecificCommandLoader(val context: CommandTemplateContext) : Co
 
     private fun loadCommandsFromTemplateFile(file : String, executablePath: String) : List<Command> {
         // Get the template file
-        val templateFile = ResourceUtils.getResource("/commands/$file")
+        val templateFile = ResourceUtils.getResource("/commands/${CommandLoader.getOSPathSuffix()}/$file")
 
         val commandParser = context.commandParser
         val fis = FileInputStream(templateFile)
@@ -74,7 +74,7 @@ class ApplicationSpecificCommandLoader(val context: CommandTemplateContext) : Co
      */
     private fun loadTemplates() {
         // Get the template file
-        val templateDb = ResourceUtils.getResource("/commands/apps.json")
+        val templateDb = ResourceUtils.getResource("/commands/${CommandLoader.getOSPathSuffix()}/apps.json")
 
         // Read all the file and populate the map
         try {

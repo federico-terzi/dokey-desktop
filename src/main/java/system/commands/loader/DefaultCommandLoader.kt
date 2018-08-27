@@ -6,18 +6,14 @@ import json.JSONTokener
 import model.command.Command
 import system.ResourceUtils
 import system.commands.annotations.RegisterLoader
-import system.commands.general.AppRelatedCommand
 import system.context.CommandTemplateContext
-import java.io.File
 import java.io.FileInputStream
-import java.io.FileNotFoundException
-import java.io.IOException
 
 @RegisterLoader
 class DefaultCommandLoader(val context: CommandTemplateContext) : CommandLoader {
     override fun getTemplateCommands(): List<Command> {
         // Get the template file
-        val templateFile = ResourceUtils.getResource("/commands/defaults.json")
+        val templateFile = ResourceUtils.getResource("/commands/common/defaults.json")
 
         val commandParser = context.commandParser
         val fis = FileInputStream(templateFile)

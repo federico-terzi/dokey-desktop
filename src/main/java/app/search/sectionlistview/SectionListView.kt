@@ -28,7 +28,7 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
         setOnMouseClicked { event ->
             // Make sure the clicked item is a result
             if (results[selectionModel.selectedIndex].isResult) {
-                getSelectedResult()?.executeAction()
+                executeCurrentResult()
             }else{
                 selectionModel.clearSelection()
             }
@@ -145,6 +145,16 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
         }
 
         return results[selectionModel.selectedIndex]?.result
+    }
+
+    /**
+     * Execute the currently selected result
+     */
+    fun executeCurrentResult() {
+        val currentResult = getSelectedResult()
+        Thread {
+            currentResult?.executeAction()
+        }.start()
     }
 
     /**

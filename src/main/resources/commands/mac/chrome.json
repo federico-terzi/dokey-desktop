@@ -1,0 +1,162 @@
+[
+  {
+    "type": "simple",
+    "title": "New Tab",
+    "desc": "Open a New Tab in Google Chrome",
+    "iconId": "static:tab",
+    "category": "ks",
+    "value": "CMD+T"
+  },
+  {
+    "type": "simple",
+    "title": "New Window",
+    "desc": "Open a New Window in Google Chrome",
+    "iconId": "static:desktop_windows",
+    "category": "ks",
+    "value": "CMD+N"
+  },
+  {
+    "type": "simple",
+    "title": "Close Tab",
+    "desc": "Close the current Tab in Google Chrome",
+    "iconId": "static:tab_unselected",
+    "category": "ks",
+    "value": "CMD+W"
+  },
+  {
+    "type": "simple",
+    "title": "Back",
+    "desc": "Navigate to the previous page in Google Chrome",
+    "iconId": "static:arrow_back",
+    "category": "ks",
+    "value": "CMD+LEFT"
+  },
+  {
+    "type": "simple",
+    "title": "Forward",
+    "desc": "Navigate forward in Google Chrome",
+    "iconId": "static:arrow_forward",
+    "category": "ks",
+    "value": "CMD+RIGHT"
+  },
+  {
+    "type": "simple",
+    "title": "Add to Favourites",
+    "desc": "Add the current page to the Favourites in Google Chrome",
+    "iconId": "static:stars",
+    "category": "ks",
+    "value": "CMD+D"
+  },
+  {
+    "type": "simple",
+    "title": "Search in Page",
+    "desc": "Search something in the current page in Google Chrome",
+    "iconId": "static:search",
+    "category": "ks",
+    "value": "CMD+F"
+  },
+  {
+    "type": "simple",
+    "title": "Favourites",
+    "desc": "Show Favourites in Google Chrome",
+    "iconId": "static:star",
+    "category": "ks",
+    "value": "CMD+ALT+B"
+  },
+  {
+    "type": "simple",
+    "title": "Downloads",
+    "desc": "Show Downloads in Google Chrome",
+    "iconId": "static:file_download",
+    "category": "ks",
+    "value": "CMD+SHIFT+J"
+  },
+  {
+    "type": "simple",
+    "title": "Developer Console",
+    "desc": "Developer console in Google Chrome",
+    "iconId": "static:code",
+    "category": "ks",
+    "value": "CMD+ALT+I"
+  },
+  {
+    "type": "simple",
+    "title": "Incognito",
+    "desc": "Open a new window in Incognito Mode in Google Chrome",
+    "iconId": "static:face",
+    "category": "ks",
+    "value": "CMD+SHIFT+N"
+  },
+  {
+    "type": "simple",
+    "title": "Print",
+    "desc": "Print the current page in Google Chrome",
+    "iconId": "static:print",
+    "category": "ks",
+    "value": "CMD+P"
+  },
+  {
+    "type": "simple",
+    "title": "History",
+    "desc": "Show History in Google Chrome",
+    "iconId": "static:history",
+    "category": "ks",
+    "value": "CMD+Y"
+  },
+  {
+    "type": "simple",
+    "title": "View Source",
+    "desc": "View the Source of the current page in Google Chrome",
+    "iconId": "static:code",
+    "category": "ks",
+    "value": "CMD+ALT+U"
+  },
+  {
+    "type": "simple",
+    "title": "Reload",
+    "desc": "Reload the current page in Google Chrome",
+    "iconId": "static:refresh",
+    "category": "ks",
+    "value": "CMD+SHIFT+R"
+  },
+  {
+    "type": "simple",
+    "title": "Reopen Closed Tab",
+    "desc": "Reopen the last closed tab and jump to it in Google Chrome",
+    "iconId": "static:open_in_browser",
+    "category": "ks",
+    "value": "CMD+SHIFT+T"
+  },
+  {
+    "type": "simple",
+    "title": "Toggle Bookmarks Bar",
+    "desc": "Show or hide the Bookmarks bar in Google Chrome",
+    "iconId": "static:space_bar",
+    "category": "ks",
+    "value": "CMD+SHIFT+B"
+  },
+  {
+    "type": "simple",
+    "title": "Clear Browsing Data",
+    "desc": "Open the Clear Browsing Data options in Google Chrome",
+    "iconId": "static:change_history",
+    "category": "ks",
+    "value": "CMD+SHIFT+BACK_SPACE"
+  },
+  {
+    "type": "simple",
+    "title": "Save Page",
+    "desc": "Open options to save the current page in Google Chrome",
+    "iconId": "static:save",
+    "category": "ks",
+    "value": "CMD+S"
+  },
+  {
+    "type": "simple",
+    "title": "Fullscreen",
+    "desc": "Turn full-screen mode on or off in Google Chrome",
+    "iconId": "static:fullscreen",
+    "category": "ks",
+    "value": "CMD+CTRL+F"
+  }
+]
