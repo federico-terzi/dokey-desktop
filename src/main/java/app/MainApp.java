@@ -28,6 +28,7 @@ import system.bookmarks.BookmarkManager;
 import system.commands.CommandManager;
 import system.applications.ApplicationManager;
 import system.section.SectionManager;
+import system.server.SocketBuilder;
 import system.startup.StartupManager;
 import system.storage.StorageManager;
 import system.system.SystemManager;
@@ -184,14 +185,8 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         }
 
         // Initialize the server socket
-        try {
-            serverSocket = new ServerSocket(0);  // Let the OS choose the port.
-            LOG.info("Server socket started with port: "+serverSocket.getLocalPort());
-        } catch (IOException e1) {
-            e1.printStackTrace();
-            LOG.severe("Error opening socket. "+e1.toString());
-            System.exit(4);
-        }
+        serverSocket = SocketBuilder.buildSocket();
+        LOG.info("Server socket started with port: "+serverSocket.getLocalPort());
 
         // Setup spring
         context = new AnnotationConfigApplicationContext(AppConfig.class);
