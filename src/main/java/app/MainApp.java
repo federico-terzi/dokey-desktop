@@ -2,6 +2,7 @@ package app;
 
 import app.control_panel.ControlPanelStage;
 import app.control_panel.appearance.position.PositionResolver;
+import app.notifications.NotificationFactory;
 import app.search.stages.SearchStage;
 import app.stages.InitializationStage;
 import app.stages.SettingsStage;
@@ -13,12 +14,15 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import kotlin.Unit;
 import net.discovery.ServerDiscoveryDaemon;
 import net.model.DeviceInfo;
 import net.model.ServerInfo;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
@@ -28,10 +32,13 @@ import system.bookmarks.BookmarkManager;
 import system.commands.CommandManager;
 import system.applications.ApplicationManager;
 import system.section.SectionManager;
+import system.server.MobileServer;
+import system.server.MobileWorker;
 import system.server.SocketBuilder;
 import system.startup.StartupManager;
 import system.storage.StorageManager;
 import system.system.SystemManager;
+import utils.SystemInfoManager;
 
 import javax.swing.*;
 import java.io.*;
@@ -39,12 +46,13 @@ import java.net.ServerSocket;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.*;
 
 @Service
-public class MainApp extends Application implements ADBManager.OnUSBDeviceConnectedListener{
+public class MainApp extends Application implements ADBManager.OnUSBDeviceConnectedListener, MobileWorker.OnDeviceConnectionListener {
 
     public static int DOKEY_MOBILE_MIN_VERSION = -1;  // Don't change here, modify it in the gradle
     public static int DOKEY_VERSION_NUMBER = -1;  // Don't change here, modify it in the gradle
@@ -62,8 +70,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     private ServerDiscoveryDaemon serverDiscoveryDaemon;
     private ActiveApplicationsDaemon activeApplicationsDaemon;
     private BookmarkManager bookmarkManager;
-//    private QuickCommandManager quickCommandManager;
-//    private EngineServer engineServer;
+    private MobileServer mobileServer;
     private ADBManager adbManager;
     private SystemManager systemManager;
     private DaemonMonitor daemonMonitor;
@@ -384,10 +391,10 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         // Start the active apps daemon
         activeApplicationsDaemon.start();
 
-//        // Start the engine server
-//        engineServer = context.getBean(EngineServer.class, serverSocket);
-//        engineServer.setDeviceConnectionListener(this);
-//        engineServer.start();
+        // Start the mobile server
+        mobileServer = context.getBean(MobileServer.class, serverSocket, new byte[] {1,2,3,4});  // TODO: change key
+        mobileServer.setDeviceConnectionListener(this);
+        mobileServer.start();
 
         // Update the tray icon status
         trayIconManager.setStatusText(resourceBundle.getString("not_connected"));
@@ -473,7 +480,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     private void stopAllServices() {
         applicationSwitchDaemon.setShouldStop(true);
         serverDiscoveryDaemon.stopDiscovery();
-//        engineServer.stopServer();
+        mobileServer.stopServer();
         adbManager.stopDaemon();
         activeApplicationsDaemon.stopDaemon();
     }
@@ -554,119 +561,116 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         openCommandEditor();
     }
 
-//    /**
-//     * Called when a device connects to the server.
-//     *
-//     * @param deviceInfo the DeviceInfo object with the information about the connected device.
-//     */
-//    @Override
-//    public void onDeviceConnected(DeviceInfo deviceInfo) {
-//        LOG.info("Connected to: "+deviceInfo.getName() +" ID: "+deviceInfo.getID());
-//
-//        // Set the tray icon as running
-//        trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_CONNECTED);
-//        trayIconManager.setTrayIconStatus(resourceBundle.getString("connected"));
-//
-//        // Wake up all daemons
-//        daemonMonitor.wakeUp();
-//        connectedClientsCount++;
-//
-//        // Create the notification
-//        Platform.runLater(new Runnable() {
-//            @Override
-//            public void run() {
-//                String title = resourceBundle.getString("device_connected");
-//                String message = resourceBundle.getString("connected_to")+" "+deviceInfo.getName();
-//                NotificationFactory.showNotification(title, message);
-//            }
-//        });
-//    }
-//
-//    /**
-//     * Called when a device disconnects from the server.
-//     *
-//     * @param deviceInfo the DeviceInfo object with the information about the connected device.
-//     */
-//    @Override
-//    public void onDeviceDisconnected(DeviceInfo deviceInfo) {
-//        LOG.info("Disconnected from: "+deviceInfo.getName() +" ID: "+deviceInfo.getID());
-//
-//        // Set the tray icon as ready
-//        trayIconManager.setTrayIcon(TrayIconManager.TRAY_ICON_FILENAME_READY);
-//        trayIconManager.setTrayIconStatus(resourceBundle.getString("not_connected"));
-//
-//        // If there are no more devices connected, pause all the daemons
-//        connectedClientsCount--;
-//        if (connectedClientsCount==0) {
-//            daemonMonitor.pause();
-//        }
-//
-//        // Create the notification
-//        Platform.runLater(new Runnable() {
-//            @Override
-//            public void run() {
-//                String title = resourceBundle.getString("device_disconnected");
-//                String message = resourceBundle.getString("disconnected_from")+" "+deviceInfo.getName();
-//                NotificationFactory.showNotification(title, message);
-//            }
-//        });
-//    }
-//
-//    /**
-//     * Called when a connected device needs a more recent desktop version.
-//     * @param deviceInfo the DeviceInfo object with the information about the connected device.
-//     */
-//    @Override
-//    public void onDesktopVersionTooLow(DeviceInfo deviceInfo) {
-//        Platform.runLater(new Runnable() {
-//            @Override
-//            public void run() {
-//                ButtonType cancel = new ButtonType(resourceBundle.getString("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
-//                ButtonType download = new ButtonType(resourceBundle.getString("download"), ButtonBar.ButtonData.OK_DONE);
-//
-//                Alert alert = new Alert(Alert.AlertType.WARNING, "", download, cancel);
-//                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-//                stage.getIcons().add(new Image(MainApp.class.getResourceAsStream("/assets/icon.png")));
-//                stage.setAlwaysOnTop(true);
-//                alert.setTitle("Your Dokey Desktop version is too old :(");
-//                alert.setHeaderText("The version of Dokey Desktop you are running on your PC is too old!");
-//                alert.setContentText("Please download the new version from the Dokey Website");
-//                Optional<ButtonType> result = alert.showAndWait();
-//                if (result.isPresent() && result.get() == download) {
-//                    // Navigate to the dokey website, download section
-//                    appManager.openWebLink(DOWNLOAD_URL);
-//                }
-//            }
-//        });
-//    }
-//
-//    /**
-//     * Called when a connected device has a version not supported anymore by this Desktop.
-//     * @param deviceInfo the DeviceInfo object with the information about the connected device.
-//     */
-//    @Override
-//    public void onMobileVersionTooLow(DeviceInfo deviceInfo) {
-//        Platform.runLater(new Runnable() {
-//            @Override
-//            public void run() {
-//                ButtonType cancel = new ButtonType(resourceBundle.getString("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
-//                ButtonType download = new ButtonType(resourceBundle.getString("visit_playstore"), ButtonBar.ButtonData.OK_DONE);
-//
-//                Alert alert = new Alert(Alert.AlertType.WARNING, "", download, cancel);
-//                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-//                stage.getIcons().add(new Image(MainApp.class.getResourceAsStream("/assets/icon.png")));
-//                stage.setAlwaysOnTop(true);
-//                alert.setTitle("Your Dokey Android version is too old :(");
-//                alert.setHeaderText("The version of Dokey Android you are running on your smartphone is too old!");
-//                alert.setContentText("Please update it from the PlayStore to connect!");
-//                Optional<ButtonType> result = alert.showAndWait();
-//                if (result.isPresent() && result.get() == download) {
-//                    // Navigate to the playstore page
-//                    appManager.openWebLink(PLAYSTORE_URL);
-//                }
-//            }
-//        });
-//    }
+    /**
+     * Called when a device connects to the server.
+     *
+     * @param deviceInfo the DeviceInfo object with the information about the connected device.
+     */
+    @Override
+    public void onDeviceConnected(DeviceInfo deviceInfo) {
+        LOG.info("Connected to: "+deviceInfo.getName() +" ID: "+deviceInfo.getID());
+
+        // Wake up all daemons
+        daemonMonitor.wakeUp();
+        connectedClientsCount++;
+
+        // Create the notification
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                String title = resourceBundle.getString("device_connected");
+                String message = resourceBundle.getString("connected_to")+" "+deviceInfo.getName();
+                NotificationFactory.showNotification(title, message);
+            }
+        });
+    }
+
+    /**
+     * Called when a device disconnects from the server.
+     *
+     * @param deviceInfo the DeviceInfo object with the information about the connected device.
+     */
+    @Override
+    public void onDeviceDisconnected(DeviceInfo deviceInfo) {
+        LOG.info("Disconnected from: "+deviceInfo.getName() +" ID: "+deviceInfo.getID());
+
+        // If there are no more devices connected, pause all the daemons
+        connectedClientsCount--;
+        if (connectedClientsCount==0) {
+            daemonMonitor.pause();
+        }
+
+        // Create the notification
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                String title = resourceBundle.getString("device_disconnected");
+                String message = resourceBundle.getString("disconnected_from")+" "+deviceInfo.getName();
+                NotificationFactory.showNotification(title, message);
+            }
+        });
+    }
+
+    /**
+     * Called when a connected device needs a more recent desktop version.
+     * @param deviceInfo the DeviceInfo object with the information about the connected device.
+     */
+    @Override
+    public void onDesktopVersionTooLow(DeviceInfo deviceInfo) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                ButtonType cancel = new ButtonType(resourceBundle.getString("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
+                ButtonType download = new ButtonType(resourceBundle.getString("download"), ButtonBar.ButtonData.OK_DONE);
+
+                Alert alert = new Alert(Alert.AlertType.WARNING, "", download, cancel);
+                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                stage.getIcons().add(new Image(MainApp.class.getResourceAsStream("/assets/icon.png")));
+                stage.setAlwaysOnTop(true);
+                alert.setTitle("Your Dokey Desktop version is too old :(");
+                alert.setHeaderText("The version of Dokey Desktop you are running on your PC is too old!");
+                alert.setContentText("Please download the new version from the Dokey Website");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == download) {
+                    // Navigate to the dokey website, download section
+                    appManager.openWebLink(DOWNLOAD_URL);
+                }
+            }
+        });
+    }
+
+    /**
+     * Called when a connected device has a version not supported anymore by this Desktop.
+     * @param deviceInfo the DeviceInfo object with the information about the connected device.
+     */
+    @Override
+    public void onMobileVersionTooLow(DeviceInfo deviceInfo) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                ButtonType cancel = new ButtonType(resourceBundle.getString("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
+                ButtonType download = new ButtonType(resourceBundle.getString("visit_playstore"), ButtonBar.ButtonData.OK_DONE);
+
+                Alert alert = new Alert(Alert.AlertType.WARNING, "", download, cancel);
+                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                stage.getIcons().add(new Image(MainApp.class.getResourceAsStream("/assets/icon.png")));
+                stage.setAlwaysOnTop(true);
+                alert.setTitle("Your Dokey Android version is too old :(");
+                alert.setHeaderText("The version of Dokey Android you are running on your smartphone is too old!");
+                alert.setContentText("Please update it from the PlayStore to connect!");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == download) {
+                    // Navigate to the playstore page
+                    appManager.openWebLink(PLAYSTORE_URL);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onInvalidKeyConnectionAttempt() {
+        // TODO make something
+    }
 
 
     /**

@@ -20,7 +20,7 @@
                     <items>
                        <Button fx:id="layouts_tab_btn" mnemonicParsing="false">
                           <graphic>
-                             <ImageView fitHeight="18" fitWidth="18">
+                             <ImageView fitHeight="24" fitWidth="24">
                                 <image>
                                    <Image url="/assets/toolbar_icons/grid.png" />
                                 </image>
@@ -32,7 +32,7 @@
                        </Button>
                        <Button fx:id="command_tab_btn" mnemonicParsing="false">
                           <graphic>
-                             <ImageView fitHeight="18" fitWidth="18">
+                             <ImageView fitHeight="24" fitWidth="24">
                                 <image>
                                    <Image url="/assets/toolbar_icons/layers.png" />
                                 </image>
@@ -57,7 +57,7 @@
 
                        <Button fx:id="search_btn" mnemonicParsing="false">
                           <graphic>
-                             <ImageView fitHeight="18" fitWidth="18">
+                             <ImageView fitHeight="24" fitWidth="24">
                                 <image>
                                    <Image url="/assets/toolbar_icons/search.png" />
                                 </image>
@@ -72,7 +72,7 @@
 
                        <Button fx:id="settings_btn" mnemonicParsing="false">
                           <graphic>
-                             <ImageView fitHeight="18" fitWidth="18">
+                             <ImageView fitHeight="24" fitWidth="24">
                                 <image>
                                    <Image url="/assets/toolbar_icons/settings.png" />
                                 </image>

@@ -3,7 +3,7 @@
 //import net.discovery.ClientDiscoveryDaemon;
 //import net.model.ServerInfo;
 //import org.jetbrains.annotations.NotNull;
-//import system.SystemInfoManager;
+//import utils.SystemInfoManager;
 //
 //import java.io.BufferedReader;
 //import java.io.File;

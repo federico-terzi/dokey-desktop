@@ -8,9 +8,12 @@ import model.parser.page.DefaultPageParser;
 import model.parser.page.PageParser;
 import model.parser.section.DefaultSectionParser;
 import model.parser.section.SectionParser;
+import net.DEManager;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 import system.applications.MAC.MACApplicationManager;
 import system.applications.MS.MSApplicationManager;
 import system.bookmarks.BookmarkManager;
@@ -28,6 +31,9 @@ import system.applications.ApplicationManager;
 import system.parsers.RuntimeCommandParser;
 import system.search.SearchEngine;
 import system.section.SectionManager;
+import system.server.MobileServer;
+import system.server.MobileService;
+import system.server.MobileWorker;
 import system.startup.MACStartupManager;
 import system.startup.MSStartupManager;
 import system.startup.StartupManager;
@@ -37,6 +43,9 @@ import system.system.MSSystemManager;
 import system.system.SystemManager;
 import utils.OSValidator;
 
+import java.awt.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -254,25 +263,25 @@ public class SystemConfig {
         };
     }
 
-//    @Bean
-//    @Lazy
-//    public EngineServer engineServer(ServerSocket serverSocket){
-//        return new EngineServer(serverSocket);
-//    }
-//
-//    @Bean
-//    @Scope("prototype")
-//    public EngineWorker engineWorker(Socket socket){
-//        return new EngineWorker(socket);
-//    }
-//
-//    @Bean
-//    @Scope("prototype")
-//    public EngineService engineService(Socket socket, DEManager.OnConnectionListener onConnectionListener)
-//            throws UnsupportedOperatingSystemException, AWTException {
-//        return new EngineService(socket, applicationManager(), applicationSwitchDaemon(),
-//                systemManager(), activeApplicationsDaemon(), webLinkResolver(), onConnectionListener);
-//    }
+    @Bean
+    @Lazy
+    public MobileServer mobileServer(ServerSocket serverSocket, byte[] key){
+        return new MobileServer(serverSocket, key);
+    }
+
+    @Bean
+    @Scope("prototype")
+    public MobileWorker mobileWorker(Socket socket, byte[] key){
+        return new MobileWorker(socket, key);
+    }
+
+    @Bean
+    @Scope("prototype")
+    public MobileService mobileService(Socket socket, byte[] key, DEManager.OnConnectionListener onConnectionListener)
+            throws UnsupportedOperatingSystemException, AWTException {
+        return new MobileService(socket, key, commandManager(), imageResolver(), keyboardManager(), applicationManager(),
+                applicationSwitchDaemon(), onConnectionListener);
+    }
 
 //    @Bean
 //    public ShortcutIconManager shortcutIconManager() {
