@@ -14,7 +14,8 @@ import java.util.*
  * This component extends ListView to implement the Category label feature used
  * to distinguish between results
  */
-class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolver) : ListView<ListViewEntry>() {
+class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolver,
+                      val onResultSelected : () -> Unit) : ListView<ListViewEntry>() {
     private val results : ObservableList<ListViewEntry> = FXCollections.observableArrayList()
 
     init {

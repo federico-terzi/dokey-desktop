@@ -78,7 +78,10 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
         controller.rootNode.prefWidth = DIALOG_WIDTH
 
         // Setup the listview
-        listView = SectionListView(DIALOG_WIDTH, imageResolver)
+        listView = SectionListView(DIALOG_WIDTH, imageResolver) {
+            this.hide()  // Hide the window when a user clicks on a result
+        }
+
         controller.rootNode.children.add(listView)
         listView.isManaged = false
 
@@ -138,6 +141,7 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
             }
             else if (event.code == KeyCode.ENTER) {  // Execute action and close the stage
                 listView.executeCurrentResult()
+                this.hide()
             } else if (event.code == KeyCode.ESCAPE) { // Close the search stage or remove filter
                 if (resultFilter != null) {  // REMOVE FILTER
                     resultFilter = null
