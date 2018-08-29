@@ -1,81 +1,113 @@
-//import net.DEManager;
-//import net.LinkManager;
-//import net.discovery.ClientDiscoveryDaemon;
-//import net.model.ServerInfo;
-//import org.jetbrains.annotations.NotNull;
-//import utils.SystemInfoManager;
-//
-//import java.io.BufferedReader;
-//import java.io.File;
-//import java.io.IOException;
-//import java.io.InputStreamReader;
-//import java.net.InetAddress;
-//import java.net.Socket;
-//import java.net.UnknownHostException;
-//import java.util.List;
-//import java.util.StringTokenizer;
-//
-//public class ClientTestMain {
-//    public static void main(String[] args) {
-//        boolean useServiceDiscovery = true;
-//
-//        if (args.length == 2) {
-//            int port = Integer.parseInt(args[1]);
-//            InetAddress address = null;
-//            try {
-//                //address = InetAddress.getByName("192.168.56.101");
-//                address = InetAddress.getByName(args[0]);
-//            } catch (UnknownHostException e) {
-//                System.err.println("Errore nell'indirizzo.");
-//                System.exit(0);
-//            }
-//            createConnection(address, port);
-//        }else{
-//            System.out.println("Listening for servers using server discovery...");
-//            ClientDiscoveryDaemon daemon = new ClientDiscoveryDaemon(new ClientDiscoveryDaemon.OnDiscoveryUpdatedListener() {
-//                @Override
-//                public void onDiscoveryUpdated(List<ServerInfo> list) {
-//                    // Server found, create connection
-//                    ServerInfo serverInfo = list.get(0);
-//                    System.out.println("Service found: "+serverInfo);
-//                    createConnection(serverInfo.getAddress(), serverInfo.getPort());
-//                }
-//            });
-//            daemon.start();
-//        }
-//    }
-//
-//    private static void createConnection(InetAddress address, int port) {
-//        System.out.print("Connecting to: "+address.getHostAddress()+":"+port+" ...");
-//        // Apro la socket
-//        Socket socket = null;
-//
-//        try {
-//            socket = new Socket(address, port);
-//        } catch (IOException e1) {
-//            e1.printStackTrace();
-//            System.err.println("Errore nell'apertura della socket.");
-//            System.exit(4);
-//        }
-//
-//        System.out.println("Connected!");
-//
-//        try {
-//            LinkManager manager = new LinkManager(socket, SystemInfoManager.getDeviceInfo(), 2, 1, true, null);
-//
-//            manager.setAppSwitchEventListener(new LinkManager.OnAppSwitchEventListener() {
-//                @Override
-//                public void onAppSwitchReceived(@NotNull RemoteApplication application, long lastEdit) {
-//                    System.out.println("App Switch REQUEST: "+application+" lastEdit: "+lastEdit);
-//                }
-//            });
-//            manager.startDaemon();
-//
-//            System.out.println("Client started!");
-//
-//            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-//            String line = null;
-//            while((line = br.readLine()) != null) {
+package tests;
+
+import json.JSONObject;
+import net.DEManager;
+import net.LinkManager;
+import net.discovery.ClientDiscoveryDaemon;
+import net.model.DeviceInfo;
+import net.model.ServerInfo;
+import org.jetbrains.annotations.NotNull;
+import utils.SystemInfoManager;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.List;
+import java.util.StringTokenizer;
+
+public class ClientTestMain {
+    public static void main(String[] args) {
+        boolean useServiceDiscovery = true;
+
+        if (args.length == 2) {
+            int port = Integer.parseInt(args[1]);
+            InetAddress address = null;
+            try {
+                //address = InetAddress.getByName("192.168.56.101");
+                address = InetAddress.getByName(args[0]);
+            } catch (UnknownHostException e) {
+                System.err.println("Errore nell'indirizzo.");
+                System.exit(0);
+            }
+            createConnection(address, port);
+        }else{
+            System.out.println("Listening for servers using server discovery...");
+            ClientDiscoveryDaemon daemon = new ClientDiscoveryDaemon(new ClientDiscoveryDaemon.OnDiscoveryUpdatedListener() {
+                @Override
+                public void onDiscoveryUpdated(List<ServerInfo> list) {
+                    // Server found, create connection
+                    ServerInfo serverInfo = list.get(0);
+                    System.out.println("Service found: "+serverInfo);
+                    createConnection(serverInfo.getAddress(), serverInfo.getPort());
+                }
+            });
+            daemon.start();
+        }
+    }
+
+    private static void createConnection(InetAddress address, int port) {
+        System.out.print("Connecting to: "+address.getHostAddress()+":"+port+" ...");
+        // Apro la socket
+        Socket socket = null;
+
+        try {
+            socket = new Socket(address, port);
+        } catch (IOException e1) {
+            e1.printStackTrace();
+            System.err.println("Errore nell'apertura della socket.");
+            System.exit(4);
+        }
+
+        System.out.println("Connected!");
+
+        try {
+            LinkManager manager = new LinkManager(socket, SystemInfoManager.getDeviceInfo(), 3,
+                    8, true, new byte[]{1, 2, 3, 4}, false, null,
+                    new DEManager.OnConnectionListener() {
+                        @Override
+                        public void onConnectionStarted(DeviceInfo deviceInfo, int i) {
+                            System.out.println("Connection started with: "+deviceInfo);
+                        }
+
+                        @Override
+                        public void onReceiverVersionTooLow(DeviceInfo deviceInfo, int i) {
+                            System.out.println("Receiver version too low: "+deviceInfo);
+                        }
+
+                        @Override
+                        public void onConnectionNotAccepted(DeviceInfo deviceInfo, int i) {
+                            System.out.println("Connection NOT ACCEPTED: "+deviceInfo);
+                        }
+
+                        @Override
+                        public void onInvalidKey() {
+                            System.out.println("Invalid key");
+                        }
+                    });
+
+
+            manager.startDaemon();
+
+            System.out.println("Client started!");
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            String line = null;
+            while((line = br.readLine()) != null) {
+                manager.requestService(line, null, new LinkManager.OnServiceResponseListener() {
+                    @Override
+                    public void onServiceResponse(JSONObject jsonObject) {
+                        System.out.println(jsonObject);
+                    }
+
+                    @Override
+                    public void onServiceError() {
+                        System.out.println("Error");
+                    }
+                });
 //                if (line.startsWith("keys")) {  // KEYBOARD SHORTCUT
 //                    StringTokenizer st = new StringTokenizer(line, ";");
 //                    st.nextToken();
@@ -233,9 +265,9 @@
 //                        }
 //                    });
 //                }
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//}
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}

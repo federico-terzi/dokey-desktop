@@ -29,7 +29,7 @@ class MobileWorker(val socket: Socket, val key: ByteArray) : Thread(), Applicati
     override fun run() {
         try {
             // Create the engine service
-            service = context!!.getBean(MobileService::class.java, socket, object : DEManager.OnConnectionListener {
+            service = context!!.getBean(MobileService::class.java, socket, key, object : DEManager.OnConnectionListener {
                 override fun onInvalidKey() {
                     LOG.warning("A device tried to connect to the computer with the wrong key.")
                     shouldStop = true
@@ -62,6 +62,7 @@ class MobileWorker(val socket: Socket, val key: ByteArray) : Thread(), Applicati
                     deviceConnectionListener?.onDeviceConnected(deviceInfo)
                 }
             })
+            service?.initialize()
 
             // Set up the connection closed listener
             service?.onConnectionClosed = {shouldStop = true}
