@@ -8,7 +8,9 @@ import java.util.ArrayList
 /**
  * Generate the payload used in the QR code to establish a connection from a mobile device.
  */
-class HandshakeDataBuilder {
+class HandshakeDataBuilder(val keyGenerator: KeyGenerator) {
+    var serverPort : Int? = null
+
     fun getAllIpAddresses() : List<String> {
         val ips = mutableListOf<String>()
 
@@ -24,12 +26,16 @@ class HandshakeDataBuilder {
             for (interfaceAddress in networkInterface.interfaceAddresses) {
                 val address = interfaceAddress.address ?: continue
                 if (address is Inet4Address) {
-                    // TODO: Change with byte rappresentation
                     ips.add("${address.hostAddress}/${interfaceAddress.networkPrefixLength}")
                 }
             }
         }
 
         return ips
+    }
+
+    fun getHandshakePayload() : String {
+        val ipAddresses = getAllIpAddresses().joinToString(":")
+        return "DOKEY;$ipAddresses;${keyGenerator.keyToString}"
     }
 }

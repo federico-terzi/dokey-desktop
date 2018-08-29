@@ -14,6 +14,9 @@ const val KEY_SIZE = 10
 class KeyGenerator(val storageManager: StorageManager) {
     var key : ByteArray? = null
 
+    val keyToString
+        get() = key?.joinToString(",")
+
     /**
      * If the key is not already present, create one and then load it.
      */

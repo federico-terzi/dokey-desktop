@@ -32,10 +32,7 @@ import system.bookmarks.BookmarkManager;
 import system.commands.CommandManager;
 import system.applications.ApplicationManager;
 import system.section.SectionManager;
-import system.server.KeyGenerator;
-import system.server.MobileServer;
-import system.server.MobileWorker;
-import system.server.SocketBuilder;
+import system.server.*;
 import system.startup.StartupManager;
 import system.storage.StorageManager;
 import system.system.SystemManager;
@@ -68,7 +65,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     private ApplicationManager appManager;
     private TrayIconManager trayIconManager;
     private ApplicationSwitchDaemon applicationSwitchDaemon;
-    private ServerDiscoveryDaemon serverDiscoveryDaemon;
     private ActiveApplicationsDaemon activeApplicationsDaemon;
     private BookmarkManager bookmarkManager;
     private MobileServer mobileServer;
@@ -82,6 +78,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     private SectionManager sectionManager;
     private PositionResolver positionResolver;
     private KeyGenerator keyGenerator;
+    private HandshakeDataBuilder handshakeDataBuilder;
 
     private ServerSocket serverSocket;  // This is the server socket later used by the EngineServer
 
@@ -209,6 +206,10 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         keyGenerator = context.getBean(KeyGenerator.class);
         keyGenerator.initialize();
 
+        // Initialize the handshake data builder
+        handshakeDataBuilder = context.getBean(HandshakeDataBuilder.class);
+        handshakeDataBuilder.setServerPort(serverSocket.getLocalPort());
+
         // instructs the javafx system not to exit implicitly when the last application window is shut.
         Platform.setImplicitExit(false);
 
@@ -234,7 +235,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
 
         // Initialize the discovery daemon
         ServerInfo serverInfo = SystemInfoManager.getServerInfo(serverSocket.getLocalPort());
-        serverDiscoveryDaemon = new ServerDiscoveryDaemon(serverInfo);
 
         // Initialize the ADB manager
         adbManager = new ADBManager(this, serverInfo);
@@ -387,9 +387,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         // Start the application switch daemon
         applicationSwitchDaemon.start();
 
-        // Start the server discovery daemon
-        serverDiscoveryDaemon.start();
-
         // Start the ADB daemon
         adbManager.startDaemon();
 
@@ -484,7 +481,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
      */
     private void stopAllServices() {
         applicationSwitchDaemon.setShouldStop(true);
-        serverDiscoveryDaemon.stopDiscovery();
         mobileServer.stopServer();
         adbManager.stopDaemon();
         activeApplicationsDaemon.stopDaemon();

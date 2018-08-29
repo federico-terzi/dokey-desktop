@@ -31,10 +31,7 @@ import system.applications.ApplicationManager;
 import system.parsers.RuntimeCommandParser;
 import system.search.SearchEngine;
 import system.section.SectionManager;
-import system.server.KeyGenerator;
-import system.server.MobileServer;
-import system.server.MobileService;
-import system.server.MobileWorker;
+import system.server.*;
 import system.startup.MACStartupManager;
 import system.startup.MSStartupManager;
 import system.startup.StartupManager;
@@ -287,6 +284,11 @@ public class SystemConfig {
     @Bean
     public KeyGenerator keyGenerator() {
         return new KeyGenerator(storageManager());
+    }
+
+    @Bean
+    public HandshakeDataBuilder handshakeDataBuilder() {
+        return new HandshakeDataBuilder(keyGenerator());
     }
 
 //    @Bean
