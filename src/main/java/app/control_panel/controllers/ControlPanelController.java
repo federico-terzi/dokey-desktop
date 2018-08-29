@@ -5,4 +5,5 @@ import javafx.scene.layout.VBox;
 
 public class ControlPanelController {
     public VBox content_box;
+    public VBox top_section;
 }

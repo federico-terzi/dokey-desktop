@@ -5,6 +5,7 @@ import app.control_panel.animations.StagePositionTransition
 import app.control_panel.controllers.ControlPanelController
 import app.control_panel.layout_editor.GlobalKeyboardListener
 import app.control_panel.layout_editor.LayoutEditorTab
+import app.control_panel.tab_selector.TabSelector
 import javafx.animation.ParallelTransition
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
@@ -40,6 +41,8 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
     override var isShiftPressed: Boolean = false
 
+    private val tabSelector = TabSelector(imageResolver)
+
     init {
         val fxmlLoader = FXMLLoader(ResourceUtils.getResource("/layouts/control_panel.fxml")!!.toURI().toURL())
         fxmlLoader.resources = resourceBundle
@@ -57,6 +60,9 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
         // Initialize the style
         initializeStyle()
+
+        // Load the tab selector
+        controller.top_section.children.add(tabSelector)
 
         // Load the tabs
         controller.content_box.children.add(layoutEditorTab)
