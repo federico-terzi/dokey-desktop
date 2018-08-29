@@ -31,6 +31,7 @@ import system.applications.ApplicationManager;
 import system.parsers.RuntimeCommandParser;
 import system.search.SearchEngine;
 import system.section.SectionManager;
+import system.server.KeyGenerator;
 import system.server.MobileServer;
 import system.server.MobileService;
 import system.server.MobileWorker;
@@ -281,6 +282,11 @@ public class SystemConfig {
             throws UnsupportedOperatingSystemException, AWTException {
         return new MobileService(socket, key, commandManager(), generalContext(), commandEngine(),
                 imageResolver(), applicationSwitchDaemon(), onConnectionListener);
+    }
+
+    @Bean
+    public KeyGenerator keyGenerator() {
+        return new KeyGenerator(storageManager());
     }
 
 //    @Bean

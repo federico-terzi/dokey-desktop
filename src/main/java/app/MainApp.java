@@ -32,6 +32,7 @@ import system.bookmarks.BookmarkManager;
 import system.commands.CommandManager;
 import system.applications.ApplicationManager;
 import system.section.SectionManager;
+import system.server.KeyGenerator;
 import system.server.MobileServer;
 import system.server.MobileWorker;
 import system.server.SocketBuilder;
@@ -80,13 +81,13 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     private CommandManager commandManager;
     private SectionManager sectionManager;
     private PositionResolver positionResolver;
+    private KeyGenerator keyGenerator;
 
     private ServerSocket serverSocket;  // This is the server socket later used by the EngineServer
 
     private InitializationStage initializationStage;
     private ControlPanelStage controlPanelStage;
     private SettingsStage settingsStage = null;
-//    private CommandEditorStage commandEditorStage = null;
     private SearchStage searchStage;
 
     private ResourceBundle resourceBundle;
@@ -203,6 +204,10 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
 
         // Set the MODENA theme
         setUserAgentStylesheet(STYLESHEET_MODENA);
+
+        // Initialize the Key
+        keyGenerator = context.getBean(KeyGenerator.class);
+        keyGenerator.initialize();
 
         // instructs the javafx system not to exit implicitly when the last application window is shut.
         Platform.setImplicitExit(false);
@@ -392,7 +397,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         activeApplicationsDaemon.start();
 
         // Start the mobile server
-        mobileServer = context.getBean(MobileServer.class, serverSocket, new byte[] {1,2,3,4});  // TODO: change key
+        mobileServer = context.getBean(MobileServer.class, serverSocket, keyGenerator.getKey());
         mobileServer.setDeviceConnectionListener(this);
         mobileServer.start();
 
