@@ -69,6 +69,8 @@ class Tab(val imageResolver: ImageResolver, val tabLabel : String, val tabImage 
     }
 
     private fun animateSelectionIn() {
+        isCache = false
+
         val fadeInTransition = FadeTransition(Duration(200.0), nameLabel)
         fadeInTransition.fromValue = 0.0
         fadeInTransition.toValue = 1.0
@@ -78,6 +80,7 @@ class Tab(val imageResolver: ImageResolver, val tabLabel : String, val tabImage 
         translateTransition.toY = 0.0
 
         val parallelTransition = ParallelTransition(fadeInTransition, translateTransition)
+        parallelTransition.setOnFinished { isCache = true }
         parallelTransition.play()
     }
 
