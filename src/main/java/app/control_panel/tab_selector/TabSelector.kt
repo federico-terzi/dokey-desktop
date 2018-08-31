@@ -71,7 +71,5 @@ class TabSelector(val imageResolver: ImageResolver) : Pane() {
             tab.prefWidth = tabWidth
             tab.layoutX = TAB_INITIAL_OFFSET + tabSpacing * i
         }
-
-        renderSelection()
     }
 }
