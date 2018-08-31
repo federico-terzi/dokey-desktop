@@ -5,6 +5,7 @@ import javafx.animation.Interpolator
 import javafx.animation.ParallelTransition
 import javafx.animation.TranslateTransition
 import javafx.geometry.Pos
+import javafx.scene.CacheHint
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.image.ImageView
@@ -52,6 +53,7 @@ class Tab(val imageResolver: ImageResolver, val tabLabel : String, val tabImage 
         vBox.alignment = Pos.CENTER
         nameLabel = Label(tabLabel)
         nameLabel.opacity = 0.0
+        nameLabel.isCache = false
 
         val image = imageResolver.resolveImage(tabImage, 24)
         imageView = ImageView(image)
@@ -59,6 +61,9 @@ class Tab(val imageResolver: ImageResolver, val tabLabel : String, val tabImage 
         imageView.fitWidth = 24.0
         imageView.translateY = UNSELECTED_TAB_VERTICAL_OFFSET
         vBox.children.addAll(imageView, nameLabel)
+
+        isCache = true
+        cacheHint = CacheHint.SPEED
 
         graphic = vBox
     }
