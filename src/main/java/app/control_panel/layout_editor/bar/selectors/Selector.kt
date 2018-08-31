@@ -3,6 +3,7 @@ package app.control_panel.layout_editor.bar.selectors
 import javafx.animation.FadeTransition
 import javafx.animation.TranslateTransition
 import javafx.geometry.Pos
+import javafx.scene.CacheHint
 import javafx.scene.control.Button
 import javafx.scene.image.ImageView
 import javafx.scene.layout.VBox
@@ -20,18 +21,21 @@ abstract class Selector(val context: SelectorContext, val section: Section, val 
         get() = _selected
         set(value) {
             if (value != _selected) {
+                isCache = false
+
                 if (value) {
                     selectorNode.opacity = 1.0
 
                     val transition = TranslateTransition(Duration(300.0), selectorNode)
                     transition.fromY = 10.0
                     transition.toY = 1.0
+                    transition.setOnFinished { isCache = true }
                     transition.play()
                 }else{
                     val transition = TranslateTransition(Duration(300.0), selectorNode)
                     transition.fromY = 1.0
                     transition.toY = 10.0
-                    transition.setOnFinished { selectorNode.opacity = 0.0 }
+                    transition.setOnFinished { selectorNode.opacity = 0.0; isCache = true }
                     transition.play()
                 }
             }
@@ -60,6 +64,9 @@ abstract class Selector(val context: SelectorContext, val section: Section, val 
         vBox.alignment = Pos.CENTER
         vBox.children.addAll(imageView, selectorNode)
         setGraphic(vBox)
+
+        isCache = true
+        cacheHint = CacheHint.SPEED
     }
 
     override fun compareTo(other: Selector): Int {
