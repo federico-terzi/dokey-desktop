@@ -3,6 +3,7 @@ package app.control_panel
 import app.control_panel.animations.StageOpacityTransition
 import app.control_panel.animations.StagePositionTransition
 import app.control_panel.controllers.ControlPanelController
+import app.control_panel.devices_tab.DevicesTab
 import app.control_panel.layout_editor_tab.GlobalKeyboardListener
 import app.control_panel.layout_editor_tab.LayoutEditorTab
 import app.control_panel.tab_selector.TabSelector
@@ -22,18 +23,20 @@ import javafx.stage.Stage
 import javafx.stage.StageStyle
 import javafx.util.Duration
 import model.parser.component.ComponentParser
+import net.model.DeviceInfo
 import system.ResourceUtils
 import system.commands.CommandManager
 import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
 import system.applications.ApplicationManager
 import system.section.SectionManager
+import system.server.HandshakeDataBuilder
 import utils.OSValidator
 import java.util.*
 
 class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                         val componentParser: ComponentParser, val commandManager: CommandManager,
-                        val applicationManager: ApplicationManager,
+                        val applicationManager: ApplicationManager, val handshakeDataBuilder: HandshakeDataBuilder,
                         val dndCommandProcessor: DNDCommandProcessor) : Stage(), GlobalKeyboardListener {
 
     private val controller : ControlPanelController
@@ -41,7 +44,9 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
     private val layoutEditorTab = LayoutEditorTab(sectionManager, imageResolver, resourceBundle, componentParser,
             commandManager, applicationManager, this, dndCommandProcessor)
 
-    private val tabs = listOf<ControlPanelTab>(ComingSoonTab(), layoutEditorTab, ComingSoonTab(),
+    private val devicesTab = DevicesTab(imageResolver, resourceBundle, handshakeDataBuilder)
+
+    private val tabs = listOf<ControlPanelTab>(devicesTab, layoutEditorTab, ComingSoonTab(),
             ComingSoonTab(), ComingSoonTab())
 
     // This variable will hold the currently active control panel tab

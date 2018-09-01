@@ -4,6 +4,7 @@
 @import "control_panel/layout-toolbar.css";
 @import "control_panel/tab_selector/tab_selector.css";
 @import "control_panel/coming_soon.css";
+@import "control_panel/devices/devices_tab.css";
 
 .root {
     -fx-font-family: "Nunito Sans Light";

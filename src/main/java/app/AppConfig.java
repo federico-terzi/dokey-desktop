@@ -21,6 +21,7 @@ import system.image.ImageResolver;
 import system.applications.ApplicationManager;
 import system.search.SearchEngine;
 import system.section.SectionManager;
+import system.server.HandshakeDataBuilder;
 import system.startup.StartupManager;
 import system.storage.StorageManager;
 import utils.OSValidator;
@@ -50,6 +51,7 @@ public class AppConfig {
     @Autowired private CommandManager commandManager;
     @Autowired private ComponentParser componentParser;
     @Autowired private DNDCommandProcessor dndCommandProcessor;
+    @Autowired private HandshakeDataBuilder handshakeDataBuilder;
 
     @Bean
     public TrayIconManager trayIconManager() throws UnsupportedOperatingSystemException {
@@ -75,7 +77,7 @@ public class AppConfig {
     @Lazy
     public ControlPanelStage controlPanelStage() throws IOException, UnsupportedOperatingSystemException {
         return new ControlPanelStage(sectionManager, imageResolver, resourceBundle, componentParser, commandManager,
-                applicationManager, dndCommandProcessor);
+                applicationManager,handshakeDataBuilder, dndCommandProcessor);
     }
 
     @Bean
