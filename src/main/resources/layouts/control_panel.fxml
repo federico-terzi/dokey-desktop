@@ -13,7 +13,7 @@
 <VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" id="parent-box" fx:controller="app.control_panel.controllers.ControlPanelController">
    <children>
       <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                  prefWidth="352.0" prefHeight="680">
+                  prefWidth="400.0" prefHeight="680">
          <top>
             <VBox id="top-section" BorderPane.alignment="CENTER" fx:id="top_section" />
          </top>

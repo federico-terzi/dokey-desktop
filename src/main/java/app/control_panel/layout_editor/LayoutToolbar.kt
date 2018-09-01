@@ -27,17 +27,17 @@ class LayoutToolbar(val imageResolver: ImageResolver, val applicationManager: Ap
         HBox.setHgrow(spacingPanel, Priority.ALWAYS)
 
         val newLayoutBtn = Button()
-        val newLayoutImage = imageResolver.resolveImage("asset:file-plus", 20)
+        val newLayoutImage = imageResolver.resolveImage("asset:file-plus", 24)
         val newLayoutImageView = ImageView(newLayoutImage)
-        newLayoutImageView.fitHeight = 20.0
-        newLayoutImageView.fitWidth = 20.0
+        newLayoutImageView.fitHeight = 24.0
+        newLayoutImageView.fitWidth = 24.0
         newLayoutBtn.graphic = newLayoutImageView
 
         val moreBtn = Button()
-        val moreImage = imageResolver.resolveImage("asset:more-vertical", 20)
+        val moreImage = imageResolver.resolveImage("asset:more-vertical", 24)
         val moreImageView = ImageView(moreImage)
-        moreImageView.fitHeight = 20.0
-        moreImageView.fitWidth = 20.0
+        moreImageView.fitHeight = 24.0
+        moreImageView.fitWidth = 24.0
         moreBtn.graphic = moreImageView
 
         children.addAll(applicationLabel, spacingPanel, newLayoutBtn, moreBtn)

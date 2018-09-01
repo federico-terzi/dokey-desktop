@@ -1,12 +1,13 @@
 .app_scroll_pane_container {
     -fx-background-color: linear-gradient(to bottom right, -start-green-gradient, -stop-green-gradient);
-    -fx-effect: innershadow(gaussian, rgba(0,0,0, 0.1), 7, 0, 0, 3);
+    -fx-effect: innershadow(gaussian, rgba(0,0,0, 0.3), 7, 0, 0, 0);
+    -fx-pref-height: 72px;
 }
 
 .app_scroll_pane {
     -fx-background-radius: 0;
     -fx-background-color: transparent;
-    -fx-padding: 5px 5px 0px 10px;
+    -fx-padding: 5px 5px 0px 13px;
 }
 
 .app_scroll_pane > .viewport {

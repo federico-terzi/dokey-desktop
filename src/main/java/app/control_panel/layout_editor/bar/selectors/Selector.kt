@@ -50,13 +50,13 @@ abstract class Selector(val context: SelectorContext, val section: Section, val 
     }
 
     fun initialize() {
-        val image = context.imageResolver.resolveImage(imageId, 32)
+        val image = context.imageResolver.resolveImage(imageId, 40)
         val imageView = ImageView(image)
-        imageView.fitHeight = 32.0
-        imageView.fitWidth = 32.0
+        imageView.fitHeight = 40.0
+        imageView.fitWidth = 40.0
 
 //        selectorNode.content = "M25 48 L42 48 L33 40 Z"
-        selectorNode.width = 27.0
+        selectorNode.width = 48.0
         selectorNode.height = 4.0
         selectorNode.arcHeight = 5.0
         selectorNode.arcWidth = 5.0
