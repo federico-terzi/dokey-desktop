@@ -16,6 +16,7 @@ import javafx.scene.CacheHint
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.control.Tab
+import javafx.scene.effect.BoxBlur
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
 import javafx.scene.paint.Color
@@ -91,6 +92,13 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
                 activeTab.onFocus()
 
                 controller.tab_pane.selectionModel.select(tabIndex)
+
+//                val bb = BoxBlur()
+//                bb.setWidth(10.0)
+//                bb.setHeight(10.0)
+//                bb.setIterations(3)
+//
+//                this.controller.parent_box.effect = bb
             }
         }
 

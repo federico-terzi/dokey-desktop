@@ -7,4 +7,5 @@ import javafx.scene.layout.VBox;
 public class ControlPanelController {
     public VBox top_section;
     public TabPane tab_pane;
+    public VBox parent_box;
 }

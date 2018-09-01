@@ -1,3 +1,5 @@
+@import "device_list.css";
+
 .device-tab-title-label {
     -fx-font-size: 20px;
     -fx-font-family: "Nunito Sans Regular";
@@ -7,4 +9,12 @@
     -fx-font-size: 14px;
     -fx-pref-width: 260px;
     -fx-text-alignment: center;
+}
+
+.device-tab-connected-box {
+    -fx-padding: 30px 10px 0px 23px;
+}
+
+.device-tab-connected-box > .label {
+    -fx-padding: 0 0 0 10px;
 }

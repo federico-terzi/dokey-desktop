@@ -1,0 +1,40 @@
+.device-list-cell {
+    -fx-pref-height: 50px;
+    -fx-padding: 20px 10px 20px 20px;
+}
+
+.device-list-cell .label {
+    -fx-padding: 0 0 0 20px;
+}
+
+.device-list-cell .button {
+    -fx-background-color: transparent;
+}
+
+.device-list-cell .button:hover {
+    -fx-effect: innershadow( one-pass-box , -start-green-gradient, 70 , 1 , 1 , 1 );
+}
+
+.device-list-view {
+    -fx-padding: 5px 0 0 0;
+    -fx-background-color: transparent;
+    -fx-pref-height: 150px;
+
+}
+
+.device-list-view .list-cell:odd {
+    -fx-background-color: white;
+}
+.device-list-view .list-cell:even {
+    -fx-background-color: #d8d8d8;
+}
+.device-list-view .list-cell:filled:selected .label{
+    -fx-text-fill: black;
+}
+
+.device-list-view .scroll-bar .increment-arrow,
+.device-list-view .scroll-bar .decrement-arrow,
+.device-list-view .scroll-bar .increment-button,
+.device-list-view .scroll-bar .decrement-button {
+    -fx-padding:0;
+}

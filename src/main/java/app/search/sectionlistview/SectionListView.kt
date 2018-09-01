@@ -19,6 +19,8 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
     private val results : ObservableList<ListViewEntry> = FXCollections.observableArrayList()
 
     init {
+        styleClass.add("search-list-view")
+
         // Setup the list cells
         val fallback = ImageResolver.getImage("/assets/photo.png", 32)
         cellFactory = Callback<ListView<ListViewEntry>, ListCell<ListViewEntry>> {

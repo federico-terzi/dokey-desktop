@@ -1,39 +1,39 @@
 @import "result_view_adapter.css";
 @import "separator_view_adapter.css";
 
-.list-view {
+.search-list-view {
     -fx-background-color: transparent;
 }
 
-.list-view .list-cell:even {
+.search-list-view .list-cell:even {
     -fx-background-color: transparent;
 }
-.list-view .list-cell:odd {
+.search-list-view .list-cell:odd {
     -fx-background-color: transparent;
 }
-.list-view .list-cell:filled:selected{
+.search-list-view .list-cell:filled:selected{
     -fx-background-color: -green-gradient;
 }
 
-.list-view .list-cell:filled:selected .dokey-search-result-icon{
+.search-list-view .list-cell:filled:selected .dokey-search-result-icon{
     -fx-effect: innershadow( gaussian , -primaryTextColor , 7 , 1 , 1 , 1 );
 }
 
-.list-view .list-cell:filled:selected .dokey-search-result-image{
+.search-list-view .list-cell:filled:selected .dokey-search-result-image{
     -fx-effect: none;
 }
-/*.list-view .list-cell:filled:selected .label{*/
+/*.search-list-view .list-cell:filled:selected .label{*/
 /*-fx-text-fill: -primaryTextColor;*/
 /*}*/
 
-.list-view .scroll-bar .increment-arrow,
-.list-view .scroll-bar .decrement-arrow,
-.list-view .scroll-bar .increment-button,
-.list-view .scroll-bar .decrement-button {
+.search-list-view .scroll-bar .increment-arrow,
+.search-list-view .scroll-bar .decrement-arrow,
+.search-list-view .scroll-bar .increment-button,
+.search-list-view .scroll-bar .decrement-button {
     -fx-padding:0;
 }
 
-.list-view {
+.search-list-view {
     -fx-background-insets: 0, 0;
     -fx-padding: 0;
 }
