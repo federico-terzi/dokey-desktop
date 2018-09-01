@@ -1,7 +1,7 @@
 @import "colors.css";
 @import "font.css";
 @import "control_panel/layout_editor/layout_editor.css";
-@import "control_panel/toolbar.css";
+@import "control_panel/layout-toolbar.css";
 @import "control_panel/tab_selector/tab_selector.css";
 
 .root {

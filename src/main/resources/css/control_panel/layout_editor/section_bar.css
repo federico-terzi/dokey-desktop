@@ -6,7 +6,7 @@
 .app_scroll_pane {
     -fx-background-radius: 0;
     -fx-background-color: transparent;
-    -fx-padding: 5px 5px 0px 5px;
+    -fx-padding: 5px 5px 0px 10px;
 }
 
 .app_scroll_pane > .viewport {

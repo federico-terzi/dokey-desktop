@@ -26,11 +26,14 @@ class LayoutEditorTab(val sectionManager: SectionManager, val imageResolver: Ima
                       val componentParser: ComponentParser, val commandManager: CommandManager,
                       val applicationManager: ApplicationManager, val globalKeyboardListener: GlobalKeyboardListener,
                       val dndCommandProcessor: DNDCommandProcessor) : ControlPanelTab() {
+    val layoutToolbar = LayoutToolbar(imageResolver, applicationManager)
     val sectionBar: SectionBar
     var sectionGrid: SectionGrid? = null
     val sectionGridContainer: ScrollPane = ScrollPane()  // Used as a workaround to fix overflowing transitions
 
     init {
+        children.add(layoutToolbar)
+
         // The section bar must be included in a box as a workaround to add the gradient background without
         // the focus border of javafx
         val sectionBarContainer = VBox()
@@ -86,6 +89,8 @@ class LayoutEditorTab(val sectionManager: SectionManager, val imageResolver: Ima
                 sectionGrid!!.invalidate()
             }
         }
+
+        layoutToolbar.setCurrentSection(section)
 
         // Replace the old grid with the new one, transitioning if necessary
         if (oldGrid != null) {
