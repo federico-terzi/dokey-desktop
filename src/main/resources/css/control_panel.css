@@ -3,6 +3,7 @@
 @import "control_panel/layout_editor/layout_editor.css";
 @import "control_panel/layout-toolbar.css";
 @import "control_panel/tab_selector/tab_selector.css";
+@import "control_panel/coming_soon.css";
 
 .root {
     -fx-font-family: "Nunito Sans Light";
@@ -22,4 +23,17 @@
 .mac-panel {
     -fx-padding: 30px 20px 10px 20px;
     -fx-shape: "m184.04798,92.63101c0,-8.284 6.716,-15 15,-15l138.02,0l11.074,-10.738l11.745,10.738l137.348,0c8.284,0 15,6.716 15,15l0,423.02c0,8.284 -6.716,15 -15,15l-298.188,0c-8.284,0 -15,-6.716 -15,-15l0,-423.02l0.001,0z";
+}
+
+.main-tab-pane
+{
+    -fx-tab-max-height: 0;
+}
+
+.main-tab-pane:top .tab-content-area {
+    -fx-background-color: transparent;
+}
+
+.main-tab-pane .tab-header-area {
+    visibility: hidden ;
 }

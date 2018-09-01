@@ -81,6 +81,7 @@ class SectionGrid(val section: Section,
     private fun createView(): VBox {
         // Create the tabpane for the pages and set it up
         val tabPane = TabPane()
+        tabPane.styleClass.add("section-tab-pane")
 
         componentGrids = HashMap<Tab, ComponentGrid>()
 

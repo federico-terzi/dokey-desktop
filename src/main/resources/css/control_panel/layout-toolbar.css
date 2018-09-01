@@ -1,7 +1,7 @@
 .layout-toolbar {
     -fx-background-color: white;
-    -fx-pref-height: 40px;
-    -fx-padding: 10px 10px 10px 20px;
+    -fx-pref-height: 30px;
+    -fx-padding: 0px 10px 10px 20px;
 }
 
 .layout-toolbar > .label {

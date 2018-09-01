@@ -1,16 +1,16 @@
 @import "../../colors.css";
 
-.tab-pane
+.section-tab-pane
 {
     -fx-tab-min-width:50px;
     -fx-tab-max-height: 0 ;
 }
 
-.tab-pane:top .tab-content-area {
+.section-tab-pane:top .tab-content-area {
     -fx-background-color: transparent;
 }
 
-.tab-pane .tab-header-area {
+.section-tab-pane .tab-header-area {
     visibility: hidden ;
 }
 

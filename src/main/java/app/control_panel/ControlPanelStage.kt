@@ -6,10 +6,15 @@ import app.control_panel.controllers.ControlPanelController
 import app.control_panel.layout_editor.GlobalKeyboardListener
 import app.control_panel.layout_editor.LayoutEditorTab
 import app.control_panel.tab_selector.TabSelector
+import javafx.animation.FadeTransition
+import javafx.animation.Interpolator
 import javafx.animation.ParallelTransition
+import javafx.animation.TranslateTransition
 import javafx.fxml.FXMLLoader
+import javafx.scene.CacheHint
 import javafx.scene.Parent
 import javafx.scene.Scene
+import javafx.scene.control.Tab
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
 import javafx.scene.paint.Color
@@ -35,6 +40,9 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
     private val layoutEditorTab = LayoutEditorTab(sectionManager, imageResolver, resourceBundle, componentParser,
             commandManager, applicationManager, this, dndCommandProcessor)
+
+    private val tabs = listOf<ControlPanelTab>(ComingSoonTab(), layoutEditorTab, ComingSoonTab(),
+            ComingSoonTab(), ComingSoonTab())
 
     // This variable will hold the currently active control panel tab
     private var activeTab : ControlPanelTab
@@ -65,10 +73,29 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
         controller.top_section.children.add(tabSelector)
 
         // Load the tabs
-        controller.content_box.children.add(layoutEditorTab)
+        tabs.forEach {
+            val tab = Tab()
+            tab.content = it
+            controller.tab_pane.tabs.add(tab)
+        }
 
-        activeTab = layoutEditorTab
+        // Setup the tab change listener
+        tabSelector.onTabSelected = {tabIndex ->
+            if (controller.tab_pane.selectionModel.selectedIndex != tabIndex) {
+                activeTab = tabs[tabIndex]
+                activeTab.onFocus()
+
+                controller.tab_pane.selectionModel.select(tabIndex)
+            }
+        }
+
+        // Setup the tab change animation
+        setupTabPaneAnimation()
+
+        // Initially select the first one
+        activeTab = tabs[0]
         activeTab.onFocus()
+
 
         // Keyboard listeners for detecting if a key is pressed or not
         scene.setOnKeyPressed {
@@ -84,6 +111,29 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
             // Notify the active tab
             activeTab.onGlobalKeyPress(it)
         }
+    }
+
+    private fun setupTabPaneAnimation() {
+        // Transition animation
+        controller.tab_pane.selectionModel
+                .selectedItemProperty()
+                .addListener { _, oldTab, newTab ->
+                    newTab.content.isCache = true
+                    newTab.content.cacheHint = CacheHint.SPEED
+
+                    val fadeInTransition = FadeTransition(Duration(200.0), newTab.content)
+                    fadeInTransition.fromValue = 0.0
+                    fadeInTransition.toValue = 1.0
+
+                    val translateTransition = TranslateTransition(Duration(200.0), newTab.content)
+                    translateTransition.interpolator = Interpolator.EASE_BOTH
+                    translateTransition.toY = 0.0
+                    translateTransition.fromY = 20.0
+
+                    val parallelTransition = ParallelTransition(fadeInTransition, translateTransition)
+                    parallelTransition.setOnFinished { newTab.content.isCache = false }
+                    parallelTransition.play()
+                }
     }
 
     fun animateIn() {
