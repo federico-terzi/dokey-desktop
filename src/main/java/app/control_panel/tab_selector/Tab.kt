@@ -49,6 +49,9 @@ class Tab(val imageResolver: ImageResolver, val tabLabel : String, val tabImage 
     init {
         styleClass.add("tab-selector-tab")
 
+        // Needed to make the button hitbox equals to the shape
+        isPickOnBounds = false
+
         val vBox = VBox()
         vBox.alignment = Pos.CENTER
         nameLabel = Label(tabLabel)
