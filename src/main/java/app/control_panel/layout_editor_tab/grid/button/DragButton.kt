@@ -1,7 +1,6 @@
-package app.control_panel.layout_editor.grid.button
+package app.control_panel.layout_editor_tab.grid.button
 
-import app.control_panel.layout_editor.grid.GridContext
-import com.sun.scenario.effect.impl.prism.PrEffectHelper.render
+import app.control_panel.layout_editor_tab.grid.GridContext
 import javafx.animation.RotateTransition
 import javafx.application.Platform
 import javafx.event.EventHandler

@@ -1,12 +1,9 @@
-package app.control_panel.layout_editor.grid.button
+package app.control_panel.layout_editor_tab.grid.button
 
-import app.control_panel.layout_editor.grid.GridContext
-import javafx.event.ActionEvent
-import javafx.event.EventHandler
+import app.control_panel.layout_editor_tab.grid.GridContext
 import javafx.scene.control.ContentDisplay
 import javafx.scene.control.ContextMenu
 import javafx.scene.image.ImageView
-import javafx.scene.input.MouseEvent
 import system.image.ImageResolver
 
 class EmptyButton(context : GridContext) : DragButton(context) {

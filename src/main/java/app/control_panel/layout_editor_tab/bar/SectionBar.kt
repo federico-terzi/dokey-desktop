@@ -1,16 +1,9 @@
-package app.control_panel.layout_editor.bar
+package app.control_panel.layout_editor_tab.bar
 
-import app.control_panel.layout_editor.bar.selectors.*
+import app.control_panel.layout_editor_tab.bar.selectors.*
 import javafx.event.EventHandler
-import javafx.geometry.Pos
-import javafx.scene.control.Button
 import javafx.scene.control.ScrollPane
-import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
-import javafx.scene.layout.VBox
-import javafx.scene.shape.Rectangle
-import javafx.scene.shape.SVGPath
-import javafx.scene.shape.Shape
 import model.section.*
 import system.image.ImageResolver
 import system.applications.ApplicationManager

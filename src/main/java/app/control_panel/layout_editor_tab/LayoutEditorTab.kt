@@ -1,8 +1,8 @@
-package app.control_panel.layout_editor
+package app.control_panel.layout_editor_tab
 
 import app.control_panel.ControlPanelTab
-import app.control_panel.layout_editor.grid.SectionGrid
-import app.control_panel.layout_editor.bar.SectionBar
+import app.control_panel.layout_editor_tab.grid.SectionGrid
+import app.control_panel.layout_editor_tab.bar.SectionBar
 import javafx.animation.*
 import javafx.scene.CacheHint
 import javafx.scene.control.ScrollPane

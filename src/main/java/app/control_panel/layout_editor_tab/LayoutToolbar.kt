@@ -1,4 +1,4 @@
-package app.control_panel.layout_editor
+package app.control_panel.layout_editor_tab
 
 import javafx.geometry.Pos
 import javafx.scene.control.Button

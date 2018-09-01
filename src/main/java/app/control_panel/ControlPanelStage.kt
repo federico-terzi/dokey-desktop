@@ -3,8 +3,8 @@ package app.control_panel
 import app.control_panel.animations.StageOpacityTransition
 import app.control_panel.animations.StagePositionTransition
 import app.control_panel.controllers.ControlPanelController
-import app.control_panel.layout_editor.GlobalKeyboardListener
-import app.control_panel.layout_editor.LayoutEditorTab
+import app.control_panel.layout_editor_tab.GlobalKeyboardListener
+import app.control_panel.layout_editor_tab.LayoutEditorTab
 import app.control_panel.tab_selector.TabSelector
 import javafx.animation.FadeTransition
 import javafx.animation.Interpolator

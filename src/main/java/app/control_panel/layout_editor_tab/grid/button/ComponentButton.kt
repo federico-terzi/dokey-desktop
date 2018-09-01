@@ -1,7 +1,7 @@
-package app.control_panel.layout_editor.grid.button
+package app.control_panel.layout_editor_tab.grid.button
 
-import app.control_panel.layout_editor.grid.GridContext
-import app.control_panel.layout_editor.grid.exception.CommandNotFoundException
+import app.control_panel.layout_editor_tab.grid.GridContext
+import app.control_panel.layout_editor_tab.grid.exception.CommandNotFoundException
 import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.scene.Cursor

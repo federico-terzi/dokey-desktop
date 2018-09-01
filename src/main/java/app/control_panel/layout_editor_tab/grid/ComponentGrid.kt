@@ -1,15 +1,14 @@
-package app.control_panel.layout_editor.grid
+package app.control_panel.layout_editor_tab.grid
 
-import app.control_panel.layout_editor.GlobalKeyboardListener
-import app.control_panel.layout_editor.grid.button.ComponentButton
-import app.control_panel.layout_editor.grid.button.DragButton
-import app.control_panel.layout_editor.grid.button.EmptyButton
-import app.control_panel.layout_editor.grid.button.SelectableButton
-import app.control_panel.layout_editor.model.ScreenOrientation
+import app.control_panel.layout_editor_tab.GlobalKeyboardListener
+import app.control_panel.layout_editor_tab.grid.button.ComponentButton
+import app.control_panel.layout_editor_tab.grid.button.DragButton
+import app.control_panel.layout_editor_tab.grid.button.EmptyButton
+import app.control_panel.layout_editor_tab.grid.button.SelectableButton
+import app.control_panel.layout_editor_tab.model.ScreenOrientation
 import javafx.geometry.HPos
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
-import javafx.scene.input.KeyCode
 import javafx.scene.layout.ColumnConstraints
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.Priority
@@ -20,7 +19,6 @@ import model.component.Component
 import model.parser.component.ComponentParser
 import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
-import java.awt.event.KeyEvent
 import java.util.*
 
 

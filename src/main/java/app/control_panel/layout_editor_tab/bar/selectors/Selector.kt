@@ -1,6 +1,5 @@
-package app.control_panel.layout_editor.bar.selectors
+package app.control_panel.layout_editor_tab.bar.selectors
 
-import javafx.animation.FadeTransition
 import javafx.animation.TranslateTransition
 import javafx.geometry.Pos
 import javafx.scene.CacheHint
@@ -9,7 +8,6 @@ import javafx.scene.image.ImageView
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
-import javafx.scene.shape.SVGPath
 import javafx.util.Duration
 import model.section.Section
 

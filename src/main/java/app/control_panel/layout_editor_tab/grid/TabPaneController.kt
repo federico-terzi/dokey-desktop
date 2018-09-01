@@ -1,4 +1,4 @@
-package app.control_panel.layout_editor.grid
+package app.control_panel.layout_editor_tab.grid
 
 import javafx.animation.FadeTransition
 import javafx.animation.ParallelTransition
