@@ -1,17 +1,17 @@
 .layout-toolbar {
     -fx-background-color: white;
-    -fx-pref-height: 30px;
-    -fx-padding: 0px 10px 10px 20px;
+    -fx-pref-height: 47px;
+    -fx-padding: 0px 10px 10px 24px;
 }
 
 .layout-toolbar > .label {
-    -fx-font-size: 16px;
-    -fx-font-family: "Nunito Sans Light";
+    -fx-font-size: 20px;
+    -fx-font-family: "Nunito Sans Regular";
 }
 
 .layout-toolbar > .button {
     -fx-background-color: transparent;
-    -fx-padding: 2px;
+    -fx-padding: 3px;
 }
 
 .layout-toolbar > .button:hover {

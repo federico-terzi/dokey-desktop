@@ -40,7 +40,7 @@ class TabSelector(val imageResolver: ImageResolver) : Pane() {
 
         // Setup the clipping mask for the border
         val clippingMask = SVGPath()
-        clippingMask.content = "M0,${TAB_SELECTOR_HEIGHT}l0.089-44.04C0.109,8.299,8.425,0,18.625,0h315c4.922,0,9.559,1.93,13.056,5.434c3.497,3.504,5.418,8.145,5.408,13.067l-0.089,${TAB_SELECTOR_HEIGHT-20}L0,${TAB_SELECTOR_HEIGHT}z"
+        clippingMask.content = "M0,${TAB_SELECTOR_HEIGHT}l0.089-44.04C0.109,8.299,8.425,0,18.625,0h363c4.922,0,9.559,1.93,13.056,5.434c3.497,3.504,5.418,8.145,5.408,13.067l-0.089,${TAB_SELECTOR_HEIGHT-20}L0,${TAB_SELECTOR_HEIGHT}z"
         clippingMask.layoutX = 0.0
         clippingMask.layoutY = 0.0
         this.clip = clippingMask

@@ -1,7 +1,7 @@
-package app.control_panel.layout_editor.grid
+package app.control_panel.layout_editor_tab.grid
 
-import app.control_panel.layout_editor.GlobalKeyboardListener
-import app.control_panel.layout_editor.model.ScreenOrientation
+import app.control_panel.layout_editor_tab.GlobalKeyboardListener
+import app.control_panel.layout_editor_tab.model.ScreenOrientation
 import javafx.animation.*
 import javafx.scene.CacheHint
 import javafx.scene.control.Tab

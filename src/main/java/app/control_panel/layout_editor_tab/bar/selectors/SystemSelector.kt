@@ -1,4 +1,4 @@
-package app.control_panel.layout_editor.bar.selectors
+package app.control_panel.layout_editor_tab.bar.selectors
 
 import model.section.Section
 

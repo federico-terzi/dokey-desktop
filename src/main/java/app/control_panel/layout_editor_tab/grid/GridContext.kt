@@ -1,4 +1,4 @@
-package app.control_panel.layout_editor.grid
+package app.control_panel.layout_editor_tab.grid
 
 import model.component.CommandResolver
 import model.parser.component.ComponentParser
