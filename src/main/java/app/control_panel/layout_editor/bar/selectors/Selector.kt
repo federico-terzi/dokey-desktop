@@ -45,6 +45,10 @@ abstract class Selector(val context: SelectorContext, val section: Section, val 
 
     private val selectorNode : Rectangle = Rectangle()
 
+    init {
+        styleClass.add("app-scroll-pane-button")
+    }
+
     fun initialize() {
         val image = context.imageResolver.resolveImage(imageId, 32)
         val imageView = ImageView(image)
