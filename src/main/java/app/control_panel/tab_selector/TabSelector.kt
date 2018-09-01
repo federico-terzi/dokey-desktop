@@ -20,6 +20,8 @@ class TabSelector(val imageResolver: ImageResolver) : Pane() {
     var onTabSelected : ((Int) -> Unit)? = null
 
     init {
+        styleClass.add("tab-selector")
+
         tabs.add(Tab(imageResolver, "Devices", "asset:airplay"))
         tabs.add(Tab(imageResolver, "Layouts", "asset:layout"))
         tabs.add(Tab(imageResolver, "Commands", "asset:command"))
