@@ -2,18 +2,17 @@ package system.server
 
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
-import java.io.DataOutputStream
 import java.io.IOException
 import java.net.ServerSocket
 import java.util.logging.Logger
 
-/**
- * This number is sent directly when a new connection is created and makes possible for the receiver to
- * check if the connection is from a dokey server.
- */
-const val DOKEY_NUMBER : Int = 5623981
-
 class MobileServer(val serverSocket: ServerSocket, val key : ByteArray) : Thread(), ApplicationContextAware {
+    /**
+     * These numbers are sent directly when a new connection is created and makes possible for the receiver to
+     * check if the connection is from a dokey server.
+     */
+    val DOKEY_NUMBERS = byteArrayOf(123, 11, 78, 23)
+
     @Volatile private var shouldStop = false
 
     private val LOG = Logger.getGlobal()
@@ -33,9 +32,8 @@ class MobileServer(val serverSocket: ServerSocket, val key : ByteArray) : Thread
             try {
                 val socket = serverSocket.accept()
 
-                // Send the dokey number
-                val dos = DataOutputStream(socket.getOutputStream())
-                dos.writeInt(DOKEY_NUMBER)
+                // Send the dokey numbers
+                socket.getOutputStream().write(DOKEY_NUMBERS)
 
                 // Create the worker and start it
                 val worker = context!!.getBean(MobileWorker::class.java, socket, key)
