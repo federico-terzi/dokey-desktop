@@ -35,7 +35,7 @@ class MobileServer(val serverSocket: ServerSocket, val key : ByteArray) : Thread
 
                 // Send the dokey number
                 val dos = DataOutputStream(socket.getOutputStream())
-                dos.write(DOKEY_NUMBER)
+                dos.writeInt(DOKEY_NUMBER)
 
                 // Create the worker and start it
                 val worker = context!!.getBean(MobileWorker::class.java, socket, key)
