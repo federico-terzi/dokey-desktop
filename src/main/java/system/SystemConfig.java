@@ -203,6 +203,12 @@ public class SystemConfig {
         return new GeneralContext() {
             @NotNull
             @Override
+            public SectionManager getSectionManager() {
+                return sectionManager();
+            }
+
+            @NotNull
+            @Override
             public BookmarkManager getBookmarkManager() {
                 return bookmarkManager();
             }

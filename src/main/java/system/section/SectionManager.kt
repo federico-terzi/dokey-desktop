@@ -24,10 +24,14 @@ import java.io.*
 class SectionManager(val storageManager: StorageManager, val sectionParser: SectionParser,
                      val commandManager: CommandManager) {
     // A cache that associates the section id with the section
-    val sectionCache = mutableMapOf<String, Section>()
+    private val sectionCache = mutableMapOf<String, Section>()
 
     fun getSections() : Collection<Section> {
         return sectionCache.values
+    }
+
+    fun getSection(sectionId: String) : Section? {
+        return sectionCache[sectionId]
     }
 
     private fun loadSections(): Collection<Section> {
@@ -155,6 +159,9 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
         // Update the last edit
         section.lastEdit = System.currentTimeMillis()
 
+        // Reload the section in the cache
+        sectionCache[section.id!!] = section
+
         // Save the section
         return writeSectionToFile(section, sectionFile)
     }
@@ -188,6 +195,10 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
 
     @Synchronized
     fun deleteSection(section: Section): Boolean {
+        // Delete the section from the cache
+        sectionCache.remove(section.id)
+
+        // Delete the section from file
         val sectionFile: File = getSectionFile(section)
         if (sectionFile.isFile) {
             return sectionFile.delete()
