@@ -181,6 +181,7 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
         val fis = FileInputStream(commandFile)
         val tokener = JSONTokener(fis)
         val jsonContent = JSONObject(tokener)
+        fis.close()
         return commandParser.fromJSON(jsonContent)
     }
 
