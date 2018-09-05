@@ -1,6 +1,5 @@
 package system.image.sources
 
-import javafx.scene.image.Image
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.FileUtils
 import system.ResourceUtils
@@ -16,27 +15,27 @@ import java.net.URISyntaxException
 
 @RegisterSource(scheme = "url", useAnotherThread = true)
 class UrlImageSource(context: ImageSourceContext) : AbstractImageSource(context) {
-    override fun resolveImageFromCacheInternal(id: String, size: Int): Image? {
+    override fun resolveFileFromCacheInternal(id: String): File? {
         // Calculate the hash of the requested url
         val hash = DigestUtils.md5Hex(id)
 
         // Check if the image has already been cached
         val cachedFile = File(context.storageManager.webCacheDir, "$hash.png")
         if (cachedFile.isFile) {
-            return ImageResolver.getImage(cachedFile, size)
+            return cachedFile
         }
 
         // Check if the image was already requested before but not found
         // Used to avoid requesting the same image over and over when not available
         if (File(context.storageManager.webCacheDir, "$hash.notfound").isFile) {
             // Falling back to the default
-            return ImageResolver.getImage(UrlImageSource::class.java.getResourceAsStream("/assets/world_black.png"), size)
+            return ResourceUtils.getResource("/assets/world_black.png")
         }
 
         return null
     }
 
-    override fun resolveImageInternal(id: String, size: Int): Image? {
+    override fun resolveFileInternal(id: String): File? {
         // Calculate the hash of the requested url
         val hash = DigestUtils.md5Hex(id)
 
@@ -48,7 +47,8 @@ class UrlImageSource(context: ImageSourceContext) : AbstractImageSource(context)
         if (highResImage != null) {
             // Copy the found image to the cache file
             FileUtils.copyFile(highResImage, cachedFile)
-            return ImageResolver.getImage(cachedFile, size)        }
+            return cachedFile
+        }
 
         // Not in the cache, request it
         val downloadedImageFile = WebResolver.extractImageFromUrl(id)
@@ -57,7 +57,7 @@ class UrlImageSource(context: ImageSourceContext) : AbstractImageSource(context)
             // Create a file that is used in followings request to avoid requesting the image over and over
             // when not available
             File(context.storageManager.webCacheDir, "$hash.notfound").createNewFile()
-            return ImageResolver.getImage(UrlImageSource::class.java.getResourceAsStream("/assets/world_black.png"), size)
+            return ResourceUtils.getResource("/assets/world_black.png")
         }else{ // Image found!
             // Copy the found image to the right file
             FileUtils.copyFile(downloadedImageFile, cachedFile)
@@ -65,10 +65,8 @@ class UrlImageSource(context: ImageSourceContext) : AbstractImageSource(context)
             downloadedImageFile.delete()
 
             // And finally, return the right image
-            return ImageResolver.getImage(cachedFile, size)
+            return cachedFile
         }
-
-        return null
     }
 
     private fun resolveHighResolutionIcon(url: String) : File? {

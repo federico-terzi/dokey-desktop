@@ -9,6 +9,12 @@ import java.io.File
 import java.io.InputStream
 import java.util.*
 
+/**
+ * Used to manage and retrieve images.
+ * Every image in the system is associated with a scheme and an identifier.
+ * Every scheme is associated with an ImageSource, to which the ImageResolver
+ * will pass the relative id to find the image.
+ */
 class ImageResolver(context: ImageSourceContext) {
     val sourceMap = mutableMapOf<String, MetaImageSource>()
 
@@ -30,6 +36,33 @@ class ImageResolver(context: ImageSourceContext) {
         }
     }
 
+    /**
+     * Return the File associated with the given image id, or null if not found.
+     * The call will check the cache first and, if not found, make some potentially
+     * expensive calculation to get it.
+     */
+    fun resolveImageFile(imageId: String) : File? {
+        // Extract the scheme from the imageId
+        val (scheme, id) = extractSchemeAndIdentifier(imageId)
+        if (sourceMap.containsKey(scheme)) {
+            val imageSource: MetaImageSource = sourceMap[scheme]!!
+
+            val cachedImageFile = imageSource.resolveFileFromCache(id)
+            if (cachedImageFile != null) {
+                return cachedImageFile
+            }else{
+                return imageSource?.resolveFile(id)
+            }
+        }
+
+        return null  // Not found
+    }
+
+    /**
+     * Return the Image associated with the given image id, or null if not found.
+     * The call will check the cache first and, if not found, make some potentially
+     * expensive calculation to get it.
+     */
     fun resolveImage(imageId: String, size: Int) : Image? {
         // Extract the scheme from the imageId
         val (scheme, id) = extractSchemeAndIdentifier(imageId)
@@ -47,6 +80,13 @@ class ImageResolver(context: ImageSourceContext) {
         return null  // Not found
     }
 
+    /**
+     * Get the Image associated with the given image id, asynchronously.
+     * The result will be delivered by the callback(), specifying if the call was
+     * made from another thread, and thus requiring to move to the UI thread to use it.
+     * The call will check the cache first and, if not found, make some potentially
+     * expensive calculation to get it.
+     */
     fun resolveImageAsync(imageId: String, size: Int, callback: (Image?, externalThread: Boolean) -> Unit) {
         // Extract the scheme from the imageId
         val (scheme, id) = extractSchemeAndIdentifier(imageId)

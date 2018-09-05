@@ -19,6 +19,7 @@ import system.context.MobileServerContext
 import system.image.ImageResolver
 import system.keyboard.KeyboardManager
 import utils.SystemInfoManager
+import java.io.File
 import java.io.Serializable
 import java.net.Socket
 import java.util.logging.Logger
@@ -27,7 +28,7 @@ class MobileService(val socket : Socket, val key : ByteArray, val commandManager
                     val context: MobileServerContext, val commandEngine: CommandEngine,
                     val imageResolver: ImageResolver, val applicationSwitchDaemon: ApplicationSwitchDaemon,
                     val onConnectionListener: DEManager.OnConnectionListener) :
-        ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnCommandReceivedListener {
+        ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnCommandReceivedListener, LinkManager.OnImageRequestListener {
 
     var onConnectionClosed : (() -> Unit)? = null
 
@@ -53,6 +54,7 @@ class MobileService(val socket : Socket, val key : ByteArray, val commandManager
         registerServiceHandlers()
 
         linkManager.commandListener = this
+        linkManager.setImageRequestListener(this)
 
         // Register the app switch deamon
         applicationSwitchDaemon.addApplicationSwitchListener(this)
@@ -92,6 +94,10 @@ class MobileService(val socket : Socket, val key : ByteArray, val commandManager
 
     override fun onCommandReceived(command: Command) {
         commandEngine.execute(command)
+    }
+
+    override fun onImageRequestReceived(imageIdentifier: String): File? {
+        return imageResolver.resolveImageFile(imageIdentifier)
     }
 
     private val editorSectionModifiedListener = BroadcastManager.BroadcastListener {
