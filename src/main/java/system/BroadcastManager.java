@@ -14,15 +14,12 @@ import java.util.logging.Logger;
 public class BroadcastManager {
     // Events
     public static final int EDITOR_MODIFIED_SECTION_EVENT = 10;
-    public static final int PHONE_MODIFIED_SECTION_EVENT = 11;
 
     public static final int OPEN_CONTROL_PANEL_REQUEST_EVENT = 20;
     public static final int OPEN_SETTINGS_REQUEST_EVENT = 21;
     public static final int OPEN_COMMANDS_REQUEST_EVENT = 22;
 
     public static final int ADD_URL_TO_QUICK_COMMANDS_EVENT = 30;
-
-    public static final int OPEN_SHORTCUT_PAGE_FOR_APPLICATION_EVENT = 50;
 
     public static final int ENABLE_DOKEY_SEARCH_PROPERTY_CHANGED = 100;
 
@@ -158,6 +155,8 @@ public class BroadcastManager {
 
         // Add to the queue
         eventQueue.add(entry);
+
+        LOG.fine("BROADCAST: "+ eventID);
 
         return true;
     }

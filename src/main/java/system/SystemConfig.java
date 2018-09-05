@@ -284,7 +284,7 @@ public class SystemConfig {
     public MobileService mobileService(Socket socket, byte[] key, DEManager.OnConnectionListener onConnectionListener)
             throws UnsupportedOperatingSystemException, AWTException {
         return new MobileService(socket, key, commandManager(), generalContext(), commandEngine(),
-                imageResolver(), applicationSwitchDaemon(), onConnectionListener);
+                imageResolver(), applicationSwitchDaemon(), sectionManager(), onConnectionListener);
     }
 
     @Bean

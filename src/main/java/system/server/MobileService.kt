@@ -18,6 +18,7 @@ import system.commands.CommandManager
 import system.context.MobileServerContext
 import system.image.ImageResolver
 import system.keyboard.KeyboardManager
+import system.section.SectionManager
 import utils.SystemInfoManager
 import java.io.File
 import java.io.Serializable
@@ -27,6 +28,7 @@ import java.util.logging.Logger
 class MobileService(val socket : Socket, val key : ByteArray, val commandManager: CommandManager,
                     val context: MobileServerContext, val commandEngine: CommandEngine,
                     val imageResolver: ImageResolver, val applicationSwitchDaemon: ApplicationSwitchDaemon,
+                    val sectionManager: SectionManager,
                     val onConnectionListener: DEManager.OnConnectionListener) :
         ApplicationSwitchDaemon.OnApplicationSwitchListener, LinkManager.OnCommandReceivedListener, LinkManager.OnImageRequestListener {
 
@@ -101,6 +103,12 @@ class MobileService(val socket : Socket, val key : ByteArray, val commandManager
     }
 
     private val editorSectionModifiedListener = BroadcastManager.BroadcastListener {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val sectionId = it as String?
+        if (sectionId != null) {
+            val section = sectionManager.getSection(sectionId)
+            if (section != null) {
+                linkManager.requestService("section_edit", section.json(), null)
+            }
+        }
     }
 }

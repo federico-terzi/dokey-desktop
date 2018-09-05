@@ -3,6 +3,7 @@ package app.control_panel.layout_editor_tab
 import app.control_panel.ControlPanelTab
 import app.control_panel.layout_editor_tab.grid.SectionGrid
 import app.control_panel.layout_editor_tab.bar.SectionBar
+import io.reactivex.subjects.PublishSubject
 import javafx.animation.*
 import javafx.scene.CacheHint
 import javafx.scene.control.ScrollPane
@@ -13,12 +14,14 @@ import javafx.util.Duration
 import model.page.DefaultPage
 import model.parser.component.ComponentParser
 import model.section.Section
+import system.BroadcastManager
 import system.commands.CommandManager
 import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
 import system.applications.ApplicationManager
 import system.section.SectionManager
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 const val MAX_PAGES = 6
 
@@ -30,6 +33,9 @@ class LayoutEditorTab(val sectionManager: SectionManager, val imageResolver: Ima
     val sectionBar: SectionBar
     var sectionGrid: SectionGrid? = null
     val sectionGridContainer: ScrollPane = ScrollPane()  // Used as a workaround to fix overflowing transitions
+
+    // Used to save section edits with a debouncing mechanism
+    val saveSectionSubject = PublishSubject.create<Section>()
 
     init {
         children.add(layoutToolbar)
@@ -53,6 +59,15 @@ class LayoutEditorTab(val sectionManager: SectionManager, val imageResolver: Ima
         sectionBar.onSectionClicked = { section ->
             loadSection(section)
         }
+
+        // Setup the debouncing save mechanism
+        saveSectionSubject.debounce(100, TimeUnit.MILLISECONDS).subscribe {section ->
+            // Ssve the section
+            sectionManager.saveSection(section)
+
+            // Send a broadcast
+            BroadcastManager.getInstance().sendBroadcast(BroadcastManager.EDITOR_MODIFIED_SECTION_EVENT, section.id)
+        }
     }
 
     override fun onFocus() {
@@ -73,7 +88,7 @@ class LayoutEditorTab(val sectionManager: SectionManager, val imageResolver: Ima
         sectionGrid = SectionGrid(section, imageResolver, resourceBundle, componentParser, commandManager,
                 globalKeyboardListener, dndCommandProcessor)
         sectionGrid!!.onSectionModified = { section ->
-            sectionManager.saveSection(section)
+            saveSectionSubject.onNext(section)
         }
         sectionGrid!!.onRequestAddPage = { section ->
             // Make sure to not exceed the limit
