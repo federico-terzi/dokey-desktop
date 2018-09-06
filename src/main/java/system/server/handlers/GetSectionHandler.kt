@@ -11,7 +11,23 @@ class GetSectionHandler(val context: MobileServerContext) : ServiceHandler {
         val requestedSectionId = body?.getString("id")
         val sectionLastEdit = body?.optLong("lastEdit", 0)
 
-        val section = context.sectionManager.getSection(requestedSectionId!!)
+        // If the requested section id is "shortcut", return the section of the currently active application
+        val sectionId = if (requestedSectionId == "shortcut") {
+            val currentlyActiveApplication = context.applicationSwitchDaemon.currentApplication
+            if (currentlyActiveApplication !=  null) {
+                "app:${currentlyActiveApplication.executablePath}"
+            }else{
+                null
+            }
+        }else{
+            requestedSectionId
+        }
+
+        val section = if (sectionId != null) {
+            context.sectionManager.getSection(sectionId)
+        }else{
+            null
+        }
 
         val outputJson = JSONObject()
 

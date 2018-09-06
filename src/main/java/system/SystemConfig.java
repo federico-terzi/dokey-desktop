@@ -203,6 +203,17 @@ public class SystemConfig {
         return new GeneralContext() {
             @NotNull
             @Override
+            public ApplicationSwitchDaemon getApplicationSwitchDaemon() {
+                try {
+                    return applicationSwitchDaemon();
+                } catch (UnsupportedOperatingSystemException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            @NotNull
+            @Override
             public SectionManager getSectionManager() {
                 try {
                     return sectionManager();
