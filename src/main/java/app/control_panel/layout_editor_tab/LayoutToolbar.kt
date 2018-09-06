@@ -44,15 +44,6 @@ class LayoutToolbar(val imageResolver: ImageResolver, val applicationManager: Ap
     }
 
     fun setCurrentSection(section: Section) {
-        applicationLabel.text = getSectionLabel(section)
-    }
-
-    private fun getSectionLabel(section: Section): String? {
-        return when(section) {
-            is LaunchpadSection -> "Launchpad"
-            is SystemSection -> "System"
-            is ApplicationSection -> applicationManager.getApplication(section.appId).name
-            else -> "Undefined"
-        }
+        applicationLabel.text = section.name
     }
 }

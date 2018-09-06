@@ -12,6 +12,7 @@ import model.section.LaunchpadSection
 import model.section.Section
 import model.section.SystemSection
 import org.apache.commons.codec.digest.DigestUtils
+import system.applications.ApplicationManager
 import system.commands.CommandManager
 import system.commands.general.AppRelatedCommand
 import system.storage.StorageManager
@@ -22,7 +23,7 @@ import java.io.*
  * The SectionManager is used to manage sections.
  */
 class SectionManager(val storageManager: StorageManager, val sectionParser: SectionParser,
-                     val commandManager: CommandManager) {
+                     val commandManager: CommandManager, val applicationManager: ApplicationManager) {
     // A cache that associates the section id with the section
     private val sectionCache = mutableMapOf<String, Section>()
 
@@ -59,10 +60,13 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
 
         // Generate all the missing sections based on the available applications
         for (application in applications.keys) {
+            // Get the application name and make sure the app was found
+            val applicationName = applicationManager.getApplication(application) ?: continue
+
             // Check if the application already has an associated section.
             val sectionFile = getSectionFile("app:$application")
             if (!sectionFile.isFile) {  // If not, generate a new section from the commands
-                val section = generateAppSectionFromCommands(application!!, applications[application]!!)
+                val section = generateAppSectionFromCommands(application!!, applicationName.name, applications[application]!!)
                 saveSection(section)
             }
         }
@@ -92,20 +96,23 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
 
     private fun generateSystemSection(): Section {
         val section = SystemSection()
+        section.name = "System"
         section.pages = mutableListOf(generateEmptyPage())
         return section
     }
 
     private fun generateLaunchpadSection(): LaunchpadSection {
         val section = LaunchpadSection()
+        section.name = "Launchpad"
         section.pages = mutableListOf(generateEmptyPage())
         return section
     }
 
-    private fun generateAppSectionFromCommands(application: String, commands: List<AppRelatedCommand>): Section {
+    private fun generateAppSectionFromCommands(executablePath: String, applicationName: String, commands: List<AppRelatedCommand>): Section {
         // Create the destination section
         val section = DefaultApplicationSection()
-        section.id = "app:$application"
+        section.id = "app:$executablePath"
+        section.name = applicationName
 
         // Create a list of pages by filling them with commands
         val pages = mutableListOf<Page>(generateEmptyPage())

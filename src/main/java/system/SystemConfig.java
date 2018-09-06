@@ -126,8 +126,8 @@ public class SystemConfig {
     }
 
     @Bean
-    public SectionManager sectionManager() {
-        return new SectionManager(storageManager(), sectionParser(), commandManager());
+    public SectionManager sectionManager() throws UnsupportedOperatingSystemException {
+        return new SectionManager(storageManager(), sectionParser(), commandManager(), applicationManager());
     }
 
     @Bean
@@ -204,7 +204,12 @@ public class SystemConfig {
             @NotNull
             @Override
             public SectionManager getSectionManager() {
-                return sectionManager();
+                try {
+                    return sectionManager();
+                } catch (UnsupportedOperatingSystemException e) {
+                    e.printStackTrace();
+                    return null;
+                }
             }
 
             @NotNull
