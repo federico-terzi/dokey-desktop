@@ -68,6 +68,8 @@ class Tab(val imageResolver: ImageResolver, val tabLabel : String, val tabImage 
         isCache = true
         cacheHint = CacheHint.SPEED
 
+        prefWidth = TAB_WIDTH
+
         graphic = vBox
     }
 

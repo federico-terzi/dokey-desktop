@@ -10,6 +10,12 @@ import system.image.ImageResolver
 const val TAB_OVERFLOW = 40.0
 const val TAB_INITIAL_OFFSET = -20.0
 
+// Unfortunately, due to a graphical glitch, this value cannot be dynamically generated
+// that means that if the number of tab changes, this value must be manually recalculated.
+// This is the formula
+// tabWidth = this.width / tabs.size + TAB_OVERFLOW
+const val TAB_WIDTH = 120.0
+
 const val TAB_SELECTOR_HEIGHT = 60.0
 
 class TabSelector(val imageResolver: ImageResolver) : Pane() {
@@ -51,7 +57,9 @@ class TabSelector(val imageResolver: ImageResolver) : Pane() {
 
         // Initially select the first one
         selectedTab = tabs[0]
-        Platform.runLater {renderSelection()}
+        Platform.runLater {
+            renderSelection()
+        }
     }
 
     private fun renderSelection() {
@@ -70,11 +78,9 @@ class TabSelector(val imageResolver: ImageResolver) : Pane() {
     override fun layoutChildren() {
         super.layoutChildren()
 
-        val tabWidth = this.width / tabs.size + TAB_OVERFLOW
         val tabSpacing = this.width / tabs.size
 
         tabs.forEachIndexed { i, tab ->
-            tab.prefWidth = tabWidth
             tab.layoutX = TAB_INITIAL_OFFSET + tabSpacing * i
         }
     }
