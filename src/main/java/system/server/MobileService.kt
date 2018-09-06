@@ -1,6 +1,7 @@
 package system.server
 
 import app.MainApp
+import json.JSONObject
 import model.command.Command
 import model.component.CommandResolver
 import net.DEDaemon
@@ -91,7 +92,18 @@ class MobileService(val socket : Socket, val key : ByteArray, val commandManager
     }
 
     override fun onApplicationSwitch(application: Application) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        // Check if the application has an associated section
+        val associatedSection = sectionManager.getSection("app:${application.executablePath}")
+
+        val requestJson = JSONObject()
+        requestJson.put("appName", application.name)
+
+        if (associatedSection != null) {
+            requestJson.put("sectionId", associatedSection.id)
+            requestJson.put("lastEdit", associatedSection.lastEdit)
+        }
+
+        linkManager.requestService("app_switch", requestJson, null)
     }
 
     override fun onCommandReceived(command: Command) {
