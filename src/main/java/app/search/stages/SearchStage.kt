@@ -78,7 +78,7 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
         controller.rootNode.prefWidth = DIALOG_WIDTH
 
         // Setup the listview
-        listView = SectionListView(DIALOG_WIDTH, imageResolver) {
+        listView = SectionListView(imageResolver) {
             this.hide()  // Hide the window when a user clicks on a result
         }
 

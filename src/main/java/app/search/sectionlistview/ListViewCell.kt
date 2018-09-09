@@ -10,7 +10,7 @@ import system.search.results.Result
 /**
  * The list cell used in the SectionListView.
  */
-class ListViewCell(private val listWidth: Double, private val fallback: Image,
+class ListViewCell(private val fallback: Image,
                    private val imageResolver: ImageResolver) : ListCell<ListViewEntry>() {
     // The current view adapter, kept in memory make updates more efficient
     private var viewAdapter: ViewAdapter? = null
@@ -32,7 +32,8 @@ class ListViewCell(private val listWidth: Double, private val fallback: Image,
         viewAdapter!!.updateView(entry)
         val view = viewAdapter!!.getView()
         view.alignment = Pos.CENTER_LEFT
-        view.maxWidth = listWidth - 50
+        view.minWidth = 0.0
+        view.prefWidth = 1.0
 
         graphic = view
     }

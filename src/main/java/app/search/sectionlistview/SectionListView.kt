@@ -14,7 +14,7 @@ import java.util.*
  * This component extends ListView to implement the Category label feature used
  * to distinguish between results
  */
-class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolver,
+class SectionListView(val imageResolver: ImageResolver,
                       val onResultSelected : () -> Unit) : ListView<ListViewEntry>() {
     private val results : ObservableList<ListViewEntry> = FXCollections.observableArrayList()
 
@@ -24,7 +24,7 @@ class SectionListView(val preferredWidth: Double, val imageResolver: ImageResolv
         // Setup the list cells
         val fallback = ImageResolver.getImage("/assets/photo.png", 32)
         cellFactory = Callback<ListView<ListViewEntry>, ListCell<ListViewEntry>> {
-            ListViewCell(preferredWidth, fallback, imageResolver) as ListCell<ListViewEntry>
+            ListViewCell(fallback, imageResolver) as ListCell<ListViewEntry>
         }
 
         // Result list view click listener, execute the corresponding action
