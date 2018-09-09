@@ -1,0 +1,16 @@
+.command-list-view {
+    -fx-background-color: transparent;
+}
+
+.command-list-cell {
+    -fx-padding: 8px 15px 8px 11px;
+}
+
+.command-list-cell-vbox {
+    -fx-padding: 0px 5px 0px 12px;
+}
+
+.command-list-cell-title {
+    -fx-font-family: "Nunito Sans Bold";
+    -fx-font-size: 13px;
+}
