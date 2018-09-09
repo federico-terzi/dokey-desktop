@@ -24,8 +24,9 @@ class CommandTab(val imageResolver: ImageResolver, val resourceBundle: ResourceB
     // This is the list that will contain the commands shown by the list view
     private val commands = FXCollections.observableArrayList<Command>()
 
-    private var currentQuery : String? = null
-    private var currentComparator : Comparator<Command> = NameComparator(Sorting.ASCENDING)
+    private var currentQuery: String? = null
+    private var currentComparator: Comparator<Command> = NameComparator(Sorting.ASCENDING)
+
     init {
         VBox.setVgrow(commandListView, Priority.ALWAYS)
 
@@ -41,7 +42,14 @@ class CommandTab(val imageResolver: ImageResolver, val resourceBundle: ResourceB
         }
 
         // Setup the search bar listener
-
+        toolbar.onSearchChanged = { query ->
+            if (query.isBlank()) {
+                currentQuery = null
+            }else{
+                currentQuery = query
+            }
+            loadCommands()
+        }
     }
 
     fun loadCommands() {

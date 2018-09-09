@@ -37,15 +37,16 @@ class SortingButton(val imageResolver: ImageResolver, val title : String) : Butt
         contentDisplay = ContentDisplay.RIGHT
 
         setOnMouseClicked {
+            // Invert the sorting
+            sorting = if (sorting == Sorting.ASCENDING) Sorting.DESCENDING else Sorting.ASCENDING
+
             if (!sortingEnabled) {
                 sortingEnabled = true
-                onSortingSelected?.invoke(sorting)
             }else{
-                // Invert the sorting
-                sorting = if (sorting == Sorting.ASCENDING) Sorting.DESCENDING else Sorting.ASCENDING
                 render()
-                onSortingSelected?.invoke(sorting)
             }
+
+            onSortingSelected?.invoke(sorting)
         }
     }
 
