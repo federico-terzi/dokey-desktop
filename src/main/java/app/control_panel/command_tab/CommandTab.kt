@@ -2,6 +2,8 @@ package app.control_panel.command_tab
 
 import app.control_panel.ControlPanelTab
 import app.control_panel.command_tab.list.CommandListView
+import app.control_panel.command_tab.list.comparator.NameComparator
+import app.ui.model.Sorting
 import javafx.collections.FXCollections
 import javafx.scene.input.KeyEvent
 import javafx.scene.layout.Priority
@@ -16,12 +18,14 @@ class CommandTab(val imageResolver: ImageResolver, val resourceBundle: ResourceB
 
     // UI Elements
     private val toolbar = CommandToolbar(imageResolver)
-    private val listHeader = CommandListHeader()
+    private val listHeader = CommandListHeader(imageResolver)
     private val commandListView = CommandListView(imageResolver)
 
     // This is the list that will contain the commands shown by the list view
     private val commands = FXCollections.observableArrayList<Command>()
 
+    private var currentQuery : String? = null
+    private var currentComparator : Comparator<Command> = NameComparator(Sorting.ASCENDING)
     init {
         VBox.setVgrow(commandListView, Priority.ALWAYS)
 
@@ -29,11 +33,25 @@ class CommandTab(val imageResolver: ImageResolver, val resourceBundle: ResourceB
 
         // Setup the list view
         commandListView.items = commands
+
+        // Setup ordering logic
+        listHeader.onSortingSelected = { comparator ->
+            currentComparator = comparator
+            loadCommands()
+        }
+
+        // Setup the search bar listener
+
+    }
+
+    fun loadCommands() {
+        val results = commandManager.searchCommands(query = currentQuery)
+        commands.setAll(results)
+        commands.sortWith(currentComparator)
     }
 
     override fun onFocus() {
-        val results = commandManager.searchCommands()
-        commands.setAll(results)
+        loadCommands()
     }
 
     override fun onGlobalKeyPress(event: KeyEvent) {

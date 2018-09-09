@@ -1,5 +1,26 @@
 .command-list-view {
     -fx-background-color: transparent;
+    -fx-padding: 0 0 35px 0;
+}
+
+.command-list-view .list-cell:even {
+    -fx-background-color: transparent;
+}
+.command-list-view .list-cell:odd {
+    -fx-background-color: #eeeeee;
+}
+.command-list-view .list-cell:filled:selected{
+    -fx-background-color: -green-gradient;
+}
+.command-list-view .list-cell:filled:selected .label{
+    -fx-text-fill: black;
+}
+
+.command-list-view .scroll-bar .increment-arrow,
+.command-list-view .scroll-bar .decrement-arrow,
+.command-list-view .scroll-bar .increment-button,
+.command-list-view .scroll-bar .decrement-button {
+    -fx-padding:0;
 }
 
 .command-list-cell {
@@ -13,4 +34,15 @@
 .command-list-cell-title {
     -fx-font-family: "Nunito Sans Bold";
     -fx-font-size: 13px;
+}
+
+.command-list-cell-desc {
+    -fx-font-family: "Nunito Sans Regular";
+    -fx-text-fill: #636363;
+    -fx-font-size: 11px;
+}
+
+.command-list-cell-date {
+    -fx-font-family: "Nunito Sans Regular";
+    -fx-font-size: 14px;
 }

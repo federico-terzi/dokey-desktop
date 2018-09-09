@@ -16,7 +16,7 @@
 }
 
 .search-list-view .list-cell:filled:selected .dokey-search-result-icon{
-    -fx-effect: innershadow( gaussian , -primaryTextColor , 7 , 1 , 1 , 1 );
+    -fx-effect: innershadow( one-pass-box , -primaryTextColor , 7 , 1 , 1 , 1 );
 }
 
 .search-list-view .list-cell:filled:selected .dokey-search-result-image{

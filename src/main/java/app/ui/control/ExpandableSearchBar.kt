@@ -15,12 +15,14 @@ class ExpandableSearchBar(val imageResolver: ImageResolver) : HBox() {
     private val imageView : ImageView
     private val textField = TextField()
 
+    var onSearchChanged : ((String) -> Unit)? = null
+
     init {
         styleClass.add("expandable-search-bar")
 
-        imageView = ImageView(imageResolver.resolveImage("asset:search", 20))
-        imageView.fitHeight = 20.0
-        imageView.fitWidth = 20.0
+        imageView = ImageView(imageResolver.resolveImage("asset:search", 18))
+        imageView.fitHeight = 18.0
+        imageView.fitWidth = 18.0
         imageView.styleClass.add("expandable-search-bar-text-field")
 
         textField.promptText = "Search..."  // TODO: make international
@@ -35,6 +37,10 @@ class ExpandableSearchBar(val imageResolver: ImageResolver) : HBox() {
                     contract()
                 }
             }
+        }
+
+        textField.textProperty().addListener { _, _, value ->
+            onSearchChanged?.invoke(value)
         }
 
         prefWidth = Region.USE_COMPUTED_SIZE

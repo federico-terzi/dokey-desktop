@@ -1,3 +1,4 @@
 .command-tab-list-header {
     -fx-background-color: linear-gradient(to bottom right, -start-green-gradient, -stop-green-gradient);
+    -fx-padding: 2px 0px 2px 38px;
 }

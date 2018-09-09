@@ -34,6 +34,8 @@ class CommandListCell(val imageResolver: ImageResolver) : ListCell<Command>() {
         imageView.fitWidth = 24.0
 
         nameLabel.styleClass.add("command-list-cell-title")
+        descriptionLabel.styleClass.add("command-list-cell-desc")
+        dateLabel.styleClass.add("command-list-cell-date")
 
         val vBox = VBox()
         vBox.styleClass.add("command-list-cell-vbox")

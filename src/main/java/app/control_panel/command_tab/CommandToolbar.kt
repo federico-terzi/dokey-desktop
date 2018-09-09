@@ -14,6 +14,12 @@ class CommandToolbar(val imageResolver: ImageResolver) : HBox() {
     private val filterLabel = Label("All")  // TODO: change
     private val filterButton = IconButton(imageResolver, "asset:filter", 18)
 
+    var onSearchChanged : ((String) -> Unit)?
+        get() = searchBar.onSearchChanged
+        set(value) {
+            searchBar.onSearchChanged = value
+        }
+
     init {
         styleClass.add("command-tab-toolbar")
 
