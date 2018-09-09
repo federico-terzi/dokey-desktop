@@ -1,5 +1,6 @@
 package app.control_panel.layout_editor_tab
 
+import app.ui.control.IconButton
 import javafx.geometry.Pos
 import javafx.scene.control.Button
 import javafx.scene.control.Label
@@ -26,19 +27,8 @@ class LayoutToolbar(val imageResolver: ImageResolver, val applicationManager: Ap
         val spacingPanel = Pane()
         HBox.setHgrow(spacingPanel, Priority.ALWAYS)
 
-        val newLayoutBtn = Button()
-        val newLayoutImage = imageResolver.resolveImage("asset:file-plus", 24)
-        val newLayoutImageView = ImageView(newLayoutImage)
-        newLayoutImageView.fitHeight = 24.0
-        newLayoutImageView.fitWidth = 24.0
-        newLayoutBtn.graphic = newLayoutImageView
-
-        val moreBtn = Button()
-        val moreImage = imageResolver.resolveImage("asset:more-vertical", 24)
-        val moreImageView = ImageView(moreImage)
-        moreImageView.fitHeight = 24.0
-        moreImageView.fitWidth = 24.0
-        moreBtn.graphic = moreImageView
+        val newLayoutBtn = IconButton(imageResolver,"asset:file-plus", 24)
+        val moreBtn = IconButton(imageResolver, "asset:more-vertical", 24)
 
         children.addAll(applicationLabel, spacingPanel, newLayoutBtn, moreBtn)
     }

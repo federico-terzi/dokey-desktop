@@ -1,5 +1,6 @@
 package app.control_panel.devices_tab.device_list
 
+import app.ui.control.IconButton
 import javafx.geometry.Pos
 import javafx.scene.control.Button
 import javafx.scene.control.Label
@@ -18,7 +19,7 @@ class DeviceListCell(val imageResolver: ImageResolver) : ListCell<DeviceInfo>() 
     private val imageView : ImageView
     private val nameLabel : Label
     private val hBox = HBox()
-    private val disconnectBtn : Button
+    private val disconnectBtn : IconButton
 
     init {
         styleClass.add("device-list-cell")
@@ -32,11 +33,7 @@ class DeviceListCell(val imageResolver: ImageResolver) : ListCell<DeviceInfo>() 
         val pane = Pane()
         HBox.setHgrow(pane, Priority.ALWAYS)
 
-        disconnectBtn = Button()
-        val disconnectImageView = ImageView(imageResolver.resolveImage("asset:x-circle", 20))
-        disconnectImageView.fitWidth = 20.0
-        disconnectImageView.fitHeight = 20.0
-        disconnectBtn.graphic = disconnectImageView
+        disconnectBtn = IconButton(imageResolver, "asset:x-circle", 20)
 
         hBox.children.addAll(imageView, nameLabel, pane, disconnectBtn)
         hBox.alignment = Pos.CENTER_LEFT

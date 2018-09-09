@@ -7,14 +7,6 @@
     -fx-padding: 0 0 0 20px;
 }
 
-.device-list-cell .button {
-    -fx-background-color: transparent;
-}
-
-.device-list-cell .button:hover {
-    -fx-effect: innershadow( one-pass-box , -start-green-gradient, 70 , 1 , 1 , 1 );
-}
-
 .device-list-view {
     -fx-padding: 5px 0 0 0;
     -fx-background-color: transparent;

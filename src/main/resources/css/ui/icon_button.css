@@ -1,0 +1,7 @@
+.icon-button {
+    -fx-background-color: transparent;
+}
+
+.icon-button:hover {
+    -fx-effect: innershadow( one-pass-box , -start-green-gradient, 70 , 1 , 1 , 1 );
+}
