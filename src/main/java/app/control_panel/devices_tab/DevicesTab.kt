@@ -62,6 +62,7 @@ class DevicesTab(val imageResolver: ImageResolver, val resourceBundle: ResourceB
             qrImageView.image = image
         }
 
+        // TODO: replace with real ones
         deviceList.items = FXCollections.observableArrayList(
                 SystemInfoManager.getDeviceInfo(),
                 SystemInfoManager.getDeviceInfo(),

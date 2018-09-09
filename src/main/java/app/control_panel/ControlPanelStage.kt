@@ -2,6 +2,7 @@ package app.control_panel
 
 import app.control_panel.animations.StageOpacityTransition
 import app.control_panel.animations.StagePositionTransition
+import app.control_panel.command_tab.CommandTab
 import app.control_panel.controllers.ControlPanelController
 import app.control_panel.devices_tab.DevicesTab
 import app.control_panel.layout_editor_tab.GlobalKeyboardListener
@@ -47,7 +48,9 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
     private val devicesTab = DevicesTab(imageResolver, resourceBundle, handshakeDataBuilder)
 
-    private val tabs = listOf<ControlPanelTab>(devicesTab, layoutEditorTab, ComingSoonTab(),
+    private val commandTab = CommandTab(imageResolver, resourceBundle)
+
+    private val tabs = listOf<ControlPanelTab>(devicesTab, layoutEditorTab, commandTab,
             ComingSoonTab(), ComingSoonTab())
 
     // This variable will hold the currently active control panel tab

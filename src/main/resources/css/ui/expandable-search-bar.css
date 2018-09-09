@@ -1,0 +1,15 @@
+.expandable-search-bar {
+    -fx-background-color: #eeeeee;
+    -fx-padding: 5px 5px 5px 7px;
+    -fx-background-radius: 30px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0, 0.2), 5, 0, 0, 4);
+}
+
+.expandable-search-bar > .text-field {
+    -fx-background-color: transparent;
+    -fx-padding: 1px 0px 0px 3px;
+    -fx-prompt-text-fill: #747474;
+}
+
+.expandable-search-bar-text-field {
+}
