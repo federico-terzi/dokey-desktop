@@ -61,4 +61,24 @@ abstract class Application : Comparable<Application>{
     override fun compareTo(other: Application): Int {
         return this.name.toLowerCase().compareTo(other.name.toLowerCase())
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Application
+
+        if (name != other.name) return false
+        if (executablePath != other.executablePath) return false
+        if (iconPath != other.iconPath) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + executablePath.hashCode()
+        result = 31 * result + (iconPath?.hashCode() ?: 0)
+        return result
+    }
 }

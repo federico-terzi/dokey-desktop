@@ -79,6 +79,7 @@ public class MSApplicationManager extends ApplicationManager {
     interface WUser32 extends User32 {
         WUser32 INSTANCE = (WUser32) Native.loadLibrary("User32", WUser32.class, W32APIOptions.DEFAULT_OPTIONS);
         int SystemParametersInfo(int uiAction, int uiParam, int pvParam, int fWinIni);
+        HWND GetLastActivePopup(HWND hWnd);
     }
 
     /**
@@ -426,60 +427,17 @@ public class MSApplicationManager extends ApplicationManager {
 
     @Override
     public List<Application> getActiveApplications() {
-        List<Application> apps = new ArrayList<>();
+        Set<Application> apps = new HashSet<>();
 
-        User32.INSTANCE.EnumWindows(new WinUser.WNDENUMPROC() {
-            public boolean callback(HWND hwnd, Pointer arg1) {
-                char[] windowText = new char[512];
-                User32.INSTANCE.GetWindowText(hwnd, windowText, 512);
-                String titleText = Native.toString(windowText);
-
-                // Skip the ones that are empty or default.
-                if (titleText.isEmpty() || titleText.equals("Default IME") || titleText.equals("MSCTFIME UI")) {
-                    return true;
-                }
-
-                // Make sure the system.window is visible, skip if not
-                boolean isWindowVisible = User32.INSTANCE.IsWindowVisible(hwnd);
-                if (!isWindowVisible) {
-                    return true;
-                }
-
-                // Get the PID
-                IntByReference PID = new IntByReference();
-                User32.INSTANCE.GetWindowThreadProcessId(hwnd, PID);
-
-                // Get the executable path
-                //String executablePath = executablesMap.get(PID.getValue());
-                String executablePath= getExecutablePathFromPID(PID.getValue());
-
-                // If the executablePath is empty, skip the process
-                if (executablePath == null) {
-                    return true;
-                }
-
-                // Get the application
-                Application application = applicationMap.get(executablePath);
-
-                // If application is not present in the list, load it dynamically
-                if (application == null) {
-                    application = addApplicationFromExecutablePath(executablePath, null, null);
-                }
-
-                // If the application could not be found, return
-                if (application == null) {
-                    return true;
-                }
-
-                // Avoid duplicates
-                if (!apps.contains(application)) {
-                    apps.add(application);
-                }
-                return true;
+        // Get all the currently active windows to extract the apps.
+        List<Window> activeWindows = getWindowList();
+        for (Window win: activeWindows) {
+            if (!apps.contains(win)) {
+                apps.add(win.getApplication());
             }
-        }, null);
+        }
 
-        return apps;
+        return new ArrayList<>(apps);
     }
 
     /**
@@ -630,13 +588,11 @@ public class MSApplicationManager extends ApplicationManager {
     @Override
     public List<Window> getWindowList() {
         final List<Window> windowList = new ArrayList<>();
-
-        // Get all the current processes
-        // Deprecated in favour of a native kernel call
-        // Map<Integer, String> executablesMap = getExecutablePathsMap();
-
         User32.INSTANCE.EnumWindows(new WinUser.WNDENUMPROC() {
             public boolean callback(HWND hwnd, Pointer arg1) {
+                // Using this method to extract only visible windows
+                // https://stackoverflow.com/questions/7277366/why-does-enumwindows-return-more-windows-than-i-expected
+
                 char[] windowText = new char[512];
                 User32.INSTANCE.GetWindowText(hwnd, windowText, 512);
                 String titleText = Native.toString(windowText);
@@ -650,6 +606,15 @@ public class MSApplicationManager extends ApplicationManager {
                 boolean isWindowVisible = User32.INSTANCE.IsWindowVisible(hwnd);
                 if (!isWindowVisible) {
                     return true;
+                }
+
+                // Filter the windows based on these codes:
+                // https://docs.microsoft.com/en-us/windows/desktop/winmsg/extended-window-styles
+                //System.out.println(titleText + " - " + code + " - "+Integer.toBinaryString(code));
+                int code = User32.INSTANCE.GetWindowLong(hwnd, WinUser.GWL_EXSTYLE);
+                int result = code & 0x00200000 + code & 0x00000080;
+                if (result != 0) {
+                    return false;
                 }
 
                 // Get the PID
