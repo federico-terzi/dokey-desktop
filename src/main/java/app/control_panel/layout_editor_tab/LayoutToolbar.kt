@@ -30,6 +30,9 @@ class LayoutToolbar(val imageResolver: ImageResolver, val applicationManager: Ap
         val newLayoutBtn = IconButton(imageResolver,"asset:file-plus", 24)
         val moreBtn = IconButton(imageResolver, "asset:more-vertical", 24)
 
+        // Setup the button click event listeners
+        newLayoutBtn.setOnAction { onNewLayoutRequested?.invoke() }
+
         children.addAll(applicationLabel, spacingPanel, newLayoutBtn, moreBtn)
     }
 

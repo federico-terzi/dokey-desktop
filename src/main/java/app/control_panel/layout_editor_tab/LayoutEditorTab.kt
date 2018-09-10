@@ -1,8 +1,10 @@
 package app.control_panel.layout_editor_tab
 
+import app.control_panel.ControlPanelStage
 import app.control_panel.ControlPanelTab
 import app.control_panel.layout_editor_tab.grid.SectionGrid
 import app.control_panel.layout_editor_tab.bar.SectionBar
+import app.control_panel.layout_editor_tab.dialog.ApplicationSelectDialog
 import io.reactivex.subjects.PublishSubject
 import javafx.animation.*
 import javafx.scene.CacheHint
@@ -25,7 +27,8 @@ import java.util.concurrent.TimeUnit
 
 const val MAX_PAGES = 6
 
-class LayoutEditorTab(val sectionManager: SectionManager, val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
+class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManager: SectionManager,
+                      val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                       val componentParser: ComponentParser, val commandManager: CommandManager,
                       val applicationManager: ApplicationManager, val globalKeyboardListener: GlobalKeyboardListener,
                       val dndCommandProcessor: DNDCommandProcessor) : ControlPanelTab() {
@@ -67,6 +70,12 @@ class LayoutEditorTab(val sectionManager: SectionManager, val imageResolver: Ima
 
             // Send a broadcast
             BroadcastManager.getInstance().sendBroadcast(BroadcastManager.EDITOR_MODIFIED_SECTION_EVENT, section.id)
+        }
+
+        // Button click event listeners
+        layoutToolbar.onNewLayoutRequested = {
+            val dialog = ApplicationSelectDialog(controlPanelStage, imageResolver, applicationManager)
+            dialog.showWithAnimation()
         }
     }
 

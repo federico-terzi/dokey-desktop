@@ -1,4 +1,4 @@
-package app.control_panel.animations
+package app.ui.animation
 
 import javafx.animation.Interpolator
 import javafx.animation.Transition

@@ -1,0 +1,15 @@
+@import "colors.css";
+@import "font.css";
+@import "ui/ui.css";
+
+.root {
+    -fx-background-insets: 20px;
+    -fx-padding: 20px;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0, 0.3), 20, 0, 4, 4);
+    -fx-background-radius: 10px;
+}
+
+.top-section {
+    -fx-padding: 10px;
+}

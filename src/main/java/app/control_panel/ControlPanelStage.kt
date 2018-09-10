@@ -1,7 +1,8 @@
 package app.control_panel
 
-import app.control_panel.animations.StageOpacityTransition
-import app.control_panel.animations.StagePositionTransition
+import app.ui.animation.BlurTransition
+import app.ui.animation.StageOpacityTransition
+import app.ui.animation.StagePositionTransition
 import app.control_panel.command_tab.CommandTab
 import app.control_panel.controllers.ControlPanelController
 import app.control_panel.devices_tab.DevicesTab
@@ -17,7 +18,7 @@ import javafx.scene.CacheHint
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.control.Tab
-import javafx.scene.effect.BoxBlur
+import javafx.scene.effect.Effect
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
 import javafx.scene.paint.Color
@@ -25,7 +26,6 @@ import javafx.stage.Stage
 import javafx.stage.StageStyle
 import javafx.util.Duration
 import model.parser.component.ComponentParser
-import net.model.DeviceInfo
 import system.ResourceUtils
 import system.commands.CommandManager
 import system.drag_and_drop.DNDCommandProcessor
@@ -43,7 +43,7 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
     private val controller : ControlPanelController
 
-    private val layoutEditorTab = LayoutEditorTab(sectionManager, imageResolver, resourceBundle, componentParser,
+    private val layoutEditorTab = LayoutEditorTab(this, sectionManager, imageResolver, resourceBundle, componentParser,
             commandManager, applicationManager, this, dndCommandProcessor)
 
     private val devicesTab = DevicesTab(imageResolver, resourceBundle, handshakeDataBuilder)
@@ -59,6 +59,9 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
     override var isShiftPressed: Boolean = false
 
     private val tabSelector = TabSelector(imageResolver)
+
+    // Saved in a variable because when blurring the stage this effect is resetted
+    private var dropShadowEffect : Effect? = null
 
     init {
         val fxmlLoader = FXMLLoader(ResourceUtils.getResource("/layouts/control_panel.fxml")!!.toURI().toURL())
@@ -95,13 +98,6 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
                 activeTab.onFocus()
 
                 controller.tab_pane.selectionModel.select(tabIndex)
-
-//                val bb = BoxBlur()
-//                bb.setWidth(10.0)
-//                bb.setHeight(10.0)
-//                bb.setIterations(3)
-//
-//                this.controller.parent_box.effect = bb
             }
         }
 
@@ -171,6 +167,22 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
         val transition = ParallelTransition(fadeTransition, positionTransition)
         transition.setOnFinished { onFinished() }
+        transition.play()
+    }
+
+    fun blurIn() {
+        // Backup the effect for later recovery when blurring
+        dropShadowEffect = controller.parent_box.effect
+
+        val transition = BlurTransition(controller.parent_box, Duration(200.0), 0.0, 10.0,
+                0.0, -0.2)
+        transition.play()
+    }
+
+    fun blurOut() {
+        val transition = BlurTransition(controller.parent_box, Duration(200.0), 10.0, 0.0,
+                -0.2, 0.0)
+        transition.setOnFinished { controller.parent_box.effect = dropShadowEffect }
         transition.play()
     }
 
