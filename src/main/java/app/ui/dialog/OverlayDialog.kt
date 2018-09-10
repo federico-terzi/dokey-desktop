@@ -64,11 +64,11 @@ open class OverlayDialog(val controlPanelStage: ControlPanelStage, val imageReso
         parentBox.children.add(topSection)
 
         val contentBox = defineContentBoxComponent()
+        VBox.setVgrow(contentBox, Priority.ALWAYS)
         contentBox?.let { parentBox.children.add(it) }
 
         // Close button event
         closeBtn.setOnAction {
-            controlPanelStage.requestFocus()
             onClose()
         }
     }
@@ -79,6 +79,7 @@ open class OverlayDialog(val controlPanelStage: ControlPanelStage, val imageReso
     open fun onClose() {
         closeWithAnimation()
         Platform.runLater { controlPanelStage.blurOut() }
+        controlPanelStage.requestFocus()
     }
 
     fun showWithAnimation() {

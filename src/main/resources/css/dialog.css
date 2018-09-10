@@ -2,6 +2,8 @@
 @import "font.css";
 @import "ui/ui.css";
 
+@import "dialog/application_select_dialog.css";
+
 .root {
     -fx-background-insets: 20px;
     -fx-padding: 20px;

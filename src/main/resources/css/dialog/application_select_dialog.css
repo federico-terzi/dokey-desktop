@@ -1,0 +1,18 @@
+.application-list-cell {
+    -fx-padding: 8px 15px 8px 11px;
+}
+
+.application-list-cell-vbox {
+    -fx-padding: 0px 5px 0px 12px;
+}
+
+.application-list-cell-title {
+    -fx-font-family: "Nunito Sans Bold";
+    -fx-font-size: 13px;
+}
+
+.application-list-cell-path {
+    -fx-font-family: "Nunito Sans Regular";
+    -fx-text-fill: #636363;
+    -fx-font-size: 11px;
+}
