@@ -34,6 +34,11 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
 
         content = appBox
 
+        // Setup the scrolling behaviour
+        setOnScroll {
+            this.hvalue += it.deltaX + it.deltaY
+        }
+
         loadSections()
     }
 
