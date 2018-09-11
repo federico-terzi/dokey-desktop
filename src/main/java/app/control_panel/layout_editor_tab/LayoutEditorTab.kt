@@ -64,7 +64,7 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
         }
 
         // Setup the debouncing save mechanism
-        saveSectionSubject.debounce(100, TimeUnit.MILLISECONDS).subscribe {section ->
+        saveSectionSubject.debounce(100, TimeUnit.MILLISECONDS).subscribe { section ->
             // Ssve the section
             sectionManager.saveSection(section)
 
@@ -75,6 +75,13 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
         // Button click event listeners
         layoutToolbar.onNewLayoutRequested = {
             val dialog = ApplicationSelectDialog(controlPanelStage, imageResolver, applicationManager)
+            dialog.onApplicationSelected = { app ->
+                // Create the section
+                sectionManager.createSectionForApp(app)
+
+                // Reload the bar
+                sectionBar.loadSections()
+            }
             dialog.showWithAnimation()
         }
     }

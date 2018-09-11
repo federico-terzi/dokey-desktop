@@ -18,7 +18,7 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
     )
 
     private val appBox = HBox()
-    private val selectors : List<Selector>
+    private val selectors = mutableListOf<Selector>()
 
     var onSectionClicked : ((Section) -> Unit)? = null
 
@@ -33,6 +33,12 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
         appBox.maxWidth = Double.MAX_VALUE
 
         content = appBox
+
+        loadSections()
+    }
+
+    fun loadSections() {
+        appBox.children.clear()
 
         val sections = sectionManager.getSections()
         val selectors = mutableListOf<Selector>()
@@ -49,7 +55,8 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
             }
         }
         selectors.sort()
-        this.selectors = selectors
+        this.selectors.clear()
+        this.selectors.addAll(selectors)
 
         selectors.forEachIndexed { index, selector ->
             selector.initialize()

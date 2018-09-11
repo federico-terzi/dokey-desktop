@@ -12,6 +12,7 @@ import model.section.LaunchpadSection
 import model.section.Section
 import model.section.SystemSection
 import org.apache.commons.codec.digest.DigestUtils
+import system.applications.Application
 import system.applications.ApplicationManager
 import system.commands.CommandManager
 import system.commands.general.AppRelatedCommand
@@ -33,6 +34,15 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
 
     fun getSection(sectionId: String) : Section? {
         return sectionCache[sectionId]
+    }
+
+    fun createSectionForApp(application: Application) {
+        // Make sure it doesn't exist yet
+        if (getSection("app:${application.executablePath}") == null) {
+            val applicationSection = generateEmptyAppSection(application.executablePath, application.name)
+            saveSection(applicationSection)
+            sectionCache[applicationSection.id!!] = applicationSection
+        }
     }
 
     private fun loadSections(): Collection<Section> {
@@ -104,6 +114,15 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
     private fun generateLaunchpadSection(): LaunchpadSection {
         val section = LaunchpadSection()
         section.name = "Launchpad"
+        section.pages = mutableListOf(generateEmptyPage())
+        return section
+    }
+
+    private fun generateEmptyAppSection(executablePath: String, applicationName: String) : Section {
+        // Create the destination section
+        val section = DefaultApplicationSection()
+        section.id = "app:$executablePath"
+        section.name = applicationName
         section.pages = mutableListOf(generateEmptyPage())
         return section
     }
