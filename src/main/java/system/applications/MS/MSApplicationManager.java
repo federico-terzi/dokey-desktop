@@ -610,9 +610,9 @@ public class MSApplicationManager extends ApplicationManager {
 
                 // Filter the windows based on these codes:
                 // https://docs.microsoft.com/en-us/windows/desktop/winmsg/extended-window-styles
-                //System.out.println(titleText + " - " + code + " - "+Integer.toBinaryString(code));
                 int code = User32.INSTANCE.GetWindowLong(hwnd, WinUser.GWL_EXSTYLE);
-                int result = code & 0x00200000 + code & 0x00000080;
+                int result = (code & 0x00200000) + (code & 0x00000080);
+                //System.out.println(titleText + " - " + code + " - "+Integer.toBinaryString(code) + " - "+result);
                 if (result != 0) {
                     return false;
                 }
