@@ -1,6 +1,7 @@
 package app.ui.control
 
 import app.ui.animation.WidthTransition
+import javafx.geometry.Pos
 import javafx.scene.control.TextField
 import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
@@ -19,6 +20,8 @@ class ExpandableSearchBar(val imageResolver: ImageResolver) : HBox() {
 
     init {
         styleClass.add("expandable-search-bar")
+
+        alignment = Pos.CENTER_LEFT
 
         imageView = ImageView(imageResolver.resolveImage("asset:search", 18))
         imageView.fitHeight = 18.0

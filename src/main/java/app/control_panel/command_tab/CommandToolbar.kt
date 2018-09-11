@@ -2,6 +2,7 @@ package app.control_panel.command_tab
 
 import app.ui.control.ExpandableSearchBar
 import app.ui.control.IconButton
+import javafx.geometry.Pos
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.layout.HBox
@@ -22,6 +23,8 @@ class CommandToolbar(val imageResolver: ImageResolver) : HBox() {
 
     init {
         styleClass.add("command-tab-toolbar")
+
+        alignment = Pos.CENTER_LEFT
 
         val spacerPane = Pane()
         HBox.setHgrow(spacerPane, Priority.ALWAYS)
