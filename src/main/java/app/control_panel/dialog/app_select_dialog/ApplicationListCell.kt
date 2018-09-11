@@ -1,4 +1,4 @@
-package app.control_panel.layout_editor_tab.dialog.app_select_dialog
+package app.control_panel.dialog.app_select_dialog
 
 import javafx.application.Platform
 import javafx.geometry.Pos

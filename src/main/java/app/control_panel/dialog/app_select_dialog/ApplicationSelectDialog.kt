@@ -1,4 +1,4 @@
-package app.control_panel.layout_editor_tab.dialog.app_select_dialog
+package app.control_panel.dialog.app_select_dialog
 
 import app.control_panel.ControlPanelStage
 import app.ui.control.CollapseExpandButton
@@ -8,7 +8,6 @@ import javafx.application.Platform
 import javafx.collections.FXCollections
 import javafx.geometry.Pos
 import javafx.scene.Node
-import javafx.scene.control.Button
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox

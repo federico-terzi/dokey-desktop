@@ -21,7 +21,7 @@ class ApplicationSelector(context: SelectorContext, section: Section) : Selector
         section as ApplicationSection
         val application : Application? = context.applicationManager.getApplication(section.appId)
         if (application == null) {
-            throw SelectorLoadingException()
+            throw SelectorLoadingException()  // TODO: handle this exception
         }else{
             associatedApplication = application
         }
