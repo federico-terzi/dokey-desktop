@@ -7,10 +7,11 @@ import javafx.scene.layout.HBox
 import model.section.*
 import system.image.ImageResolver
 import system.applications.ApplicationManager
+import system.commands.CommandManager
 import system.section.SectionManager
 
 class SectionBar(val sectionManager: SectionManager, override val applicationManager: ApplicationManager,
-                 override val imageResolver: ImageResolver) : ScrollPane(), SelectorContext {
+                 override val imageResolver: ImageResolver, override val commandManager: CommandManager) : ScrollPane(), SelectorContext {
     private val selectorTypes = mapOf<Class<out Section>, Class<out Selector>>(
             LaunchpadSection::class.java to LaunchpadSelector::class.java,
             SystemSection::class.java to SystemSelector::class.java,
@@ -84,7 +85,10 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
 
             // Used when a user drag a file or url into another selector to focus the correct panel
             selector.onDragEntered = EventHandler {
-                changeAction()
+                // Make sure the source isn't the button itself
+                if (it.gestureSource != selector) {
+                    changeAction()
+                }
             }
         }
 

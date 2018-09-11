@@ -47,7 +47,7 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
         // the focus border of javafx
         val sectionBarContainer = VBox()
         sectionBarContainer.styleClass.add("app_scroll_pane_container")
-        sectionBar = SectionBar(sectionManager, applicationManager, imageResolver)
+        sectionBar = SectionBar(sectionManager, applicationManager, imageResolver, commandManager)
         sectionBarContainer.children.add(sectionBar)
 
         children.add(sectionBarContainer)
