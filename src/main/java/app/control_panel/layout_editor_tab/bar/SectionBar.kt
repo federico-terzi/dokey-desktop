@@ -36,7 +36,9 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
 
         // Setup the scrolling behaviour
         setOnScroll {
-            this.hvalue += it.deltaX + it.deltaY
+            if(Math.abs(it.deltaY) > 0) { // Scrolled vertically
+                this.hvalue += it.deltaY / 40
+            }
         }
 
         loadSections()
