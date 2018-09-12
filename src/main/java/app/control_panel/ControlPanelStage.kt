@@ -48,7 +48,7 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
     private val devicesTab = DevicesTab(imageResolver, resourceBundle, handshakeDataBuilder)
 
-    private val commandTab = CommandTab(imageResolver, resourceBundle, commandManager)
+    private val commandTab = CommandTab(this, imageResolver, resourceBundle, applicationManager, commandManager)
 
     private val tabs = listOf<ControlPanelTab>(devicesTab, layoutEditorTab, commandTab,
             ComingSoonTab(), ComingSoonTab())

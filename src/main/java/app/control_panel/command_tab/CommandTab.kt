@@ -1,8 +1,10 @@
 package app.control_panel.command_tab
 
+import app.control_panel.ControlPanelStage
 import app.control_panel.ControlPanelTab
 import app.control_panel.command_tab.list.CommandListView
 import app.control_panel.command_tab.list.comparator.NameComparator
+import app.control_panel.dialog.command_edit_dialog.CommandEditDialog
 import app.ui.control.FloatingActionButton
 import app.ui.model.Sorting
 import javafx.collections.FXCollections
@@ -12,11 +14,13 @@ import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 import model.command.Command
+import system.applications.ApplicationManager
 import system.commands.CommandManager
 import system.image.ImageResolver
 import java.util.*
 
-class CommandTab(val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
+class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: ImageResolver,
+                 val resourceBundle: ResourceBundle, val applicationManager: ApplicationManager,
                  val commandManager: CommandManager) : ControlPanelTab() {
 
     // UI Elements
@@ -62,6 +66,12 @@ class CommandTab(val imageResolver: ImageResolver, val resourceBundle: ResourceB
                 currentQuery = query
             }
             loadCommands()
+        }
+
+        // Setup add command button listener
+        addCommandBtn.setOnAction {
+            val dialog = CommandEditDialog(controlPanelStage, imageResolver, applicationManager, commandManager)
+            dialog.showWithAnimation()
         }
     }
 

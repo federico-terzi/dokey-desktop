@@ -3,6 +3,7 @@ package app.control_panel.dialog.command_edit_dialog
 import app.control_panel.ControlPanelStage
 import app.ui.control.CollapseExpandButton
 import app.ui.control.ExpandableSearchBar
+import app.ui.control.SaveButton
 import app.ui.dialog.OverlayDialog
 import javafx.application.Platform
 import javafx.collections.FXCollections
@@ -21,7 +22,7 @@ class CommandEditDialog(controlPanelStage: ControlPanelStage, imageResolver: Ima
                         val applicationManager: ApplicationManager, val commandManager: CommandManager)
     : OverlayDialog(controlPanelStage, imageResolver) {
 
-    private val saveButton = Button("Save")
+    private val saveButton = SaveButton(imageResolver,"Save")  // TODO: i18n
     private val contentBox = VBox()
 
     init {
