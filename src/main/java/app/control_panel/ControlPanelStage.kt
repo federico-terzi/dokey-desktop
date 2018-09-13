@@ -28,19 +28,23 @@ import javafx.stage.StageStyle
 import javafx.util.Duration
 import model.parser.component.ComponentParser
 import system.ResourceUtils
+import system.SettingsManager
 import system.commands.CommandManager
 import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
 import system.applications.ApplicationManager
 import system.section.SectionManager
 import system.server.HandshakeDataBuilder
+import system.startup.StartupManager
+import system.storage.StorageManager
 import utils.OSValidator
 import java.util.*
 
 class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                         val componentParser: ComponentParser, val commandManager: CommandManager,
                         val applicationManager: ApplicationManager, val handshakeDataBuilder: HandshakeDataBuilder,
-                        val dndCommandProcessor: DNDCommandProcessor) : Stage(), GlobalKeyboardListener {
+                        val dndCommandProcessor: DNDCommandProcessor, val settingsManager: SettingsManager,
+                        val startupManager: StartupManager, val storageManager: StorageManager) : Stage(), GlobalKeyboardListener {
 
     private val controller : ControlPanelController
 
@@ -51,7 +55,8 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
     private val commandTab = CommandTab(imageResolver, resourceBundle, commandManager)
 
-    private val settingsTab = SettingsTab(imageResolver, applicationManager)
+    private val settingsTab = SettingsTab(imageResolver, applicationManager, settingsManager, startupManager,
+            resourceBundle, storageManager)
 
     private val tabs = listOf<ControlPanelTab>(devicesTab, layoutEditorTab, commandTab,
             ComingSoonTab(), settingsTab)

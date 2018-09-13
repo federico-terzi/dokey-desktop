@@ -4,14 +4,24 @@ import app.control_panel.ControlPanelTab
 import app.ui.control.CollapseExpandButton
 import app.ui.control.RoundedButton
 import app.ui.control.ToggleButton
+import javafx.application.Platform
 import javafx.geometry.Pos
+import javafx.scene.control.Alert
 import javafx.scene.control.ScrollPane
 import javafx.scene.input.KeyEvent
 import javafx.scene.layout.VBox
+import system.SettingsManager
 import system.applications.ApplicationManager
 import system.image.ImageResolver
+import system.startup.StartupManager
+import java.util.*
+import javafx.scene.control.ButtonType
+import system.storage.StorageManager
 
-class SettingsTab(val imageResolver: ImageResolver, val applicationManager: ApplicationManager) : ControlPanelTab() {
+
+class SettingsTab(val imageResolver: ImageResolver, val applicationManager: ApplicationManager,
+                  val settingsManager: SettingsManager, val startupManager: StartupManager,
+                  val resourceBundle: ResourceBundle, val storageManager: StorageManager) : ControlPanelTab() {
     private val scrollPane = ScrollPane()
     private val normalSettingsPane = VBox()
     private val advancedSettingsPane = VBox()
@@ -22,7 +32,7 @@ class SettingsTab(val imageResolver: ImageResolver, val applicationManager: Appl
     private val supportBtn = RoundedButton("Contact us")  // TODO: i18n
     private val creditsBtn = RoundedButton("View credits")  // TODO: i18n
 
-    private val clearCache = RoundedButton("Clear cache")  // TODO: i18n
+    private val clearCacheBtn = RoundedButton("Clear cache")  // TODO: i18n
 
     init {
         scrollPane.hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
@@ -41,7 +51,7 @@ class SettingsTab(val imageResolver: ImageResolver, val applicationManager: Appl
         normalSettingsPane.children.add(showAdvancedBtn)
 
         // Setup advanced settings UI
-        val clearCacheEntry = SettingEntry("Clear Cache", "NOTE: Dokey must be restarted afterwards", clearCache)  // TODO: i18n
+        val clearCacheEntry = SettingEntry("Clear Cache", "NOTE: Dokey must be restarted afterwards", clearCacheBtn)  // TODO: i18n
 
         advancedSettingsPane.children.addAll(clearCacheEntry)
 
@@ -61,13 +71,59 @@ class SettingsTab(val imageResolver: ImageResolver, val applicationManager: Appl
         children.addAll(normalSettingsPane, advancedSettingsPane)
 
         // Action listeners
+
+        autolaunchBtn.onToggle = {checked ->
+            Thread {
+                val result = if (checked) {
+                    startupManager.enableAutomaticStartup()
+                }else{
+                    startupManager.disableAutomaticStartup()
+                }
+
+                // Update the checkbox
+                Platform.runLater { autolaunchBtn.checked = checked }
+
+                if (!result) {  // An error occurred
+                    val alert = Alert(Alert.AlertType.INFORMATION)
+                    alert.title = resourceBundle.getString("error")
+                    alert.headerText = resourceBundle.getString("cannot_start_automatically")
+
+                    val alertResult = alert.showAndWait()
+                }
+            }.start()
+        }
+
+        enableDokeySearchBtn.onToggle = { checked ->
+            settingsManager.dokeySearchEnabled = checked
+        }
+
         creditsBtn.setOnAction {
             applicationManager.openWebLink("https://dokey.io/credits.html")
+        }
+
+        clearCacheBtn.setOnAction {
+            val result = storageManager.clearCache()
+            if (result) {
+                val alert = Alert(Alert.AlertType.INFORMATION)
+                alert.title = resourceBundle.getString("cache_deleted")
+                alert.headerText = resourceBundle.getString("cache_deleted_msg")
+
+                val alertResult = alert.showAndWait()
+                System.exit(0)
+            } else {
+                val alert = Alert(Alert.AlertType.INFORMATION)
+                alert.title = "Error deleting cache!"
+                alert.headerText = "Unfortunately, the cache couldn't be deleted!"
+
+                val alertResult = alert.showAndWait()
+            }
         }
     }
 
     override fun onFocus() {
         // Load all the settings
+        enableDokeySearchBtn.checked = settingsManager.dokeySearchEnabled
+        autolaunchBtn.checked = startupManager.isAutomaticStartupEnabled
     }
 
     override fun onGlobalKeyPress(event: KeyEvent) {
