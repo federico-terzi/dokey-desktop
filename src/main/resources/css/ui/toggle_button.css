@@ -1,6 +1,8 @@
 .toggle-button {
+    -fx-min-width: 38px;
     -fx-max-width: 38px;
     -fx-pref-height: 20px;
+    -fx-max-height: 20px;
 
     -fx-border-color: black;
     -fx-border-width: 2px;
@@ -8,4 +10,8 @@
 
     -fx-background-color: white;
     -fx-padding: 3px;
+}
+
+.toggle-button-ball {
+    -fx-effect: innershadow( one-pass-box , black , 7 , 1 , 0 , 0 );
 }

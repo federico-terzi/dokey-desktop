@@ -31,6 +31,7 @@ class ToggleButton(imageResolver: ImageResolver) : HBox() {
 
     init {
         styleClass.add("toggle-button")
+        ball.styleClass.add("toggle-button-ball")
 
         alignment = Pos.CENTER_LEFT
 
@@ -51,7 +52,7 @@ class ToggleButton(imageResolver: ImageResolver) : HBox() {
     }
 
     private fun unselect() {
-        ball.fill = Color.rgb(170, 170, 170)
+        ball.fill = Color.WHITE
 
         val transition = TranslateTransition(Duration(100.0), ball)
         transition.toX = 0.0
