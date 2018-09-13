@@ -1,0 +1,14 @@
+.styled-text-area {
+    -fx-font-family: "Nunito Sans Regular";
+    -fx-background-color: transparent;
+}
+
+.styled-text-area .content{
+    -fx-background-color: #eeeeee;
+    -fx-background-radius: 5px;
+    -fx-padding: 10px;
+}
+
+.styled-text-area .scroll-pane .viewport{
+    -fx-background-color: transparent;
+}

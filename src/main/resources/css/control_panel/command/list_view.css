@@ -1,6 +1,6 @@
 .command-list-view {
     -fx-background-color: transparent;
-    -fx-padding: 0 0 35px 0;
+    -fx-padding: 0 0 38px 0;
 }
 
 .command-list-view .list-cell:even {

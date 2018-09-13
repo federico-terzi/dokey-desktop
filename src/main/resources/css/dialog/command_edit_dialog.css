@@ -1,0 +1,15 @@
+.command-edit-dialog-contentbox {
+    -fx-padding: 20px;
+    -fx-spacing: 15px;
+}
+
+.command-edit-dialog-title-field {
+    -fx-max-width: 200px;
+    -fx-font-size: 13px;
+    -fx-padding: 5px;
+    -fx-font-family: "Nunito Sans Bold";
+}
+
+.command-edit-dialog-desc-field {
+    -fx-max-height: 40px;
+}
