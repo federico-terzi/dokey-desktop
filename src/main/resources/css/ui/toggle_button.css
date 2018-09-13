@@ -1,0 +1,11 @@
+.toggle-button {
+    -fx-max-width: 38px;
+    -fx-pref-height: 20px;
+
+    -fx-border-color: black;
+    -fx-border-width: 2px;
+    -fx-border-radius: 20px;
+
+    -fx-background-color: white;
+    -fx-padding: 3px;
+}

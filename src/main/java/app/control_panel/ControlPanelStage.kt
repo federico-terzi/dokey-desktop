@@ -8,6 +8,7 @@ import app.control_panel.controllers.ControlPanelController
 import app.control_panel.devices_tab.DevicesTab
 import app.control_panel.layout_editor_tab.GlobalKeyboardListener
 import app.control_panel.layout_editor_tab.LayoutEditorTab
+import app.control_panel.settings_tab.SettingsTab
 import app.control_panel.tab_selector.TabSelector
 import javafx.animation.FadeTransition
 import javafx.animation.Interpolator
@@ -50,8 +51,10 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
     private val commandTab = CommandTab(imageResolver, resourceBundle, commandManager)
 
+    private val settingsTab = SettingsTab(imageResolver)
+
     private val tabs = listOf<ControlPanelTab>(devicesTab, layoutEditorTab, commandTab,
-            ComingSoonTab(), ComingSoonTab())
+            ComingSoonTab(), settingsTab)
 
     // This variable will hold the currently active control panel tab
     private var activeTab : ControlPanelTab
