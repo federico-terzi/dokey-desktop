@@ -59,7 +59,7 @@
     "type": "simple",
     "title": "Favourites",
     "desc": "Show Favourites in Google Chrome",
-    "iconId": "static:star",
+    "iconId": "static:star_border",
     "category": "ks",
     "value": "CMD+ALT+B"
   },
@@ -67,7 +67,7 @@
     "type": "simple",
     "title": "Downloads",
     "desc": "Show Downloads in Google Chrome",
-    "iconId": "static:file_download",
+    "iconId": "static:get_app",
     "category": "ks",
     "value": "CMD+SHIFT+J"
   },
