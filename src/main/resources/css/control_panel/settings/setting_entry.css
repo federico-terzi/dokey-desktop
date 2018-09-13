@@ -1,0 +1,14 @@
+.setting-entry {
+    -fx-padding: 10px 20px 10px 20px;
+}
+
+.setting-entry-title {
+    -fx-font-family: "Nunito Sans Bold";
+    -fx-font-size: 14px;
+}
+
+.setting-entry-desc {
+    -fx-font-family: "Nunito Sans Regular";
+    -fx-text-fill: #636363;
+    -fx-font-size: 11px;
+}

@@ -1,0 +1,10 @@
+.rounded-button {
+    -fx-background-color: #eeeeee;
+    -fx-background-radius: 20px;
+    -fx-font-family: "Nunito Sans Regular";
+    -fx-font-size: 12px;
+}
+
+.rounded-button:hover {
+    -fx-background-color: #c6c6c6;
+}

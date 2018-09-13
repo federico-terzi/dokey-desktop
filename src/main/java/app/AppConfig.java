@@ -5,7 +5,6 @@ import app.control_panel.appearance.position.PositionResolver;
 import app.control_panel.appearance.position.MACPositionResolver;
 import app.control_panel.appearance.position.MSPositionResolver;
 import app.search.stages.SearchStage;
-import app.stages.SettingsStage;
 import app.tray_icon.MSTrayIconManager;
 import app.tray_icon.MacTrayIconManager;
 import app.tray_icon.TrayIconManager;
@@ -77,13 +76,8 @@ public class AppConfig {
     @Lazy
     public ControlPanelStage controlPanelStage() throws IOException, UnsupportedOperatingSystemException {
         return new ControlPanelStage(sectionManager, imageResolver, resourceBundle, componentParser, commandManager,
-                applicationManager,handshakeDataBuilder, dndCommandProcessor);
-    }
-
-    @Bean
-    @Scope("prototype")
-    public SettingsStage settingsStage(SettingsStage.OnSettingsCloseListener onSettingsCloseListener) throws IOException {
-        return new SettingsStage(applicationManager, resourceBundle, settingsManager, startupManager, storageManager, onSettingsCloseListener);
+                applicationManager,handshakeDataBuilder, dndCommandProcessor, settingsManager, startupManager,
+                storageManager);
     }
 
 //    @Bean

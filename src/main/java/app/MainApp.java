@@ -5,7 +5,6 @@ import app.control_panel.appearance.position.PositionResolver;
 import app.notifications.NotificationFactory;
 import app.search.stages.SearchStage;
 import app.stages.InitializationStage;
-import app.stages.SettingsStage;
 import app.tray_icon.TrayIconManager;
 import com.tulskiy.keymaster.common.HotKey;
 import com.tulskiy.keymaster.common.HotKeyListener;
@@ -84,7 +83,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
 
     private InitializationStage initializationStage;
     private ControlPanelStage controlPanelStage;
-    private SettingsStage settingsStage = null;
     private SearchStage searchStage;
 
     private ResourceBundle resourceBundle;
@@ -410,14 +408,11 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.ADD_URL_TO_QUICK_COMMANDS_EVENT, addURLToQuickCommandsListener);
 
         // Register global hot keys if enabled
-        if (settingsManager.isDokeySearchEnabled())
+        if (settingsManager.getDokeySearchEnabled())
             registerHotKeys();
 
         if (openControlPanel) {
             showControlPanel();
-        }
-        if (openSettings) {
-            openSettings();
         }
         if (openCommandEditor) {
             openCommandEditor();
@@ -509,22 +504,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
 
     public void onEditorOpenRequest() {
         showControlPanel();
-    }
-
-    private void openSettings() {
-        if (settingsStage != null) {
-            appManager.focusDokey();
-
-            return;
-        }
-
-        settingsStage = context.getBean(SettingsStage.class,
-                (SettingsStage.OnSettingsCloseListener) () -> settingsStage = null);
-        settingsStage.show();
-    }
-
-    public void onSettingsOpenRequest() {
-        openSettings();
     }
 
     private void openCommandEditor() {
@@ -710,7 +689,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     private BroadcastManager.BroadcastListener openSettingsRequestListener = new BroadcastManager.BroadcastListener() {
         @Override
         public void onBroadcastReceived(Serializable param) {
-            Platform.runLater(() -> openSettings());
+            //Platform.runLater(() -> openSettings());  // TODO
         }
     };
     /**
