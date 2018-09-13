@@ -6,11 +6,10 @@ import javafx.scene.layout.HBox
 import javafx.scene.paint.Color
 import javafx.scene.shape.Circle
 import javafx.util.Duration
-import system.image.ImageResolver
 
 const val SELECTED_OFFSET = 18.0
 
-class ToggleButton(imageResolver: ImageResolver) : HBox() {
+class ToggleButton : HBox() {
     private val ball = Circle(0.0,0.0, 5.0)
 
     private var _checked = false
