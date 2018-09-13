@@ -31,6 +31,7 @@ class ToggleButton : HBox() {
     init {
         styleClass.add("toggle-button")
         ball.styleClass.add("toggle-button-ball")
+        ball.fill = Color.WHITE
 
         alignment = Pos.CENTER_LEFT
 
