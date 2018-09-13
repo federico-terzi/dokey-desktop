@@ -4,6 +4,7 @@ import app.control_panel.ControlPanelTab
 import app.control_panel.command_tab.list.CommandListView
 import app.control_panel.command_tab.list.comparator.NameComparator
 import app.ui.model.Sorting
+import javafx.application.Platform
 import javafx.collections.FXCollections
 import javafx.scene.input.KeyEvent
 import javafx.scene.layout.Priority
@@ -53,9 +54,15 @@ class CommandTab(val imageResolver: ImageResolver, val resourceBundle: ResourceB
     }
 
     fun loadCommands() {
-        val results = commandManager.searchCommands(query = currentQuery)
-        commands.setAll(results)
-        commands.sortWith(currentComparator)
+        Thread {
+            val results = commandManager.searchCommands(query = currentQuery).toMutableList()
+            results.sortWith(currentComparator)
+
+            Platform.runLater {
+                commands.setAll(results)
+            }
+        }.start()
+
     }
 
     override fun onFocus() {
