@@ -6,6 +6,9 @@ import app.notifications.NotificationFactory;
 import app.search.stages.SearchStage;
 import app.stages.InitializationStage;
 import app.tray_icon.TrayIconManager;
+import com.sun.jna.Callback;
+import com.sun.jna.Library;
+import com.sun.jna.Native;
 import com.tulskiy.keymaster.common.HotKey;
 import com.tulskiy.keymaster.common.HotKeyListener;
 import com.tulskiy.keymaster.common.Provider;
@@ -270,6 +273,26 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
             stopAllServices();
             LOG.info("Goodbye Dokey");
         }));
+
+        System.setProperty("jna.library.path", "/Users/freddy/Documents/TestLib");
+        DialogLibrary dialogLibrary = Native.loadLibrary("Dialog", DialogLibrary.class);
+        dialogLibrary.displayDialog(callback);
+    }
+
+    private DialogLibrary.Resp callback = new DialogLibrary.Resp() {
+        @Override
+        public void invoke(int number) {
+            System.out.println("RESP: "+number);
+        }
+    };
+
+    interface DialogLibrary extends Library
+    {
+        void displayDialog(Resp callback);
+
+        public static interface Resp extends Callback {
+            void invoke(int number);
+        }
     }
 
 
