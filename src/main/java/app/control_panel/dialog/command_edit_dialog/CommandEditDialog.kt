@@ -25,7 +25,7 @@ class CommandEditDialog(controlPanelStage: ControlPanelStage, imageResolver: Ima
     private val saveButton = SaveButton(imageResolver,"Save")  // TODO: i18n
     private val contentBox = VBox()
 
-    private val imageView = ImageView()
+    private val imageSelector = ImageSelector(imageResolver)
     private val titleTextField = StyledTextField()
     private val descriptionTextField = StyledTextArea()
     private val advancedPane = VBox()
@@ -44,7 +44,7 @@ class CommandEditDialog(controlPanelStage: ControlPanelStage, imageResolver: Ima
         descriptionTextField.styleClass.add("command-edit-dialog-desc-field")
 
 
-        contentBox.children.addAll(imageView, titleTextField, descriptionTextField, expandButton, advancedPane)
+        contentBox.children.addAll(imageSelector, titleTextField, descriptionTextField, expandButton, advancedPane)
 
         initializeUI()
     }
