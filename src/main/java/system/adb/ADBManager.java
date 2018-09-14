@@ -46,7 +46,7 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
             }else if (OSValidator.isMac()) {
                 OSSuffix="";
             }
-            File adbExecutable = ResourceUtils.getResource("/adb/adb"+OSSuffix);
+            File adbExecutable = ResourceUtils.getResource("/"+OSValidator.TAG+"/adb/adb"+OSSuffix);
             if (adbExecutable != null) {
                 if (checkIfADBIsEnabled(adbExecutable.getAbsolutePath())) {  // Check if it works
                     adbPath = adbExecutable.getAbsolutePath();

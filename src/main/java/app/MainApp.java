@@ -21,10 +21,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import kotlin.Unit;
-import net.discovery.ServerDiscoveryDaemon;
 import net.model.DeviceInfo;
 import net.model.ServerInfo;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
@@ -274,24 +272,21 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
             LOG.info("Goodbye Dokey");
         }));
 
-        System.setProperty("jna.library.path", "/Users/freddy/Documents/TestLib");
-        DialogLibrary dialogLibrary = Native.loadLibrary("Dialog", DialogLibrary.class);
-        dialogLibrary.displayDialog(callback);
+
+        JavaMacNativeUI javaMacNativeUI = Native.loadLibrary("JavaMacNativeUI", JavaMacNativeUI.class);
+        javaMacNativeUI.displayDialog("/Users/freddy/Documents/GitHub/remotekey-desktop/src/main/resources/assets/icon.png", "Native dialog", "La vita è bella",
+                new String[]{"OK", "Fanculo", "A posto"}, 3, 1, callback);
     }
 
-    private DialogLibrary.Resp callback = new DialogLibrary.Resp() {
-        @Override
-        public void invoke(int number) {
-            System.out.println("RESP: "+number);
-        }
-    };
+    private JavaMacNativeUI.DialogCallback callback = number -> System.out.println("RESP: "+number);
 
-    interface DialogLibrary extends Library
+    interface JavaMacNativeUI extends Library
     {
-        void displayDialog(Resp callback);
+        void displayDialog(String imageUrl, String title, String description, String[] buttons, int buttonsCount,
+                           int isCritical, DialogCallback callback);
 
-        public static interface Resp extends Callback {
-            void invoke(int number);
+        interface DialogCallback extends Callback {
+            void invoke(int buttonNumber);
         }
     }
 

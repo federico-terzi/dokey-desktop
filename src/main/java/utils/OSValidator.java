@@ -8,6 +8,8 @@ import net.model.DeviceInfo;
 public class OSValidator {
     private static String OS = System.getProperty("os.name").toLowerCase();
 
+    public static String TAG = getOSTag();
+
     public static boolean isWindows() {
 
         return (OS.indexOf("win") >= 0);
@@ -39,5 +41,17 @@ public class OSValidator {
         }
 
         return null;
+    }
+
+    private static String getOSTag() {
+        if (isWindows()) {
+            return "win";
+        }else if (isMac()){
+            return "mac";
+        }else if (isUnix()) {
+            return "nix";
+        }else{
+            return "UNKNOWN_OS";
+        }
     }
 }
