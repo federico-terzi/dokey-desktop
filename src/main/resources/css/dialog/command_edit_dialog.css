@@ -1,6 +1,6 @@
 .command-edit-dialog-contentbox {
-    -fx-padding: 20px;
-    -fx-spacing: 15px;
+    -fx-padding: 0px 20px 20px 20px;
+    -fx-spacing: 10px;
 }
 
 .command-edit-dialog-title-field {

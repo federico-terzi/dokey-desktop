@@ -33,7 +33,7 @@ class ApplicationSelectDialog(controlPanelStage: ControlPanelStage, imageResolve
     private var searchQuery: String? = null
 
     init {
-        applicationListView.minHeight = 0.0
+        applicationListView.minHeight = 300.0
         applicationListView.prefHeight = 1.0
         VBox.setVgrow(applicationListView, Priority.ALWAYS)
 

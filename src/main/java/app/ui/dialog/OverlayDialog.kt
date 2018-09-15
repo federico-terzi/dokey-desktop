@@ -36,14 +36,12 @@ open class OverlayDialog(val controlPanelStage: ControlPanelStage, val imageReso
         this.icons.add(Image(OverlayDialog::class.java.getResourceAsStream("/assets/icon.png")))
 
         width = 380.0
-        height = 570.0
-
-        // Position the dialog over the stage
-        x = controlPanelStage.x + (controlPanelStage.width - width) / 2
-        y = controlPanelStage.y + (controlPanelStage.height - height) / 2
+        maxHeight = 600.0
 
         // Blur the control panel stage
-        Platform.runLater { controlPanelStage.blurIn() }
+        Platform.runLater {
+            controlPanelStage.blurIn()
+        }
 
         // Close the stage when unfocused
         focusedProperty().addListener { _, _, isFocused ->
@@ -84,6 +82,10 @@ open class OverlayDialog(val controlPanelStage: ControlPanelStage, val imageReso
 
     fun showWithAnimation() {
         show()
+
+        // Position the dialog over the stage
+        x = controlPanelStage.x + (controlPanelStage.width - width) / 2
+        y = controlPanelStage.y + (controlPanelStage.height - height) / 2
 
         val fadeTransition = StageOpacityTransition(Duration.millis(200.0), this)
         val positionTransition = StagePositionTransition(Duration.millis(200.0), this)

@@ -1,6 +1,7 @@
 package app.control_panel.dialog.command_edit_dialog
 
 import app.control_panel.ControlPanelStage
+import app.control_panel.dialog.command_edit_dialog.command_type_box.CommandTypeBox
 import app.ui.control.*
 import app.ui.dialog.OverlayDialog
 import javafx.application.Platform
@@ -8,6 +9,7 @@ import javafx.collections.FXCollections
 import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.control.Button
+import javafx.scene.control.ComboBox
 import javafx.scene.control.TextField
 import javafx.scene.image.ImageView
 import javafx.scene.input.KeyCode
@@ -30,6 +32,7 @@ class CommandEditDialog(controlPanelStage: ControlPanelStage, imageResolver: Ima
     private val descriptionTextField = StyledTextArea()
     private val advancedPane = VBox()
     private val expandButton = CollapseExpandButton(imageResolver, "Advanced", "Less")  // TODO: i18n
+    private val commandTypeBox = CommandTypeBox(imageResolver)
 
     init {
         contentBox.alignment = Pos.TOP_CENTER
@@ -43,8 +46,11 @@ class CommandEditDialog(controlPanelStage: ControlPanelStage, imageResolver: Ima
         descriptionTextField.isWrapText = true
         descriptionTextField.styleClass.add("command-edit-dialog-desc-field")
 
+        advancedPane.isManaged = false
+        advancedPane.isVisible = true
 
-        contentBox.children.addAll(imageSelector, titleTextField, descriptionTextField, expandButton, advancedPane)
+        contentBox.children.addAll(imageSelector, titleTextField, descriptionTextField, expandButton, advancedPane,
+                commandTypeBox)
 
         initializeUI()
     }
