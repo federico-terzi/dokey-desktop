@@ -15,6 +15,9 @@ import system.applications.Application
 import system.applications.ApplicationManager
 import system.image.ImageResolver
 
+val COLLAPSED_APP_LIST_VIEW_HEIGHT = 300.0
+val EXPANDED_APP_LIST_VIEW_HEIGHT = 450.0
+
 class ApplicationSelectDialog(controlPanelStage: ControlPanelStage, imageResolver: ImageResolver,
                               val applicationManager: ApplicationManager)
     : OverlayDialog(controlPanelStage, imageResolver) {
@@ -33,7 +36,7 @@ class ApplicationSelectDialog(controlPanelStage: ControlPanelStage, imageResolve
     private var searchQuery: String? = null
 
     init {
-        applicationListView.minHeight = 300.0
+        applicationListView.minHeight = COLLAPSED_APP_LIST_VIEW_HEIGHT
         applicationListView.prefHeight = 1.0
         VBox.setVgrow(applicationListView, Priority.ALWAYS)
 
@@ -55,10 +58,17 @@ class ApplicationSelectDialog(controlPanelStage: ControlPanelStage, imageResolve
         showAllAppsBtn.onExpand = {
             showAllApps = true
             loadApplications()
+
+            applicationListView.minHeight = EXPANDED_APP_LIST_VIEW_HEIGHT
+            adaptHeight()
         }
         showAllAppsBtn.onCollapse = {
             showAllApps = false
             loadApplications()
+
+            applicationListView.minHeight = COLLAPSED_APP_LIST_VIEW_HEIGHT
+            adaptHeight()
+
         }
 
         // List view selection listener

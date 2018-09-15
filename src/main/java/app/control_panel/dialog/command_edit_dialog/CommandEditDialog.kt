@@ -13,6 +13,7 @@ import javafx.scene.control.ComboBox
 import javafx.scene.control.TextField
 import javafx.scene.image.ImageView
 import javafx.scene.input.KeyCode
+import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import system.applications.Application
@@ -31,6 +32,11 @@ class CommandEditDialog(controlPanelStage: ControlPanelStage, imageResolver: Ima
     private val titleTextField = StyledTextField()
     private val descriptionTextField = StyledTextArea()
     private val advancedPane = VBox()
+
+    private val quickCommandPane = HBox()
+    private val quickCommandTextField = ColonTextField()
+    private val quickCommandIcon = IconButton(imageResolver, "asset:zap", 16)
+
     private val expandButton = CollapseExpandButton(imageResolver, "Advanced", "Less")  // TODO: i18n
     private val commandTypeBox = CommandTypeBox(imageResolver)
 
@@ -46,11 +52,30 @@ class CommandEditDialog(controlPanelStage: ControlPanelStage, imageResolver: Ima
         descriptionTextField.isWrapText = true
         descriptionTextField.styleClass.add("command-edit-dialog-desc-field")
 
-        advancedPane.isManaged = false
-        advancedPane.isVisible = true
+        quickCommandTextField.maxWidth = 100.0
+        quickCommandPane.alignment = Pos.CENTER
+        quickCommandPane.children.addAll(quickCommandTextField, quickCommandIcon)
 
-        contentBox.children.addAll(imageSelector, titleTextField, descriptionTextField, expandButton, advancedPane,
-                commandTypeBox)
+        advancedPane.children.add(quickCommandPane)
+
+        advancedPane.isManaged = false
+        advancedPane.isVisible = false
+
+        contentBox.children.addAll(imageSelector, titleTextField, descriptionTextField, advancedPane,
+                expandButton, commandTypeBox)
+
+        expandButton.onExpand = {
+            advancedPane.isManaged = true
+            advancedPane.isVisible = true
+
+            adaptHeight()
+        }
+        expandButton.onCollapse = {
+            advancedPane.isManaged = false
+            advancedPane.isVisible = false
+
+            adaptHeight()
+        }
 
         initializeUI()
     }

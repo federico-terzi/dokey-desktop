@@ -4,6 +4,7 @@ import app.control_panel.ControlPanelStage
 import app.ui.animation.StageOpacityTransition
 import app.ui.animation.StagePositionTransition
 import app.ui.control.IconButton
+import javafx.animation.Interpolator
 import javafx.animation.ParallelTransition
 import javafx.application.Platform
 import javafx.scene.Node
@@ -35,7 +36,6 @@ open class OverlayDialog(val controlPanelStage: ControlPanelStage, val imageReso
         scene.fill = Color.TRANSPARENT
         this.icons.add(Image(OverlayDialog::class.java.getResourceAsStream("/assets/icon.png")))
 
-        width = 380.0
         maxHeight = 600.0
 
         // Blur the control panel stage
@@ -63,7 +63,10 @@ open class OverlayDialog(val controlPanelStage: ControlPanelStage, val imageReso
 
         val contentBox = defineContentBoxComponent()
         VBox.setVgrow(contentBox, Priority.ALWAYS)
-        contentBox?.let { parentBox.children.add(it) }
+        contentBox?.let {
+            it.prefWidth = 340.0
+            parentBox.children.add(it)
+        }
 
         // Close button event
         closeBtn.setOnAction {
@@ -106,5 +109,23 @@ open class OverlayDialog(val controlPanelStage: ControlPanelStage, val imageReso
         val transition = ParallelTransition(fadeTransition, positionTransition)
         transition.setOnFinished { close() }
         transition.play()
+    }
+
+    fun adaptHeight() {
+        // Save the old height of the stage
+        val oldHeight = height
+
+        sizeToScene()
+
+        val newHeight = height
+
+        // Calculate how much the window should slide
+        val neededMovement = (oldHeight - newHeight) / 2
+
+        val positionTransition = StagePositionTransition(Duration.millis(200.0), this)
+        positionTransition.interpolator = Interpolator.EASE_BOTH
+        positionTransition.toY = this.y + neededMovement
+        positionTransition.fromY = this.y
+        positionTransition.play()
     }
 }
