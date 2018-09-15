@@ -13,3 +13,19 @@
 .styled-combo-box .combo-box-popup {
     -fx-background-radius: 5px;
 }
+
+.styled-combo-box .list-view .list-cell:filled:selected{
+    -fx-background-color: -green-gradient;
+}
+
+.styled-combo-box .list-view .list-cell:filled:selected .label{
+    -fx-text-fill: black;
+}
+
+.styled-combo-box .list-view .list-cell:hover{
+    -fx-background-color: -green-gradient;
+}
+
+.styled-combo-box .list-view .list-cell:hover .label{
+    -fx-text-fill: black;
+}

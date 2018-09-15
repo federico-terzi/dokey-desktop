@@ -3,7 +3,7 @@ package system.commands.general
 import model.command.SimpleCommand
 import system.commands.annotations.RegisterCommand
 
-@RegisterCommand
+@RegisterCommand(title = "Open Web Link", iconId = "asset:link")
 class UrlCommand : SimpleCommand() {
     init {
         category = "url"

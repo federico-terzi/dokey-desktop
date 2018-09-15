@@ -2,7 +2,7 @@ package system.commands.general
 
 import system.commands.annotations.RegisterCommand
 
-@RegisterCommand
+@RegisterCommand(title = "Keyboard Shortcut", iconId = "asset:command")
 class KeyboardShortcutCommand : SimpleAppRelatedCommand() {
     init {
         category = "ks"  // Keyboard Shortcut
