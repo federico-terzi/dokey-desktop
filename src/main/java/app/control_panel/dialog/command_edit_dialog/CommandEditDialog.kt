@@ -1,6 +1,9 @@
 package app.control_panel.dialog.command_edit_dialog
 
 import app.control_panel.ControlPanelStage
+import app.control_panel.dialog.command_edit_dialog.builder.BuilderContext
+import app.control_panel.dialog.command_edit_dialog.builder.CommandBuilder
+import app.control_panel.dialog.command_edit_dialog.builder.annotation.RegisterBuilder
 import app.control_panel.dialog.command_edit_dialog.command_type_box.CommandTypeBox
 import app.ui.control.*
 import app.ui.dialog.OverlayDialog
@@ -16,14 +19,21 @@ import javafx.scene.input.KeyCode
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
+import model.command.Command
+import org.reflections.Reflections
 import system.applications.Application
 import system.applications.ApplicationManager
 import system.commands.CommandManager
 import system.image.ImageResolver
+import kotlin.reflect.KClass
 
 class CommandEditDialog(controlPanelStage: ControlPanelStage, imageResolver: ImageResolver,
                         val applicationManager: ApplicationManager, val commandManager: CommandManager)
-    : OverlayDialog(controlPanelStage, imageResolver) {
+    : OverlayDialog(controlPanelStage, imageResolver), BuilderContext {
+
+    private val builderMap = mutableMapOf<KClass<out Command>, Class<out CommandBuilder>>()
+
+    private var currentBuilder : CommandBuilder? = null
 
     private val saveButton = SaveButton(imageResolver,"Save")  // TODO: i18n
     private val contentBox = VBox()
@@ -39,6 +49,8 @@ class CommandEditDialog(controlPanelStage: ControlPanelStage, imageResolver: Ima
 
     private val expandButton = CollapseExpandButton(imageResolver, "Advanced", "Less")  // TODO: i18n
     private val commandTypeBox = CommandTypeBox(imageResolver)
+
+    private val builderContainer = VBox()
 
     init {
         contentBox.alignment = Pos.TOP_CENTER
@@ -62,7 +74,7 @@ class CommandEditDialog(controlPanelStage: ControlPanelStage, imageResolver: Ima
         advancedPane.isVisible = false
 
         contentBox.children.addAll(imageSelector, titleTextField, descriptionTextField, advancedPane,
-                expandButton, commandTypeBox)
+                expandButton, commandTypeBox, builderContainer)
 
         expandButton.onExpand = {
             advancedPane.isManaged = true
@@ -77,7 +89,38 @@ class CommandEditDialog(controlPanelStage: ControlPanelStage, imageResolver: Ima
             adaptHeight()
         }
 
+        commandTypeBox.setOnAction {
+            val selectedDescriptor = commandTypeBox.selectionModel.selectedItem
+            if (selectedDescriptor != null) {
+                val builderClass = builderMap[selectedDescriptor.associatedCommandClass.kotlin]
+                if (builderClass != null) {
+                    currentBuilder = builderClass?.getConstructor(BuilderContext::class.java)?.newInstance(this)
+
+                    // TODO: call command related callbacks
+
+                    builderContainer.children.clear()
+                    builderContainer.children.add(currentBuilder?.contentBox)
+
+                    adaptHeight()
+                }
+            }
+        }
+
+        // Load the registered command builder classes
+        loadBuilders()
+
+        // Load the UI
         initializeUI()
+    }
+
+    private fun loadBuilders() {
+        // Load all the command handlers dynamically
+        val reflections = Reflections("app.control_panel.dialog.command_edit_dialog.builder")
+        val commands = reflections.getTypesAnnotatedWith(RegisterBuilder::class.java)
+        commands.forEach { commandClass ->
+            val annotation = commandClass.getAnnotation(RegisterBuilder::class.java)
+            builderMap[annotation.type] = commandClass as Class<out CommandBuilder>
+        }
     }
 
     override fun defineTopSectionComponent(): Node? {

@@ -32,7 +32,7 @@ class CommandTypeBox(val imageResolver: ImageResolver) : StyledComboBox<CommandD
             val commands = reflections.getTypesAnnotatedWith(RegisterCommand::class.java)
             commands.forEach { commandClass ->
                 val annotation = commandClass.getAnnotation(RegisterCommand::class.java)
-                val descriptor = CommandDescriptor(annotation.title, annotation.iconId)
+                val descriptor = CommandDescriptor(annotation.title, annotation.iconId, commandClass as Class<out Command>)
                 descriptorList.add(descriptor)
             }
 
