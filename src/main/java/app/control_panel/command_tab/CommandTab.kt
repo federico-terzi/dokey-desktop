@@ -7,6 +7,7 @@ import app.control_panel.command_tab.list.comparator.NameComparator
 import app.control_panel.dialog.command_edit_dialog.CommandEditDialog
 import app.ui.control.FloatingActionButton
 import app.ui.model.Sorting
+import javafx.application.Platform
 import javafx.collections.FXCollections
 import javafx.geometry.Pos
 import javafx.scene.input.KeyEvent
@@ -14,6 +15,7 @@ import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 import model.command.Command
+import system.BroadcastManager
 import system.applications.ApplicationManager
 import system.commands.CommandManager
 import system.image.ImageResolver
@@ -90,11 +92,30 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
         commands.sortWith(currentComparator)
     }
 
-    override fun onFocus() {
+    fun focusCommand(commandId: Int) {
         loadCommands()
+        val selectedIndex = commands.indexOfFirst { it.id == commandId }
+        selectedIndex?.let {
+            commandListView.selectionModel.select(selectedIndex)
+        }
     }
 
-    override fun onGlobalKeyPress(event: KeyEvent) {
+    override fun onFocus() {
+        loadCommands()
 
+        BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.EDITOR_MODIFIED_COMMAND_EVENT, commandModifiedEvent)
+    }
+
+    override fun onUnfocus() {
+        BroadcastManager.getInstance().unregisterBroadcastListener(BroadcastManager.EDITOR_MODIFIED_COMMAND_EVENT, commandModifiedEvent)
+    }
+
+    private val commandModifiedEvent = BroadcastManager.BroadcastListener { commandIdString ->
+        commandIdString as String
+        val commandId = commandIdString.toInt()
+
+        Platform.runLater {
+            focusCommand(commandId)
+        }
     }
 }

@@ -85,8 +85,6 @@ class DevicesTab(val imageResolver: ImageResolver, val resourceBundle: ResourceB
         }.start()
     }
 
-    override fun onGlobalKeyPress(event: KeyEvent) {}
-
     companion object {
         fun generateQR(text: String, height: Int, width: Int) : InputStream {
             val qrCodeWriter = QRCodeWriter()

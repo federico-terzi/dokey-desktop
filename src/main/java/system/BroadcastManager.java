@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 public class BroadcastManager {
     // Events
     public static final int EDITOR_MODIFIED_SECTION_EVENT = 10;
+    public static final int EDITOR_MODIFIED_COMMAND_EVENT = 11;
 
     public static final int OPEN_CONTROL_PANEL_REQUEST_EVENT = 20;
     public static final int OPEN_SETTINGS_REQUEST_EVENT = 21;

@@ -1,6 +1,7 @@
 package app.control_panel.dialog.command_edit_dialog.builder
 
 import app.control_panel.dialog.command_edit_dialog.builder.annotation.RegisterBuilder
+import app.control_panel.dialog.command_edit_dialog.validation.ValidationException
 import app.ui.control.IconButton
 import app.ui.control.StyledTextField
 import javafx.geometry.Pos
@@ -9,6 +10,7 @@ import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import model.command.Command
 import system.commands.general.FolderOpenCommand
+import java.io.File
 
 @RegisterBuilder(type = FolderOpenCommand::class)
 class FolderOpenBuilder(val context: BuilderContext) : CommandBuilder {
@@ -30,15 +32,29 @@ class FolderOpenBuilder(val context: BuilderContext) : CommandBuilder {
     }
 
     override fun populateUIForCommand(command: Command) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        command as FolderOpenCommand
+
+        pathField.text = command.folder
     }
 
     override fun updateCommand(command: Command) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        command as FolderOpenCommand
+
+        command.folder = pathField.text
     }
 
     override fun validateInput(): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if (pathField.text.isBlank()) {
+            throw ValidationException("Please select a directory.") // TODO: i18n
+        }
+
+        // Make sure the folder exists
+        val folder = File(pathField.text)
+        if (!folder.isDirectory) {
+            throw ValidationException("The selected directory does not exist.") // TODO: i18n
+        }
+
+        return true
     }
 
 

@@ -11,6 +11,8 @@ import system.commands.annotations.RegisterCommand
 import system.image.ImageResolver
 
 class CommandTypeBox(val imageResolver: ImageResolver) : StyledComboBox<CommandDescriptor>() {
+    private val types = FXCollections.observableArrayList<CommandDescriptor>()
+
     init {
         setCellFactory {
             ImageTextListCell<CommandDescriptor>(imageResolver) {
@@ -20,7 +22,17 @@ class CommandTypeBox(val imageResolver: ImageResolver) : StyledComboBox<CommandD
 
         promptText = "Select type" // TODO: i18n
 
-        items = FXCollections.observableArrayList(getCommandDescriptors())
+        items = types
+        types.setAll(getCommandDescriptors())
+    }
+
+    fun selectTypeForCommand(command: Command) {
+        val index = types.indexOfFirst {
+            it.associatedCommandClass == command::class.java
+        }
+        if (index != null) {
+            selectionModel.select(index)
+        }
     }
 
     companion object {

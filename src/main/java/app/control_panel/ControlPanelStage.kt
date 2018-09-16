@@ -99,11 +99,16 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
             controller.tab_pane.tabs.add(tab)
         }
 
+        // Initially select the first one
+        activeTab = tabs[0]
+        activeTab.onFocus()
+
         // Setup the tab change listener
         tabSelector.onTabSelected = {tabIndex ->
             if (controller.tab_pane.selectionModel.selectedIndex != tabIndex) {
+                activeTab.onUnfocus()  // Send the unfocus event to the previous one
                 activeTab = tabs[tabIndex]
-                activeTab.onFocus()
+                activeTab.onFocus()  // Send the focus event to the current
 
                 controller.tab_pane.selectionModel.select(tabIndex)
             }
@@ -111,11 +116,6 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
         // Setup the tab change animation
         setupTabPaneAnimation()
-
-        // Initially select the first one
-        activeTab = tabs[0]
-        activeTab.onFocus()
-
 
         // Keyboard listeners for detecting if a key is pressed or not
         scene.setOnKeyPressed {

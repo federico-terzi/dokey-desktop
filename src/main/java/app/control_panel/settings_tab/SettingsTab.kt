@@ -125,9 +125,4 @@ class SettingsTab(val imageResolver: ImageResolver, val applicationManager: Appl
         enableDokeySearchBtn.checked = settingsManager.dokeySearchEnabled
         autolaunchBtn.checked = startupManager.isAutomaticStartupEnabled
     }
-
-    override fun onGlobalKeyPress(event: KeyEvent) {
-
-    }
-
 }

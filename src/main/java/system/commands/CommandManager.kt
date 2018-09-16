@@ -113,6 +113,7 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
      * return the old one. If the command is really new, a new id is
      * given and the command is saved.
      */
+    @Synchronized
     fun addCommand(command: Command) : Command {
         val hash = command.contentHash()
         var conflicting = false
