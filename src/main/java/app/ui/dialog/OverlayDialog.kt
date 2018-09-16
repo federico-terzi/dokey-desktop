@@ -43,12 +43,14 @@ open class OverlayDialog(val controlPanelStage: ControlPanelStage, val imageReso
             controlPanelStage.blurIn()
         }
 
+        /*
         // Close the stage when unfocused
         focusedProperty().addListener { _, _, isFocused ->
             if (!isFocused) {
                 onClose()
             }
         }
+        */
     }
 
     fun initializeUI() {

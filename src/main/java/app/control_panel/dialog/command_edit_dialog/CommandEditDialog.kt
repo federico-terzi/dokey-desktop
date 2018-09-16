@@ -98,7 +98,7 @@ class CommandEditDialog(controlPanelStage: ControlPanelStage, imageResolver: Ima
             if (commandId >= 0) { // Command saved correctly
                 BroadcastManager.getInstance().sendBroadcast(BroadcastManager.EDITOR_MODIFIED_COMMAND_EVENT, commandId.toString())
 
-                closeWithAnimation()
+                onClose()
             }
         }
 
@@ -128,6 +128,9 @@ class CommandEditDialog(controlPanelStage: ControlPanelStage, imageResolver: Ima
 
         // Select the correct combobox entry
         commandTypeBox.selectTypeForCommand(command)
+
+        // Disable the selection of type for the command modification
+        commandTypeBox.isDisable = true
 
         // Load the correct builder UI
         loadBuilderForCommandClass(command::class)

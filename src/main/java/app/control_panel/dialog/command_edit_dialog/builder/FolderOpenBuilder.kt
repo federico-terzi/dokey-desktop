@@ -2,54 +2,74 @@ package app.control_panel.dialog.command_edit_dialog.builder
 
 import app.control_panel.dialog.command_edit_dialog.builder.annotation.RegisterBuilder
 import app.control_panel.dialog.command_edit_dialog.validation.ValidationException
-import app.ui.control.IconButton
-import app.ui.control.StyledTextField
-import javafx.geometry.Pos
-import javafx.scene.layout.HBox
-import javafx.scene.layout.Priority
-import javafx.scene.layout.VBox
+import javafx.scene.input.TransferMode
+import javafx.stage.DirectoryChooser
 import model.command.Command
 import system.commands.general.FolderOpenCommand
 import java.io.File
 
 @RegisterBuilder(type = FolderOpenCommand::class)
-class FolderOpenBuilder(val context: BuilderContext) : CommandBuilder {
-    override val contentBox = VBox()
-    private val folderImage = IconButton(context.imageResolver, "asset:folder", 24)
-    private val pathField = StyledTextField()
-
+class FolderOpenBuilder(context: BuilderContext) : ImageTextCommandBuilder(context, "asset:folder") {
     init {
-        val hBox = HBox()
-        hBox.alignment = Pos.CENTER
-        HBox.setHgrow(pathField, Priority.ALWAYS)
+        label.text = "Drop folder here or click to select..."  // TODO: i18n
 
-        pathField.isDisable = true
-        pathField.promptText = "Drop folder here or click to select..."  // TODO: i18n
+        label.setOnMouseClicked {
+            promptChooseDirectory()
+        }
+        imageView.setOnAction {
+            promptChooseDirectory()
+        }
 
-        hBox.children.addAll(folderImage, pathField)
+        // Setup drag and drop
+        label.setOnDragOver{ event ->
+            if (event.dragboard.hasFiles() && event.dragboard.files[0].isDirectory) {
+                event.acceptTransferModes(TransferMode.COPY, TransferMode.MOVE, TransferMode.LINK)
+            }
 
-        contentBox.children.add(hBox)
+            event.consume()
+        }
+        label.setOnDragDropped { event ->
+            var success = false
+
+            if (event.dragboard.hasFiles() && event.dragboard.files[0].isDirectory) {
+                label.text = event.dragboard.files[0].absolutePath
+                success = true
+            }
+
+            event.isDropCompleted = success
+
+            event.consume()
+        }
+    }
+
+    private fun promptChooseDirectory() {
+        val directoryChooser = DirectoryChooser()
+        val selectedDirectory = directoryChooser.showDialog(null);
+
+        if (selectedDirectory != null && selectedDirectory.isDirectory) {
+            label.text = selectedDirectory.absolutePath
+        }
     }
 
     override fun populateUIForCommand(command: Command) {
         command as FolderOpenCommand
 
-        pathField.text = command.folder
+        label.text = command.folder
     }
 
     override fun updateCommand(command: Command) {
         command as FolderOpenCommand
 
-        command.folder = pathField.text
+        command.folder = label.text
     }
 
     override fun validateInput(): Boolean {
-        if (pathField.text.isBlank()) {
+        if (label.text.isBlank()) {
             throw ValidationException("Please select a directory.") // TODO: i18n
         }
 
         // Make sure the folder exists
-        val folder = File(pathField.text)
+        val folder = File(label.text)
         if (!folder.isDirectory) {
             throw ValidationException("The selected directory does not exist.") // TODO: i18n
         }
