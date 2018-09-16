@@ -10,6 +10,10 @@ class ColonTextField() : HBox() {
     private val colonLabel = Label()
     private val textField = TextField()
 
+    var text : String
+        get() = textField.text
+        set(value) {textField.text = value}
+
     init {
         styleClass.add("colon-text-field")
 

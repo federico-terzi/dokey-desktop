@@ -73,6 +73,15 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
             val dialog = CommandEditDialog(controlPanelStage, imageResolver, applicationManager, commandManager)
             dialog.showWithAnimation()
         }
+
+        commandListView.setOnMouseClicked {
+            if (it.clickCount == 2) {
+                val command = commandListView.selectionModel.selectedItem
+                val dialog = CommandEditDialog(controlPanelStage, imageResolver, applicationManager, commandManager)
+                dialog.loadCommand(command)
+                dialog.showWithAnimation()
+            }
+        }
     }
 
     fun loadCommands() {

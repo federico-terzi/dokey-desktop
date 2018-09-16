@@ -12,15 +12,19 @@ class ImageSelector(val imageResolver: ImageResolver) : StackPane() {
     private val imageView = ImageView()
     private val pencilImage = ImageView()
 
-    var image : Image
-        get() = imageView.image
-        set(value) {imageView.image = value}
+    private var _imageId : String? = null
+    var imageId : String
+        get() = _imageId!!
+        set(value) {
+            imageView.image = imageResolver.resolveImage(value, 70)
+            _imageId = value
+        }
 
     init {
         styleClass.add("image-selector")
         maxWidth = 70.0
 
-        imageView.image = imageResolver.resolveImage("asset:cmd_icon_default", 70)
+        imageId = "asset:cmd_icon_default"
         imageView.fitWidth = 70.0
         imageView.fitHeight = 70.0
 

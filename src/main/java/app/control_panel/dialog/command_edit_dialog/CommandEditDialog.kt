@@ -113,6 +113,24 @@ class CommandEditDialog(controlPanelStage: ControlPanelStage, imageResolver: Ima
         initializeUI()
     }
 
+    fun loadCommand(command: Command) {
+        titleTextField.text = command.title
+
+        command.description?.let {
+            descriptionTextField.text = it
+        }
+
+        command.quickCommand?.let {
+            quickCommandTextField.text = it
+        }
+
+        command.iconId?.let {
+            imageSelector.imageId = it
+        }
+
+        // TODO: command specific
+    }
+
     private fun loadBuilders() {
         // Load all the command handlers dynamically
         val reflections = Reflections("app.control_panel.dialog.command_edit_dialog.builder")

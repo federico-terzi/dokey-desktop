@@ -8,5 +8,7 @@ interface CommandBuilder {
 
     fun populateUIForCommand(command: Command)
 
+    fun validateInput() : Boolean
+
     fun updateCommand(command: Command)
 }

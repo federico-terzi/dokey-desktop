@@ -22,7 +22,7 @@ class FolderOpenBuilder(val context: BuilderContext) : CommandBuilder {
         HBox.setHgrow(pathField, Priority.ALWAYS)
 
         pathField.isDisable = true
-        pathField.text = "Drop folder here or click to select..."  // TODO: i18n
+        pathField.promptText = "Drop folder here or click to select..."  // TODO: i18n
 
         hBox.children.addAll(folderImage, pathField)
 
@@ -36,5 +36,10 @@ class FolderOpenBuilder(val context: BuilderContext) : CommandBuilder {
     override fun updateCommand(command: Command) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
+    override fun validateInput(): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
 
 }
