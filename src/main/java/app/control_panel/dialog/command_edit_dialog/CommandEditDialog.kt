@@ -165,14 +165,20 @@ class CommandEditDialog(controlPanelStage: ControlPanelStage, imageResolver: Ima
 
         if (!descriptionTextField.text.isBlank()) {
             command.description = descriptionTextField.text
+        }else{
+            command.description = null
         }
 
         if (!quickCommandTextField.text.isBlank()) {
             command.quickCommand = quickCommandTextField.text
+        }else{
+            command.quickCommand = null
         }
 
         if (imageSelector.imageId != null) {
             command.iconId = imageSelector.imageId
+        }else{
+            command.iconId = null
         }
 
         // Update the command type specific fields using the builder

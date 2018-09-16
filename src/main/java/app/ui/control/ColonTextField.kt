@@ -11,8 +11,17 @@ class ColonTextField() : HBox() {
     private val textField = TextField()
 
     var text : String
-        get() = textField.text
-        set(value) {textField.text = value}
+        get() {
+            if (textField.text.isBlank()) {
+                return ""
+            }else{
+                return ":${textField.text}"
+            }
+        }
+        set(value) {
+            // Remove the initial :
+            textField.text = value.replace(":", "")
+        }
 
     init {
         styleClass.add("colon-text-field")
