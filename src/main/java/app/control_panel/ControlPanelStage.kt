@@ -15,6 +15,7 @@ import javafx.animation.FadeTransition
 import javafx.animation.Interpolator
 import javafx.animation.ParallelTransition
 import javafx.animation.TranslateTransition
+import javafx.application.Platform
 import javafx.fxml.FXMLLoader
 import javafx.scene.CacheHint
 import javafx.scene.Parent

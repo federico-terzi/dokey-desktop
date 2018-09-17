@@ -63,7 +63,7 @@ class FileOpenBuilder(context: BuilderContext) : ImageTextCommandBuilder(context
         command.file = label.text
     }
 
-    override fun validateInput(): Boolean {
+    override fun validateInput() {
         if (label.text.isBlank()) {
             throw ValidationException("Please select a file.") // TODO: i18n
         }
@@ -73,8 +73,6 @@ class FileOpenBuilder(context: BuilderContext) : ImageTextCommandBuilder(context
         if (!file.isFile) {
             throw ValidationException("The selected file does not exist.") // TODO: i18n
         }
-
-        return true
     }
 
 

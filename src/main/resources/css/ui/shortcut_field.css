@@ -1,0 +1,21 @@
+.shortcut-field {
+    -fx-background-color: #eeeeee;
+    -fx-background-radius: 5px;
+}
+
+.shortcut-field-text {
+    -fx-background-color: transparent;
+    -fx-pref-height: 40px;
+    -fx-font-size: 14px;
+}
+
+.shortcut-field-clear-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #bfbfbf;
+    -fx-font-size: 11px;
+}
+
+.shortcut-field-clear-button:hover {
+    -fx-text-fill: #969696;
+}
+

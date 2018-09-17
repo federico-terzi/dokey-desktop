@@ -63,7 +63,7 @@ class FolderOpenBuilder(context: BuilderContext) : ImageTextCommandBuilder(conte
         command.folder = label.text
     }
 
-    override fun validateInput(): Boolean {
+    override fun validateInput() {
         if (label.text.isBlank()) {
             throw ValidationException("Please select a directory.") // TODO: i18n
         }
@@ -73,8 +73,6 @@ class FolderOpenBuilder(context: BuilderContext) : ImageTextCommandBuilder(conte
         if (!folder.isDirectory) {
             throw ValidationException("The selected directory does not exist.") // TODO: i18n
         }
-
-        return true
     }
 
 
