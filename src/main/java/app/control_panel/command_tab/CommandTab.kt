@@ -5,6 +5,7 @@ import app.control_panel.ControlPanelTab
 import app.control_panel.command_tab.list.CommandListView
 import app.control_panel.command_tab.list.comparator.NameComparator
 import app.control_panel.dialog.command_edit_dialog.CommandEditDialog
+import app.control_panel.dialog.image_select_dialog.ImageSelectDialog
 import app.ui.control.FloatingActionButton
 import app.ui.model.Sorting
 import javafx.application.Platform
@@ -102,6 +103,9 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
 
     override fun onFocus() {
         loadCommands()
+
+        val dialog = ImageSelectDialog(controlPanelStage, imageResolver)
+        dialog.showWithAnimation()
 
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.EDITOR_MODIFIED_COMMAND_EVENT, commandModifiedEvent)
     }
