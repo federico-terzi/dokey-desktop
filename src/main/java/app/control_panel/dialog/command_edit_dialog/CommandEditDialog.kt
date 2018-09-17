@@ -1,6 +1,7 @@
 package app.control_panel.dialog.command_edit_dialog
 
 import app.control_panel.ControlPanelStage
+import app.control_panel.dialog.app_select_dialog.ApplicationSelectDialog
 import app.control_panel.dialog.command_edit_dialog.builder.BuilderContext
 import app.control_panel.dialog.command_edit_dialog.builder.CommandBuilder
 import app.control_panel.dialog.command_edit_dialog.builder.annotation.RegisterBuilder

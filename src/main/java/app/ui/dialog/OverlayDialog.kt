@@ -17,6 +17,7 @@ import javafx.scene.layout.Pane
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
+import javafx.stage.Modality
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 import javafx.util.Duration
@@ -37,6 +38,8 @@ open class OverlayDialog(override val parent: BlurrableStage, val imageResolver:
         this.scene = scene
         this.isAlwaysOnTop = true
         initStyle(StageStyle.TRANSPARENT)
+        initModality(Modality.APPLICATION_MODAL)
+        initOwner(parent)
         scene.fill = Color.TRANSPARENT
         this.icons.add(Image(OverlayDialog::class.java.getResourceAsStream("/assets/icon.png")))
 
@@ -46,15 +49,6 @@ open class OverlayDialog(override val parent: BlurrableStage, val imageResolver:
         Platform.runLater {
             parent.blurIn()
         }
-
-        /*
-        // Close the stage when unfocused
-        focusedProperty().addListener { _, _, isFocused ->
-            if (!isFocused) {
-                onClose()
-            }
-        }
-        */
     }
 
     fun initializeUI() {
@@ -149,5 +143,15 @@ open class OverlayDialog(override val parent: BlurrableStage, val imageResolver:
                 -0.2, 0.0)
         transition.setOnFinished { parentBox.effect = dropShadowEffect }
         transition.play()
+    }
+
+    companion object {
+        fun getAnchestorParent(parent: BlurrableStage) : BlurrableStage {
+            var currentParent = parent
+            while (currentParent.parent != null) {
+                currentParent = currentParent.parent!!
+            }
+            return currentParent
+        }
     }
 }
