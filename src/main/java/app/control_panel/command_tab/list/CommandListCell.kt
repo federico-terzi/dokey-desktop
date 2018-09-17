@@ -69,7 +69,8 @@ class CommandListCell(val imageResolver: ImageResolver) : ListCell<Command>() {
         }
 
         // Get the image for the command
-        imageResolver.resolveImageAsync(entry.iconId!!, 48) {image, externalThread ->
+        val iconId = entry.iconId ?: "asset:image"
+        imageResolver.resolveImageAsync(iconId, 48) {image, externalThread ->
             if (image != null) {
                 if (externalThread) {
                     Platform.runLater {

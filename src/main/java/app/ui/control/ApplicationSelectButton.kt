@@ -12,9 +12,8 @@ import system.applications.Application
 import system.applications.ApplicationManager
 import system.image.ImageResolver
 
-const val APPLICATION_NULL_IMAGE = "asset:world_black"
-
-class ApplicationSelectButton(val parent: BlurrableStage, val imageResolver: ImageResolver, val applicationManager: ApplicationManager) : Button() {
+class ApplicationSelectButton(val parent: BlurrableStage, val imageResolver: ImageResolver,
+                              val applicationManager: ApplicationManager, val allowGlobal : Boolean = true) : Button() {
     private val contentBox = HBox()
     private val imageView = ImageView()
     private val nameLabel = Label()
@@ -31,8 +30,14 @@ class ApplicationSelectButton(val parent: BlurrableStage, val imageResolver: Ima
                 nameLabel.text = _application?.name
                 descriptionLabel.text = "Click to change the app..."  // TODO: i18n
             }else{
-                imageView.image = imageResolver.resolveImage(APPLICATION_NULL_IMAGE, 24)
-                nameLabel.text = "Global"  // TODO: i18n
+                if (allowGlobal) {
+                    imageView.image = imageResolver.resolveImage("asset:world_black", 24)
+                    nameLabel.text = "Global"  // TODO: i18n
+                }else{
+                    imageView.image = imageResolver.resolveImage("asset:launch", 24)
+                    nameLabel.text = "Not selected"  // TODO: i18n
+                }
+
                 descriptionLabel.text = "Click to select an app..."  // TODO: i18n
             }
         }

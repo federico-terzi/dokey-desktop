@@ -24,7 +24,7 @@ class KeyboardShortcutBuilder(val context: BuilderContext, val parent: Blurrable
     private val shortcutField = ShortcutField()
 
     init {
-        contentBox.padding = Insets(10.0, 0.0, 0.0, 0.0)
+        contentBox.padding = Insets(5.0, 0.0, 0.0, 0.0)
         contentBox.spacing = 12.0
         contentBox.alignment = Pos.CENTER
 
