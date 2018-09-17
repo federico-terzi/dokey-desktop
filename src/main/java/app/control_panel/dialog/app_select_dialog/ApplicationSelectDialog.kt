@@ -4,6 +4,7 @@ import app.control_panel.ControlPanelStage
 import app.ui.control.CollapseExpandButton
 import app.ui.control.ExpandableSearchBar
 import app.ui.dialog.OverlayDialog
+import app.ui.stage.BlurrableStage
 import javafx.application.Platform
 import javafx.collections.FXCollections
 import javafx.geometry.Pos
@@ -18,9 +19,9 @@ import system.image.ImageResolver
 val COLLAPSED_APP_LIST_VIEW_HEIGHT = 300.0
 val EXPANDED_APP_LIST_VIEW_HEIGHT = 450.0
 
-class ApplicationSelectDialog(controlPanelStage: ControlPanelStage, imageResolver: ImageResolver,
+class ApplicationSelectDialog(parent: BlurrableStage, imageResolver: ImageResolver,
                               val applicationManager: ApplicationManager)
-    : OverlayDialog(controlPanelStage, imageResolver) {
+    : OverlayDialog(parent, imageResolver) {
 
     var onApplicationSelected: ((Application) -> Unit)? = null
 

@@ -10,6 +10,7 @@ import app.control_panel.layout_editor_tab.GlobalKeyboardListener
 import app.control_panel.layout_editor_tab.LayoutEditorTab
 import app.control_panel.settings_tab.SettingsTab
 import app.control_panel.tab_selector.TabSelector
+import app.ui.stage.BlurrableStage
 import javafx.animation.FadeTransition
 import javafx.animation.Interpolator
 import javafx.animation.ParallelTransition
@@ -44,7 +45,8 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
                         val componentParser: ComponentParser, val commandManager: CommandManager,
                         val applicationManager: ApplicationManager, val handshakeDataBuilder: HandshakeDataBuilder,
                         val dndCommandProcessor: DNDCommandProcessor, val settingsManager: SettingsManager,
-                        val startupManager: StartupManager, val storageManager: StorageManager) : Stage(), GlobalKeyboardListener {
+                        val startupManager: StartupManager, val storageManager: StorageManager)
+    : BlurrableStage(), GlobalKeyboardListener {
 
     private val controller : ControlPanelController
 
@@ -70,6 +72,8 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
     // Saved in a variable because when blurring the stage this effect is resetted
     private var dropShadowEffect : Effect? = null
+
+    override val parent: BlurrableStage? = null
 
     init {
         val fxmlLoader = FXMLLoader(ResourceUtils.getResource("/layouts/control_panel.fxml")!!.toURI().toURL())
@@ -178,7 +182,7 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
         transition.play()
     }
 
-    fun blurIn() {
+    override fun blurIn() {
         // Backup the effect for later recovery when blurring
         dropShadowEffect = controller.parent_box.effect
 
@@ -187,7 +191,7 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
         transition.play()
     }
 
-    fun blurOut() {
+    override fun blurOut() {
         val transition = BlurTransition(controller.parent_box, Duration(200.0), 10.0, 0.0,
                 -0.2, 0.0)
         transition.setOnFinished { controller.parent_box.effect = dropShadowEffect }

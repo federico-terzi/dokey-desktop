@@ -8,6 +8,7 @@ import app.control_panel.dialog.command_edit_dialog.command_type_box.CommandType
 import app.control_panel.dialog.command_edit_dialog.validation.ValidationException
 import app.ui.control.*
 import app.ui.dialog.OverlayDialog
+import app.ui.stage.BlurrableStage
 import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.layout.HBox
@@ -20,9 +21,9 @@ import system.commands.CommandManager
 import system.image.ImageResolver
 import kotlin.reflect.KClass
 
-class CommandEditDialog(controlPanelStage: ControlPanelStage, imageResolver: ImageResolver,
+class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
                         val applicationManager: ApplicationManager, val commandManager: CommandManager)
-    : OverlayDialog(controlPanelStage, imageResolver), BuilderContext {
+    : OverlayDialog(parent, imageResolver), BuilderContext {
 
     private val builderMap = mutableMapOf<KClass<out Command>, Class<out CommandBuilder>>()
 
