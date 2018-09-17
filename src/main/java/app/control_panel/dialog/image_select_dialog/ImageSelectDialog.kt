@@ -16,7 +16,7 @@ class ImageSelectDialog(parent: BlurrableStage, imageResolver: ImageResolver)
     : OverlayDialog(parent, imageResolver) {
 
     private val searchBar = ExpandableSearchBar(imageResolver)
-    private val imageGridView = GridView(4, imageResolver)
+    private val imageGridView = GridView(5, imageResolver)
     private val contentBox = VBox()
 
     private var searchQuery: String? = null
@@ -42,7 +42,15 @@ class ImageSelectDialog(parent: BlurrableStage, imageResolver: ImageResolver)
 
     fun loadImages() {
         val images = imageResolver.list("static")
-        imageGridView.entries = images!!.map { GridViewEntry(it.name, it.id) }
+
+        // Filter the images based on the query
+        val inputImages = if (searchQuery != null) {
+            images?.filter { it.name.contains(searchQuery!!, ignoreCase = true) }
+        }else{
+            images
+        }
+
+        imageGridView.entries = inputImages!!.map { GridViewEntry(it.name, it.id) }
     }
 
     override fun defineTopSectionComponent(): Node? {

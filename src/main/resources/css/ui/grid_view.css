@@ -1,0 +1,32 @@
+.grid-view {
+    -fx-background-color: transparent;
+}
+
+.grid-view .list-cell:even {
+    -fx-background-color: transparent;
+}
+.grid-view .list-cell:odd {
+    -fx-background-color: transparent;
+}
+.grid-view .list-cell:filled:selected{
+    -fx-background-color: -green-gradient;
+}
+.grid-view .list-cell:filled:selected .label{
+    -fx-text-fill: black;
+}
+
+.grid-view .scroll-bar .increment-arrow,
+.grid-view .scroll-bar .decrement-arrow,
+.grid-view .scroll-bar .increment-button,
+.grid-view .scroll-bar .decrement-button {
+    -fx-padding:0;
+}
+
+.grid-view-button {
+    -fx-background-color: transparent;
+}
+
+.grid-view-button:hover {
+    -fx-background-color: -green-gradient;
+    -fx-background-radius: 5px;
+}

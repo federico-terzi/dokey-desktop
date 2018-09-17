@@ -38,6 +38,8 @@ class GridViewButton(val imageResolver: ImageResolver) : Button() {
         }
 
     init {
+        styleClass.add("grid-view-button")
+
         graphic = imageView
         contentDisplay = ContentDisplay.TOP
     }

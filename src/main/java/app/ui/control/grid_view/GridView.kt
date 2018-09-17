@@ -17,10 +17,15 @@ class GridView(val colNumber: Int, val imageResolver: ImageResolver) : ListView<
             _entries = value
         }
 
+    var onEntrySelected : ((GridViewEntry) -> Unit)? = null
 
     init {
+        styleClass.add("grid-view")
+
         setCellFactory {
-            GridViewListCell(colNumber, imageResolver)
+            GridViewListCell(colNumber, imageResolver) {
+                onEntrySelected?.invoke(it)
+            }
         }
 
         items = rows

@@ -1,5 +1,6 @@
 package app.ui.control.grid_view
 
+import app.ui.control.grid_view.model.GridViewEntry
 import app.ui.control.grid_view.model.GridViewRow
 import javafx.scene.control.ListCell
 import javafx.scene.layout.ColumnConstraints
@@ -8,7 +9,7 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import system.image.ImageResolver
 
-class GridViewListCell(val colNumber: Int, val imageResolver: ImageResolver) : ListCell<GridViewRow>() {
+class GridViewListCell(val colNumber: Int, val imageResolver: ImageResolver, val onSelected: (GridViewEntry) -> Unit) : ListCell<GridViewRow>() {
     private val gridBox = GridPane()
     private val buttons : List<GridViewButton>
 
@@ -42,11 +43,16 @@ class GridViewListCell(val colNumber: Int, val imageResolver: ImageResolver) : L
         // Setup the valid buttons
         current.items.forEachIndexed { index, entry ->
             buttons[index].entry = entry
+
+            buttons[index].setOnAction {
+                onSelected(entry)
+            }
         }
 
         // Empty the remaining ones if the number of items is less than colNumber
         (current.items.size until colNumber).forEach { index ->
             buttons[index].entry = null
+            buttons[index].onAction = null
         }
 
         graphic = gridBox
