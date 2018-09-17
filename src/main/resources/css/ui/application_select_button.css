@@ -1,0 +1,20 @@
+.application-select-button {
+    -fx-background-color: #eeeeee;
+    -fx-background-radius: 5px;
+}
+
+.application-select-button-name {
+    -fx-font-size: 14px;
+    -fx-font-family: "Nunito Sans Bold";
+}
+
+.application-select-button-desc {
+    -fx-font-size: 10px;
+    -fx-font-family: "Nunito Sans Regular";
+    -fx-text-fill: #636363;
+}
+
+.application-select-button:hover {
+    -fx-background-color: #c2c2c2;
+    -fx-background-radius: 5px;
+}

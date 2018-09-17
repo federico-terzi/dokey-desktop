@@ -23,7 +23,7 @@ import system.image.ImageResolver
 import kotlin.reflect.KClass
 
 class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
-                        val applicationManager: ApplicationManager, val commandManager: CommandManager)
+                        override val applicationManager: ApplicationManager, val commandManager: CommandManager)
     : OverlayDialog(parent, imageResolver), BuilderContext {
 
     private val builderMap = mutableMapOf<KClass<out Command>, Class<out CommandBuilder>>()
@@ -215,7 +215,8 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
     private fun loadBuilderForCommandClass(commandClass: KClass<out Command>) {
         val builderClass = builderMap[commandClass]
         if (builderClass != null) {
-            currentBuilder = builderClass?.getConstructor(BuilderContext::class.java)?.newInstance(this)
+            currentBuilder = builderClass?.getConstructor(BuilderContext::class.java, BlurrableStage::class.java)
+                    ?.newInstance(this, this)
 
             builderContainer.children.clear()
             builderContainer.children.add(currentBuilder?.contentBox)

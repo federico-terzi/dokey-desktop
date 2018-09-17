@@ -2,6 +2,7 @@ package app.control_panel.dialog.command_edit_dialog.builder
 
 import app.control_panel.dialog.command_edit_dialog.builder.annotation.RegisterBuilder
 import app.control_panel.dialog.command_edit_dialog.validation.ValidationException
+import app.ui.stage.BlurrableStage
 import javafx.scene.input.TransferMode
 import javafx.stage.DirectoryChooser
 import model.command.Command
@@ -9,7 +10,7 @@ import system.commands.general.FolderOpenCommand
 import java.io.File
 
 @RegisterBuilder(type = FolderOpenCommand::class)
-class FolderOpenBuilder(context: BuilderContext) : ImageTextCommandBuilder(context, "asset:folder") {
+class FolderOpenBuilder(context: BuilderContext, val parent: BlurrableStage) : ImageTextCommandBuilder(context, "asset:folder") {
     init {
         label.text = "Drop folder here or click to select..."  // TODO: i18n
 

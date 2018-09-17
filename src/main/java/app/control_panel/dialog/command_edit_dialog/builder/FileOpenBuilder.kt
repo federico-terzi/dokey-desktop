@@ -2,6 +2,7 @@ package app.control_panel.dialog.command_edit_dialog.builder
 
 import app.control_panel.dialog.command_edit_dialog.builder.annotation.RegisterBuilder
 import app.control_panel.dialog.command_edit_dialog.validation.ValidationException
+import app.ui.stage.BlurrableStage
 import javafx.scene.input.TransferMode
 import javafx.stage.FileChooser
 import model.command.Command
@@ -9,7 +10,7 @@ import system.commands.general.FileOpenCommand
 import java.io.File
 
 @RegisterBuilder(type = FileOpenCommand::class)
-class FileOpenBuilder(context: BuilderContext) : ImageTextCommandBuilder(context, "asset:file") {
+class FileOpenBuilder(context: BuilderContext, val parent: BlurrableStage) : ImageTextCommandBuilder(context, "asset:file") {
     init {
         label.text = "Drop file here or click to select..."  // TODO: i18n
 

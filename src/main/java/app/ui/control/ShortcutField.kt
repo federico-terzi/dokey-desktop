@@ -69,7 +69,8 @@ class ShortcutField : StackPane() {
 
     companion object {
         val commonConversionMap = mapOf<String, String>(
-                "CONTROL" to "CTRL"
+                "CONTROL" to "CTRL",
+                "WINDOWS" to "WIN"
         )
 
         fun convertKeyName(rawKeyName: String) : String {
