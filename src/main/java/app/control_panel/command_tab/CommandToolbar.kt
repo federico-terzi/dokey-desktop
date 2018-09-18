@@ -25,7 +25,24 @@ class CommandToolbar(val parent: BlurrableStage, val imageResolver: ImageResolve
             searchBar.onSearchChanged = value
         }
 
-    var currentFilter : CommandDescriptor? = null
+    private var _currentFilter : CommandDescriptor? = null
+    var currentFilter : CommandDescriptor?
+        get() = _currentFilter
+        set(value) {
+            filterLabel.text = value?.title ?: "All" // TODO: i18n
+
+            // Update the filter button image
+            filterButton.imageId = if (value != null) {
+                "asset:x"
+            }else{
+                "asset:filter"
+            }
+
+            _currentFilter = value
+
+            onFilterUpdate?.invoke(value?.associatedCommandClass)
+        }
+
     var onFilterUpdate : ((Class<out Command>?) -> Unit)? = null
 
     init {
@@ -41,18 +58,15 @@ class CommandToolbar(val parent: BlurrableStage, val imageResolver: ImageResolve
         children.addAll(searchBar, spacerPane, filterLabel, filterButton)
 
         filterButton.setOnAction {
-            val dialog = CommandTypeDialog(parent, imageResolver)
-            dialog.onTypeSelected = {commandDescriptor ->
-                currentFilter = commandDescriptor
-                onFilterUpdate?.invoke(commandDescriptor?.associatedCommandClass)
-
-                if (currentFilter != null) {
-                    filterLabel.text = commandDescriptor?.title  // TODO: i18n
-                }else{
-                    filterLabel.text = "All"  // TODO: i18n
+            if (currentFilter != null) {  // Clear the filter
+                currentFilter = null
+            }else{   // Add a filter
+                val dialog = CommandTypeDialog(parent, imageResolver)
+                dialog.onTypeSelected = {commandDescriptor ->
+                    currentFilter = commandDescriptor
                 }
+                dialog.showWithAnimation()
             }
-            dialog.showWithAnimation()
         }
     }
 }

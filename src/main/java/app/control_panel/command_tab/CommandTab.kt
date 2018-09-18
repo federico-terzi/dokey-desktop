@@ -37,7 +37,9 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
     private val commands = FXCollections.observableArrayList<Command>()
 
     private var currentQuery: String? = null
+    private var currentFilter: Class<out Command>? = null
     private var currentComparator: Comparator<Command> = NameComparator(Sorting.ASCENDING)
+
 
     init {
         VBox.setVgrow(commandListView, Priority.ALWAYS)
@@ -72,7 +74,8 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
         }
 
         toolbar.onFilterUpdate = {
-            // TODO:
+            currentFilter = it
+            loadCommands()
         }
 
         // Setup add command button listener
@@ -92,7 +95,12 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
     }
 
     fun loadCommands() {
-        val results = commandManager.searchCommands(query = currentQuery)
+        var results = commandManager.searchCommands(query = currentQuery)
+
+        if (currentFilter != null) {
+           results = results.filter { it.javaClass == currentFilter }
+        }
+
         commands.setAll(results)
         commands.sortWith(currentComparator)
     }
