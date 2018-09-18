@@ -27,7 +27,7 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
                  val commandManager: CommandManager) : ControlPanelTab() {
 
     // UI Elements
-    private val toolbar = CommandToolbar(imageResolver)
+    private val toolbar = CommandToolbar(controlPanelStage, imageResolver)
     private val listHeader = CommandListHeader(imageResolver)
     private val stackPane = StackPane()
     private val commandListView = CommandListView(imageResolver)
@@ -69,6 +69,10 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
                 currentQuery = query
             }
             loadCommands()
+        }
+
+        toolbar.onFilterUpdate = {
+            // TODO:
         }
 
         // Setup add command button listener

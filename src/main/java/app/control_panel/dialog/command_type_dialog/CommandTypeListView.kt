@@ -1,6 +1,6 @@
-package app.control_panel.dialog.command_edit_dialog.command_type_box
+package app.control_panel.dialog.command_type_dialog
 
-import app.ui.control.StyledComboBox
+import app.ui.control.SelectionListView
 import app.ui.list_cell.ImageTextEntry
 import app.ui.list_cell.ImageTextListCell
 import javafx.collections.FXCollections
@@ -10,7 +10,7 @@ import system.commands.CommandDescriptor
 import system.commands.annotations.RegisterCommand
 import system.image.ImageResolver
 
-class CommandTypeBox(val imageResolver: ImageResolver) : StyledComboBox<CommandDescriptor>() {
+class CommandTypeListView(val imageResolver: ImageResolver) : SelectionListView<CommandDescriptor>() {
     private val types = FXCollections.observableArrayList<CommandDescriptor>()
 
     init {
@@ -20,23 +20,32 @@ class CommandTypeBox(val imageResolver: ImageResolver) : StyledComboBox<CommandD
             }
         }
 
-        promptText = "Select type" // TODO: i18n
-
         items = types
-        types.setAll(getCommandDescriptors())
+        types.setAll(loadCommandDescriptors())
     }
 
     fun selectTypeForCommand(command: Command) {
         val index = types.indexOfFirst {
             it.associatedCommandClass == command::class.java
         }
-        if (index != null) {
+        if (index >= 0) {
             selectionModel.select(index)
         }
     }
 
+    fun filter(query: String?) {
+        val filtered = if (query != null) {
+            commandDescriptors.filter { it.title.contains(query, ignoreCase = true) }
+        }else{
+            commandDescriptors
+        }
+        types.setAll(filtered)
+    }
+
     companion object {
-        fun getCommandDescriptors() : List<CommandDescriptor> {
+        val commandDescriptors = loadCommandDescriptors()
+
+        fun loadCommandDescriptors() : List<CommandDescriptor> {
             val descriptorList = mutableListOf<CommandDescriptor>()
 
             // Load all the command handlers dynamically

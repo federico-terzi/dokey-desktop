@@ -31,6 +31,9 @@ open class OverlayDialog(override val parent: BlurrableStage, val imageResolver:
 
     private var dropShadowEffect: Effect? = null
 
+    // Called when a user exit a dialog clicking the X button
+    var onDialogCanceled : (() -> Unit)? = null
+
     init {
         scene = Scene(parentBox)
         scene.stylesheets.add(ResourceUtils.getResource("/css/dialog.css")!!.toURI().toString())
@@ -70,6 +73,7 @@ open class OverlayDialog(override val parent: BlurrableStage, val imageResolver:
 
         // Close button event
         closeBtn.setOnAction {
+            onDialogCanceled?.invoke()
             onClose()
         }
     }

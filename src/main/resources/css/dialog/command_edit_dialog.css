@@ -13,3 +13,11 @@
 .command-edit-dialog-desc-field {
     -fx-max-height: 40px;
 }
+
+.command-type-button {
+    -fx-background-color: linear-gradient(to bottom right, -start-green-gradient, -stop-green-gradient);
+    -fx-background-radius: 20px;
+    -fx-font-size: 13px;
+    -fx-font-family: "Nunito Sans Bold";
+    -fx-padding: 8px 14px 8px 14px;
+}

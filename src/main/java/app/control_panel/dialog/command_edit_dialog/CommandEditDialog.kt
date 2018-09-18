@@ -1,11 +1,8 @@
 package app.control_panel.dialog.command_edit_dialog
 
-import app.control_panel.ControlPanelStage
-import app.control_panel.dialog.app_select_dialog.ApplicationSelectDialog
 import app.control_panel.dialog.command_edit_dialog.builder.BuilderContext
 import app.control_panel.dialog.command_edit_dialog.builder.CommandBuilder
 import app.control_panel.dialog.command_edit_dialog.builder.annotation.RegisterBuilder
-import app.control_panel.dialog.command_edit_dialog.command_type_box.CommandTypeBox
 import app.control_panel.dialog.command_edit_dialog.validation.ValidationException
 import app.ui.control.*
 import app.ui.dialog.OverlayDialog
@@ -45,7 +42,7 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
     private val quickCommandIcon = IconButton(imageResolver, "asset:zap", 16)
 
     private val expandButton = CollapseExpandButton(imageResolver, "Advanced", "Less")  // TODO: i18n
-    private val commandTypeBox = CommandTypeBox(imageResolver)
+    private val commandTypeButton = CommandTypeButton(this, imageResolver)
 
     private val builderContainer = VBox()
 
@@ -71,7 +68,7 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
         advancedPane.isVisible = false
 
         contentBox.children.addAll(imageSelector, titleTextField, descriptionTextField, advancedPane,
-                expandButton, commandTypeBox, builderContainer)
+                expandButton, commandTypeButton, builderContainer)
 
         expandButton.onExpand = {
             advancedPane.isManaged = true
@@ -86,13 +83,10 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
             adaptHeight()
         }
 
-        commandTypeBox.setOnAction {
-            val selectedDescriptor = commandTypeBox.selectionModel.selectedItem
-            if (selectedDescriptor != null) {
-                loadBuilderForCommandClass(selectedDescriptor.associatedCommandClass.kotlin)
+        commandTypeButton.onTypeSelected = {descriptor ->
+            loadBuilderForCommandClass(descriptor.associatedCommandClass.kotlin)
 
-                adaptHeight()
-            }
+            adaptHeight()
         }
 
         saveButton.setOnAction {
@@ -129,10 +123,10 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
         }
 
         // Select the correct combobox entry
-        commandTypeBox.selectTypeForCommand(command)
+        commandTypeButton.selectTypeForCommand(command)
 
         // Disable the selection of type for the command modification
-        commandTypeBox.isDisable = true
+        commandTypeButton.isDisable = true
 
         // Load the correct builder UI
         loadBuilderForCommandClass(command::class)
@@ -162,7 +156,7 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
             currentCommand!!
         } else {
             // New command, create an instance of the correct class
-            val selectedDescriptor = commandTypeBox.selectionModel.selectedItem
+            val selectedDescriptor = commandTypeButton.commandDescriptor!!
             selectedDescriptor.associatedCommandClass.newInstance()!!
         }
 
@@ -204,7 +198,7 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
         }
 
         // Make sure that a command type is selected
-        if (commandTypeBox.selectionModel.selectedItem == null) {
+        if (commandTypeButton.commandDescriptor == null) {
             throw ValidationException("Please select a command type.")  // TODO: i18n
         }
 
