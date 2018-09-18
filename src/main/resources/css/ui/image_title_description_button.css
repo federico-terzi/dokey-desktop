@@ -1,0 +1,20 @@
+.image-title-description-button {
+    -fx-background-color: #eeeeee;
+    -fx-background-radius: 5px;
+}
+
+.image-title-description-button-name {
+    -fx-font-size: 14px;
+    -fx-font-family: "Nunito Sans Bold";
+}
+
+.image-title-description-button-desc {
+    -fx-font-size: 10px;
+    -fx-font-family: "Nunito Sans Regular";
+    -fx-text-fill: #636363;
+}
+
+.image-title-description-button:hover {
+    -fx-background-color: #c2c2c2;
+    -fx-background-radius: 5px;
+}

@@ -1,14 +1,13 @@
 package app.control_panel.layout_editor_tab.grid.button
 
 import app.control_panel.layout_editor_tab.grid.GridContext
+import app.ui.popup.StyledPopup
 import javafx.scene.control.ContentDisplay
 import javafx.scene.control.ContextMenu
 import javafx.scene.image.ImageView
 import system.image.ImageResolver
 
 class EmptyButton(context : GridContext) : DragButton(context) {
-    var onEmptyButtonClicked : (() -> Unit)? = null
-
     init {
         // Set up the button design
         styleClass.add("empty-btn")
@@ -24,12 +23,5 @@ class EmptyButton(context : GridContext) : DragButton(context) {
         val contextMenu = ContextMenu()
         // TODO
         setContextMenu(contextMenu)
-
-        // Set up the click listener
-        setOnMouseClicked {
-            onEmptyButtonClicked?.let { it() }
-        }
-
-
     }
 }

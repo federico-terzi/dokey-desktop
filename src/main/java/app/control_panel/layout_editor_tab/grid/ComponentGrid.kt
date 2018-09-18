@@ -6,6 +6,7 @@ import app.control_panel.layout_editor_tab.grid.button.DragButton
 import app.control_panel.layout_editor_tab.grid.button.EmptyButton
 import app.control_panel.layout_editor_tab.grid.button.SelectableButton
 import app.control_panel.layout_editor_tab.model.ScreenOrientation
+import app.ui.popup.StyledPopup
 import javafx.geometry.HPos
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
@@ -22,7 +23,7 @@ import system.image.ImageResolver
 import java.util.*
 
 
-class ComponentGrid(val componentMatrix: Array<Array<Component?>>,
+class ComponentGrid(val owner: Stage, val componentMatrix: Array<Array<Component?>>,
                     val screenOrientation: ScreenOrientation, val globalKeyboardListener: GlobalKeyboardListener,
                     override val dndCommandProcessor: DNDCommandProcessor,
                     override val resourceBundle: ResourceBundle,
@@ -146,6 +147,12 @@ class ComponentGrid(val componentMatrix: Array<Array<Component?>>,
      */
     private fun addEmptyButtonToGridPane(col: Int, row: Int) {
         val emptyButton = EmptyButton(this)
+
+        emptyButton.setOnMouseClicked{
+            val popup = ActionPopup(imageResolver)
+            popup.showUnderMouse(owner, it.screenX, it.screenY)
+        }
+
         addButtonToGridPane(col, row, emptyButton)
     }
 

@@ -15,13 +15,14 @@ import javafx.util.Duration
 import system.commands.CommandManager
 import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
+import javafx.stage.Stage
 import java.util.*
 
 
 /**
  * This component will createView a Section into a Grid with button bar and animations.
  */
-class SectionGrid(val section: Section,
+class SectionGrid(val owner: Stage, val section: Section,
                   val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                   val componentParser: ComponentParser, val commandManager: CommandManager,
                   val globalKeyboardListener: GlobalKeyboardListener,
@@ -88,7 +89,7 @@ class SectionGrid(val section: Section,
         // Add the pages
         for (page in section.pages!!) {
             // Create the page grid
-            val grid = ComponentGrid(generateMatrix(page), screenOrientation, globalKeyboardListener, dndCommandProcessor,
+            val grid = ComponentGrid(owner, generateMatrix(page), screenOrientation, globalKeyboardListener, dndCommandProcessor,
                     resourceBundle, imageResolver, componentParser, commandManager)
 
             grid.onDeleteComponentRequest = { component ->
