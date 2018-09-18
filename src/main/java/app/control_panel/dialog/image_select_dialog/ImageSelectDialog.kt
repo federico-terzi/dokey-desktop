@@ -21,6 +21,8 @@ class ImageSelectDialog(parent: BlurrableStage, imageResolver: ImageResolver)
 
     private var searchQuery: String? = null
 
+    var onImageSelected : ((imageId: String) -> Unit)? = null
+
     init {
         imageGridView.minHeight = 400.0
         imageGridView.prefHeight = 1.0
@@ -35,6 +37,11 @@ class ImageSelectDialog(parent: BlurrableStage, imageResolver: ImageResolver)
         searchBar.onSearchChanged = {
             searchQuery = it
             loadImages()
+        }
+
+        imageGridView.onEntrySelected = {entry ->
+            onImageSelected?.invoke(entry.imageId)
+            onClose()
         }
 
         Platform.runLater { loadImages() }

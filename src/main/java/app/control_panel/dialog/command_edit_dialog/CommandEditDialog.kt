@@ -35,7 +35,7 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
     private val saveButton = SaveButton(imageResolver, "Save")  // TODO: i18n
     private val contentBox = VBox()
 
-    private val imageSelector = ImageSelector(imageResolver)
+    private val imageSelector = ImageSelector(this, imageResolver)
     private val titleTextField = StyledTextField()
     private val descriptionTextField = StyledTextArea()
     private val advancedPane = VBox()

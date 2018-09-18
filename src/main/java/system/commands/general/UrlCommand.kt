@@ -14,7 +14,9 @@ class UrlCommand : SimpleCommand() {
         set(url) {
             value = url
 
-            // Set also the icon id based on the URL
-            iconId = "url:$url"
+            // Set also the icon id based on the URL if not provided
+            if (iconId == null) {
+                iconId = "url:$url"
+            }
         }
 }

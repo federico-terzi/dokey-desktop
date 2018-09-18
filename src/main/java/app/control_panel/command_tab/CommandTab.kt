@@ -104,9 +104,6 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
     override fun onFocus() {
         loadCommands()
 
-        val dialog = ImageSelectDialog(controlPanelStage, imageResolver)
-        dialog.showWithAnimation()
-
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.EDITOR_MODIFIED_COMMAND_EVENT, commandModifiedEvent)
     }
 

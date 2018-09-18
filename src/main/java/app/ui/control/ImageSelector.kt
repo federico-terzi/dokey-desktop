@@ -1,5 +1,7 @@
 package app.ui.control
 
+import app.control_panel.dialog.image_select_dialog.ImageSelectDialog
+import app.ui.stage.BlurrableStage
 import javafx.geometry.Pos
 import javafx.scene.control.Button
 import javafx.scene.image.Image
@@ -7,7 +9,7 @@ import javafx.scene.image.ImageView
 import javafx.scene.layout.StackPane
 import system.image.ImageResolver
 
-class ImageSelector(val imageResolver: ImageResolver) : StackPane() {
+class ImageSelector(val parent: BlurrableStage, val imageResolver: ImageResolver) : StackPane() {
     private val button = Button()
     private val imageView = ImageView()
     private val pencilImage = ImageView()
@@ -39,5 +41,18 @@ class ImageSelector(val imageResolver: ImageResolver) : StackPane() {
         children.addAll(button, pencilImage)
 
         alignment = Pos.TOP_RIGHT
+
+        button.setOnAction {
+            selectImage()
+        }
+        pencilImage.setOnMouseClicked { selectImage() }
+    }
+
+    private fun selectImage() {
+        val dialog = ImageSelectDialog(parent, imageResolver)
+        dialog.onImageSelected = {id ->
+            imageId = id
+        }
+        dialog.showWithAnimation()
     }
 }
