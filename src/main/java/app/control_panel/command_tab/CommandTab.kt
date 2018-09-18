@@ -95,14 +95,19 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
     }
 
     fun loadCommands() {
-        var results = commandManager.searchCommands(query = currentQuery)
+        Thread {
+            var results = commandManager.searchCommands(query = currentQuery).toMutableList()
 
-        if (currentFilter != null) {
-           results = results.filter { it.javaClass == currentFilter }
-        }
+            if (currentFilter != null) {
+                results = results.filter { it.javaClass == currentFilter }.toMutableList()
+            }
 
-        commands.setAll(results)
-        commands.sortWith(currentComparator)
+            results.sortWith(currentComparator)
+
+            Platform.runLater {
+                commands.setAll(results)
+            }
+        }.start()
     }
 
     fun focusCommand(commandId: Int) {
