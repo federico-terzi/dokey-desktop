@@ -1,0 +1,9 @@
+.styled-text-field {
+    -fx-background-color: #eeeeee;
+    -fx-background-radius: 5px;
+    -fx-font-family: "Nunito Sans Regular";
+}
+
+.styled-text-field:disabled {
+    -fx-opacity: 1;
+}

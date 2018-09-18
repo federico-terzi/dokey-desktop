@@ -10,10 +10,12 @@ import app.control_panel.layout_editor_tab.GlobalKeyboardListener
 import app.control_panel.layout_editor_tab.LayoutEditorTab
 import app.control_panel.settings_tab.SettingsTab
 import app.control_panel.tab_selector.TabSelector
+import app.ui.stage.BlurrableStage
 import javafx.animation.FadeTransition
 import javafx.animation.Interpolator
 import javafx.animation.ParallelTransition
 import javafx.animation.TranslateTransition
+import javafx.application.Platform
 import javafx.fxml.FXMLLoader
 import javafx.scene.CacheHint
 import javafx.scene.Parent
@@ -44,7 +46,8 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
                         val componentParser: ComponentParser, val commandManager: CommandManager,
                         val applicationManager: ApplicationManager, val handshakeDataBuilder: HandshakeDataBuilder,
                         val dndCommandProcessor: DNDCommandProcessor, val settingsManager: SettingsManager,
-                        val startupManager: StartupManager, val storageManager: StorageManager) : Stage(), GlobalKeyboardListener {
+                        val startupManager: StartupManager, val storageManager: StorageManager)
+    : BlurrableStage(), GlobalKeyboardListener {
 
     private val controller : ControlPanelController
 
@@ -53,7 +56,7 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
     private val devicesTab = DevicesTab(imageResolver, resourceBundle, handshakeDataBuilder)
 
-    private val commandTab = CommandTab(imageResolver, resourceBundle, commandManager)
+    private val commandTab = CommandTab(this, imageResolver, resourceBundle, applicationManager, commandManager)
 
     private val settingsTab = SettingsTab(imageResolver, applicationManager, settingsManager, startupManager,
             resourceBundle, storageManager)
@@ -70,6 +73,8 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
     // Saved in a variable because when blurring the stage this effect is resetted
     private var dropShadowEffect : Effect? = null
+
+    override val parent: BlurrableStage? = null
 
     init {
         val fxmlLoader = FXMLLoader(ResourceUtils.getResource("/layouts/control_panel.fxml")!!.toURI().toURL())
@@ -99,11 +104,16 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
             controller.tab_pane.tabs.add(tab)
         }
 
+        // Initially select the first one
+        activeTab = tabs[0]
+        activeTab.onFocus()
+
         // Setup the tab change listener
         tabSelector.onTabSelected = {tabIndex ->
             if (controller.tab_pane.selectionModel.selectedIndex != tabIndex) {
+                activeTab.onUnfocus()  // Send the unfocus event to the previous one
                 activeTab = tabs[tabIndex]
-                activeTab.onFocus()
+                activeTab.onFocus()  // Send the focus event to the current
 
                 controller.tab_pane.selectionModel.select(tabIndex)
             }
@@ -111,11 +121,6 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
         // Setup the tab change animation
         setupTabPaneAnimation()
-
-        // Initially select the first one
-        activeTab = tabs[0]
-        activeTab.onFocus()
-
 
         // Keyboard listeners for detecting if a key is pressed or not
         scene.setOnKeyPressed {
@@ -178,7 +183,7 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
         transition.play()
     }
 
-    fun blurIn() {
+    override fun blurIn() {
         // Backup the effect for later recovery when blurring
         dropShadowEffect = controller.parent_box.effect
 
@@ -187,7 +192,7 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
         transition.play()
     }
 
-    fun blurOut() {
+    override fun blurOut() {
         val transition = BlurTransition(controller.parent_box, Duration(200.0), 10.0, 0.0,
                 -0.2, 0.0)
         transition.setOnFinished { controller.parent_box.effect = dropShadowEffect }

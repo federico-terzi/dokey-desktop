@@ -1,0 +1,15 @@
+.round-border-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 20px;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+    -fx-border-style: solid;
+    -fx-border-radius: 20px;
+    -fx-font-family: "Nunito Sans Regular";
+    -fx-font-size: 12px;
+    -fx-padding: 2px 8px 2px 8px;
+}
+
+.round-border-button:hover {
+    -fx-background-color: #eeeeee;
+}

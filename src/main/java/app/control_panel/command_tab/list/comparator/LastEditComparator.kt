@@ -13,7 +13,7 @@ class LastEditComparator(val order: Sorting) : Comparator<Command>{
             o2!!.lastEdit!!.compareTo(o1!!.lastEdit!!)
         }
         if (lastEditOrdering == 0) {
-            return o1!!.title!!.compareTo(o2!!.title!!)
+            return o1.title!!.toLowerCase().compareTo(o2.title!!.toLowerCase())
         }else{
             return lastEditOrdering
         }

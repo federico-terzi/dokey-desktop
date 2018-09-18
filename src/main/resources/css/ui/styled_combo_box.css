@@ -1,0 +1,31 @@
+.styled-combo-box {
+    -fx-background-color: linear-gradient(to bottom right, -start-green-gradient, -stop-green-gradient);
+    -fx-background-radius: 20px;
+    -fx-font-size: 12px;
+    -fx-font-family: "Nunito Sans Bold";
+    -fx-padding: 5px;
+}
+
+.styled-combo-box .arrow {
+    -fx-effect: innershadow( one-pass-box , black , 7 , 1 , 0 , 0 );
+}
+
+.styled-combo-box .combo-box-popup {
+    -fx-background-radius: 5px;
+}
+
+.styled-combo-box .list-view .list-cell:filled:selected{
+    -fx-background-color: -green-gradient;
+}
+
+.styled-combo-box .list-view .list-cell:filled:selected .label{
+    -fx-text-fill: black;
+}
+
+.styled-combo-box .list-view .list-cell:hover{
+    -fx-background-color: -green-gradient;
+}
+
+.styled-combo-box .list-view .list-cell:hover .label{
+    -fx-text-fill: black;
+}

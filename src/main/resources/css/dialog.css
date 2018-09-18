@@ -3,6 +3,7 @@
 @import "ui/ui.css";
 
 @import "dialog/application_select_dialog.css";
+@import "dialog/command_edit_dialog.css";
 
 .root {
     -fx-background-insets: 20px;

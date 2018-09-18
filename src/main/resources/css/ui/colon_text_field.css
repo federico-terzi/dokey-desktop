@@ -1,0 +1,18 @@
+.colon-text-field {
+    -fx-background-color: #eeeeee;
+    -fx-background-radius: 5px;
+    -fx-font-family: "Nunito Sans Regular";
+}
+
+.colon-text-field > .text-field {
+    -fx-background-color: transparent;
+    -fx-padding: 5px;
+    -fx-prompt-text-fill: #747474;
+}
+
+.colon-text-field-label {
+    -fx-background-radius: 5px 0 0 5px;
+    -fx-padding: 5px 7px 5px 7px;
+    -fx-background-color: #c5c5c5;
+    -fx-font-family: "Nunito Sans Bold";
+}

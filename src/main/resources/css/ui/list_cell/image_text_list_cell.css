@@ -1,0 +1,7 @@
+.image-text-list-cell {
+    -fx-padding: 3px;
+}
+
+.image-text-list-cell .label{
+    -fx-padding: 0 0 0 5px;
+}

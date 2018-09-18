@@ -34,9 +34,11 @@ class TabSelector(val imageResolver: ImageResolver) : Pane() {
         tabs.add(Tab(imageResolver, "Send", "asset:send"))
         tabs.add(Tab(imageResolver, "Settings", "asset:settings"))
 
-        tabs.forEachIndexed {index, tab ->
-            this.children.add(tab)
+        // Add all the tabs in reverse
+        tabs.reversed().forEach { tab -> this.children.add(tab) }
 
+        // Add all the listeners
+        tabs.forEachIndexed {index, tab ->
             tab.setOnAction {
                 selectedTab = tab
 

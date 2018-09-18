@@ -4,6 +4,8 @@ import javafx.scene.image.Image
 import org.reflections.Reflections
 import system.context.ImageSourceContext
 import system.image.annotations.RegisterSource
+import system.image.model.ImageListing
+import system.image.model.ListableSource
 import system.image.sources.ImageSource
 import java.io.File
 import java.io.InputStream
@@ -21,7 +23,8 @@ class ImageResolver(context: ImageSourceContext) {
     /**
      * A wrapper around image source, used to add useful informations to the class
      */
-    class MetaImageSource(imageSource: ImageSource, val useAnotherThread: Boolean) : ImageSource by imageSource
+    class MetaImageSource(val imageSource: ImageSource, val useAnotherThread: Boolean,
+                          val listable: Boolean) : ImageSource by imageSource
 
     init {
         // Load all the image sources using reflection
@@ -31,7 +34,8 @@ class ImageResolver(context: ImageSourceContext) {
             val annotation = handlerClass.getAnnotation(RegisterSource::class.java)
             annotation as RegisterSource
             val imageSource = handlerClass.getConstructor(ImageSourceContext::class.java).newInstance(context) as ImageSource
-            val metaImageSource = MetaImageSource(imageSource, annotation.useAnotherThread)
+            val listable = imageSource is ListableSource
+            val metaImageSource = MetaImageSource(imageSource, annotation.useAnotherThread, listable)
             sourceMap[annotation.scheme] = metaImageSource
         }
     }
@@ -109,6 +113,19 @@ class ImageResolver(context: ImageSourceContext) {
                 }
             }
         }
+    }
+
+    /**
+     * Return the list of all available images for the Sources that implement the ListableSource interface.
+     */
+    fun list(scheme: String) : List<ImageListing>? {
+        val imageSource = sourceMap[scheme]
+        if (imageSource != null && imageSource.listable) {
+            imageSource.imageSource as ListableSource
+            return  imageSource.imageSource.list()
+        }
+
+        return null
     }
 
     companion object {
