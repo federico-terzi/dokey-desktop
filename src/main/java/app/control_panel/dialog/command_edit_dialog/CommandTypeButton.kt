@@ -49,5 +49,7 @@ class CommandTypeButton(val parent: BlurrableStage, val imageResolver: ImageReso
         if (descriptor != null) {
             text = descriptor.title
         }
+
+        commandDescriptor = descriptor
     }
 }

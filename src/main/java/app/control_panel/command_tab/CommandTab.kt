@@ -110,6 +110,7 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
         val selectedIndex = commands.indexOfFirst { it.id == commandId }
         selectedIndex?.let {
             commandListView.selectionModel.select(selectedIndex)
+            commandListView.scrollTo(selectedIndex)
         }
     }
 
