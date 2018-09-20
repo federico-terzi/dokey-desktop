@@ -225,10 +225,7 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
                     return
                 }
 
-                val command = commandManager.getCommand(component.commandId!!)
-                if (command == null) {
-                    return
-                }
+                val command = commandManager.getCommand(component.commandId!!) ?: return
 
                 val dialog = CommandEditDialog(parent, imageResolver, applicationManager, commandManager)
                 dialog.loadCommand(command)
@@ -253,15 +250,19 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
         }
 
         current.setOnMouseClicked {
-            if (!current.selected) {
-                // If shift is not pressed, unselect all the other buttons
-                if (!globalKeyboardListener.isShiftPressed) {
-                    unselectAllButtons()
-                }
+            if (it.clickCount == 2) {  // Double click
+                current.onComponentActionListener?.onComponentEdit()
+            }else{  // Single click
+                if (!current.selected) {
+                    // If shift is not pressed, unselect all the other buttons
+                    if (!globalKeyboardListener.isShiftPressed) {
+                        unselectAllButtons()
+                    }
 
-                current.selected = true
-            }else{
-                current.selected = false
+                    current.selected = true
+                }else{
+                    current.selected = false
+                }
             }
         }
 
