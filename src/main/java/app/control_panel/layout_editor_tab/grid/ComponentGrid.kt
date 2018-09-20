@@ -1,5 +1,6 @@
 package app.control_panel.layout_editor_tab.grid
 
+import app.control_panel.dialog.command_edit_dialog.CommandEditDialog
 import app.control_panel.dialog.command_select_dialog.CommandSelectDialog
 import app.control_panel.layout_editor_tab.GlobalKeyboardListener
 import app.control_panel.layout_editor_tab.grid.button.ComponentButton
@@ -20,6 +21,7 @@ import model.component.CommandResolver
 import model.component.Component
 import model.component.RuntimeComponent
 import model.parser.component.ComponentParser
+import system.applications.ApplicationManager
 import system.commands.CommandManager
 import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
@@ -28,7 +30,7 @@ import java.util.*
 
 class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array<Component?>>,
                     val screenOrientation: ScreenOrientation, val globalKeyboardListener: GlobalKeyboardListener,
-                    val commandManager: CommandManager,
+                    val commandManager: CommandManager, val applicationManager: ApplicationManager,
                     override val dndCommandProcessor: DNDCommandProcessor,
                     override val resourceBundle: ResourceBundle,
                     override val imageResolver: ImageResolver, override val componentParser: ComponentParser,
@@ -173,7 +175,21 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
                 dialog.showWithAnimation()
             }
             popup.onNewCommandRequested =  {
+                val dialog = CommandEditDialog(parent, imageResolver, applicationManager, commandManager)
+                dialog.onCommandSaved = {command ->
+                    // Create a component with the given command
+                    val component = RuntimeComponent(commandManager)
+                    component.x = col
+                    component.y = row
+                    component.commandId = command.id
 
+                    componentMatrix[col][row] = component
+
+                    onNewComponentRequest?.invoke(component)
+
+                    render()
+                }
+                dialog.showWithAnimation()
             }
 
             popup.showUnderMouse(parent, it.screenX, it.screenY)
@@ -205,7 +221,21 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
 
         current.onComponentActionListener = object : ComponentButton.OnComponentActionListener {
             override fun onComponentEdit() {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                if (component.commandId == null) {
+                    return
+                }
+
+                val command = commandManager.getCommand(component.commandId!!)
+                if (command == null) {
+                    return
+                }
+
+                val dialog = CommandEditDialog(parent, imageResolver, applicationManager, commandManager)
+                dialog.loadCommand(command)
+                dialog.onCommandSaved = {
+                    render()
+                }
+                dialog.showWithAnimation()
             }
 
             override fun onComponentDelete() {

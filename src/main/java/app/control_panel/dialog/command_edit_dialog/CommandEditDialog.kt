@@ -46,6 +46,8 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
 
     private val builderContainer = VBox()
 
+    var onCommandSaved : ((Command) -> Unit)? = null
+
     init {
         contentBox.alignment = Pos.TOP_CENTER
         contentBox.styleClass.add("command-edit-dialog-contentbox")
@@ -93,6 +95,11 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
             val commandId = requestSave()
             if (commandId >= 0) { // Command saved correctly
                 BroadcastManager.getInstance().sendBroadcast(BroadcastManager.EDITOR_MODIFIED_COMMAND_EVENT, commandId.toString())
+
+                onCommandSaved?.let {
+                    val command = commandManager.getCommand(commandId)
+                    it(command!!)
+                }
 
                 onClose()
             }

@@ -101,8 +101,8 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
         val oldGrid = sectionGrid
 
         // Create the section grid
-        sectionGrid = SectionGrid(controlPanelStage, section, imageResolver, resourceBundle, componentParser, commandManager,
-                globalKeyboardListener, dndCommandProcessor)
+        sectionGrid = SectionGrid(controlPanelStage, section, imageResolver, resourceBundle, componentParser,
+                commandManager, applicationManager, globalKeyboardListener, dndCommandProcessor)
         sectionGrid!!.onSectionModified = { section ->
             saveSectionSubject.onNext(section)
         }

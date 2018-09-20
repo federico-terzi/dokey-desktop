@@ -17,6 +17,7 @@ import system.commands.CommandManager
 import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
 import javafx.stage.Stage
+import system.applications.ApplicationManager
 import java.util.*
 
 
@@ -26,6 +27,7 @@ import java.util.*
 class SectionGrid(val parent: BlurrableStage, val section: Section,
                   val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                   val componentParser: ComponentParser, val commandManager: CommandManager,
+                  val applicationManager: ApplicationManager,
                   val globalKeyboardListener: GlobalKeyboardListener,
                   val dndCommandProcessor: DNDCommandProcessor)
     : VBox() {
@@ -91,7 +93,7 @@ class SectionGrid(val parent: BlurrableStage, val section: Section,
         for (page in section.pages!!) {
             // Create the page grid
             val grid = ComponentGrid(parent, generateMatrix(page), screenOrientation, globalKeyboardListener, commandManager,
-                    dndCommandProcessor,
+                    applicationManager, dndCommandProcessor,
                     resourceBundle, imageResolver, componentParser, commandManager)
 
             grid.onDeleteComponentRequest = { component ->
