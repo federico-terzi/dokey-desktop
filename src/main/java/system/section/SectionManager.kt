@@ -19,6 +19,7 @@ import system.commands.CommandManager
 import system.commands.general.AppRelatedCommand
 import system.storage.StorageManager
 import java.io.*
+import java.util.logging.Logger
 
 
 /**
@@ -117,6 +118,8 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
         }
 
         if (toBeDeleted.size > 0) {
+            LOG.warning("Removing invalid commands from section: ${section.name}: ${toBeDeleted.map { it.commandId }.joinToString(",")}")
+
             section.pages?.forEach {page ->
                 page.components?.removeAll(toBeDeleted)
             }
@@ -295,5 +298,7 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
     companion object {
         val DEFAULT_PAGE_ROWS = 4
         val DEFAULT_PAGE_COLS = 4
+
+        val LOG = Logger.getGlobal()
     }
 }
