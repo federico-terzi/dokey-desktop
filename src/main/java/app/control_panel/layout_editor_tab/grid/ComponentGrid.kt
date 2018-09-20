@@ -10,6 +10,7 @@ import app.control_panel.layout_editor_tab.grid.button.SelectableButton
 import app.control_panel.layout_editor_tab.model.ScreenOrientation
 import app.ui.stage.BlurrableStage
 import javafx.geometry.HPos
+import javafx.scene.Parent
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
 import javafx.scene.layout.ColumnConstraints
@@ -192,7 +193,8 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
                 dialog.showWithAnimation()
             }
 
-            popup.showUnderMouse(parent, it.screenX, it.screenY)
+            popup.showForComponent(parent, emptyButton)
+            //popup.showUnderMouse(parent, it.screenX, it.screenY)
         }
 
         addButtonToGridPane(col, row, emptyButton)
