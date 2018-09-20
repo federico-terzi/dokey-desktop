@@ -3,6 +3,7 @@ package system.section
 import json.JSONException
 import json.JSONObject
 import json.JSONTokener
+import model.component.Component
 import model.component.RuntimeComponent
 import model.page.DefaultPage
 import model.page.Page
@@ -57,6 +58,9 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
             // Get the section from the file
             val currentSection = getSectionFromFile(sectionFile)
             if (currentSection != null) {
+                // Validate the section and remove invalid commands
+                validateSection(currentSection)
+
                 sections.add(currentSection)
             }
         }
@@ -94,6 +98,32 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
         // Load all the sections and populate the section cache
         val sections = loadSections()
         sections.forEach { sectionCache[it.id!!] = it }
+    }
+
+    /**
+     * Analyze the commands of the section to make sure that all of them exists.
+     * If an unknown command is found, remove the command.
+     */
+    fun validateSection(section: Section) {
+        val toBeDeleted = mutableListOf<Component>()
+
+        section.pages?.forEach { page ->
+            page.components?.forEach { component ->
+                // If the command id is not found, remove the component
+                if (commandManager.getCommand(component.commandId!!) == null) {
+                    toBeDeleted.add(component)
+                }
+            }
+        }
+
+        if (toBeDeleted.size > 0) {
+            section.pages?.forEach {page ->
+                page.components?.removeAll(toBeDeleted)
+            }
+
+            // Update the section
+            saveSection(section)
+        }
     }
 
     private fun generateEmptyPage() : Page {
