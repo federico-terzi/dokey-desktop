@@ -12,3 +12,16 @@
 .styled-text-area .scroll-pane .viewport{
     -fx-background-color: transparent;
 }
+
+.styled-text-area:disabled{
+    -fx-opacity: 1;
+}
+
+.styled-text-area:disabled .scroll-pane{
+    -fx-opacity: 0.9;
+}
+
+
+.styled-text-area:disabled .content{
+    -fx-opacity: 1;
+}

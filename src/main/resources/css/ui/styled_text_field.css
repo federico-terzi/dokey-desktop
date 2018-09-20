@@ -5,5 +5,5 @@
 }
 
 .styled-text-field:disabled {
-    -fx-opacity: 1;
+    -fx-opacity: 0.9;
 }

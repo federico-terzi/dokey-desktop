@@ -56,6 +56,11 @@ class FileOpenBuilder(context: BuilderContext, val parent: BlurrableStage) : Ima
         command as FileOpenCommand
 
         label.text = command.file
+
+        // If command is locked then disable the button
+        if (command.locked) {
+            label.isDisable = true
+        }
     }
 
     override fun updateCommand(command: Command) {

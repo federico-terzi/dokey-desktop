@@ -58,6 +58,11 @@ class KeyboardShortcutBuilder(val context: BuilderContext, val parent: Blurrable
         }
 
         applicationButton.application = application
+
+        // If command is locked then disable the button
+        if (command.locked) {
+            contentBox.isDisable = true
+        }
     }
 
     override fun updateCommand(command: Command) {

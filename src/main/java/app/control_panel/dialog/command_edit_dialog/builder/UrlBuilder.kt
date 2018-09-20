@@ -49,6 +49,11 @@ class UrlBuilder(context: BuilderContext, val parent: BlurrableStage) : ImageEdi
         command as UrlCommand
 
         textField.text = command.url
+
+        // If command is locked then disable the button
+        if (command.locked) {
+            textField.isDisable = true
+        }
     }
 
     override fun updateCommand(command: Command) {

@@ -16,6 +16,7 @@ import org.reflections.Reflections
 import system.BroadcastManager
 import system.applications.ApplicationManager
 import system.commands.CommandManager
+import system.commands.model.CommandWrapper
 import system.image.ImageResolver
 import kotlin.reflect.KClass
 
@@ -73,16 +74,11 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
                 expandButton, commandTypeButton, builderContainer)
 
         expandButton.onExpand = {
-            advancedPane.isManaged = true
-            advancedPane.isVisible = true
+            expandAdvanced()
 
-            adaptHeight()
         }
         expandButton.onCollapse = {
-            advancedPane.isManaged = false
-            advancedPane.isVisible = false
-
-            adaptHeight()
+            collapseAdvanced()
         }
 
         commandTypeButton.onTypeSelected = {descriptor ->
@@ -113,6 +109,8 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
     }
 
     fun loadCommand(command: Command) {
+        command as CommandWrapper  // Used to obtain the wrapper information
+
         currentCommand = command
 
         titleTextField.text = command.title
@@ -123,6 +121,9 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
 
         command.quickCommand?.let {
             quickCommandTextField.text = it
+
+            // If quick command is present also expand the advanced pane
+            expandAdvanced()
         }
 
         command.iconId?.let {
@@ -134,6 +135,16 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
 
         // Disable the selection of type for the command modification
         commandTypeButton.isDisable = true
+
+        // If the command is locked, disable all inputs except the quick command
+        if (command.locked) {
+            titleTextField.isDisable = true
+            descriptionTextField.isDisable = true
+            imageSelector.isDisable = true
+
+            // If locked also show the advanced pane to change the quick command
+            expandAdvanced()
+        }
 
         // Load the correct builder UI
         loadBuilderForCommandClass(command::class)
@@ -232,6 +243,26 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
             val annotation = commandClass.getAnnotation(RegisterBuilder::class.java)
             builderMap[annotation.type] = commandClass as Class<out CommandBuilder>
         }
+    }
+
+    private fun expandAdvanced() {
+        advancedPane.isManaged = true
+        advancedPane.isVisible = true
+
+        expandButton.collapsed = false
+        expandButton.render()
+
+        adaptHeight()
+    }
+
+    private fun collapseAdvanced() {
+        advancedPane.isManaged = false
+        advancedPane.isVisible = false
+
+        expandButton.collapsed = true
+        expandButton.render()
+
+        adaptHeight()
     }
 
     override fun defineTopSectionComponent(): Node? {

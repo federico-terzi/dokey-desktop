@@ -30,17 +30,16 @@ class CollapseExpandButton(val imageResolver: ImageResolver,
         contentDisplay = ContentDisplay.BOTTOM
 
         setOnAction {
-            if (collapsed) {
-                text = expandedText
-                rotateUp()
+            collapsed = !collapsed
+
+            if (!collapsed) {
                 onExpand?.invoke()
             }else{
-                text = collapsedText
-                rotateDown()
                 onCollapse?.invoke()
             }
 
-            collapsed = !collapsed
+
+            render()
         }
     }
 
@@ -56,5 +55,15 @@ class CollapseExpandButton(val imageResolver: ImageResolver,
         transition.fromAngle = 180.0
         transition.toAngle = 0.0
         transition.play()
+    }
+
+    fun render() {
+        if (!collapsed) {
+            text = expandedText
+            rotateUp()
+        }else{
+            text = collapsedText
+            rotateDown()
+        }
     }
 }

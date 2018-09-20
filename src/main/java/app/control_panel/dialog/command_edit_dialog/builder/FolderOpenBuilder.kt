@@ -56,6 +56,11 @@ class FolderOpenBuilder(context: BuilderContext, val parent: BlurrableStage) : I
         command as FolderOpenCommand
 
         label.text = command.folder
+
+        // If command is locked then disable the button
+        if (command.locked) {
+            label.isDisable = true
+        }
     }
 
     override fun updateCommand(command: Command) {

@@ -34,6 +34,11 @@ class AppOpenBuilder(val context: BuilderContext, val parent: BlurrableStage) : 
         }
 
         applicationButton.application = application
+
+        // If command is locked then disable the button
+        if (command.locked) {
+            applicationButton.isDisable = true
+        }
     }
 
     override fun updateCommand(command: Command) {
