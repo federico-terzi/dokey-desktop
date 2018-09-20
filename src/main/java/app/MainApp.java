@@ -1,5 +1,6 @@
 package app;
 
+import app.alert.AlertFactory;
 import app.control_panel.ControlPanelStage;
 import app.control_panel.appearance.position.PositionResolver;
 import app.notifications.NotificationFactory;
@@ -61,6 +62,8 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     public static final String DOWNLOAD_URL = "https://dokey.io/#download";
     public static final String PLAYSTORE_URL = "https://dokey.io/";  // TODO: change
 
+    private static StorageManager storageManager;
+
     private ApplicationContext context;
     private ApplicationManager appManager;
     private TrayIconManager trayIconManager;
@@ -73,7 +76,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     private DaemonMonitor daemonMonitor;
     private SettingsManager settingsManager;
     private StartupManager startupManager;
-    private StorageManager storageManager;
     private CommandManager commandManager;
     private SectionManager sectionManager;
     private PositionResolver positionResolver;
@@ -95,7 +97,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     public final static String LOG_FILENAME = "log.txt";
 
     public final static String LOCK_FILENAME = "lock";  // File used as lock to make sure only one instance of dokey is running at each time.
-    private RandomAccessFile lockFile = null;
+    private static RandomAccessFile lockFile = null;
 
     // Status variables
     private int connectedClientsCount = 0;  // How many clients are currently connected
@@ -173,11 +175,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
 
         LOG.info("VERSION: "+DOKEY_VERSION + " VNUM: "+DOKEY_VERSION_NUMBER+" MIN_VER: "+DOKEY_MOBILE_MIN_VERSION);
 
-        launch(args);
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws IOException {
         // Initialize the storage manager
         storageManager = StorageManager.getDefault();
 
@@ -188,6 +185,11 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
             System.exit(5);
         }
 
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws IOException {
         // Initialize the server socket
         serverSocket = SocketBuilder.buildSocket();
         LOG.info("Server socket started with port: "+serverSocket.getLocalPort());
@@ -271,26 +273,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
             stopAllServices();
             LOG.info("Goodbye Dokey");
         }));
-
-
-        JavaMacNativeUI javaMacNativeUI = Native.loadLibrary("JavaMacNativeUI", JavaMacNativeUI.class);
-        javaMacNativeUI.displayDialog("/Users/freddy/Documents/GitHub/remotekey-desktop/src/main/resources/assets/icon.png", "Native dialog", "La vita è bella",
-                new String[]{"OK", "Fanculo", "A posto"}, 3, 1, callback);
     }
-
-    private JavaMacNativeUI.DialogCallback callback = number -> System.out.println("RESP: "+number);
-
-    interface JavaMacNativeUI extends Library
-    {
-        void displayDialog(String imageUrl, String title, String description, String[] buttons, int buttonsCount,
-                           int isCritical, DialogCallback callback);
-
-        interface DialogCallback extends Callback {
-            void invoke(int buttonNumber);
-        }
-    }
-
-
 
     /**
      * Start the application loading process
@@ -459,7 +442,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
      * Check if Dokey is already running by analyzing the lock file
      * @return true if already running, false otherwise.
      */
-    private boolean checkIfDokeyIsAlreadyRunning() {
+    private static boolean checkIfDokeyIsAlreadyRunning() {
         final File inputFile = new File(storageManager.getStorageDir(), LOCK_FILENAME);
         try {
             lockFile = new RandomAccessFile(inputFile, "rw");
@@ -479,13 +462,13 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     /**
      * Show a dialog to the user warning that dokey is already running, and the application will stop.
      */
-    private void showAlreadyRunningDialog() {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.getIcons().add(new Image(MainApp.class.getResourceAsStream("/assets/icon.png")));
-        alert.setTitle("Dokey is already running!");
-        alert.setHeaderText("Dokey is already running on this computer!");
-        alert.setContentText("Only one instance of Dokey can run at a time.");
+    private static void showAlreadyRunningDialog() {
+        // TODO: i18n
+        app.alert.model.Alert alert = AlertFactory.Companion.getInstance()
+                .alert(
+                        "Dokey is already running!",
+                        "Only one instance of Dokey can run at a time.",
+                        false);
         alert.showAndWait();
     }
 
