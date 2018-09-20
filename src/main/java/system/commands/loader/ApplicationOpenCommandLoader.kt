@@ -25,6 +25,8 @@ class ApplicationOpenCommandLoader(val context: CommandTemplateContext) : Comman
             command.executablePath = application.executablePath
             command.description = "Open ${application.name}"
             command.title = application.name
+            command.implicit = true
+            command.locked = true
             commands.add(command)
         }
 

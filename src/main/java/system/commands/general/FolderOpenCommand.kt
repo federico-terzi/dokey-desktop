@@ -1,10 +1,10 @@
 package system.commands.general
 
-import model.command.SimpleCommand
 import system.commands.annotations.RegisterCommand
+import system.commands.model.SimpleCommandWrapper
 
 @RegisterCommand(title = "Open Folder", iconId = "asset:folder")
-class FolderOpenCommand : SimpleCommand() {
+class FolderOpenCommand : SimpleCommandWrapper() {
     init {
         category = "folderopen"
         iconId = "static:folder_open"

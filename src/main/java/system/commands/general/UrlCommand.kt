@@ -1,10 +1,10 @@
 package system.commands.general
 
-import model.command.SimpleCommand
 import system.commands.annotations.RegisterCommand
+import system.commands.model.SimpleCommandWrapper
 
 @RegisterCommand(title = "Open Web Link", iconId = "asset:link")
-class UrlCommand : SimpleCommand() {
+class UrlCommand : SimpleCommandWrapper() {
     init {
         category = "url"
     }

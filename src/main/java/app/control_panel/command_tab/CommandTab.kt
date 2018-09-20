@@ -23,7 +23,8 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
 
     // UI Elements
     private val toolbar = CommandToolbar(controlPanelStage, imageResolver)
-    private val commandListPanel = CommandListPanel(controlPanelStage, imageResolver, commandManager)
+    private val commandListPanel = CommandListPanel(controlPanelStage, imageResolver, commandManager,
+            showImplicit = false)
     private val stackPane = StackPane()
     private val addCommandBtn = FloatingActionButton(imageResolver, "Add command")  // TODO: i18n
 

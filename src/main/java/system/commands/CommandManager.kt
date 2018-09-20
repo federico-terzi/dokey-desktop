@@ -8,6 +8,7 @@ import model.parser.command.CommandParser
 import system.applications.Application
 import system.commands.general.AppOpenCommand
 import system.commands.general.AppRelatedCommand
+import system.commands.model.CommandWrapper
 import system.storage.StorageManager
 import java.io.*
 import java.util.logging.Logger
@@ -19,7 +20,7 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
     val commandDir = storageManager.commandDir
 
     // This structure will hold all the commands, associated with their IDs
-    val commandMap = mutableMapOf<Int, Command>()
+    val commandMap = mutableMapOf<Int, CommandWrapper>()
 
     val LOG = Logger.getGlobal()
 
@@ -58,7 +59,7 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
             }
 
             if (!conflicting) {
-                commandMap[command.id!!] = command
+                commandMap[command.id!!] = command as CommandWrapper
             }
         }
 
@@ -78,7 +79,7 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
 
             if (!conflicting) {
                 template.id = ++maxId
-                commandMap[maxId] = template
+                commandMap[maxId] = template as CommandWrapper
                 saveCommand(template)
             }
         }
@@ -127,14 +128,17 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
             val conflictingCommand = conflictMap[hash]!!.filter { it.contentEquals(command) }.first()
             return conflictingCommand
         }else{
-            // Give an id to the current command
+            command as CommandWrapper
+
+            // Give an id and specify the author to the current command
             command.id = ++maxId
+            command.author = "user"
             commandMap[command.id!!] = command
             saveCommand(command)
 
             // Add the command to the conflict map
             if (conflictMap[hash] == null) {
-                conflictMap[hash] = mutableListOf(command)
+                conflictMap[hash] = mutableListOf(command as Command)
             }else{
                 conflictMap[hash]!!.add(command)
             }
@@ -194,19 +198,27 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
     /**
      * Return all the commands t
      */
-    fun searchCommands(query : String? = null, limit: Int = 0, activeApplication: Application? = null) : Collection<Command> {
-        val results = mutableListOf<Command>()
-        if (query == null) {
-            results.addAll(commandMap.values)
-        }else{
+    fun searchCommands(query : String? = null, limit: Int = 0, activeApplication: Application? = null,
+                       showImplicit : Boolean = true, showDeleted : Boolean = false) : Collection<Command> {
+        var results = commandMap.values.toList()
+
+        if (!showImplicit) {
+            results = results.filter { it.implicit == false }
+        }
+
+        if (!showDeleted) {
+            results = results.filter { it.deleted == false }
+        }
+
+        if (query != null) {
             val filteringFunction : (Command) -> Boolean = if (query.startsWith(":")) {
                 { it: Command ->
                     it.quickCommand?.startsWith(query, true) ?: false
                 }
             }else{
                 { it: Command ->
-                        it.title?.contains(query, true) ?: false ||
-                        it.description?.contains(query, true) ?: false
+                    it.title?.contains(query, true) ?: false ||
+                            it.description?.contains(query, true) ?: false
                 }
             }
 
@@ -216,20 +228,19 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
                 val appCommands = getAppRelatedCommands().filter { it.app == activeApplication.executablePath && filteringFunction(it) }
                 val noAppCommands = commandMap.values.filter {
                     !(it is AppRelatedCommand)||
-                    it.app != activeApplication.executablePath
+                            it.app != activeApplication.executablePath
                 }.filter(filteringFunction)
 
-                results.addAll(appCommands)
-                results.addAll(noAppCommands)
+                results = appCommands + noAppCommands
             }else{
-                results.addAll(commandMap.values.filter(filteringFunction))
+                results = results.filter(filteringFunction)
             }
         }
 
-        if (limit > 0) {
-            return results.take(limit)
+        return if (limit > 0) {
+            results.take(limit)
         } else{
-            return results
+            results
         }
     }
 

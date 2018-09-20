@@ -6,6 +6,7 @@ import json.JSONTokener
 import model.command.Command
 import system.ResourceUtils
 import system.commands.annotations.RegisterLoader
+import system.commands.model.CommandWrapper
 import system.context.CommandTemplateContext
 import java.io.FileInputStream
 
@@ -24,6 +25,8 @@ class DefaultCommandLoader(val context: CommandTemplateContext) : CommandLoader 
 
         for (jsonObj in jsonArray) {
             val command = commandParser.fromJSON(jsonObj as JSONObject)
+            command as CommandWrapper
+            command.locked = true
 
             commands.add(command)
         }

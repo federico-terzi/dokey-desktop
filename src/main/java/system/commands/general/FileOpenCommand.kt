@@ -1,10 +1,10 @@
 package system.commands.general
 
-import model.command.SimpleCommand
 import system.commands.annotations.RegisterCommand
+import system.commands.model.SimpleCommandWrapper
 
 @RegisterCommand(title = "Open File", iconId = "asset:file")
-class FileOpenCommand : SimpleCommand() {
+class FileOpenCommand : SimpleCommandWrapper() {
     init {
         category = "fileopen"
         iconId = "static:insert_drive_file"

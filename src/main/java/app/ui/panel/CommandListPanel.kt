@@ -14,7 +14,8 @@ import system.commands.CommandManager
 import system.image.ImageResolver
 import java.util.Comparator
 
-class CommandListPanel(val parent: BlurrableStage, val imageResolver: ImageResolver, val commandManager: CommandManager)
+class CommandListPanel(val parent: BlurrableStage, val imageResolver: ImageResolver, val commandManager: CommandManager,
+                       val showImplicit: Boolean = true, val showDeleted: Boolean = false)
     : VBox() {
 
     // UI Elements
@@ -58,7 +59,8 @@ class CommandListPanel(val parent: BlurrableStage, val imageResolver: ImageResol
 
     fun loadCommands(onLoaded: (() -> Unit)? = null) {
         Thread {
-            var results = commandManager.searchCommands(query = currentQuery).toMutableList()
+            var results = commandManager.searchCommands(query = currentQuery,
+                    showImplicit = showImplicit, showDeleted = showDeleted).toMutableList()
 
             if (currentFilter != null) {
                 results = results.filter { it.javaClass == currentFilter }.toMutableList()

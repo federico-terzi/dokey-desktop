@@ -1,9 +1,9 @@
 package system.commands.general
 
 import json.JSONObject
-import model.command.SimpleCommand
+import system.commands.model.SimpleCommandWrapper
 
-open class SimpleAppRelatedCommand : SimpleCommand(), AppRelatedCommand {
+open class SimpleAppRelatedCommand : SimpleCommandWrapper(), AppRelatedCommand {
     private var _app: String? = null
 
     override var app : String?

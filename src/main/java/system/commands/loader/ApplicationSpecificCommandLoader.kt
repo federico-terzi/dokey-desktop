@@ -57,6 +57,7 @@ class ApplicationSpecificCommandLoader(val context: CommandTemplateContext) : Co
             // Set the specific application path
             command as AppRelatedCommand
             command.app = executablePath
+            command.locked = true
 
             // Set the icon identifier if null
             if (command.iconId == null) {
