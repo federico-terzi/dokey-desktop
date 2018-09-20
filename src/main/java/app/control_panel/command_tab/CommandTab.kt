@@ -2,20 +2,15 @@ package app.control_panel.command_tab
 
 import app.control_panel.ControlPanelStage
 import app.control_panel.ControlPanelTab
-import app.control_panel.command_tab.list.CommandListView
-import app.control_panel.command_tab.list.comparator.NameComparator
 import app.control_panel.dialog.command_edit_dialog.CommandEditDialog
-import app.control_panel.dialog.image_select_dialog.ImageSelectDialog
+import app.ui.panel.CommandListPanel
 import app.ui.control.FloatingActionButton
-import app.ui.model.Sorting
 import javafx.application.Platform
-import javafx.collections.FXCollections
+import javafx.geometry.Insets
 import javafx.geometry.Pos
-import javafx.scene.input.KeyEvent
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
-import model.command.Command
 import system.BroadcastManager
 import system.applications.ApplicationManager
 import system.commands.CommandManager
@@ -28,55 +23,24 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
 
     // UI Elements
     private val toolbar = CommandToolbar(controlPanelStage, imageResolver)
-    private val listHeader = CommandListHeader(imageResolver)
+    private val commandListPanel = CommandListPanel(controlPanelStage, imageResolver, commandManager)
     private val stackPane = StackPane()
-    private val commandListView = CommandListView(imageResolver)
     private val addCommandBtn = FloatingActionButton(imageResolver, "Add command")  // TODO: i18n
 
-    // This is the list that will contain the commands shown by the list view
-    private val commands = FXCollections.observableArrayList<Command>()
-
-    private var currentQuery: String? = null
-    private var currentFilter: Class<out Command>? = null
-    private var currentComparator: Comparator<Command> = NameComparator(Sorting.ASCENDING)
-
-
     init {
-        VBox.setVgrow(commandListView, Priority.ALWAYS)
+        commandListPanel.padding = Insets(0.0, 0.0,38.0, 0.0)
+
+        VBox.setVgrow(commandListPanel, Priority.ALWAYS)
 
         stackPane.alignment = Pos.BOTTOM_RIGHT
 
         // Move the addCommandButton a bit higher
         addCommandBtn.translateY = -40.0
 
-        stackPane.children.addAll(commandListView, addCommandBtn)
+        stackPane.children.addAll(commandListPanel, addCommandBtn)
         VBox.setVgrow(stackPane, Priority.ALWAYS)
 
-        children.addAll(toolbar, listHeader, stackPane)
-
-        // Setup the list view
-        commandListView.items = commands
-
-        // Setup ordering logic
-        listHeader.onSortingSelected = { comparator ->
-            currentComparator = comparator
-            loadCommands()
-        }
-
-        // Setup the search bar listener
-        toolbar.onSearchChanged = { query ->
-            if (query.isBlank()) {
-                currentQuery = null
-            }else{
-                currentQuery = query
-            }
-            loadCommands()
-        }
-
-        toolbar.onFilterUpdate = {
-            currentFilter = it
-            loadCommands()
-        }
+        children.addAll(toolbar, stackPane)
 
         // Setup add command button listener
         addCommandBtn.setOnAction {
@@ -84,43 +48,24 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
             dialog.showWithAnimation()
         }
 
-        commandListView.setOnMouseClicked {
-            if (it.clickCount == 2) {
-                val command = commandListView.selectionModel.selectedItem
-                val dialog = CommandEditDialog(controlPanelStage, imageResolver, applicationManager, commandManager)
-                dialog.loadCommand(command)
-                dialog.showWithAnimation()
-            }
+        // Setup the search bar listener
+        toolbar.onSearchChanged = { query ->
+            commandListPanel.search(query)
         }
-    }
 
-    fun loadCommands() {
-        Thread {
-            var results = commandManager.searchCommands(query = currentQuery).toMutableList()
+        toolbar.onFilterUpdate = {filter ->
+            commandListPanel.filter(filter)
+        }
 
-            if (currentFilter != null) {
-                results = results.filter { it.javaClass == currentFilter }.toMutableList()
-            }
-
-            results.sortWith(currentComparator)
-
-            Platform.runLater {
-                commands.setAll(results)
-            }
-        }.start()
-    }
-
-    fun focusCommand(commandId: Int) {
-        loadCommands()
-        val selectedIndex = commands.indexOfFirst { it.id == commandId }
-        selectedIndex?.let {
-            commandListView.selectionModel.select(selectedIndex)
-            commandListView.scrollTo(selectedIndex)
+        commandListPanel.onCommandSelected = { command ->
+            val dialog = CommandEditDialog(controlPanelStage, imageResolver, applicationManager, commandManager)
+            dialog.loadCommand(command)
+            dialog.showWithAnimation()
         }
     }
 
     override fun onFocus() {
-        loadCommands()
+        commandListPanel.loadCommands()
 
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.EDITOR_MODIFIED_COMMAND_EVENT, commandModifiedEvent)
     }
@@ -134,7 +79,7 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
         val commandId = commandIdString.toInt()
 
         Platform.runLater {
-            focusCommand(commandId)
+            commandListPanel.focusCommand(commandId)
         }
     }
 }

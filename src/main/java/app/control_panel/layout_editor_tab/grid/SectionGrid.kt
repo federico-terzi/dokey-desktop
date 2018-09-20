@@ -2,6 +2,7 @@ package app.control_panel.layout_editor_tab.grid
 
 import app.control_panel.layout_editor_tab.GlobalKeyboardListener
 import app.control_panel.layout_editor_tab.model.ScreenOrientation
+import app.ui.stage.BlurrableStage
 import javafx.animation.*
 import javafx.scene.CacheHint
 import javafx.scene.control.Tab
@@ -22,7 +23,7 @@ import java.util.*
 /**
  * This component will createView a Section into a Grid with button bar and animations.
  */
-class SectionGrid(val owner: Stage, val section: Section,
+class SectionGrid(val parent: BlurrableStage, val section: Section,
                   val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                   val componentParser: ComponentParser, val commandManager: CommandManager,
                   val globalKeyboardListener: GlobalKeyboardListener,
@@ -89,7 +90,8 @@ class SectionGrid(val owner: Stage, val section: Section,
         // Add the pages
         for (page in section.pages!!) {
             // Create the page grid
-            val grid = ComponentGrid(owner, generateMatrix(page), screenOrientation, globalKeyboardListener, dndCommandProcessor,
+            val grid = ComponentGrid(parent, generateMatrix(page), screenOrientation, globalKeyboardListener, commandManager,
+                    dndCommandProcessor,
                     resourceBundle, imageResolver, componentParser, commandManager)
 
             grid.onDeleteComponentRequest = { component ->

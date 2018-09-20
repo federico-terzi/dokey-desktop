@@ -1,6 +1,5 @@
 .command-list-view {
     -fx-background-color: transparent;
-    -fx-padding: 0 0 38px 0;
 }
 
 .command-list-view .list-cell:even {
@@ -45,4 +44,10 @@
 .command-list-cell-date {
     -fx-font-family: "Nunito Sans Regular";
     -fx-font-size: 14px;
+}
+
+.command-tab-list-header {
+    -fx-background-color: linear-gradient(to bottom right, -start-green-gradient, -stop-green-gradient);
+    -fx-padding: 2px 5px 2px 48px;
+    -fx-font-family: "Nunito Sans Bold";
 }

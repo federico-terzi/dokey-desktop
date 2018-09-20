@@ -1,12 +1,13 @@
 package app.control_panel.layout_editor_tab.grid
 
+import app.control_panel.dialog.command_select_dialog.CommandSelectDialog
 import app.control_panel.layout_editor_tab.GlobalKeyboardListener
 import app.control_panel.layout_editor_tab.grid.button.ComponentButton
 import app.control_panel.layout_editor_tab.grid.button.DragButton
 import app.control_panel.layout_editor_tab.grid.button.EmptyButton
 import app.control_panel.layout_editor_tab.grid.button.SelectableButton
 import app.control_panel.layout_editor_tab.model.ScreenOrientation
-import app.ui.popup.StyledPopup
+import app.ui.stage.BlurrableStage
 import javafx.geometry.HPos
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
@@ -17,14 +18,17 @@ import javafx.scene.layout.RowConstraints
 import javafx.stage.Stage
 import model.component.CommandResolver
 import model.component.Component
+import model.component.RuntimeComponent
 import model.parser.component.ComponentParser
+import system.commands.CommandManager
 import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
 import java.util.*
 
 
-class ComponentGrid(val owner: Stage, val componentMatrix: Array<Array<Component?>>,
+class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array<Component?>>,
                     val screenOrientation: ScreenOrientation, val globalKeyboardListener: GlobalKeyboardListener,
+                    val commandManager: CommandManager,
                     override val dndCommandProcessor: DNDCommandProcessor,
                     override val resourceBundle: ResourceBundle,
                     override val imageResolver: ImageResolver, override val componentParser: ComponentParser,
@@ -150,7 +154,29 @@ class ComponentGrid(val owner: Stage, val componentMatrix: Array<Array<Component
 
         emptyButton.setOnMouseClicked{
             val popup = ActionPopup(imageResolver)
-            popup.showUnderMouse(owner, it.screenX, it.screenY)
+
+            popup.onExistingCommandRequested = {
+                val dialog = CommandSelectDialog(parent, imageResolver, commandManager)
+                dialog.onCommandSelected = { command ->
+                    // Create a component with the given command
+                    val component = RuntimeComponent(commandManager)
+                    component.x = col
+                    component.y = row
+                    component.commandId = command.id
+
+                    componentMatrix[col][row] = component
+
+                    onNewComponentRequest?.invoke(component)
+
+                    render()
+                }
+                dialog.showWithAnimation()
+            }
+            popup.onNewCommandRequested =  {
+
+            }
+
+            popup.showUnderMouse(parent, it.screenX, it.screenY)
         }
 
         addButtonToGridPane(col, row, emptyButton)

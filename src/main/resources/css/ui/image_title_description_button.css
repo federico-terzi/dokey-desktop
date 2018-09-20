@@ -1,5 +1,5 @@
 .image-title-description-button {
-    -fx-background-color: #eeeeee;
+    -fx-background-color: transparent;
     -fx-background-radius: 5px;
 }
 
@@ -15,6 +15,6 @@
 }
 
 .image-title-description-button:hover {
-    -fx-background-color: #c2c2c2;
+    -fx-background-color: #eeeeee;
     -fx-background-radius: 5px;
 }
