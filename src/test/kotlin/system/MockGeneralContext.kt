@@ -1,3 +1,4 @@
+/*
 package system
 
 import model.parser.DesktopModelParser
@@ -25,4 +26,4 @@ class MockGeneralContext : GeneralContext {
         get() = _modelParser
     override val keyboardManager: KeyboardManager
         get() = _keyboardManager
-}
+}*/

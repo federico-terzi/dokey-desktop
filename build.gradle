@@ -1,7 +1,7 @@
 import java.nio.channels.Channels
 import java.nio.channels.ReadableByteChannel
 import java.nio.file.Files
-import java.nio.file.Path
+import java.nio.file.*
 import org.apache.commons.lang3.SystemUtils
 import java.nio.file.StandardCopyOption
 
@@ -32,7 +32,7 @@ sourceCompatibility = 1.8
 
 // Remove the image directories from the JAR, because they will
 // be included outside the jar
-sourceSets.main.resources.excludes = ["/sicons", "/sysicons", "/webicons", "/win"]
+sourceSets.main.resources.excludes = ["/sicons", "/sysicons", "/webicons", "/win", "/mac", "/commands"]
 
 repositories {
     mavenCentral()
@@ -68,30 +68,6 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-task updateRemoteConnectDependency() {
-    ext.repositoryUrl = "http://federicoterzi.com/remotekey-connect/"
-
-    doLast {
-        // Get the current jar filename
-        def currentJarFilename = new URL(repositoryUrl+"/current.txt").getText()
-        println "Repository version: "+currentJarFilename
-
-        // Make sure the project version is updated
-        def checkFile = new File("libs/"+currentJarFilename)
-        if (checkFile.isFile()) {
-            println "Project JAR is already updated."
-        }else{
-            println "Updating project JAR..."
-            // Download the JAR file
-            URL jarURL = new URL(repositoryUrl+currentJarFilename)
-            InputStream i = jarURL.openStream()
-            def fout = new FileOutputStream(new File("libs/"+currentJarFilename))
-            Files.copy(i, fout)
-            fout.close()
-        }
-    }
-}
-
 private <T> T osSpecific(T win, T mac) {
     if (SystemUtils.IS_OS_WINDOWS)
     {
@@ -102,19 +78,6 @@ private <T> T osSpecific(T win, T mac) {
         return mac
     }
     throw new RuntimeException('Unknown OS')
-}
-
-task('copyAdditionalFiles', type: Sync) {
-    Path outProduction = projectDir.toPath().resolve("out/production/resources")
-
-    Path additionalFilesSources = projectDir.toPath()
-            .resolve('src/main/os-resources/')
-
-    from additionalFilesSources.resolve(osSpecific('win', 'mac'))
-    into outProduction
-
-    from projectDir.toPath().resolve("src/main/resources/")
-    into outProduction
 }
 
 // Used to produce project info properties file
@@ -128,19 +91,18 @@ task('produceProjInfo') {
     properties.store(new FileOutputStream(propertiesFile), null)
 }
 
-build.dependsOn copyAdditionalFiles
 build.dependsOn produceProjInfo
 
 // NATIVE COPY OS SPECIFIC FILES
 Path additionalFilesBuildDir = buildDir.toPath().resolve('jfx-additional-files')
 task('copyAdditionalFilesNative', type: Sync) {
-    Path additionalFilesSources = projectDir.toPath()
-            .resolve('src/main/os-resources/')
-
-    from additionalFilesSources.resolve(osSpecific('win', 'mac'))
-    into additionalFilesBuildDir
-
     from projectDir.toPath().resolve("src/main/resources/")
+    // Skip the directories of other OS
+    if (SystemUtils.IS_OS_WINDOWS) {
+        exclude("**/mac/**")
+    }else if (SystemUtils.IS_OS_MAC) {
+        exclude("**/win/**")
+    }
     into additionalFilesBuildDir
 }
 jfxNative.dependsOn copyAdditionalFilesNative
@@ -165,3 +127,28 @@ jfx {
 // Uncomment these to include the resources in the jar
 //sourceSets.main.resources.srcDirs = [ "src/main/resources/" ]
 //sourceSets.main.resources.includes = ["**/*"]
+
+
+task updateRemoteConnectDependency() {
+    ext.repositoryUrl = "http://federicoterzi.com/remotekey-connect/"
+
+    doLast {
+        // Get the current jar filename
+        def currentJarFilename = new URL(repositoryUrl+"/current.txt").getText()
+        println "Repository version: "+currentJarFilename
+
+        // Make sure the project version is updated
+        def checkFile = new File("libs/"+currentJarFilename)
+        if (checkFile.isFile()) {
+            println "Project JAR is already updated."
+        }else{
+            println "Updating project JAR..."
+            // Download the JAR file
+            URL jarURL = new URL(repositoryUrl+currentJarFilename)
+            InputStream i = jarURL.openStream()
+            def fout = new FileOutputStream(new File("libs/"+currentJarFilename))
+            Files.copy(i, fout)
+            fout.close()
+        }
+    }
+}

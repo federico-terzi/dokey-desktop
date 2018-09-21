@@ -309,44 +309,6 @@ public class MACApplicationManager extends ApplicationManager {
         return null;
     }
 
-    /**
-     * Get the current active application by using the "getActiveApplication" mac executable.
-     * @return the active Application
-     */
-    @Deprecated
-    public Application getActiveApplicationWithExternalCall() {
-        String scriptPath = ResourceUtils.getResource("/mac/getActiveApplication").getAbsolutePath();
-        Runtime runtime = Runtime.getRuntime();
-
-        try {
-            // Execute the process
-            Process proc = runtime.exec(new String[]{scriptPath});
-
-            // Get the output
-            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-
-            // Get the executable path and the pid
-            String executablePath = br.readLine();
-            int pid = Integer.parseInt(br.readLine());
-
-            // Convert the executable path to the .app bundle path
-            String appPath = getAppPathFromExecutablePath(executablePath);
-
-            // Get the application
-
-            // Try to get it from the applicationMap
-            if (applicationMap.containsKey(appPath)){
-                return applicationMap.get(appPath);
-            }
-
-            // If not found on the map, dynamically analyze the app.
-            return addApplicationFromAppPath(appPath);
-        } catch (Exception e) {
-            LOG.info("CATCHED: "+e.toString());
-        }
-        return null;
-    }
-
     @Override
     public List<Application> getActiveApplications() {
         List<Application> apps = new ArrayList<>();
@@ -393,46 +355,6 @@ public class MACApplicationManager extends ApplicationManager {
                     apps.add(app);
                 }
             }
-        }
-
-        return apps;
-    }
-
-    @Deprecated
-    public List<Application> getActiveApplicationsWithApplescript() {
-        String scriptPath = ResourceUtils.getResource("/applescripts/getActiveApplications.scpt").getAbsolutePath();
-        Runtime runtime = Runtime.getRuntime();
-
-        List<Application> apps = new ArrayList<>();
-
-        try {
-            // Execute the process
-            Process proc = runtime.exec(new String[]{"osascript", scriptPath});
-
-            // Get the output
-            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-
-            // Get the executable path
-            String appPath;
-
-            // Get the list
-            while ((appPath = br.readLine()) != null) {
-                Application app = null;
-
-                // Try to get it from the applicationMap
-                if (applicationMap.containsKey(appPath)){
-                    app = applicationMap.get(appPath);
-                }
-
-                // If not found on the map, dynamically analyze the app.
-                app = addApplicationFromAppPath(appPath);
-
-                if (app != null && !apps.contains(app)) {
-                    apps.add(app);
-                }
-            }
-        } catch (Exception e) {
-            LOG.info("CATCHED: "+e.toString());
         }
 
         return apps;
@@ -543,32 +465,6 @@ public class MACApplicationManager extends ApplicationManager {
             }
         }
 
-        return -1;
-    }
-
-    /**
-     * @return PID of the current active application. -1 is returned in case of errors.
-     */
-    @Deprecated
-    public synchronized int getActivePIDWithExternalCall() {
-        String scriptPath = ResourceUtils.getResource("/mac/getActiveApplication").getAbsolutePath();
-        Runtime runtime = Runtime.getRuntime();
-
-        try {
-            // Execute the process
-            Process proc = runtime.exec(new String[]{scriptPath});
-
-            // Get the output
-            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-
-            // Get the executable path and the pid
-            String executablePath = br.readLine();
-            int pid = Integer.parseInt(br.readLine());
-
-            return pid;
-        } catch (Exception e) {
-            LOG.info("CATCHED: "+e.toString());
-        }
         return -1;
     }
 

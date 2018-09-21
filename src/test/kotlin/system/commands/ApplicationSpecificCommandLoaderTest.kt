@@ -1,3 +1,4 @@
+/*
 package system.commands
 
 import org.junit.jupiter.api.*
@@ -43,4 +44,4 @@ class ApplicationSpecificCommandLoaderTest {
         assertTrue(commands.filter {it as SimpleAppRelatedCommand
             it.title == "New Tab" && it.app == "C:\\Programs\\chrome.exe"}.isNotEmpty())
     }
-}
+}*/
