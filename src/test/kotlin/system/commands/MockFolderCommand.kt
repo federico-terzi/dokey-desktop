@@ -3,7 +3,7 @@ package system.commands
 import model.command.SimpleCommand
 import system.commands.annotations.RegisterCommand
 
-@RegisterCommand
+//@RegisterCommand
 class MockFolderCommand : SimpleCommand() {
     companion object {
         fun getMockCommand(id : Int) : MockFolderCommand {

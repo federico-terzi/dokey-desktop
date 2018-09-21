@@ -1,5 +1,6 @@
 package app.control_panel.dialog.command_edit_dialog
 
+import app.alert.AlertFactory
 import app.control_panel.dialog.command_edit_dialog.builder.BuilderContext
 import app.control_panel.dialog.command_edit_dialog.builder.CommandBuilder
 import app.control_panel.dialog.command_edit_dialog.builder.annotation.RegisterBuilder
@@ -162,8 +163,7 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
             validate()
             return saveCommand()
         } catch (e: ValidationException) {
-            // TODO: message box here
-            println(e.errorMessage)
+            AlertFactory.instance.alert("Invalid command", e.errorMessage).show()  // TODO: i18n
         }
 
         return -1
