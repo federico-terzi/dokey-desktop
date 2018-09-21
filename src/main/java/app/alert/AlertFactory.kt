@@ -3,6 +3,7 @@ package app.alert
 import app.alert.mac.MacAlertFactory
 import app.alert.model.Alert
 import app.alert.model.AlertOption
+import app.alert.win.WinAlertFactory
 import system.exceptions.UnsupportedOperatingSystemException
 import utils.OSValidator
 
@@ -19,7 +20,9 @@ interface AlertFactory {
         private fun loadInstance() : AlertFactory {
             if (OSValidator.isMac()) {
                 return MacAlertFactory()
-            } //TODO: add windows
+            }else if (OSValidator.isWindows()) {
+                return WinAlertFactory()
+            }
 
             throw UnsupportedOperatingSystemException("This OS is not supported")
         }

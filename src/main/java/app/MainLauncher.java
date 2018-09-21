@@ -15,13 +15,13 @@ public class MainLauncher {
             System.setProperty("apple.awt.application.name", "Dokey");
             System.setProperty("apple.awt.UIElement", "true");
 
-            // Load native libs directory
-            File nativeLibsDirectory = ResourceUtils.getResource("/"+OSValidator.TAG+ "/nativelibs");
-            if (nativeLibsDirectory != null) {
-                System.setProperty("jna.library.path", nativeLibsDirectory.getAbsolutePath());
-            }
-
             System.setProperty("jna.encoding", "UTF8");
+        }
+
+        // Load native libs directory
+        File nativeLibsDirectory = ResourceUtils.getResource("/"+OSValidator.TAG+ "/nativelibs");
+        if (nativeLibsDirectory != null) {
+            System.setProperty("jna.library.path", nativeLibsDirectory.getAbsolutePath());
         }
 
         // Start the app as awt
