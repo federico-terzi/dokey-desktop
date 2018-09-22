@@ -57,6 +57,8 @@ public class MACApplicationManager extends ApplicationManager {
         // Open it
         if (application != null) {
             application.open();
+        }else{
+            return false;
         }
 
         long waitAmount = 0;
