@@ -13,6 +13,10 @@ import java.util.logging.Logger;
  */
 public class BroadcastManager {
     // Events
+    public static final int DEVICE_CONNECTED = 1;
+    public static final int DEVICE_DISCONNECTED = 2;
+    public static final int REQUEST_DEVICE_DISCONNECT = 3;
+
     public static final int EDITOR_MODIFIED_SECTION_EVENT = 10;
     public static final int EDITOR_MODIFIED_COMMAND_EVENT = 11;
 

@@ -20,6 +20,8 @@ import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
+import system.BroadcastManager
+import system.server.MobileServer
 import utils.SystemInfoManager
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -57,23 +59,6 @@ class DevicesTab(val imageResolver: ImageResolver, val resourceBundle: ResourceB
         children.addAll(qrImageView, titleLabel, descriptionLabel, hBox, deviceList)
     }
 
-    override fun onFocus() {
-        requestQRCode() {image ->
-            qrImageView.image = image
-        }
-
-        // TODO: replace with real ones
-        deviceList.items = FXCollections.observableArrayList(
-                SystemInfoManager.getDeviceInfo(),
-                SystemInfoManager.getDeviceInfo(),
-                SystemInfoManager.getDeviceInfo(),
-                SystemInfoManager.getDeviceInfo(),
-                SystemInfoManager.getDeviceInfo(),
-                SystemInfoManager.getDeviceInfo(),
-                SystemInfoManager.getDeviceInfo()
-        )
-    }
-
     private fun requestQRCode(onQrReady: (Image) -> Unit) {
         Thread {
             val payload = handshakeDataBuilder.getHandshakePayload()
@@ -83,6 +68,28 @@ class DevicesTab(val imageResolver: ImageResolver, val resourceBundle: ResourceB
                 onQrReady(image)
             }
         }.start()
+    }
+
+    override fun onFocus() {
+        requestQRCode() {image ->
+            qrImageView.image = image
+        }
+
+        deviceList.items = FXCollections.observableArrayList(MobileServer.connectedDevices)
+
+        BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.DEVICE_CONNECTED, connectedDeviceListChangedEvent)
+        BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.DEVICE_DISCONNECTED, connectedDeviceListChangedEvent)
+    }
+
+    override fun onUnfocus() {
+        BroadcastManager.getInstance().unregisterBroadcastListener(BroadcastManager.DEVICE_CONNECTED, connectedDeviceListChangedEvent)
+        BroadcastManager.getInstance().unregisterBroadcastListener(BroadcastManager.DEVICE_DISCONNECTED, connectedDeviceListChangedEvent)
+    }
+
+    private val connectedDeviceListChangedEvent = BroadcastManager.BroadcastListener {
+        Platform.runLater {
+            deviceList.items = FXCollections.observableArrayList(MobileServer.connectedDevices)
+        }
     }
 
     companion object {

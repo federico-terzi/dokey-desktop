@@ -1,7 +1,11 @@
 package system.server
 
+import javafx.application.Platform
+import javafx.collections.FXCollections
+import net.model.DeviceInfo
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
+import system.BroadcastManager
 import java.io.IOException
 import java.net.ServerSocket
 import java.util.logging.Logger
@@ -21,12 +25,18 @@ class MobileServer(val serverSocket: ServerSocket, val key : ByteArray) : Thread
 
     var deviceConnectionListener : MobileWorker.OnDeviceConnectionListener? = null
 
+    private val workers = mutableListOf<MobileWorker>()
+
     init {
         name = "Mobile Server"
+        connectedDevices.clear()
     }
 
     override fun run() {
         LOG.fine("Server started!")
+
+        BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.REQUEST_DEVICE_DISCONNECT,
+                requestDeviceDisconnectEvent)
 
         while(!shouldStop) {
             try {
@@ -38,6 +48,20 @@ class MobileServer(val serverSocket: ServerSocket, val key : ByteArray) : Thread
                 // Create the worker and start it
                 val worker = context!!.getBean(MobileWorker::class.java, socket, key)
                 worker.deviceConnectionListener = deviceConnectionListener
+                worker.onConnected = {
+                    connectedDevices.add(worker.connectedDevice!!)
+
+                    synchronized(this@MobileServer) {
+                        workers.add(worker)
+                    }
+                }
+                worker.onDisconnected = {
+                    connectedDevices.remove(worker.connectedDevice!!)
+
+                    synchronized(this@MobileServer) {
+                        workers.remove(worker)
+                    }
+                }
                 worker.start()
 
                 LOG.info("Connected with: " + socket.inetAddress.toString());
@@ -60,5 +84,20 @@ class MobileServer(val serverSocket: ServerSocket, val key : ByteArray) : Thread
 
     override fun setApplicationContext(applicationContext: ApplicationContext?) {
         context = applicationContext
+    }
+
+    private val requestDeviceDisconnectEvent = BroadcastManager.BroadcastListener { deviceIdString ->
+        val deviceId = deviceIdString as String
+        // Find the worker with the requested device id
+        val worker = workers.find { it.connectedDevice?.id == deviceId }
+        worker?.shouldStop = true
+
+        synchronized(this) {
+            workers.remove(worker)
+        }
+    }
+
+    companion object {
+        val connectedDevices = mutableListOf<DeviceInfo>()
     }
 }

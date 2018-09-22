@@ -10,6 +10,7 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.Pane
 import javafx.scene.layout.Priority
 import net.model.DeviceInfo
+import system.BroadcastManager
 import system.image.ImageResolver
 
 /**
@@ -42,6 +43,10 @@ class DeviceListCell(val imageResolver: ImageResolver) : ListCell<DeviceInfo>() 
 
     private fun addContent(entry: DeviceInfo) {
         nameLabel.text = entry.name
+
+        disconnectBtn.setOnAction {
+            BroadcastManager.getInstance().sendBroadcast(BroadcastManager.REQUEST_DEVICE_DISCONNECT, entry.id)
+        }
 
         graphic = hBox
     }

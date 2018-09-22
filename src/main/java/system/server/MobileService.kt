@@ -22,6 +22,7 @@ import system.keyboard.KeyboardManager
 import system.section.SectionManager
 import utils.SystemInfoManager
 import java.io.File
+import java.io.IOException
 import java.io.Serializable
 import java.net.Socket
 import java.util.logging.Logger
@@ -83,6 +84,13 @@ class MobileService(val socket : Socket, val key : ByteArray, val commandManager
 
     fun close() {
         linkManager.stopDaemon()
+
+        // Close the socket
+        try {
+            socket.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
 
         // Remove the listeners
         applicationSwitchDaemon.removeApplicationSwitchListener(this)

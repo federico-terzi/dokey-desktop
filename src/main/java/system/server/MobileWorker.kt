@@ -5,26 +5,29 @@ import net.model.DeviceInfo
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import system.bookmarks.BookmarkImportAgent.LOG
-import net.DEDaemon
 import net.DEManager
 
 
 
 
 class MobileWorker(val socket: Socket, val key: ByteArray) : Thread(), ApplicationContextAware {
-    var receiverInfo : DeviceInfo? = null
+    var connectedDevice : DeviceInfo? = null
+    var isConnected = false
 
     var deviceConnectionListener: OnDeviceConnectionListener? = null
 
     private var context : ApplicationContext? = null
 
-    @Volatile private var shouldStop = false
+    @Volatile var shouldStop = false
 
     private var service : MobileService? = null
 
     init {
         name = "Mobile Worker"
     }
+
+    var onConnected : (() -> Unit)? = null
+    var onDisconnected : (() -> Unit)? = null
 
     override fun run() {
         try {
@@ -38,7 +41,7 @@ class MobileWorker(val socket: Socket, val key: ByteArray) : Thread(), Applicati
                 }
 
                 override fun onConnectionNotAccepted(deviceInfo: DeviceInfo, version: Int) {
-                    receiverInfo = deviceInfo
+                    connectedDevice = deviceInfo
                     LOG.warning("Connection not accepted by the phone: " + deviceInfo.name + " with version: " + version)
                     shouldStop = true
 
@@ -47,7 +50,7 @@ class MobileWorker(val socket: Socket, val key: ByteArray) : Thread(), Applicati
                 }
 
                 override fun onReceiverVersionTooLow(deviceInfo: DeviceInfo, version: Int) {
-                    receiverInfo = deviceInfo
+                    connectedDevice = deviceInfo
                     LOG.warning("Not accepting connection, phone has version too low: " + deviceInfo.name + " with version: " + version)
                     shouldStop = true
 
@@ -56,10 +59,13 @@ class MobileWorker(val socket: Socket, val key: ByteArray) : Thread(), Applicati
                 }
 
                 override fun onConnectionStarted(deviceInfo: DeviceInfo, version: Int) {
-                    receiverInfo = deviceInfo
+                    connectedDevice = deviceInfo
                     LOG.info("Connection accepted by: " + deviceInfo.name + " with version: " + version)
                     // Send the connect notification
+                    onConnected?.invoke()
                     deviceConnectionListener?.onDeviceConnected(deviceInfo)
+
+                    isConnected = true
                 }
             })
             service?.initialize()
@@ -85,7 +91,8 @@ class MobileWorker(val socket: Socket, val key: ByteArray) : Thread(), Applicati
         service?.close()
 
         // Send the disconnect notification
-        deviceConnectionListener?.onDeviceDisconnected(receiverInfo)
+        onDisconnected?.invoke()
+        deviceConnectionListener?.onDeviceDisconnected(connectedDevice)
     }
 
     override fun setApplicationContext(applicationContext: ApplicationContext?) {

@@ -565,6 +565,8 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
                 NotificationFactory.showNotification(title, message);
             }
         });
+
+        BroadcastManager.getInstance().sendBroadcast(BroadcastManager.DEVICE_CONNECTED, null);
     }
 
     /**
@@ -591,6 +593,8 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
                 NotificationFactory.showNotification(title, message);
             }
         });
+
+        BroadcastManager.getInstance().sendBroadcast(BroadcastManager.DEVICE_DISCONNECTED, null);
     }
 
     /**
