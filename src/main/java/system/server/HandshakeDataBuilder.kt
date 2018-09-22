@@ -36,6 +36,6 @@ class HandshakeDataBuilder(val keyGenerator: KeyGenerator) {
 
     fun getHandshakePayload() : String {
         val ipAddresses = getAllIpAddresses().joinToString(":")
-        return "DOKEY;$ipAddresses;${keyGenerator.keyToString}"
+        return "DOKEY;$ipAddresses;${keyGenerator.keyToString};$serverPort"
     }
 }

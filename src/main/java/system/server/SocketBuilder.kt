@@ -5,7 +5,7 @@ import java.net.ServerSocket
 import java.util.logging.Logger
 
 const val MIN_PORT = 60642
-const val MAX_PORT = 60652
+const val MAX_PORT = 60644
 
 class SocketBuilder {
     companion object {
