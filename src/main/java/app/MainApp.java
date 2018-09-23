@@ -488,6 +488,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     }
 
     private void showControlPanel() {
+        controlPanelStage.hide();  // TODO: this is a workaround to fix for multiple desktops, find a better solution
         controlPanelStage.show();
         // Position the control panel in the correct position
         positionResolver.positionStageOnScreen(controlPanelStage);
@@ -671,9 +672,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         public void onBroadcastReceived(Serializable param) {
             String targetSection = (String) param;
             Platform.runLater(() -> {
-                if (!controlPanelStage.isShowing()) {
-                    showControlPanel();
-                }
+                showControlPanel();
 
                 controlPanelStage.requestSectionFocus(targetSection);
             });
