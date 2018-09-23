@@ -99,7 +99,7 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
 
     fun requestSection(targetSectionId: String?) {
         if (targetSectionId != null) {
-            sectionBar.selectSection(targetSectionId)
+            sectionBar.selectSection(targetSectionId, canReloadSections = true)
         }
     }
 

@@ -9,6 +9,8 @@ import system.image.ImageResolver
 import system.applications.ApplicationManager
 import system.commands.CommandManager
 import system.section.SectionManager
+import java.lang.reflect.InvocationTargetException
+import java.util.logging.Logger
 
 class SectionBar(val sectionManager: SectionManager, override val applicationManager: ApplicationManager,
                  override val imageResolver: ImageResolver, override val commandManager: CommandManager) : ScrollPane(), SelectorContext {
@@ -57,8 +59,8 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
                     val selector = selectorClass.getConstructor(SelectorContext::class.java, Section::class.java)
                             .newInstance(this, section)
                     selectors.add(selector)
-                }catch (ex: SelectorLoadingException) {
-                    ex.printStackTrace()
+                }catch (ex: InvocationTargetException) {
+                    LOG.severe("Error creating selector for section: "+section)
                 }
             }
         }
@@ -96,14 +98,15 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
         onSelectorSelected(selectors.first())
     }
 
-    fun selectSection(section: Section) {
-        selectSection(section.id!!)
-    }
-
-    fun selectSection(sectionId: String) {
+    fun selectSection(sectionId: String, canReloadSections: Boolean = false) {
         val associatedSelectorIndex = selectors.indexOfFirst { it.section.id == sectionId }
         if (associatedSelectorIndex >= 0 ) {
             selectSection(associatedSelectorIndex)
+        }else{  // Section not found, maybe it was created lately and reloading them can solve the problem
+            if (canReloadSections) {
+                loadSections()
+                selectSection(sectionId, canReloadSections = false)
+            }
         }
     }
     fun selectSection(index: Int) {
@@ -111,6 +114,15 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
         val currentSelector = selectors.indexOfFirst { selector -> selector.selected }
 
         val associatedSelector = selectors[index]
+
+        // Scroll to the correct selector if needed
+        val x = associatedSelector.boundsInParent.maxX
+        val paneWidth = this.boundsInLocal.width
+        val currentScroll = this.hvalue
+        if (x < (currentScroll + associatedSelector.width) || x > (currentScroll+paneWidth)) {
+            this.hvalue = x - paneWidth
+        }
+
         onSelectorSelected(associatedSelector)
     }
 
@@ -122,5 +134,9 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
 
         // Select the current one
         selector.selected = true
+    }
+
+    companion object {
+        val LOG = Logger.getGlobal()
     }
 }
