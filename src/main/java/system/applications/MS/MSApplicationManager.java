@@ -910,7 +910,8 @@ public class MSApplicationManager extends ApplicationManager {
 
         // Try to generate the icon using the native method
         try {
-            File extractedIcon = extractIconUsingExe(executablePath, iconFile, true);
+            //File extractedIcon = extractIconUsingExe(executablePath, iconFile, true);
+            File extractedIcon = extractIconUsingNativeLib(executablePath, iconFile, true);
             if (extractedIcon != null) {
                 return extractedIcon;
             }
@@ -995,6 +996,38 @@ public class MSApplicationManager extends ApplicationManager {
         }
 
         return index < 48;
+    }
+
+    /**
+     * Extract the icon from the executable using the native lib method
+     *
+     * @param executablePath  path of the executable
+     * @param destinationFile path of the destination image file
+     * @param bigIcon if true, request the 256x256 icon. If false 48x48 is requested.
+     * @return true if succeeded, false otherwise.
+     */
+    public File extractIconUsingNativeLib(String executablePath, File destinationFile, boolean bigIcon) {
+        try {
+            WinExtractIconLib.extractIcon(executablePath, destinationFile.getAbsolutePath(), bigIcon);
+
+            // If a big icon has been requested, make sure the resulting icon is valid.
+            if (bigIcon && destinationFile.isFile()) {
+                // Reload the destination file
+                destinationFile = new File(destinationFile.getAbsolutePath());
+
+                // If the image is low resolution, request the 48x48 image.
+                BufferedImage image = ImageIO.read(destinationFile);
+                if (isLowResImage(image)) {
+                    return extractIconUsingExe(executablePath, destinationFile, false);
+                }
+            }
+
+            return destinationFile;
+        } catch (IOException e) {
+            System.out.println(executablePath);
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**

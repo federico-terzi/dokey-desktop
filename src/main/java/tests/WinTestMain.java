@@ -1,10 +1,12 @@
 package tests;
 
 import com.sun.jna.Native;
+import com.sun.jna.WString;
 import system.ResourceUtils;
 import system.applications.ApplicationManager;
 import system.applications.MS.MSApplicationManager;
 import system.applications.MS.ShellLinkResolver;
+import system.applications.MS.WinExtractIconLib;
 import system.applications.Window;
 import system.bookmarks.ChromeBookmarkImportAgent;
 import system.exceptions.UnsupportedOperatingSystemException;
@@ -41,7 +43,8 @@ public class WinTestMain {
             System.setProperty("jna.library.path", nativeLibsDirectory.getAbsolutePath());
         }
 
-        String target = ShellLinkResolver.resolveLnkTarget("C:\\Users\\federico.terzi2\\Documents\\prova.lnk");
+        boolean res = WinExtractIconLib.extractIcon("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exez",
+                "D:\\prova.png", true);
 
         System.exit(0);
     }
