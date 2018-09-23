@@ -97,6 +97,12 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
         }
     }
 
+    fun requestSection(targetSectionId: String?) {
+        if (targetSectionId != null) {
+            sectionBar.selectSection(targetSectionId)
+        }
+    }
+
     private fun loadSection(section: Section) {
         val oldGrid = sectionGrid
 
@@ -157,4 +163,6 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
 
         crossFade.setOnFinished { newGrid.cacheHint = CacheHint.QUALITY; newGrid.isCache = false }
     }
+
+
 }

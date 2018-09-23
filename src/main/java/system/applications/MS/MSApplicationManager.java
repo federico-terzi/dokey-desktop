@@ -56,6 +56,8 @@ public class MSApplicationManager extends ApplicationManager {
 
     private StartupManager startupManager;
 
+    private int dokeyPID;
+
     public MSApplicationManager(StorageManager storageManager, StartupManager startupManager) {
         super(storageManager);
 
@@ -74,6 +76,8 @@ public class MSApplicationManager extends ApplicationManager {
         } catch (AWTException e) {
             e.printStackTrace();
         }
+
+        dokeyPID = startupManager.getPID();
     }
 
     interface WUser32 extends User32 {
@@ -378,6 +382,11 @@ public class MSApplicationManager extends ApplicationManager {
         IntByReference PID = new IntByReference();
         User32.INSTANCE.GetWindowThreadProcessId(hwnd, PID);
 
+        // Filter out dokey
+        if (PID.getValue() == dokeyPID) {
+            return null;
+        }
+
         // Get the executable path
         String executablePath = getExecutablePathFromPID(PID.getValue());
 
@@ -614,13 +623,17 @@ public class MSApplicationManager extends ApplicationManager {
                 int result = (code & 0x00200000) + (code & 0x00000080);
                 //System.out.println(titleText + " - " + code + " - "+Integer.toBinaryString(code) + " - "+result);
                 if (result != 0) {
-                    return false;
+                    return true;
                 }
 
                 // Get the PID
                 IntByReference PID = new IntByReference();
                 User32.INSTANCE.GetWindowThreadProcessId(hwnd, PID);
 
+                // Filter out dokey itself
+                if (PID.getValue() == dokeyPID) {
+                    return true;
+                }
 
                 // Get the executable path
                 //String executablePath = executablesMap.get(PID.getValue());

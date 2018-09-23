@@ -22,26 +22,12 @@ public class ActiveApplicationsDaemon extends Thread{
     // The synchronized list that will hold the currently active apps
     private List<Application> activeApplications = new ArrayList<>();
 
-    // The list of apps that must be filtered out
-    private Set<String> skippedApps = new HashSet<>();
-
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
 
     public ActiveApplicationsDaemon(ApplicationManager appManager, DaemonMonitor daemonMonitor) {
         this.appManager = appManager;
         this.daemonMonitor = daemonMonitor;
-
-        // Initialize the apps that will be filtered out
-        skippedApps.add("WinStore.App.exe");
-        skippedApps.add("Microsoft.Photos.exe");
-        skippedApps.add("ApplicationFrameHost.exe");
-        skippedApps.add("ShellExperienceHost.exe");
-        skippedApps.add("googledrivesync.exe");
-        skippedApps.add("SearchUI.exe");
-        skippedApps.add("SystemSettings.exe");
-        skippedApps.add("SystemSettingsBroker.exe");
-        skippedApps.add("Calculator.exe");
 
         setName("Active Applications Daemon");
     }
@@ -64,13 +50,8 @@ public class ActiveApplicationsDaemon extends Thread{
             }
 
             try {
-                // Get the currently active apps, filtering out the skipped ones
-                activeApplications = appManager.getActiveApplications().stream().filter(
-                        (application -> {
-                            File appFile = new File(application.getExecutablePath());
-                            return !skippedApps.contains(appFile.getName());
-                        })
-                ).collect(Collectors.toList());
+                // Get the currently active apps
+                activeApplications = appManager.getActiveApplications();
 
                 Thread.sleep(CHECK_INTERVAL);
             } catch (InterruptedException e) {

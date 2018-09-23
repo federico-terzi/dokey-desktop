@@ -404,10 +404,8 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
 
         // Register the global event listeners
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_CONTROL_PANEL_REQUEST_EVENT, openControlPanelRequestListener);
-        BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_SETTINGS_REQUEST_EVENT, openSettingsRequestListener);
-        BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_COMMANDS_REQUEST_EVENT, openCommandsRequestListener);
+        BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.OPEN_EDITOR_REQUEST_EVENT, openEditorRequestListener);
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.ENABLE_DOKEY_SEARCH_PROPERTY_CHANGED, enableDokeySearchChangedListener);
-        BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.ADD_URL_TO_QUICK_COMMANDS_EVENT, addURLToQuickCommandsListener);
 
         // Register global hot keys if enabled
         if (settingsManager.getDokeySearchEnabled())
@@ -415,9 +413,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
 
         if (openControlPanel) {
             showControlPanel();
-        }
-        if (openCommandEditor) {
-            openCommandEditor();
         }
     }
 
@@ -508,23 +503,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         showControlPanel();
     }
 
-    private void openCommandEditor() {
-//        if (commandEditorStage != null) {
-//            appManager.focusDokey();
-//
-//            return;
-//        }
-//
-//        commandEditorStage = context.getBean(CommandEditorStage.class,
-//                (CommandEditorStage.OnCommandEditorCloseListener) () -> commandEditorStage = null);
-//        commandEditorStage.show();
-    }
-
-    public void onHelpOpenRequest() {
-        // Open the docs in the browser
-        appManager.openWebLink(DOCS_URL);
-    }
-
     public void onSearchOpenRequest() {
         if (!searchStage.isShowing()) {
             // Get the currently active application
@@ -537,10 +515,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         }else{
             searchStage.hide();
         }
-    }
-
-    public void onQuickCommandsOpenRequest() {
-        openCommandEditor();
     }
 
     /**
@@ -683,31 +657,28 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     private BroadcastManager.BroadcastListener openControlPanelRequestListener = new BroadcastManager.BroadcastListener() {
         @Override
         public void onBroadcastReceived(Serializable param) {
-            String targetApp = (String) param;
             Platform.runLater(() -> {
                 showControlPanel();
             });
         }
     };
-    /**
-     * Called when the user request to open settings.
-     */
-    private BroadcastManager.BroadcastListener openSettingsRequestListener = new BroadcastManager.BroadcastListener() {
-        @Override
-        public void onBroadcastReceived(Serializable param) {
-            //Platform.runLater(() -> openSettings());  // TODO
-        }
-    };
-    /**
-     * Called when the user request to open commands editor.
-     */
-    private BroadcastManager.BroadcastListener openCommandsRequestListener = new BroadcastManager.BroadcastListener() {
-        @Override
-        public void onBroadcastReceived(Serializable param) {
-            Platform.runLater(() -> openCommandEditor());
-        }
-    };
 
+    /**
+     * Called when the user request to open the editor from the app.
+     */
+    private BroadcastManager.BroadcastListener openEditorRequestListener = new BroadcastManager.BroadcastListener() {
+        @Override
+        public void onBroadcastReceived(Serializable param) {
+            String targetSection = (String) param;
+            Platform.runLater(() -> {
+                if (!controlPanelStage.isShowing()) {
+                    showControlPanel();
+                }
+
+                controlPanelStage.requestSectionFocus(targetSection);
+            });
+        }
+    };
 
     /**
      * Called when the user request to enable/disable the dokey search hotkey.
@@ -723,23 +694,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
             }else{
                 provider.reset();
             }
-        }
-    };
-
-    /**
-     * Called when the user request to add an url to the quick commands.
-     */
-    private BroadcastManager.BroadcastListener addURLToQuickCommandsListener = new BroadcastManager.BroadcastListener() {
-        @Override
-        public void onBroadcastReceived(Serializable param) {
-//            String url = (String) param;
-//            if (url != null)
-//                Platform.runLater(() -> {
-//                    openCommandEditor();
-//                    if (commandEditorStage != null) {
-//                        commandEditorStage.insertNewWebLinkCommand(url);
-//                    }
-//                });
         }
     };
 }

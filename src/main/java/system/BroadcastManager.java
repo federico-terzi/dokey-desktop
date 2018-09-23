@@ -21,8 +21,7 @@ public class BroadcastManager {
     public static final int EDITOR_MODIFIED_COMMAND_EVENT = 11;
 
     public static final int OPEN_CONTROL_PANEL_REQUEST_EVENT = 20;
-    public static final int OPEN_SETTINGS_REQUEST_EVENT = 21;
-    public static final int OPEN_COMMANDS_REQUEST_EVENT = 22;
+    public static final int OPEN_EDITOR_REQUEST_EVENT = 21;
 
     public static final int ADD_URL_TO_QUICK_COMMANDS_EVENT = 30;
 

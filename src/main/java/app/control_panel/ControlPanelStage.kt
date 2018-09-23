@@ -139,6 +139,18 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
         }
     }
 
+    fun selectTab(tabIndex: Int) {
+        tabSelector.selectTab(tabIndex)
+    }
+
+    fun requestSectionFocus(targetSection: String?) {
+        val editorTabIndex = tabs.indexOfFirst { it == layoutEditorTab }
+        if (editorTabIndex >= 0) {
+            selectTab(editorTabIndex)
+            layoutEditorTab.requestSection(targetSection)
+        }
+    }
+
     private fun setupTabPaneAnimation() {
         // Transition animation
         controller.tab_pane.selectionModel

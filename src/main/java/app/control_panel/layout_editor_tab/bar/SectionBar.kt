@@ -97,12 +97,15 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
     }
 
     fun selectSection(section: Section) {
-        val associatedSelectorIndex = selectors.indexOfFirst { it.section == section }
+        selectSection(section.id!!)
+    }
+
+    fun selectSection(sectionId: String) {
+        val associatedSelectorIndex = selectors.indexOfFirst { it.section.id == sectionId }
         if (associatedSelectorIndex >= 0 ) {
             selectSection(associatedSelectorIndex)
         }
     }
-
     fun selectSection(index: Int) {
         // Find the currently selected
         val currentSelector = selectors.indexOfFirst { selector -> selector.selected }

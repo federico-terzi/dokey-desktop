@@ -40,11 +40,7 @@ class TabSelector(val imageResolver: ImageResolver) : Pane() {
         // Add all the listeners
         tabs.forEachIndexed {index, tab ->
             tab.setOnAction {
-                selectedTab = tab
-
-                renderSelection()
-
-                onTabSelected?.invoke(index)
+                selectTab(index)
             }
         }
 
@@ -62,6 +58,14 @@ class TabSelector(val imageResolver: ImageResolver) : Pane() {
         Platform.runLater {
             renderSelection()
         }
+    }
+
+    fun selectTab(tabIndex: Int) {
+        selectedTab = tabs[tabIndex]
+
+        renderSelection()
+
+        onTabSelected?.invoke(tabIndex)
     }
 
     private fun renderSelection() {
