@@ -105,6 +105,7 @@ class MobileService(val socket : Socket, val key : ByteArray, val commandManager
 
         val requestJson = JSONObject()
         requestJson.put("appName", application.name)
+        requestJson.put("path", application.executablePath)
 
         if (associatedSection != null) {
             requestJson.put("sectionId", associatedSection.id)
