@@ -482,87 +482,6 @@ public class MSApplicationManager extends ApplicationManager {
     }
 
     /**
-     * Return the executable path for the given PID. Return null if not found.
-     * It uses the WMIC command line utility.
-     *
-     * @param pid process PID.
-     * @return the executable path for the given PID. null if not found.
-     */
-    private String getExecutablePathFromPIDUsingWMIC(int pid) {
-        String cmd = "wmic process where ProcessID=" + pid + " get ProcessID,ExecutablePath /FORMAT:csv";
-        Runtime runtime = Runtime.getRuntime();
-
-        try {
-            // Execute the process
-            Process proc = runtime.exec(cmd);
-
-            // Get the output
-            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-            String line = null;
-
-            // Read each line
-            while ((line = br.readLine()) != null) {
-                String[] subPieces = line.split(",");
-
-                // Make sure the line is not empty and ends with a number ( process PID )
-                if (!line.trim().isEmpty() && isNumeric(subPieces[subPieces.length - 1])) {
-                    StringTokenizer st = new StringTokenizer(line.trim(), ",");
-                    st.nextToken(); // Discard the Node name
-                    String executablePath = st.nextToken();
-                    return executablePath;
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * Return the executable path map for the processes currently running.
-     * The map has this configuration:
-     * Map<PID, ExecutablePath>
-     * <p>
-     * It uses the WMIC command line utility.
-     *
-     * @return the executable path map for the processes currently running.
-     */
-    private Map<Integer, String> getExecutablePathsMap() {
-        String cmd = "wmic process get ProcessID,ExecutablePath /FORMAT:csv";
-        Runtime runtime = Runtime.getRuntime();
-
-        Map<Integer, String> outputMap = new HashMap<>();
-
-        try {
-            // Execute the process
-            Process proc = runtime.exec(cmd);
-
-            // Get the output
-            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-            String line = null;
-
-            // Read each line
-            while ((line = br.readLine()) != null) {
-                String[] tokens = line.trim().split(",");
-
-                // Make sure the line is not empty and ends with a number ( process PID ).
-                // And also the path is not empty.
-                if (!line.trim().isEmpty() && isNumeric(tokens[tokens.length - 1]) &&
-                        !tokens[1].isEmpty()) {
-                    String executablePath = tokens[1];
-                    int processPID = Integer.parseInt(tokens[2]);
-
-                    // Add to the map
-                    outputMap.put(processPID, executablePath);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return outputMap;
-    }
-
-    /**
      * Used when windows is stucked and doesn't change window.
      */
     private void triggerAppSwitch() {
@@ -577,18 +496,6 @@ public class MSApplicationManager extends ApplicationManager {
         robot.delay(40);
         robot.keyRelease(KeyEvent.VK_TAB);
         robot.delay(40);
-    }
-
-    /**
-     * @return true if given string is numeric.
-     */
-    private boolean isNumeric(String number) {
-        try {
-            Integer.parseInt(number);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
     }
 
     /**
