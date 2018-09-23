@@ -640,8 +640,11 @@ public class MSApplicationManager extends ApplicationManager {
                         continue;
                     }
                 } else {  // APP not in cache
+                    System.out.println(file.getAbsolutePath());
+
                     // Calculate the correct values
-                    executablePath = getLnkExecutablePath(file.getAbsolutePath());
+                    //executablePath = getLnkExecutablePath(file.getAbsolutePath());
+                    executablePath = ShellLinkResolver.resolveLnkTarget(file.getAbsolutePath());
 
                     // Make sure the executable exists
                     if (executablePath != null) {

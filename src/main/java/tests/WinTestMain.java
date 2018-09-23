@@ -41,7 +41,7 @@ public class WinTestMain {
             System.setProperty("jna.library.path", nativeLibsDirectory.getAbsolutePath());
         }
 
-        String target = ShellLinkResolver.resolveLnkTarget("C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\JetBrains\\IntelliJ IDEA 2018.1.lnk");
+        String target = ShellLinkResolver.resolveLnkTarget("C:\\Users\\federico.terzi2\\Documents\\prova.lnk");
 
         System.exit(0);
     }
