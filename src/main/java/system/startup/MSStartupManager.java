@@ -5,6 +5,7 @@ import com.sun.jna.platform.win32.*;
 import com.sun.jna.ptr.PointerByReference;
 import com.sun.jna.win32.StdCallLibrary;
 import org.apache.commons.io.FileUtils;
+import system.applications.MS.PsApi;
 import system.storage.StorageManager;
 import system.ResourceUtils;
 
@@ -25,22 +26,11 @@ public class MSStartupManager extends StartupManager {
         return Kernel32.INSTANCE.GetCurrentProcessId();
     }
 
-    /**
-     * Used to get the executable path for the given pid
-     */
-    public interface PsApi extends StdCallLibrary {
-
-        int GetModuleFileNameExA(WinNT.HANDLE process, WinNT.HANDLE module,
-                                 byte[] name, int i);
-
-    }
-
     @Override
     public String getExecutablePath(int pid) {
-        MSStartupManager.PsApi psapi = (MSStartupManager.PsApi) Native.loadLibrary("psapi", MSStartupManager.PsApi.class);
         byte[] pathText = new byte[1024];
         WinNT.HANDLE process = Kernel32.INSTANCE.OpenProcess(0x0400 | 0x0010, false, pid);
-        psapi.GetModuleFileNameExA(process, null, pathText, 1024);
+        PsApi.INSTANCE.GetModuleFileNameExA(process, null, pathText, 1024);
         String executablePath = Native.toString(pathText);
 
         // If the executablePath is empty, return null

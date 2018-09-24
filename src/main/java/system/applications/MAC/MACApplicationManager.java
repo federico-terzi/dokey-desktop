@@ -206,11 +206,6 @@ public class MACApplicationManager extends ApplicationManager {
         return focusDokey();
     }
 
-    @Override
-    public boolean isApplicationAlreadyPresent(String executablePath) {
-        return applicationMap.containsKey(executablePath);
-    }
-
     /**
      * Get the application associated with the given executable path.
      * @param executablePath the path to the application.
@@ -556,9 +551,7 @@ public class MACApplicationManager extends ApplicationManager {
         }
 
         // Load the list of the external applications
-        List<String> externalApps = loadExternalAppPaths();
-        List<File> externalAppFiles = externalApps.stream().map(File::new).collect(Collectors.toList());
-        fileList.addAll(externalAppFiles);
+        // TODO
 
         // Current application in the list
         int current = 0;
