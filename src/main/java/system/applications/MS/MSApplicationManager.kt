@@ -618,7 +618,11 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
                     }
                 }
 
-                // If found, notify the listener
+                // Filter out applications inside the C:\Windows folder
+                if (executablePath?.startsWith("C:\\Windows", ignoreCase = true) == true) {
+                    continue
+                }
+
                 if (executablePath != null) {
                     val target = AppTarget(executablePath, applicationName)
                     output.add(target)
