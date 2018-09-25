@@ -81,10 +81,10 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
             val dialog = ApplicationSelectDialog(controlPanelStage, imageResolver, applicationManager)
             dialog.onApplicationSelected = { app ->
                 // Create the section
-                sectionManager.createSectionForApp(app)
+                val newSection = sectionManager.createSectionForApp(app)
 
                 // Reload the bar
-                sectionBar.loadSections()
+                sectionBar.loadSections(targetSection = newSection)
             }
             dialog.showWithAnimation()
         }
@@ -171,7 +171,8 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
     private fun requestDeleteSection(section: Section) {
         AlertFactory.instance.confirmation("Delete confirmation", "Do you really want to delete ${section.name} layout?",
                 onYes = {
-                    // TODO: delete section
+                    sectionManager.deleteSection(section)
+                    sectionBar.loadSections()
                 }).show()
     }
 }

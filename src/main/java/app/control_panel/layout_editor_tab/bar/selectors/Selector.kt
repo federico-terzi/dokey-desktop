@@ -115,4 +115,21 @@ abstract class Selector(val context: SelectorContext, val sectionBar: SectionBar
     override fun compareTo(other: Selector): Int {
         return priority.compareTo(other.priority)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Selector
+
+        if (section != other.section) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return section.hashCode()
+    }
+
+
 }

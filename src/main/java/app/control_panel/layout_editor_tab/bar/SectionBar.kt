@@ -51,7 +51,17 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
         loadSections()
     }
 
-    fun loadSections() {
+    fun loadSections(targetSection: Section? = null) {
+        // Get the target section that should be selected,
+        // if not specified, select the previous one if possible
+        val _targetSection: Section? = if (targetSection != null) {
+            targetSection
+        }else{
+            // Save the previous selector so can be focused again
+            val previousSelector = selectors.find { it.selected }
+            previousSelector?.section
+        }
+
         appBox.children.clear()
 
         val sections = sectionManager.getSections()
@@ -98,8 +108,16 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
             }
         }
 
-        // Automatically select the first one
-        onSelectorSelected(selectors.first())
+        if (_targetSection != null && selectors.any { it.section == _targetSection }) {
+            val currentSelector = selectors.find { it.section == _targetSection }
+
+            // Previous selector is still available, select it.
+            onSelectorSelected(currentSelector!!)
+        }else{
+            // Automatically select the first one
+            onSelectorSelected(selectors.first())
+        }
+
     }
 
     fun selectSection(sectionId: String, canReloadSections: Boolean = false) {

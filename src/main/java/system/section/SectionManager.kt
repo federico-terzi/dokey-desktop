@@ -32,20 +32,39 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
     // A cache that associates the section id with the section
     private val sectionCache = mutableMapOf<String, SectionWrapper>()
 
-    fun getSections() : Collection<SectionWrapper> {
-        return sectionCache.values
+    fun getSections(filterDeleted: Boolean = true) : Collection<SectionWrapper> {
+        return sectionCache.values.filter {
+            filterDeleted && !it.deleted
+        }
     }
 
-    fun getSection(sectionId: String) : SectionWrapper? {
-        return sectionCache[sectionId]
+    fun getSection(sectionId: String, filterDeleted: Boolean = true) : SectionWrapper? {
+        val section = sectionCache[sectionId]
+        if (section != null) {
+            if (!section.deleted || !filterDeleted) {
+                return section
+            }
+        }
+
+        return null
     }
 
-    fun createSectionForApp(application: Application) {
-        // Make sure it doesn't exist yet
-        if (getSection("app:${application.executablePath}") == null) {
+    fun createSectionForApp(application: Application) : Section {
+        val section = getSection("app:${application.executablePath}", filterDeleted = false)
+
+        if (section == null) {  // Section doesn't exist
             val applicationSection = generateEmptyAppSection(application.executablePath, application.name)
             saveSection(applicationSection)
             sectionCache[applicationSection.id!!] = applicationSection
+
+            return applicationSection
+        }else{
+            if (section.deleted) {
+                // The section already exists, but it is hidden because has been deleted
+                undeleteSection(section)
+            }
+
+            return section
         }
     }
 
@@ -256,16 +275,18 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
 
     @Synchronized
     fun deleteSection(section: Section): Boolean {
-        // Delete the section from the cache
-        sectionCache.remove(section.id)
+        section as SectionWrapper
+        section.deleted = true
 
-        // Delete the section from file
-        val sectionFile: File = getSectionFile(section)
-        if (sectionFile.isFile) {
-            return sectionFile.delete()
-        }
+        return saveSection(section)
+    }
 
-        return false
+    @Synchronized
+    fun undeleteSection(section: Section): Boolean {
+        section as SectionWrapper
+        section.deleted = false
+
+        return saveSection(section)
     }
 
     /**
