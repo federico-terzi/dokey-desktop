@@ -1,10 +1,12 @@
 package app.control_panel.layout_editor_tab
 
 import app.ui.control.IconButton
+import javafx.event.ActionEvent
 import javafx.geometry.Pos
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.image.ImageView
+import javafx.scene.input.MouseEvent
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Pane
 import javafx.scene.layout.Priority
@@ -19,6 +21,7 @@ class LayoutToolbar(val imageResolver: ImageResolver, val applicationManager: Ap
     val applicationLabel = Label()
 
     var onNewLayoutRequested : (() -> Unit)? = null
+    var onMoreBtnClicked : ((MouseEvent) -> Unit)? = null
 
     init {
         alignment = Pos.CENTER
@@ -32,6 +35,7 @@ class LayoutToolbar(val imageResolver: ImageResolver, val applicationManager: Ap
 
         // Setup the button click event listeners
         newLayoutBtn.setOnAction { onNewLayoutRequested?.invoke() }
+        moreBtn.setOnMouseClicked { onMoreBtnClicked?.invoke(it) }
 
         children.addAll(applicationLabel, spacingPanel, newLayoutBtn, moreBtn)
     }

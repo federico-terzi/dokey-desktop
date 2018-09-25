@@ -23,6 +23,9 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
     private val appBox = HBox()
     private val selectors = mutableListOf<Selector>()
 
+    // Currently selected selector
+    var currentSelector : Selector? = null
+
     var onSectionClicked : ((Section) -> Unit)? = null
 
     // Context menu actions
@@ -54,13 +57,7 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
     fun loadSections(targetSection: Section? = null) {
         // Get the target section that should be selected,
         // if not specified, select the previous one if possible
-        val _targetSection: Section? = if (targetSection != null) {
-            targetSection
-        }else{
-            // Save the previous selector so can be focused again
-            val previousSelector = selectors.find { it.selected }
-            previousSelector?.section
-        }
+        val _targetSection: Section? = targetSection ?: currentSelector?.section
 
         appBox.children.clear()
 
@@ -109,10 +106,10 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
         }
 
         if (_targetSection != null && selectors.any { it.section == _targetSection }) {
-            val currentSelector = selectors.find { it.section == _targetSection }
+            val actualSelector = selectors.find { it.section == _targetSection }
 
             // Previous selector is still available, select it.
-            onSelectorSelected(currentSelector!!)
+            onSelectorSelected(actualSelector!!)
         }else{
             // Automatically select the first one
             onSelectorSelected(selectors.first())
@@ -149,6 +146,8 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
     }
 
     private fun onSelectorSelected(selector: Selector) {
+        currentSelector = selector
+
         onSectionClicked?.invoke(selector.section)
 
         // Unselect previous selector

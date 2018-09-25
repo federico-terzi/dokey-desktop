@@ -88,6 +88,10 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
             }
             dialog.showWithAnimation()
         }
+        layoutToolbar.onMoreBtnClicked = {event ->
+            // Get the context menu for the current selector
+            sectionBar.currentSelector?.contextMenu?.show(layoutToolbar, event.screenX-50, event.screenY)
+        }
     }
 
     override fun onFocus() {
