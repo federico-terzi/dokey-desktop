@@ -8,10 +8,7 @@ import model.component.RuntimeComponent
 import model.page.DefaultPage
 import model.page.Page
 import model.parser.section.SectionParser
-import model.section.DefaultApplicationSection
-import model.section.LaunchpadSection
-import model.section.Section
-import model.section.SystemSection
+import model.section.*
 import org.apache.commons.codec.digest.DigestUtils
 import system.applications.Application
 import system.applications.ApplicationManager
@@ -181,7 +178,7 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
         return DefaultSectionWrapper(section)
     }
 
-    private fun generateAppSectionFromCommands(executablePath: String, applicationName: String, commands: List<AppRelatedCommand>): Section {
+    private fun generateAppSectionFromCommands(executablePath: String, applicationName: String, commands: List<AppRelatedCommand>): SectionWrapper {
         // Create the destination section
         val section = DefaultApplicationSection()
         section.id = "app:$executablePath"
@@ -218,7 +215,7 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
         }
 
         section.pages = pages
-        return section
+        return DefaultSectionWrapper(section)
     }
 
     private fun getSectionFile(sectionId: String) : File {
@@ -287,6 +284,40 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
         section.deleted = false
 
         return saveSection(section)
+    }
+
+    @Synchronized
+    fun resetSection(section: Section): Section? {
+        val newSection : Section? = when (section.type) {
+            "launchpad" -> {
+                generateLaunchpadSection()
+            }
+            "system" -> {
+                generateSystemSection()
+            }
+            "app" -> {
+                section as ApplicationSection
+                val application = applicationManager.getApplication(section.appId)
+                if (application != null) {
+                    val commands = commandManager.getAppRelatedCommands().filter { it.app == section.appId }
+                    generateAppSectionFromCommands(application.executablePath, application.name, commands)
+                }else{
+                    generateEmptyAppSection(section.appId!!, section.name!!)
+                }
+            }
+            else -> null
+        }
+
+        if (newSection != null) {
+            newSection.name = section.name
+            newSection.id = section.id
+
+            if (saveSection(newSection)) {
+                return newSection
+            }
+        }
+
+        return null
     }
 
     /**

@@ -66,6 +66,9 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
         sectionBar.onDeleteRequest = { section ->
             requestDeleteSection(section)
         }
+        sectionBar.onResetRequest = { section ->
+            requestResetSection(section)
+        }
 
         // Setup the debouncing save mechanism
         saveSectionSubject.debounce(100, TimeUnit.MILLISECONDS).subscribe { section ->
@@ -177,6 +180,17 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
                 onYes = {
                     sectionManager.deleteSection(section)
                     sectionBar.loadSections()
+                }).show()
+    }
+
+    private fun requestResetSection(section: Section) {
+        AlertFactory.instance.confirmation("Reset confirmation", "Do you really want to reset ${section.name} layout? All your changes will be overwritten.",
+                onYes = {
+                    val resettedSection = sectionManager.resetSection(section)
+                    sectionBar.loadSections(targetSection = resettedSection)
+
+                    // Send a broadcast
+                    BroadcastManager.getInstance().sendBroadcast(BroadcastManager.EDITOR_MODIFIED_SECTION_EVENT, resettedSection?.id)
                 }).show()
     }
 }
