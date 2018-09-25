@@ -1,9 +1,12 @@
 package app.control_panel.command_tab.list
 
+import app.ui.control.StyledMenuItem
 import javafx.application.Platform
 import javafx.geometry.Pos
+import javafx.scene.control.ContextMenu
 import javafx.scene.control.Label
 import javafx.scene.control.ListCell
+import javafx.scene.control.MenuItem
 import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
