@@ -1,5 +1,6 @@
 package app.control_panel.layout_editor_tab
 
+import app.alert.AlertFactory
 import app.control_panel.ControlPanelStage
 import app.control_panel.ControlPanelTab
 import app.control_panel.layout_editor_tab.grid.SectionGrid
@@ -61,6 +62,9 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
 
         sectionBar.onSectionClicked = { section ->
             loadSection(section)
+        }
+        sectionBar.onDeleteRequest = { section ->
+            requestDeleteSection(section)
         }
 
         // Setup the debouncing save mechanism
@@ -164,5 +168,10 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
         crossFade.setOnFinished { newGrid.cacheHint = CacheHint.QUALITY; newGrid.isCache = false }
     }
 
-
+    private fun requestDeleteSection(section: Section) {
+        AlertFactory.instance.confirmation("Delete confirmation", "Do you really want to delete ${section.name} layout?",
+                onYes = {
+                    // TODO: delete section
+                }).show()
+    }
 }

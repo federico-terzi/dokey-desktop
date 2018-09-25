@@ -26,6 +26,23 @@ class MacAlertFactory : AlertFactory {
         return alert
     }
 
+    override fun confirmation(title: String, text: String?, onYes: (() -> Unit)?, onNo: (() -> Unit)?, runOnJavaFxThread: Boolean): Alert {
+        val yesOpt = AlertOption("Yes") { // TODO: i18n
+            onYes?.invoke()
+        }
+        val noOpt = AlertOption("No") {  // TODO: i18n
+            onNo?.invoke()
+        }
+        val cancelOpt = AlertOption("Cancel") {}  // TODO: i18n
+
+        val alert = MacAlert(library, title, text, listOf(yesOpt, noOpt, cancelOpt), true, runOnJavaFxThread = runOnJavaFxThread)
+
+        // Store the current alert to prevent garbage collection ( needed for the native callback )
+        alertStore = alert
+
+        return alert
+    }
+
     companion object {
         // Used to store references to the current dialog, to prevent the garbage
         // collector from removing the objects and blocking the callback

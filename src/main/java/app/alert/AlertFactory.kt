@@ -14,6 +14,9 @@ interface AlertFactory {
     fun custom(title: String, text: String?, options: List<AlertOption>, isCritical: Boolean = false,
                runOnJavaFxThread: Boolean = true) : Alert
 
+    fun confirmation(title: String, text: String?, onYes : (() -> Unit)? = null, onNo : (() -> Unit)? = null,
+                     runOnJavaFxThread: Boolean = true) : Alert
+
     companion object {
         val instance = loadInstance()
 
