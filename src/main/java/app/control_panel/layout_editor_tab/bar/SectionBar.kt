@@ -14,10 +14,10 @@ import java.util.logging.Logger
 
 class SectionBar(val sectionManager: SectionManager, override val applicationManager: ApplicationManager,
                  override val imageResolver: ImageResolver, override val commandManager: CommandManager) : ScrollPane(), SelectorContext {
-    private val selectorTypes = mapOf<Class<out Section>, Class<out Selector>>(
-            LaunchpadSection::class.java to LaunchpadSelector::class.java,
-            SystemSection::class.java to SystemSelector::class.java,
-            DefaultApplicationSection::class.java to ApplicationSelector::class.java
+    private val selectorTypes = mapOf<String, Class<out Selector>>(
+            "launchpad" to LaunchpadSelector::class.java,
+            "system" to SystemSelector::class.java,
+            "app" to ApplicationSelector::class.java
     )
 
     private val appBox = HBox()
@@ -57,14 +57,14 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
         val sections = sectionManager.getSections()
         val selectors = mutableListOf<Selector>()
         sections.forEach { section ->
-            val selectorClass = selectorTypes[section.javaClass]
+            val selectorClass = selectorTypes[section.type]
             if (selectorClass != null) {
                 try {
                     val selector = selectorClass.getConstructor(SelectorContext::class.java, SectionBar::class.java, Section::class.java)
                             .newInstance(this, this, section)
                     selectors.add(selector)
                 }catch (ex: InvocationTargetException) {
-                    LOG.severe("Error creating selector for section: "+section)
+                    LOG.severe("Error creating selector for section: $section: ${ex.targetException}")
                 }
             }
         }

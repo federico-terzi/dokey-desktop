@@ -17,6 +17,8 @@ import system.applications.Application
 import system.applications.ApplicationManager
 import system.commands.CommandManager
 import system.commands.general.AppRelatedCommand
+import system.section.model.DefaultSectionWrapper
+import system.section.model.SectionWrapper
 import system.storage.StorageManager
 import java.io.*
 import java.util.logging.Logger
@@ -28,13 +30,13 @@ import java.util.logging.Logger
 class SectionManager(val storageManager: StorageManager, val sectionParser: SectionParser,
                      val commandManager: CommandManager, val applicationManager: ApplicationManager) {
     // A cache that associates the section id with the section
-    private val sectionCache = mutableMapOf<String, Section>()
+    private val sectionCache = mutableMapOf<String, SectionWrapper>()
 
-    fun getSections() : Collection<Section> {
+    fun getSections() : Collection<SectionWrapper> {
         return sectionCache.values
     }
 
-    fun getSection(sectionId: String) : Section? {
+    fun getSection(sectionId: String) : SectionWrapper? {
         return sectionCache[sectionId]
     }
 
@@ -47,8 +49,8 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
         }
     }
 
-    private fun loadSections(): Collection<Section> {
-        val sections = mutableListOf<Section>()
+    private fun loadSections(): Collection<SectionWrapper> {
+        val sections = mutableListOf<SectionWrapper>()
 
         // Go through all user section files
         for (sectionFile in storageManager.sectionDir.listFiles()) {
@@ -137,27 +139,27 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
         return page
     }
 
-    private fun generateSystemSection(): Section {
+    private fun generateSystemSection(): SectionWrapper {
         val section = SystemSection()
         section.name = "System"
         section.pages = mutableListOf(generateEmptyPage())
-        return section
+        return DefaultSectionWrapper(section)
     }
 
-    private fun generateLaunchpadSection(): LaunchpadSection {
+    private fun generateLaunchpadSection(): SectionWrapper {
         val section = LaunchpadSection()
         section.name = "Launchpad"
         section.pages = mutableListOf(generateEmptyPage())
-        return section
+        return DefaultSectionWrapper(section)
     }
 
-    private fun generateEmptyAppSection(executablePath: String, applicationName: String) : Section {
+    private fun generateEmptyAppSection(executablePath: String, applicationName: String) : SectionWrapper {
         // Create the destination section
         val section = DefaultApplicationSection()
         section.id = "app:$executablePath"
         section.name = applicationName
         section.pages = mutableListOf(generateEmptyPage())
-        return section
+        return DefaultSectionWrapper(section)
     }
 
     private fun generateAppSectionFromCommands(executablePath: String, applicationName: String, commands: List<AppRelatedCommand>): Section {
@@ -219,7 +221,7 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
         section.lastEdit = System.currentTimeMillis()
 
         // Reload the section in the cache
-        sectionCache[section.id!!] = section
+        sectionCache[section.id!!] = section as SectionWrapper
 
         // Save the section
         return writeSectionToFile(section, sectionFile)
@@ -271,7 +273,7 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
      * @param sectionFile the section File
      * @return the Section read from the file
      */
-    fun getSectionFromFile(sectionFile: File): Section? {
+    fun getSectionFromFile(sectionFile: File): SectionWrapper? {
         // Read the content
         try {
             val fis = FileInputStream(sectionFile)
@@ -280,10 +282,12 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
 
             // Create the section by de-serialization
             val section = sectionParser.fromJSON(jsonContent)
+            val wrapper = DefaultSectionWrapper(section)
+            wrapper.populateWrapperFields(jsonContent)
 
             fis.close()
 
-            return section
+            return wrapper
         } catch (e: JSONException) {
             e.printStackTrace()
         } catch (e: FileNotFoundException) {
