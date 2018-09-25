@@ -2,10 +2,7 @@ package app.control_panel.command_tab.list
 
 import app.ui.control.StyledMenuItem
 import javafx.collections.ListChangeListener
-import javafx.scene.control.ContextMenu
-import javafx.scene.control.ListView
-import javafx.scene.control.MenuItem
-import javafx.scene.control.SelectionMode
+import javafx.scene.control.*
 import javafx.scene.input.KeyCode
 import model.command.Command
 import system.image.ImageResolver
@@ -14,6 +11,7 @@ class CommandListView(val imageResolver: ImageResolver, val commandActionListene
     // Context menu items
     private val editItem : MenuItem = StyledMenuItem("/assets/edit.png", "Edit")  // TODO: i18n
     private val deleteItem : MenuItem = StyledMenuItem("/assets/delete.png", "Delete")  // TODO: i18n
+    private val exportItem : MenuItem = StyledMenuItem("/assets/external-link.png", "Export")  // TODO: i18n
 
     // Menu items that support only a single selection
     private val singleElementMenuItems : List<MenuItem> = listOf(editItem)
@@ -36,6 +34,12 @@ class CommandListView(val imageResolver: ImageResolver, val commandActionListene
                     commandActionListener?.onEditRequest?.invoke(selectedCommand)
                 }
             }
+            exportItem.setOnAction {
+                val selectedCommands = this.selectionModel.selectedItems
+                if (selectedCommands.size > 0) {
+                    // TODO
+                }
+            }
             deleteItem.setOnAction {
                 val selectedCommands = this.selectionModel.selectedItems
                 if (selectedCommands.size > 0) {
@@ -43,7 +47,8 @@ class CommandListView(val imageResolver: ImageResolver, val commandActionListene
                 }
             }
 
-            cm.items.addAll(editItem, deleteItem)
+
+            cm.items.addAll(editItem, exportItem, SeparatorMenuItem(), deleteItem)
             contextMenu = cm
 
             // Add binding to show/hide context menu items based on the number of selected items
