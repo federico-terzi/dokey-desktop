@@ -2,6 +2,7 @@ package app.control_panel.command_tab
 
 import app.control_panel.ControlPanelStage
 import app.control_panel.ControlPanelTab
+import app.control_panel.command_tab.list.CommandActionListener
 import app.control_panel.dialog.command_edit_dialog.CommandEditDialog
 import app.ui.panel.CommandListPanel
 import app.ui.control.FloatingActionButton
@@ -11,6 +12,7 @@ import javafx.geometry.Pos
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
+import model.command.Command
 import system.BroadcastManager
 import system.applications.ApplicationManager
 import system.commands.CommandManager
@@ -19,17 +21,17 @@ import java.util.*
 
 class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: ImageResolver,
                  val resourceBundle: ResourceBundle, val applicationManager: ApplicationManager,
-                 val commandManager: CommandManager) : ControlPanelTab() {
+                 val commandManager: CommandManager) : ControlPanelTab(), CommandActionListener {
 
     // UI Elements
     private val toolbar = CommandToolbar(controlPanelStage, imageResolver)
     private val commandListPanel = CommandListPanel(controlPanelStage, imageResolver, commandManager,
-            showImplicit = false)
+            showImplicit = false, showContextMenus = true, commandActionListener = this)
     private val stackPane = StackPane()
     private val addCommandBtn = FloatingActionButton(imageResolver, "Add command")  // TODO: i18n
 
     init {
-        commandListPanel.padding = Insets(0.0, 0.0,38.0, 0.0)
+        commandListPanel.padding = Insets(0.0, 0.0, 38.0, 0.0)
 
         VBox.setVgrow(commandListPanel, Priority.ALWAYS)
 
@@ -54,14 +56,12 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
             commandListPanel.search(query)
         }
 
-        toolbar.onFilterUpdate = {filter ->
+        toolbar.onFilterUpdate = { filter ->
             commandListPanel.filter(filter)
         }
 
         commandListPanel.onCommandSelected = { command ->
-            val dialog = CommandEditDialog(controlPanelStage, imageResolver, applicationManager, commandManager)
-            dialog.loadCommand(command)
-            dialog.showWithAnimation()
+            requestEditForCommand(command)
         }
     }
 
@@ -82,5 +82,23 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
         Platform.runLater {
             commandListPanel.focusCommand(commandId)
         }
+    }
+
+    /**
+     * CONTEXT MENU ACTIONS
+     */
+
+    override val onEditRequest: ((Command) -> Unit)? = { command ->
+        requestEditForCommand(command)
+    }
+
+    override val onDeleteRequest: ((List<Command>) -> Unit)? = {
+
+    }
+
+    private fun requestEditForCommand(command: Command) {
+        val dialog = CommandEditDialog(controlPanelStage, imageResolver, applicationManager, commandManager)
+        dialog.loadCommand(command)
+        dialog.showWithAnimation()
     }
 }

@@ -9,10 +9,7 @@ import javafx.scene.control.SelectionMode
 import model.command.Command
 import system.image.ImageResolver
 
-class CommandListView(val imageResolver: ImageResolver) : ListView<Command>() {
-    var onEditRequest : ((Command) -> Unit)? = null
-    var onDeleteRequest : ((List<Command>) -> Unit)? = null
-
+class CommandListView(val imageResolver: ImageResolver, val commandActionListener: CommandActionListener?, showContextMenus: Boolean) : ListView<Command>(){
     // Context menu items
     private val editItem : MenuItem = StyledMenuItem("/assets/edit.png", "Edit")  // TODO: i18n
     private val deleteItem : MenuItem = StyledMenuItem("/assets/delete.png", "Delete")  // TODO: i18n
@@ -30,24 +27,32 @@ class CommandListView(val imageResolver: ImageResolver) : ListView<Command>() {
         selectionModel.selectionMode = SelectionMode.MULTIPLE
 
         // Setup the context menu
-        val cm = ContextMenu()
-        editItem.setOnAction {
-            //onEditRequest?.invoke()
-        }
-        deleteItem.setOnAction {
-            //onDeleteRequest?.invoke()
-        }
-
-        cm.items.addAll(editItem, deleteItem)
-        contextMenu = cm
-
-        // Add binding to show/hide context menu items based on the number of selected items
-        this.selectionModel.selectedIndices.addListener(ListChangeListener<Int> {
-            if (it.list.size >= 2) {
-                singleElementMenuItems.forEach { it.isVisible = false }
-            }else{
-                singleElementMenuItems.forEach { it.isVisible = true }
+        if (showContextMenus) {
+            val cm = ContextMenu()
+            editItem.setOnAction {
+                val selectedCommand = this.selectionModel.selectedItem
+                if (selectedCommand != null) {
+                    commandActionListener?.onEditRequest?.invoke(selectedCommand)
+                }
             }
-        })
+            deleteItem.setOnAction {
+                val selectedCommands = this.selectionModel.selectedItems
+                if (selectedCommands.size > 0) {
+                    commandActionListener?.onDeleteRequest?.invoke(selectedCommands)
+                }
+            }
+
+            cm.items.addAll(editItem, deleteItem)
+            contextMenu = cm
+
+            // Add binding to show/hide context menu items based on the number of selected items
+            this.selectionModel.selectedIndices.addListener(ListChangeListener<Int> {
+                if (it.list.size >= 2) {
+                    singleElementMenuItems.forEach { it.isVisible = false }
+                }else{
+                    singleElementMenuItems.forEach { it.isVisible = true }
+                }
+            })
+        }
     }
 }

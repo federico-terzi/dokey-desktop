@@ -1,6 +1,7 @@
 package app.ui.panel
 
 import app.control_panel.command_tab.CommandListHeader
+import app.control_panel.command_tab.list.CommandActionListener
 import app.control_panel.command_tab.list.CommandListView
 import app.control_panel.command_tab.list.comparator.NameComparator
 import app.ui.model.Sorting
@@ -15,12 +16,13 @@ import system.image.ImageResolver
 import java.util.Comparator
 
 class CommandListPanel(val parent: BlurrableStage, val imageResolver: ImageResolver, val commandManager: CommandManager,
-                       val showImplicit: Boolean = true, val showDeleted: Boolean = false)
+                       val showImplicit: Boolean = true, val showDeleted: Boolean = false,
+                       val showContextMenus : Boolean = false, commandActionListener: CommandActionListener? = null)
     : VBox() {
 
     // UI Elements
     private val listHeader = CommandListHeader(imageResolver)
-    private val commandListView = CommandListView(imageResolver)
+    private val commandListView = CommandListView(imageResolver, commandActionListener, showContextMenus = showContextMenus)
 
     // This is the list that will contain the commands shown by the list view
     private val commands = FXCollections.observableArrayList<Command>()
