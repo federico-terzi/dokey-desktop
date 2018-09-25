@@ -6,6 +6,7 @@ import javafx.scene.control.ContextMenu
 import javafx.scene.control.ListView
 import javafx.scene.control.MenuItem
 import javafx.scene.control.SelectionMode
+import javafx.scene.input.KeyCode
 import model.command.Command
 import system.image.ImageResolver
 
@@ -53,6 +54,15 @@ class CommandListView(val imageResolver: ImageResolver, val commandActionListene
                     singleElementMenuItems.forEach { it.isVisible = true }
                 }
             })
+        }
+
+        setOnKeyPressed {
+            if (it.code == KeyCode.DELETE || it.code == KeyCode.BACK_SPACE) {
+                val selectedCommands = this.selectionModel.selectedItems
+                if (selectedCommands.size > 0) {
+                    commandActionListener?.onDeleteRequest?.invoke(selectedCommands)
+                }
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package app.control_panel.command_tab
 
+import app.alert.AlertFactory
 import app.control_panel.ControlPanelStage
 import app.control_panel.ControlPanelTab
 import app.control_panel.command_tab.list.CommandActionListener
@@ -92,8 +93,14 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
         requestEditForCommand(command)
     }
 
-    override val onDeleteRequest: ((List<Command>) -> Unit)? = {
-
+    override val onDeleteRequest: ((List<Command>) -> Unit)? = {commands ->
+        AlertFactory.instance.confirmation("Delete confirmation", "Do you really want to delete ${commands.size} command(s)?",  // TODO: i18n
+                onYes = {
+                    commands.forEach { command ->
+                        commandManager.deleteCommand(command)
+                    }
+                    commandListPanel.loadCommands()
+                }).show()
     }
 
     private fun requestEditForCommand(command: Command) {
