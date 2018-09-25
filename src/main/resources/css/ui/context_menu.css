@@ -1,0 +1,16 @@
+.context-menu {
+    -fx-background-color: white;
+    -fx-background-radius: 5px;
+    -fx-padding: 3px 0px 3px 0px;
+    -fx-text-fill: black;
+    -fx-font-family: "Nunito Sans";
+}
+
+.menu-item .label {
+    -fx-text-fill: #000000;
+    -fx-padding: 2px 4px 2px 4px;
+}
+
+.menu-item:focused {
+    -fx-background-color: -green-gradient;
+}

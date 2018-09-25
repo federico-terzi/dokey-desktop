@@ -25,6 +25,10 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
 
     var onSectionClicked : ((Section) -> Unit)? = null
 
+    // Context menu actions
+    var onResetRequest : ((Section) -> Unit)? = null
+    var onDeleteRequest : ((Section) -> Unit)? = null
+
     init {
         this.styleClass.add("app_scroll_pane")
 
@@ -56,8 +60,8 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
             val selectorClass = selectorTypes[section.javaClass]
             if (selectorClass != null) {
                 try {
-                    val selector = selectorClass.getConstructor(SelectorContext::class.java, Section::class.java)
-                            .newInstance(this, section)
+                    val selector = selectorClass.getConstructor(SelectorContext::class.java, SectionBar::class.java, Section::class.java)
+                            .newInstance(this, this, section)
                     selectors.add(selector)
                 }catch (ex: InvocationTargetException) {
                     LOG.severe("Error creating selector for section: "+section)

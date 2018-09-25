@@ -1,5 +1,6 @@
 package app.control_panel.layout_editor_tab.bar.selectors
 
+import app.control_panel.layout_editor_tab.bar.SectionBar
 import javafx.event.EventHandler
 import javafx.scene.Cursor
 import javafx.scene.SnapshotParameters
@@ -12,7 +13,7 @@ import system.applications.Application
 import system.drag_and_drop.DNDCommandProcessor
 import utils.OSValidator
 
-class ApplicationSelector(context: SelectorContext, section: Section) : Selector(context, section, 2) {
+class ApplicationSelector(context: SelectorContext, sectionBar: SectionBar, section: Section) : Selector(context, sectionBar, section, 2) {
     val associatedApplication : Application
 
     override val imageId: String
