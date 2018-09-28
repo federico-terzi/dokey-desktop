@@ -33,6 +33,10 @@ public class ApplicationPathResolver {
      * Load the application data to search efficiently later.
      */
     public void load() {
+        // Reset the maps
+        filenamePathMap = new HashMap<>();
+        applicationPathSet = new HashSet<>();
+
         // Populate the filenamePathMap and the applicationPathSet
         for (Application application : appManager.getApplicationList()) {
             // Load the executable file to extract the name

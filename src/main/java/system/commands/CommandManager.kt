@@ -6,7 +6,7 @@ import model.command.Command
 import model.component.CommandResolver
 import model.parser.command.CommandParser
 import system.applications.Application
-import system.commands.export.CommandExporter
+import system.commands.exporter.CommandExporter
 import system.commands.general.AppOpenCommand
 import system.commands.general.AppRelatedCommand
 import system.commands.model.CommandWrapper

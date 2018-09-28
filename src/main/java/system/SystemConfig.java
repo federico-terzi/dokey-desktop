@@ -20,7 +20,7 @@ import system.bookmarks.BookmarkManager;
 import system.commands.CommandEngine;
 import system.commands.CommandManager;
 import system.commands.CommandTemplateLoader;
-import system.commands.export.CommandExporter;
+import system.commands.exporter.CommandExporter;
 import system.context.GeneralContext;
 import system.drag_and_drop.DNDCommandProcessor;
 import system.exceptions.UnsupportedOperatingSystemException;
@@ -29,7 +29,7 @@ import system.keyboard.KeyboardManager;
 import system.keyboard.MACKeyboardManager;
 import system.keyboard.MSKeyboardManager;
 import system.applications.ApplicationManager;
-import system.parsers.RuntimeCommandParser;
+import system.commands.parsers.RuntimeCommandParser;
 import system.search.SearchEngine;
 import system.section.SectionManager;
 import system.server.*;
@@ -205,8 +205,24 @@ public class SystemConfig {
         return new ImageResolver(generalContext());
     }
 
+    @Bean
+    public ApplicationPathResolver applicationPathResolver() throws UnsupportedOperatingSystemException {
+        return new ApplicationPathResolver(applicationManager());
+    }
+
     public GeneralContext generalContext() {
         return new GeneralContext() {
+            @NotNull
+            @Override
+            public ApplicationPathResolver getApplicationPathResolver() {
+                try {
+                    return applicationPathResolver();
+                } catch (UnsupportedOperatingSystemException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
             @NotNull
             @Override
             public ApplicationSwitchDaemon getApplicationSwitchDaemon() {

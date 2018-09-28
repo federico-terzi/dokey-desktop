@@ -1,4 +1,4 @@
-package system.parsers
+package system.commands.parsers
 
 import model.command.Command
 import model.parser.command.CategoryCommandParser

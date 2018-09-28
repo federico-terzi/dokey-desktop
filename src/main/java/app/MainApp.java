@@ -69,6 +69,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     private ApplicationManager appManager;
     private TrayIconManager trayIconManager;
     private ApplicationSwitchDaemon applicationSwitchDaemon;
+    private ApplicationPathResolver applicationPathResolver;
     private ActiveApplicationsDaemon activeApplicationsDaemon;
     private BookmarkManager bookmarkManager;
     private MobileServer mobileServer;
@@ -268,6 +269,9 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         // Initialize the search bar for the first invocation
         searchStage = context.getBean(SearchStage.class);
 
+        // Get the application path resolver
+        applicationPathResolver = context.getBean(ApplicationPathResolver.class);
+
         // Add the shutdownPC hook
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             LOG.info("Stopping all services...");
@@ -375,6 +379,9 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
 
         // Initialize the control panel
         controlPanelStage = context.getBean(ControlPanelStage.class);
+
+        // Initialize the application path resolver
+        applicationPathResolver.load();
 
         // Start the engine server
         startEngineServer();
