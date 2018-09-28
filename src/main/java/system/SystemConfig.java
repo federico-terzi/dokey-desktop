@@ -20,6 +20,7 @@ import system.bookmarks.BookmarkManager;
 import system.commands.CommandEngine;
 import system.commands.CommandManager;
 import system.commands.CommandTemplateLoader;
+import system.commands.export.CommandExporter;
 import system.context.GeneralContext;
 import system.drag_and_drop.DNDCommandProcessor;
 import system.exceptions.UnsupportedOperatingSystemException;
@@ -186,7 +187,12 @@ public class SystemConfig {
 
     @Bean
     public CommandManager commandManager() {
-        return new CommandManager(commandParser(), storageManager(), commandTemplateLoader());
+        return new CommandManager(commandParser(), storageManager(), commandTemplateLoader(), commandExporter());
+    }
+
+    @Bean
+    public CommandExporter commandExporter() {
+        return new CommandExporter();
     }
 
     @Bean

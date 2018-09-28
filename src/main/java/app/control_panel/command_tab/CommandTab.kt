@@ -13,11 +13,13 @@ import javafx.geometry.Pos
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
+import javafx.stage.FileChooser
 import model.command.Command
 import system.BroadcastManager
 import system.applications.ApplicationManager
 import system.commands.CommandManager
 import system.image.ImageResolver
+import java.io.File
 import java.util.*
 
 class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: ImageResolver,
@@ -101,6 +103,17 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
                     }
                     commandListPanel.loadCommands()
                 }).show()
+    }
+    override val onExportRequest: ((List<Command>) -> Unit)? = {commands ->
+        val fileChooser = FileChooser()
+        fileChooser.title = "Export commands..."  // TODO: i18n
+        fileChooser.initialDirectory = File(System.getProperty("user.home"))
+        fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Dokey Commands", "*.dkcm"))
+
+        val destinationFile = fileChooser.showSaveDialog(null)
+        if (destinationFile != null) {
+            commandManager.exportCommands(commands, destinationFile)
+        }
     }
 
     private fun requestEditForCommand(command: Command) {

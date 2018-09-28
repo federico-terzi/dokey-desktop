@@ -37,7 +37,7 @@ class CommandListView(val imageResolver: ImageResolver, val commandActionListene
             exportItem.setOnAction {
                 val selectedCommands = this.selectionModel.selectedItems
                 if (selectedCommands.size > 0) {
-                    // TODO
+                    commandActionListener?.onExportRequest?.invoke(selectedCommands)
                 }
             }
             deleteItem.setOnAction {

@@ -1,5 +1,6 @@
 package system.commands.model
 
+import json.JSONObject
 import model.command.Command
 
 interface CommandWrapper : Command {

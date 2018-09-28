@@ -18,6 +18,13 @@ open class SimpleCommandWrapper : SimpleCommand(), CommandWrapper {
         return json
     }
 
+    override fun jsonExport(): JSONObject {
+        val json = super.jsonExport()
+        json.put("locked", locked)
+        json.put("implicit", implicit)
+        return json
+    }
+
     override fun populateFromJSON(json: JSONObject) {
         super.populateFromJSON(json)
 
