@@ -18,6 +18,12 @@ open class SimpleAppRelatedCommand : SimpleCommandWrapper(), AppRelatedCommand {
         return json
     }
 
+    override fun jsonExport(): JSONObject {
+        val json = super.jsonExport()
+        json.put("app", app)
+        return json
+    }
+
     override fun populateFromJSON(json: JSONObject) {
         super.populateFromJSON(json)
         _app = json.optString("app", null)
