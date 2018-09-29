@@ -31,6 +31,7 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
     // Context menu actions
     var onResetRequest : ((Section) -> Unit)? = null
     var onDeleteRequest : ((Section) -> Unit)? = null
+    var onExportRequest : ((Section) -> Unit)? = null
 
     init {
         this.styleClass.add("app_scroll_pane")

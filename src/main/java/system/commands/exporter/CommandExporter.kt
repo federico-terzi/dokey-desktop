@@ -17,7 +17,7 @@ class CommandExporter {
         }
     }
 
-    private fun generateExportPayload(commands: List<Command>) : JSONObject {
+    fun generateExportPayload(commands: List<Command>) : JSONObject {
         val json = JSONObject()
 
         // Add metadata

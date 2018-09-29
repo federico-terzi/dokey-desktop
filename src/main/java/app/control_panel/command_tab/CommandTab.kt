@@ -133,7 +133,7 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
         val fileChooser = FileChooser()
         fileChooser.title = "Export commands..."  // TODO: i18n
         fileChooser.initialDirectory = File(System.getProperty("user.home"))
-        fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Dokey Commands", "*.dkcm"))
+        fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Dokey Command Format", "*.dkcf"))
 
         val destinationFile = fileChooser.showSaveDialog(null)
         if (destinationFile != null) {
@@ -144,7 +144,7 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
         val fileChooser = FileChooser()
         fileChooser.title = "Import commands..."  // TODO: i18n
         fileChooser.initialDirectory = File(System.getProperty("user.home"))
-        fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Dokey Commands", "*.dkcm"))
+        fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Dokey Command Format", "*.dkcf"))
 
         val sourceFile = fileChooser.showOpenDialog(null)
         if (sourceFile != null) {

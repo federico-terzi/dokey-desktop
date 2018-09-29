@@ -43,6 +43,10 @@ open class DefaultSectionWrapper(val section: Section) : SectionWrapper {
         return json
     }
 
+    override fun jsonExport(): JSONObject {
+        return section.jsonExport()
+    }
+
     override fun populateFromJSON(json: JSONObject, pageParser: PageParser) {
         section.populateFromJSON(json, pageParser)
     }

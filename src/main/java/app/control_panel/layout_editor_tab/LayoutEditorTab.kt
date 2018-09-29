@@ -13,6 +13,7 @@ import javafx.scene.control.ScrollPane
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.scene.layout.VBox
+import javafx.stage.FileChooser
 import javafx.util.Duration
 import model.page.DefaultPage
 import model.parser.component.ComponentParser
@@ -23,6 +24,8 @@ import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
 import system.applications.ApplicationManager
 import system.section.SectionManager
+import system.section.export.SectionExporter
+import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -32,7 +35,7 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
                       val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                       val componentParser: ComponentParser, val commandManager: CommandManager,
                       val applicationManager: ApplicationManager, val globalKeyboardListener: GlobalKeyboardListener,
-                      val dndCommandProcessor: DNDCommandProcessor) : ControlPanelTab() {
+                      val dndCommandProcessor: DNDCommandProcessor, val sectionExporter: SectionExporter) : ControlPanelTab() {
     val layoutToolbar = LayoutToolbar(imageResolver, applicationManager)
     val sectionBar: SectionBar
     var sectionGrid: SectionGrid? = null
@@ -68,6 +71,17 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
         }
         sectionBar.onResetRequest = { section ->
             requestResetSection(section)
+        }
+        sectionBar.onExportRequest = { section ->
+            val fileChooser = FileChooser()
+            fileChooser.title = "Export section..."  // TODO: i18n
+            fileChooser.initialDirectory = File(System.getProperty("user.home"))
+            fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Dokey Layout Format", "*.dklf"))
+            fileChooser.initialFileName = "${section.name}.dklf"
+            val destinationFile = fileChooser.showSaveDialog(null)
+            if (destinationFile != null) {
+                sectionExporter.export(section, destinationFile)
+            }
         }
 
         // Setup the debouncing save mechanism

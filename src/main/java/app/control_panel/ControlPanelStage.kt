@@ -38,6 +38,7 @@ import system.applications.ApplicationManager
 import system.commands.exporter.CommandExporter
 import system.commands.importer.CommandImporter
 import system.section.SectionManager
+import system.section.export.SectionExporter
 import system.server.HandshakeDataBuilder
 import system.server.MobileServer
 import system.startup.StartupManager
@@ -50,13 +51,14 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
                         val applicationManager: ApplicationManager, val handshakeDataBuilder: HandshakeDataBuilder,
                         val dndCommandProcessor: DNDCommandProcessor, val settingsManager: SettingsManager,
                         val startupManager: StartupManager, val storageManager: StorageManager,
-                        val commandExporter: CommandExporter, val commandImporter: CommandImporter)
+                        val commandExporter: CommandExporter, val commandImporter: CommandImporter,
+                        val sectionExporter: SectionExporter)
     : BlurrableStage(), GlobalKeyboardListener {
 
     private val controller : ControlPanelController
 
     private val layoutEditorTab = LayoutEditorTab(this, sectionManager, imageResolver, resourceBundle, componentParser,
-            commandManager, applicationManager, this, dndCommandProcessor)
+            commandManager, applicationManager, this, dndCommandProcessor, sectionExporter)
 
     private val devicesTab = DevicesTab(imageResolver, resourceBundle, handshakeDataBuilder)
 

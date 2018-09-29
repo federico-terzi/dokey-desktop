@@ -22,6 +22,7 @@ import system.image.ImageResolver;
 import system.applications.ApplicationManager;
 import system.search.SearchEngine;
 import system.section.SectionManager;
+import system.section.export.SectionExporter;
 import system.server.HandshakeDataBuilder;
 import system.server.MobileServer;
 import system.startup.StartupManager;
@@ -50,6 +51,7 @@ public class AppConfig {
     @Autowired private StorageManager storageManager;
     @Autowired private ImageResolver imageResolver;
     @Autowired private SectionManager sectionManager;
+    @Autowired private SectionExporter sectionExporter;
     @Autowired private CommandManager commandManager;
     @Autowired private CommandExporter commandExporter;
     @Autowired private CommandImporter commandImporter;
@@ -82,7 +84,7 @@ public class AppConfig {
     public ControlPanelStage controlPanelStage() throws IOException, UnsupportedOperatingSystemException {
         return new ControlPanelStage(sectionManager, imageResolver, resourceBundle, componentParser, commandManager,
                 applicationManager,handshakeDataBuilder, dndCommandProcessor, settingsManager, startupManager,
-                storageManager, commandExporter, commandImporter);
+                storageManager, commandExporter, commandImporter, sectionExporter);
     }
 
 //    @Bean

@@ -83,7 +83,7 @@ abstract class Selector(val context: SelectorContext, val sectionBar: SectionBar
         val contextMenu = ContextMenu()
         val exportItem : MenuItem = StyledMenuItem("/assets/external-link.png", "Export")  // TODO: i18n
         exportItem.setOnAction {
-            // TODO
+            sectionBar.onExportRequest?.invoke(section)
         }
 
         val resetMenuItem = StyledMenuItem("/assets/repeat.png", "Reset")  // TODO: i18n
