@@ -36,7 +36,7 @@ class CommandListView(val imageResolver: ImageResolver, val commandActionListene
                 }
             }
             exportItem.setOnAction {
-                val selectedCommands = this.selectionModel.selectedItems
+                val selectedCommands = this.selectionModel.selectedItems.toList()
                 if (selectedCommands.size > 0) {
                     commandActionListener?.onExportRequest?.invoke(selectedCommands)
                 }
@@ -45,14 +45,14 @@ class CommandListView(val imageResolver: ImageResolver, val commandActionListene
                 commandActionListener?.onImportRequest?.invoke()
             }
             deleteItem.setOnAction {
-                val selectedCommands = this.selectionModel.selectedItems
+                val selectedCommands = this.selectionModel.selectedItems.toList()
                 if (selectedCommands.size > 0) {
                     commandActionListener?.onDeleteRequest?.invoke(selectedCommands)
                 }
             }
 
 
-            cm.items.addAll(editItem, exportItem, importItem, SeparatorMenuItem(), deleteItem)
+            cm.items.addAll(editItem, deleteItem, SeparatorMenuItem(), exportItem, importItem)
             contextMenu = cm
 
             // Add binding to show/hide context menu items based on the number of selected items

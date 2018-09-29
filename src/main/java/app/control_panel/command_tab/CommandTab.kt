@@ -126,8 +126,10 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
 
         val sourceFile = fileChooser.showOpenDialog(null)
         if (sourceFile != null) {
-            commandImporter.import(sourceFile)
-            commandListPanel.loadCommands()
+            val commands = commandImporter.import(sourceFile)
+            if (commands.isNotEmpty()) {
+                commandListPanel.focusCommand(commands.first().id!!)
+            }
         }
     }
 
