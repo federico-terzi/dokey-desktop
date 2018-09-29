@@ -15,6 +15,7 @@ import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
 import javafx.util.Duration
 import model.section.Section
+import java.util.*
 
 abstract class Selector(val context: SelectorContext, val sectionBar: SectionBar, val section: Section, val priority: Int,
                         val isDeletable: Boolean = true) : Comparable<Selector>, Button() {

@@ -1,6 +1,8 @@
 package app.control_panel.layout_editor_tab.bar
 
 import app.control_panel.layout_editor_tab.bar.selectors.*
+import javafx.application.Platform
+import javafx.concurrent.Task
 import javafx.event.EventHandler
 import javafx.scene.control.ScrollPane
 import javafx.scene.layout.HBox
@@ -10,7 +12,12 @@ import system.applications.ApplicationManager
 import system.commands.CommandManager
 import system.section.SectionManager
 import java.lang.reflect.InvocationTargetException
+import java.util.*
 import java.util.logging.Logger
+import kotlin.concurrent.timer
+import kotlin.concurrent.timerTask
+
+const val DRAG_TIMEOUT = 500L // ms
 
 class SectionBar(val sectionManager: SectionManager, override val applicationManager: ApplicationManager,
                  override val imageResolver: ImageResolver, override val commandManager: CommandManager) : ScrollPane(), SelectorContext {
@@ -22,6 +29,9 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
 
     private val appBox = HBox()
     private val selectors = mutableListOf<Selector>()
+
+    // Used to delay section change during drag and drop
+    private var dragTimer = Timer()
 
     // Currently selected selector
     var currentSelector : Selector? = null
@@ -101,8 +111,16 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
             selector.onDragEntered = EventHandler {
                 // Make sure the source isn't the button itself
                 if (it.gestureSource != selector) {
-                    changeAction()
+                    dragTimer = Timer()
+                    dragTimer.schedule(timerTask {
+                        Platform.runLater {
+                            changeAction()
+                        }
+                    }, DRAG_TIMEOUT)
                 }
+            }
+            selector.setOnDragExited {
+                dragTimer.cancel()
             }
         }
 
