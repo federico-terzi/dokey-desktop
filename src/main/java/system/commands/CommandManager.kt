@@ -187,6 +187,12 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
         return saveCommand(command)
     }
 
+    fun undeleteCommand(command: Command) : Boolean {
+        command as CommandWrapper
+        command.deleted = false
+        return saveCommand(command)
+    }
+
     /**
      * Read and parse the command from the specified JSON file
      */

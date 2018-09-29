@@ -16,10 +16,12 @@ import javafx.scene.layout.VBox
 import javafx.stage.FileChooser
 import model.command.Command
 import system.BroadcastManager
+import system.SettingsManager
 import system.applications.ApplicationManager
 import system.commands.CommandManager
 import system.commands.exporter.CommandExporter
 import system.commands.importer.CommandImporter
+import system.commands.model.CommandWrapper
 import system.image.ImageResolver
 import java.io.File
 import java.util.*
@@ -27,7 +29,7 @@ import java.util.*
 class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: ImageResolver,
                  val resourceBundle: ResourceBundle, val applicationManager: ApplicationManager,
                  val commandManager: CommandManager, val commandExporter: CommandExporter,
-                 val commandImporter: CommandImporter) : ControlPanelTab(), CommandActionListener {
+                 val commandImporter: CommandImporter, val settingsManager: SettingsManager) : ControlPanelTab(), CommandActionListener {
 
     // UI Elements
     private val toolbar = CommandToolbar(controlPanelStage, imageResolver)
@@ -67,11 +69,17 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
         }
 
         commandListPanel.onCommandSelected = { command ->
-            requestEditForCommand(command)
+            command as CommandWrapper
+            if (!command.deleted) {
+                requestEditForCommand(command)
+            }else{
+                showCommandIsDeletedRecoverDialog(command)
+            }
         }
     }
 
     override fun onFocus() {
+        commandListPanel.showDeleted = settingsManager.showDeletedCommands
         commandListPanel.loadCommands()
 
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.EDITOR_MODIFIED_COMMAND_EVENT, commandModifiedEvent)
@@ -86,8 +94,16 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
         val commandId = commandIdString.toInt()
 
         Platform.runLater {
-            commandListPanel.focusCommand(commandId)
+            commandListPanel.loadCommandsAndFocus(commandId)
         }
+    }
+
+    private fun showCommandIsDeletedRecoverDialog(command: CommandWrapper) {
+        AlertFactory.instance.confirmation("Deleted command", "This command was previously deleted, do you want to recover it?",  // TODO: i18n
+                onYes = {
+                    commandManager.undeleteCommand(command)
+                    commandListPanel.loadCommands()
+                }).show()
     }
 
     /**
@@ -106,6 +122,12 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
                     }
                     commandListPanel.loadCommands()
                 }).show()
+    }
+    override val onRecoverRequest: ((List<Command>) -> Unit)? = {commands ->
+        commands.forEach { command ->
+            commandManager.undeleteCommand(command)
+        }
+        commandListPanel.loadCommands()
     }
     override val onExportRequest: ((List<Command>) -> Unit)? = {commands ->
         val fileChooser = FileChooser()
@@ -128,7 +150,7 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
         if (sourceFile != null) {
             val commands = commandImporter.import(sourceFile)
             if (commands.isNotEmpty()) {
-                commandListPanel.focusCommand(commands.first().id!!)
+                commandListPanel.loadCommandsAndFocus(commands.first().id!!)
             }
         }
     }

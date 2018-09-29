@@ -16,4 +16,15 @@
     -stop-green-gradient: #3BB2B8;
 
     -green-gradient: linear-gradient(to bottom right, -start-green-gradient, -stop-green-gradient);
+
+    -start-red-gradient: #F54EA2;
+    -stop-red-gradient: #FF7676;
+
+    -red-gradient: linear-gradient(to bottom right, -start-red-gradient, -stop-red-gradient);
+
+    -start-blue-gradient: #61709c;
+    -stop-blue-gradient: #364163;
+
+    -blue-gradient: linear-gradient(to bottom right, -start-blue-gradient, -stop-blue-gradient);
+
 }

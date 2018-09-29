@@ -2,6 +2,8 @@ package app.control_panel.command_tab.list
 
 import app.ui.control.StyledMenuItem
 import javafx.application.Platform
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.css.PseudoClass
 import javafx.geometry.Pos
 import javafx.scene.control.ContextMenu
 import javafx.scene.control.Label
@@ -12,6 +14,7 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import model.command.Command
+import system.commands.model.CommandWrapper
 import system.image.ImageResolver
 import java.time.Instant
 import java.time.LocalDateTime
@@ -27,6 +30,8 @@ class CommandListCell(val imageResolver: ImageResolver) : ListCell<Command>() {
 
     private val dayFormatter = DateTimeFormatter.ofPattern("MMM, dd")
     private val hourFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+    var deletedProperty = SimpleBooleanProperty(false)
 
     init {
         styleClass.add("command-list-cell")
@@ -54,9 +59,13 @@ class CommandListCell(val imageResolver: ImageResolver) : ListCell<Command>() {
         hBox.minWidth = 0.0
         hBox.prefWidth = 1.0
         graphic = hBox
+
+        deletedProperty.addListener { _, _, newValue -> pseudoClassStateChanged(DELETED_PSEUDO_CLASS, newValue) }
     }
 
     private fun addContent(entry: Command) {
+        entry as CommandWrapper
+
         // Setup the labels
         nameLabel.text = entry.title
         descriptionLabel.text = entry.description ?: ""
@@ -85,6 +94,9 @@ class CommandListCell(val imageResolver: ImageResolver) : ListCell<Command>() {
             }
         }
 
+        // Setup the deleted rendering
+        deletedProperty.set(entry.deleted)
+
         graphic = hBox
     }
 
@@ -96,5 +108,9 @@ class CommandListCell(val imageResolver: ImageResolver) : ListCell<Command>() {
         } else {
             addContent(result!!)
         }
+    }
+
+    companion object {
+        val DELETED_PSEUDO_CLASS = PseudoClass.getPseudoClass("deleted")
     }
 }

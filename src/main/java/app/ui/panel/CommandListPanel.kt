@@ -16,7 +16,7 @@ import system.image.ImageResolver
 import java.util.Comparator
 
 class CommandListPanel(val parent: BlurrableStage, val imageResolver: ImageResolver, val commandManager: CommandManager,
-                       val showImplicit: Boolean = true, val showDeleted: Boolean = false,
+                       var showImplicit: Boolean = true, var showDeleted: Boolean = false,
                        val showContextMenus : Boolean = false, commandActionListener: CommandActionListener? = null)
     : VBox() {
 
@@ -78,7 +78,7 @@ class CommandListPanel(val parent: BlurrableStage, val imageResolver: ImageResol
         }.start()
     }
 
-    fun focusCommand(commandId: Int) {
+    fun loadCommandsAndFocus(commandId: Int) {
         loadCommands {
             val selectedIndex = commands.indexOfFirst { it.id == commandId }
             if (selectedIndex >= 0) {

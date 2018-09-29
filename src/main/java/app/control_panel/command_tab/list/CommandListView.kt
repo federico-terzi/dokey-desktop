@@ -5,12 +5,14 @@ import javafx.collections.ListChangeListener
 import javafx.scene.control.*
 import javafx.scene.input.KeyCode
 import model.command.Command
+import system.commands.model.CommandWrapper
 import system.image.ImageResolver
 
 class CommandListView(val imageResolver: ImageResolver, val commandActionListener: CommandActionListener?, showContextMenus: Boolean) : ListView<Command>(){
     // Context menu items
     private val editItem : MenuItem = StyledMenuItem("/assets/edit.png", "Edit")  // TODO: i18n
     private val deleteItem : MenuItem = StyledMenuItem("/assets/delete.png", "Delete")  // TODO: i18n
+    private val recoverItem : MenuItem = StyledMenuItem("/assets/undelete.png", "Recover")  // TODO: i18n
     private val exportItem : MenuItem = StyledMenuItem("/assets/external-link.png", "Export")  // TODO: i18n
     private val importItem : MenuItem = StyledMenuItem("/assets/import.png", "Import")  // TODO: i18n
 
@@ -50,9 +52,15 @@ class CommandListView(val imageResolver: ImageResolver, val commandActionListene
                     commandActionListener?.onDeleteRequest?.invoke(selectedCommands)
                 }
             }
+            recoverItem.setOnAction {
+                val selectedCommands = this.selectionModel.selectedItems.toList()
+                if (selectedCommands.size > 0) {
+                    commandActionListener?.onRecoverRequest?.invoke(selectedCommands)
+                }
+            }
 
 
-            cm.items.addAll(editItem, deleteItem, SeparatorMenuItem(), exportItem, importItem)
+            cm.items.addAll(editItem, deleteItem, recoverItem, SeparatorMenuItem(), exportItem, importItem)
             contextMenu = cm
 
             // Add binding to show/hide context menu items based on the number of selected items
@@ -61,6 +69,19 @@ class CommandListView(val imageResolver: ImageResolver, val commandActionListene
                     singleElementMenuItems.forEach { it.isVisible = false }
                 }else{
                     singleElementMenuItems.forEach { it.isVisible = true }
+                }
+
+                // Show Delete/Recover buttons
+                val selectedCommands = this.selectionModel.selectedItems.toList()
+                if (selectedCommands.all {it as CommandWrapper ; it.deleted}) {
+                    deleteItem.isVisible = false
+                    recoverItem.isVisible = true
+                }else if (selectedCommands.all {it as CommandWrapper ; !it.deleted}){
+                    deleteItem.isVisible = true
+                    recoverItem.isVisible = false
+                }else{
+                    deleteItem.isVisible = false
+                    recoverItem.isVisible = false
                 }
             })
         }
