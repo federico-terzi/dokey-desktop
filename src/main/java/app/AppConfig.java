@@ -14,6 +14,8 @@ import org.springframework.context.annotation.*;
 import system.SettingsManager;
 import system.SystemConfig;
 import system.commands.CommandManager;
+import system.commands.exporter.CommandExporter;
+import system.commands.importer.CommandImporter;
 import system.drag_and_drop.DNDCommandProcessor;
 import system.exceptions.UnsupportedOperatingSystemException;
 import system.image.ImageResolver;
@@ -49,6 +51,8 @@ public class AppConfig {
     @Autowired private ImageResolver imageResolver;
     @Autowired private SectionManager sectionManager;
     @Autowired private CommandManager commandManager;
+    @Autowired private CommandExporter commandExporter;
+    @Autowired private CommandImporter commandImporter;
     @Autowired private ComponentParser componentParser;
     @Autowired private DNDCommandProcessor dndCommandProcessor;
     @Autowired private HandshakeDataBuilder handshakeDataBuilder;
@@ -78,7 +82,7 @@ public class AppConfig {
     public ControlPanelStage controlPanelStage() throws IOException, UnsupportedOperatingSystemException {
         return new ControlPanelStage(sectionManager, imageResolver, resourceBundle, componentParser, commandManager,
                 applicationManager,handshakeDataBuilder, dndCommandProcessor, settingsManager, startupManager,
-                storageManager);
+                storageManager, commandExporter, commandImporter);
     }
 
 //    @Bean

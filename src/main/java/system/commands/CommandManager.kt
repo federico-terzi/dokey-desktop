@@ -9,6 +9,7 @@ import system.applications.Application
 import system.commands.exporter.CommandExporter
 import system.commands.general.AppOpenCommand
 import system.commands.general.AppRelatedCommand
+import system.commands.importer.CommandImporter
 import system.commands.model.CommandWrapper
 import system.storage.StorageManager
 import java.io.*
@@ -16,7 +17,7 @@ import java.util.logging.Logger
 
 
 class CommandManager(val commandParser: CommandParser, val storageManager: StorageManager,
-                     val templateLoader: CommandTemplateLoader, val commandExporter: CommandExporter) : CommandResolver {
+                     val templateLoader: CommandTemplateLoader) : CommandResolver {
     // Load the command directory, where all the command files are saved
     val commandDir = storageManager.commandDir
 
@@ -262,12 +263,5 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
     // Used in the section selector bar
     fun getAppOpenCommand(appPath: String) : Command? {
         return commandMap.values.find { it is AppOpenCommand && it.executablePath == appPath }
-    }
-
-    /**
-     * Export the given commands to the given destination file
-     */
-    fun exportCommands(commands: List<Command>, destinationFile: File) {
-        commandExporter.exportCommands(commands, destinationFile)
     }
 }

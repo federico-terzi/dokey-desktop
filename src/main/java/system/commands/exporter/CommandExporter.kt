@@ -7,7 +7,7 @@ import utils.OSValidator
 import java.io.File
 
 class CommandExporter {
-    fun exportCommands(commands: List<Command>, destinationFile: File) {
+    fun export(commands: List<Command>, destinationFile: File) {
         // Generate the json payload
         val payload = generateExportPayload(commands)
 

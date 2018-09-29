@@ -18,13 +18,16 @@ import model.command.Command
 import system.BroadcastManager
 import system.applications.ApplicationManager
 import system.commands.CommandManager
+import system.commands.exporter.CommandExporter
+import system.commands.importer.CommandImporter
 import system.image.ImageResolver
 import java.io.File
 import java.util.*
 
 class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: ImageResolver,
                  val resourceBundle: ResourceBundle, val applicationManager: ApplicationManager,
-                 val commandManager: CommandManager) : ControlPanelTab(), CommandActionListener {
+                 val commandManager: CommandManager, val commandExporter: CommandExporter,
+                 val commandImporter: CommandImporter) : ControlPanelTab(), CommandActionListener {
 
     // UI Elements
     private val toolbar = CommandToolbar(controlPanelStage, imageResolver)
@@ -112,7 +115,19 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
 
         val destinationFile = fileChooser.showSaveDialog(null)
         if (destinationFile != null) {
-            commandManager.exportCommands(commands, destinationFile)
+            commandExporter.export(commands, destinationFile)
+        }
+    }
+    override val onImportRequest: (() -> Unit)? = {
+        val fileChooser = FileChooser()
+        fileChooser.title = "Import commands..."  // TODO: i18n
+        fileChooser.initialDirectory = File(System.getProperty("user.home"))
+        fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Dokey Commands", "*.dkcm"))
+
+        val sourceFile = fileChooser.showOpenDialog(null)
+        if (sourceFile != null) {
+            commandImporter.import(sourceFile)
+            commandListPanel.loadCommands()
         }
     }
 

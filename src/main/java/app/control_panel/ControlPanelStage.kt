@@ -35,6 +35,8 @@ import system.commands.CommandManager
 import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
 import system.applications.ApplicationManager
+import system.commands.exporter.CommandExporter
+import system.commands.importer.CommandImporter
 import system.section.SectionManager
 import system.server.HandshakeDataBuilder
 import system.server.MobileServer
@@ -47,7 +49,8 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
                         val componentParser: ComponentParser, val commandManager: CommandManager,
                         val applicationManager: ApplicationManager, val handshakeDataBuilder: HandshakeDataBuilder,
                         val dndCommandProcessor: DNDCommandProcessor, val settingsManager: SettingsManager,
-                        val startupManager: StartupManager, val storageManager: StorageManager)
+                        val startupManager: StartupManager, val storageManager: StorageManager,
+                        val commandExporter: CommandExporter, val commandImporter: CommandImporter)
     : BlurrableStage(), GlobalKeyboardListener {
 
     private val controller : ControlPanelController
@@ -57,7 +60,8 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
     private val devicesTab = DevicesTab(imageResolver, resourceBundle, handshakeDataBuilder)
 
-    private val commandTab = CommandTab(this, imageResolver, resourceBundle, applicationManager, commandManager)
+    private val commandTab = CommandTab(this, imageResolver, resourceBundle, applicationManager,
+            commandManager, commandExporter, commandImporter)
 
     private val settingsTab = SettingsTab(imageResolver, applicationManager, settingsManager, startupManager,
             resourceBundle, storageManager)

@@ -21,6 +21,8 @@ import system.commands.CommandEngine;
 import system.commands.CommandManager;
 import system.commands.CommandTemplateLoader;
 import system.commands.exporter.CommandExporter;
+import system.commands.importer.CommandImporter;
+import system.commands.validator.CommandValidator;
 import system.context.GeneralContext;
 import system.drag_and_drop.DNDCommandProcessor;
 import system.exceptions.UnsupportedOperatingSystemException;
@@ -187,7 +189,18 @@ public class SystemConfig {
 
     @Bean
     public CommandManager commandManager() {
-        return new CommandManager(commandParser(), storageManager(), commandTemplateLoader(), commandExporter());
+        return new CommandManager(commandParser(), storageManager(), commandTemplateLoader());
+    }
+
+    @Bean
+    public CommandValidator commandValidator() {
+        return new CommandValidator(generalContext());
+    }
+
+    @Bean
+    public CommandImporter commandImporter() {
+        return new CommandImporter(commandValidator(), commandParser(),
+                commandManager());
     }
 
     @Bean

@@ -12,6 +12,7 @@ class CommandListView(val imageResolver: ImageResolver, val commandActionListene
     private val editItem : MenuItem = StyledMenuItem("/assets/edit.png", "Edit")  // TODO: i18n
     private val deleteItem : MenuItem = StyledMenuItem("/assets/delete.png", "Delete")  // TODO: i18n
     private val exportItem : MenuItem = StyledMenuItem("/assets/external-link.png", "Export")  // TODO: i18n
+    private val importItem : MenuItem = StyledMenuItem("/assets/import.png", "Import")  // TODO: i18n
 
     // Menu items that support only a single selection
     private val singleElementMenuItems : List<MenuItem> = listOf(editItem)
@@ -40,6 +41,9 @@ class CommandListView(val imageResolver: ImageResolver, val commandActionListene
                     commandActionListener?.onExportRequest?.invoke(selectedCommands)
                 }
             }
+            importItem.setOnAction {
+                commandActionListener?.onImportRequest?.invoke()
+            }
             deleteItem.setOnAction {
                 val selectedCommands = this.selectionModel.selectedItems
                 if (selectedCommands.size > 0) {
@@ -48,7 +52,7 @@ class CommandListView(val imageResolver: ImageResolver, val commandActionListene
             }
 
 
-            cm.items.addAll(editItem, exportItem, SeparatorMenuItem(), deleteItem)
+            cm.items.addAll(editItem, exportItem, importItem, SeparatorMenuItem(), deleteItem)
             contextMenu = cm
 
             // Add binding to show/hide context menu items based on the number of selected items
