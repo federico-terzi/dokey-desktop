@@ -14,7 +14,10 @@ import java.util.logging.Logger
 
 class CommandImporter(val commandValidator: CommandValidator, val commandParser: CommandParser,
                       val commandManager: CommandManager) {
-    fun import(sourceFile: File) : List<Command> {
+
+    data class Result(val commands: List<Command>, val failed: List<Command>)
+
+    fun import(sourceFile: File) : Result {
         sourceFile.inputStream().use { stream ->
             val tokener = JSONTokener(stream)
             val json = JSONObject(tokener)
@@ -23,8 +26,9 @@ class CommandImporter(val commandValidator: CommandValidator, val commandParser:
         }
     }
 
-    fun import(json: JSONObject) : List<Command> {
-        val output = mutableListOf<Command>()
+    fun import(json: JSONObject) : Result {
+        val commands = mutableListOf<Command>()
+        val failed = mutableListOf<Command>()
 
         // Extract the commands fromt the JSON
         val extractedCommands = extractCommandsFromExportJSON(json)
@@ -43,13 +47,14 @@ class CommandImporter(val commandValidator: CommandValidator, val commandParser:
                     commandManager.saveCommand(command)
                 }
 
-                output.add(command)
+                commands.add(command)
             }else{
                 LOG.warning("Cannot import command: ${extractedCommand}")
+                failed.add(extractedCommand)
             }
         }
 
-        return output
+        return Result(commands, failed)
     }
 
     fun extractCommandsFromExportJSON(json: JSONObject) : List<Command> {

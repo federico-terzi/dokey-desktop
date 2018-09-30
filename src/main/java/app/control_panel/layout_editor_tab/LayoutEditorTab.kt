@@ -93,9 +93,17 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
 
             val sourceFile = fileChooser.showOpenDialog(null)
             if (sourceFile != null) {
-                val section = sectionImporter.import(sourceFile)
-                if (section != null) {
-                    sectionBar.loadSections(targetSection = section)
+                val sectionResult = sectionImporter.import(sourceFile)
+                if (sectionResult.section != null) {
+                    // Show an alert if some commands could not be imported
+                    if (sectionResult.failedCommands.isNotEmpty()) {
+                        AlertFactory.instance.alert("Warning",  // TODO: i18n
+                                "Some commands cannot not be imported because they are incompatible with your system: \n\n" +
+                                        "${sectionResult.failedCommands.map { "- " + it.title }.joinToString(separator = "\n")}"
+                                ).show()
+                    }
+
+                    sectionBar.loadSections(targetSection = sectionResult.section)
                 }
             }
         }

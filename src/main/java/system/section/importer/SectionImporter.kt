@@ -15,7 +15,10 @@ import java.io.File
 
 class SectionImporter(val sectionManager: SectionManager, val sectionParser: SectionParser,
                       val commandImporter: CommandImporter) {
-    fun import(sourceFile: File): Section? {
+
+    data class Result(val section: Section?, val failedCommands: List<Command>)
+
+    fun import(sourceFile: File): Result {
         sourceFile.inputStream().use { stream ->
             val tokener = JSONTokener(stream)
             val json = JSONObject(tokener)
@@ -24,7 +27,7 @@ class SectionImporter(val sectionManager: SectionManager, val sectionParser: Sec
         }
     }
 
-    fun import(json: JSONObject): Section? {
+    fun import(json: JSONObject): Result {
         // TODO: check if the section overwrites another one
 
         // Check if the OS is compatible
@@ -43,10 +46,10 @@ class SectionImporter(val sectionManager: SectionManager, val sectionParser: Sec
         }
 
         // Now add all the commands to the system
-        val commands = commandImporter.import(commandJson)
+        val commandResult = commandImporter.import(commandJson)
         // Create a map that associates the content hash to a list of compatible commands
         val hashCommandMap = mutableMapOf<Int, MutableList<Command>>()
-        commands.forEach { command ->
+        commandResult.commands.forEach { command ->
             val hash = command.contentHash()
             if (hashCommandMap[hash] == null) {
                 hashCommandMap[hash] = mutableListOf(command)
@@ -94,9 +97,9 @@ class SectionImporter(val sectionManager: SectionManager, val sectionParser: Sec
         // Save the section
         val sectionWrapper = DefaultSectionWrapper(section)
         if (sectionManager.saveSection(sectionWrapper)) {
-            return sectionWrapper
+            return Result(sectionWrapper, failedCommands = commandResult.failed)
         }
 
-        return null
+        return Result(null, failedCommands = commandResult.failed)
     }
 }

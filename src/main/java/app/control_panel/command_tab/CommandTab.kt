@@ -148,9 +148,17 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
 
         val sourceFile = fileChooser.showOpenDialog(null)
         if (sourceFile != null) {
-            val commands = commandImporter.import(sourceFile)
-            if (commands.isNotEmpty()) {
-                commandListPanel.loadCommandsAndFocus(commands.first().id!!)
+            val commandResult = commandImporter.import(sourceFile)
+            // Show an alert if some commands could not be imported
+            if (commandResult.failed.isNotEmpty()) {
+                AlertFactory.instance.alert("Warning",  // TODO: i18n
+                        "Some commands cannot not be imported because they are incompatible with your system: \n\n" +
+                                "${commandResult.failed.map { "- " + it.title }.joinToString(separator = "\n")}"
+                ).show()
+            }
+
+            if (commandResult.commands.isNotEmpty()) {
+                commandListPanel.loadCommandsAndFocus(commandResult.commands.first().id!!)
             }
         }
     }
