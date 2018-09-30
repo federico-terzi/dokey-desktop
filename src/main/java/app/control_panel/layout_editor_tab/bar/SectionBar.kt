@@ -1,9 +1,12 @@
 package app.control_panel.layout_editor_tab.bar
 
 import app.control_panel.layout_editor_tab.bar.selectors.*
+import app.ui.control.StyledMenuItem
 import javafx.application.Platform
 import javafx.concurrent.Task
 import javafx.event.EventHandler
+import javafx.scene.control.ContextMenu
+import javafx.scene.control.MenuItem
 import javafx.scene.control.ScrollPane
 import javafx.scene.layout.HBox
 import model.section.*
@@ -42,6 +45,7 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
     var onResetRequest : ((Section) -> Unit)? = null
     var onDeleteRequest : ((Section) -> Unit)? = null
     var onExportRequest : ((Section) -> Unit)? = null
+    var onImportRequest: (() -> Unit)? = null
 
     init {
         this.styleClass.add("app_scroll_pane")

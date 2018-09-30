@@ -87,12 +87,17 @@ abstract class Selector(val context: SelectorContext, val sectionBar: SectionBar
             sectionBar.onExportRequest?.invoke(section)
         }
 
+        val importItem : MenuItem = StyledMenuItem("/assets/import.png", "Import")  // TODO: i18n
+        importItem.setOnAction {
+            sectionBar?.onImportRequest?.invoke()
+        }
+
         val resetMenuItem = StyledMenuItem("/assets/repeat.png", "Reset")  // TODO: i18n
         resetMenuItem.setOnAction {
             sectionBar.onResetRequest?.invoke(section)
         }
 
-        contextMenu.items.addAll(exportItem, SeparatorMenuItem(), resetMenuItem)
+        contextMenu.items.addAll(exportItem, importItem, SeparatorMenuItem(), resetMenuItem)
 
         if (isDeletable) {
             val deleteMenuItem = StyledMenuItem("/assets/delete.png", "Delete")  // TODO: i18n

@@ -25,6 +25,7 @@ import system.image.ImageResolver
 import system.applications.ApplicationManager
 import system.section.SectionManager
 import system.section.exporter.SectionExporter
+import system.section.importer.SectionImporter
 import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -35,7 +36,8 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
                       val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                       val componentParser: ComponentParser, val commandManager: CommandManager,
                       val applicationManager: ApplicationManager, val globalKeyboardListener: GlobalKeyboardListener,
-                      val dndCommandProcessor: DNDCommandProcessor, val sectionExporter: SectionExporter) : ControlPanelTab() {
+                      val dndCommandProcessor: DNDCommandProcessor, val sectionExporter: SectionExporter,
+                      val sectionImporter: SectionImporter) : ControlPanelTab() {
     val layoutToolbar = LayoutToolbar(imageResolver, applicationManager)
     val sectionBar: SectionBar
     var sectionGrid: SectionGrid? = null
@@ -81,6 +83,20 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
             val destinationFile = fileChooser.showSaveDialog(null)
             if (destinationFile != null) {
                 sectionExporter.export(section, destinationFile)
+            }
+        }
+        sectionBar.onImportRequest = {
+            val fileChooser = FileChooser()
+            fileChooser.title = "Import section..."  // TODO: i18n
+            fileChooser.initialDirectory = File(System.getProperty("user.home"))
+            fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Dokey Layout Format", "*.dklf"))
+
+            val sourceFile = fileChooser.showOpenDialog(null)
+            if (sourceFile != null) {
+                val section = sectionImporter.import(sourceFile)
+                if (section != null) {
+                    sectionBar.loadSections(targetSection = section)
+                }
             }
         }
 

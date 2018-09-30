@@ -14,7 +14,7 @@ class FolderOpenValidationAgent(val context: CommandValidationContext) : Validat
         // Make sure the folder exists
         val file = File(command.folder)
 
-        return file.isFile
+        return file.isDirectory
     }
 
     override fun tryToFix(command: Command): Boolean {

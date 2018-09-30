@@ -44,6 +44,8 @@ class CommandImporter(val commandValidator: CommandValidator, val commandParser:
                 }
 
                 output.add(command)
+            }else{
+                LOG.warning("Cannot import command: ${extractedCommand}")
             }
         }
 

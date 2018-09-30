@@ -35,6 +35,7 @@ import system.commands.parsers.RuntimeCommandParser;
 import system.search.SearchEngine;
 import system.section.SectionManager;
 import system.section.exporter.SectionExporter;
+import system.section.importer.SectionImporter;
 import system.server.*;
 import system.startup.MACStartupManager;
 import system.startup.MSStartupManager;
@@ -137,6 +138,11 @@ public class SystemConfig {
     @Bean
     public SectionExporter sectionExporter() {
         return new SectionExporter(commandExporter(), commandManager());
+    }
+
+    @Bean
+    public SectionImporter sectionImporter() throws UnsupportedOperatingSystemException {
+        return new SectionImporter(sectionManager(), sectionParser(), commandImporter());
     }
 
     @Bean

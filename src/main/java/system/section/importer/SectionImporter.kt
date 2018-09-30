@@ -9,6 +9,7 @@ import model.section.Section
 import system.commands.importer.CommandImporter
 import system.exceptions.IncompatibleOsException
 import system.section.SectionManager
+import system.section.model.DefaultSectionWrapper
 import utils.OSValidator
 import java.io.File
 
@@ -91,8 +92,9 @@ class SectionImporter(val sectionManager: SectionManager, val sectionParser: Sec
         }
 
         // Save the section
-        if (sectionManager.saveSection(section)) {
-            return section
+        val sectionWrapper = DefaultSectionWrapper(section)
+        if (sectionManager.saveSection(sectionWrapper)) {
+            return sectionWrapper
         }
 
         return null
