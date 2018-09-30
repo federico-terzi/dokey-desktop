@@ -149,24 +149,7 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
 
         val sourceFile = fileChooser.showOpenDialog(null)
         if (sourceFile != null) {
-            try {
-                val commandResult = commandImporter.import(sourceFile)
-                // Show an alert if some commands could not be imported
-                if (commandResult.failed.isNotEmpty()) {
-                    AlertFactory.instance.alert("Warning",  // TODO: i18n
-                            "Some commands cannot not be imported because they are incompatible with your system: \n\n" +
-                                    "${commandResult.failed.map { "- " + it.title }.joinToString(separator = "\n")}"
-                    ).show()
-                }
-
-                if (commandResult.commands.isNotEmpty()) {
-                    commandListPanel.loadCommandsAndFocus(commandResult.commands.first().id!!)
-                }
-            } catch (ex: IncompatibleOsException) {
-                AlertFactory.instance.alert("Incompatible command(s)",  // TODO: i18n
-                        "Cannot import the requested commands because they are not compatible with your system."
-                ).show()
-            }
+            importCommands(sourceFile)
         }
     }
 
@@ -174,5 +157,26 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
         val dialog = CommandEditDialog(controlPanelStage, imageResolver, applicationManager, commandManager)
         dialog.loadCommand(command)
         dialog.showWithAnimation()
+    }
+
+    fun importCommands(sourceFile: File) {
+        try {
+            val commandResult = commandImporter.import(sourceFile)
+            // Show an alert if some commands could not be imported
+            if (commandResult.failed.isNotEmpty()) {
+                AlertFactory.instance.alert("Warning",  // TODO: i18n
+                        "Some commands cannot not be imported because they are incompatible with your system: \n\n" +
+                                "${commandResult.failed.map { "- " + it.title }.joinToString(separator = "\n")}"
+                ).show()
+            }
+
+            if (commandResult.commands.isNotEmpty()) {
+                commandListPanel.loadCommandsAndFocus(commandResult.commands.first().id!!)
+            }
+        } catch (ex: IncompatibleOsException) {
+            AlertFactory.instance.alert("Incompatible command(s)",  // TODO: i18n
+                    "Cannot import the requested commands because they are not compatible with your system."
+            ).show()
+        }
     }
 }

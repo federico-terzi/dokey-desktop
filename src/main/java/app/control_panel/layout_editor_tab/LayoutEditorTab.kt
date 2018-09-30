@@ -3,6 +3,7 @@ package app.control_panel.layout_editor_tab
 import app.alert.AlertFactory
 import app.control_panel.ControlPanelStage
 import app.control_panel.ControlPanelTab
+import app.control_panel.DropDialog
 import app.control_panel.layout_editor_tab.grid.SectionGrid
 import app.control_panel.layout_editor_tab.bar.SectionBar
 import app.control_panel.dialog.app_select_dialog.ApplicationSelectDialog
@@ -10,6 +11,7 @@ import io.reactivex.subjects.PublishSubject
 import javafx.animation.*
 import javafx.scene.CacheHint
 import javafx.scene.control.ScrollPane
+import javafx.scene.input.DragEvent
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.scene.layout.VBox
@@ -46,6 +48,8 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
 
     // Used to save section edits with a debouncing mechanism
     val saveSectionSubject = PublishSubject.create<Section>()
+
+    private var dropDialog : DropDialog? = null
 
     init {
         children.add(layoutToolbar)
@@ -132,6 +136,21 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
         layoutToolbar.onMoreBtnClicked = {event ->
             // Get the context menu for the current selector
             sectionBar.currentSelector?.contextMenu?.show(layoutToolbar, event.screenX-50, event.screenY)
+        }
+
+        // Setup the drag and drop for layout file importing
+        setOnDragEntered {
+            if (dropDialog == null) {
+                // Check if the dropping file is a dokey exported layout
+                if (validateFileDropPayload(it)) {
+                    dropDialog = DropDialog(controlPanelStage, imageResolver)
+                    dropDialog?.verifyPayload = this::validateFileDropPayload
+                    dropDialog?.showWithAnimation()
+                    dropDialog?.onDialogClosed = {
+                        dropDialog = null
+                    }
+                }
+            }
         }
     }
 
@@ -232,7 +251,7 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
                 }).show()
     }
 
-    private fun importSection(sourceFile: File) {
+    fun importSection(sourceFile: File) {
         try {
             val sectionResult = sectionImporter.import(sourceFile)
             if (sectionResult.section != null) {
@@ -251,5 +270,9 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
                     "Cannot import the requested layout because it is not compatible with your system."
             ).show()
         }
+    }
+
+    private fun validateFileDropPayload(event: DragEvent) : Boolean {
+        return event.dragboard.hasFiles() && event.dragboard.files[0].isFile && event.dragboard.files[0].extension == "dklf"
     }
 }

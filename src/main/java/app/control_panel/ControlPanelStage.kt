@@ -23,6 +23,7 @@ import javafx.scene.control.Tab
 import javafx.scene.effect.Effect
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
+import javafx.scene.input.TransferMode
 import javafx.scene.paint.Color
 import javafx.stage.StageStyle
 import javafx.util.Duration

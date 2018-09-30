@@ -24,7 +24,8 @@ import javafx.util.Duration
 import system.ResourceUtils
 import system.image.ImageResolver
 
-open class OverlayDialog(override val parent: BlurrableStage, val imageResolver: ImageResolver) : BlurrableStage() {
+open class OverlayDialog(override val parent: BlurrableStage, val imageResolver: ImageResolver,
+                         val enableCloseBtn: Boolean = true) : BlurrableStage() {
     private val parentBox = VBox()
     private val topSection = HBox()
     private val closeBtn = IconButton(imageResolver, "asset:x-circle", 20)
@@ -33,6 +34,7 @@ open class OverlayDialog(override val parent: BlurrableStage, val imageResolver:
 
     // Called when a user exit a dialog clicking the X button
     var onDialogCanceled : (() -> Unit)? = null
+    var onDialogClosed : (() -> Unit)? = null
 
     init {
         scene = Scene(parentBox)
@@ -61,7 +63,7 @@ open class OverlayDialog(override val parent: BlurrableStage, val imageResolver:
         HBox.setHgrow(spacerPane, Priority.ALWAYS)
         val topLeftComponent = defineTopSectionComponent()
         topLeftComponent?.let { topSection.children.add(it) }
-        topSection.children.addAll(spacerPane, closeBtn)
+        topSection.children.add(spacerPane)
         parentBox.children.add(topSection)
 
         val contentBox = defineContentBoxComponent()
@@ -71,10 +73,13 @@ open class OverlayDialog(override val parent: BlurrableStage, val imageResolver:
             parentBox.children.add(it)
         }
 
-        // Close button event
-        closeBtn.setOnAction {
-            onDialogCanceled?.invoke()
-            onClose()
+        if (enableCloseBtn) {
+            topSection.children.add(closeBtn)
+            // Close button event
+            closeBtn.setOnAction {
+                onDialogCanceled?.invoke()
+                onClose()
+            }
         }
     }
 
@@ -111,7 +116,7 @@ open class OverlayDialog(override val parent: BlurrableStage, val imageResolver:
         positionTransition.fromY = this.y
 
         val transition = ParallelTransition(fadeTransition, positionTransition)
-        transition.setOnFinished { close() }
+        transition.setOnFinished { onDialogClosed?.invoke(); close() }
         transition.play()
     }
 

@@ -38,8 +38,6 @@ class SectionImporter(val sectionManager: SectionManager, val sectionParser: Sec
     }
 
     fun import(json: JSONObject): Result {
-        // TODO: check if the section overwrites another one
-
         // Check if the OS is compatible
         val os = json.getString("os")
         if (os != "any" && os != OSValidator.TAG) {
