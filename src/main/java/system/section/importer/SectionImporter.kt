@@ -18,6 +18,16 @@ class SectionImporter(val sectionManager: SectionManager, val sectionParser: Sec
 
     data class Result(val section: Section?, val failedCommands: List<Command>)
 
+    fun checkIfSectionAlreadyExists(sourceFile: File): Boolean {
+        sourceFile.inputStream().use { stream ->
+            val tokener = JSONTokener(stream)
+            val json = JSONObject(tokener)
+
+            val sectionId = json.getJSONObject("section").getString("id")
+            return sectionManager.getSection(sectionId) != null
+        }
+    }
+
     fun import(sourceFile: File): Result {
         sourceFile.inputStream().use { stream ->
             val tokener = JSONTokener(stream)

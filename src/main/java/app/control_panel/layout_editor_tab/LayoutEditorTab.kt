@@ -23,6 +23,7 @@ import system.commands.CommandManager
 import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
 import system.applications.ApplicationManager
+import system.exceptions.IncompatibleOsException
 import system.section.SectionManager
 import system.section.exporter.SectionExporter
 import system.section.importer.SectionImporter
@@ -93,17 +94,16 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
 
             val sourceFile = fileChooser.showOpenDialog(null)
             if (sourceFile != null) {
-                val sectionResult = sectionImporter.import(sourceFile)
-                if (sectionResult.section != null) {
-                    // Show an alert if some commands could not be imported
-                    if (sectionResult.failedCommands.isNotEmpty()) {
-                        AlertFactory.instance.alert("Warning",  // TODO: i18n
-                                "Some commands cannot not be imported because they are incompatible with your system: \n\n" +
-                                        "${sectionResult.failedCommands.map { "- " + it.title }.joinToString(separator = "\n")}"
-                                ).show()
-                    }
-
-                    sectionBar.loadSections(targetSection = sectionResult.section)
+                // Check if the section already exists and would be overwritten with the import
+                if (sectionImporter.checkIfSectionAlreadyExists(sourceFile)) {
+                    AlertFactory.instance.confirmation("Layout already exist",  // TODO: i18n
+                            "The layout you're trying to import already exist and will be overwritten. " +
+                                    "Do you want to proceed anyway?",
+                            onYes = {
+                                importSection(sourceFile)
+                            }).show()
+                }else{
+                    importSection(sourceFile)
                 }
             }
         }
@@ -213,7 +213,7 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
         crossFade.setOnFinished { newGrid.cacheHint = CacheHint.QUALITY; newGrid.isCache = false }
     }
 
-    private fun requestDeleteSection(section: Section) {
+    private fun requestDeleteSection(section: Section) {// TODO: i18n
         AlertFactory.instance.confirmation("Delete confirmation", "Do you really want to delete ${section.name} layout?",
                 onYes = {
                     sectionManager.deleteSection(section)
@@ -221,7 +221,7 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
                 }).show()
     }
 
-    private fun requestResetSection(section: Section) {
+    private fun requestResetSection(section: Section) {// TODO: i18n
         AlertFactory.instance.confirmation("Reset confirmation", "Do you really want to reset ${section.name} layout? All your changes will be overwritten.",
                 onYes = {
                     val resettedSection = sectionManager.resetSection(section)
@@ -230,5 +230,26 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
                     // Send a broadcast
                     BroadcastManager.getInstance().sendBroadcast(BroadcastManager.EDITOR_MODIFIED_SECTION_EVENT, resettedSection?.id)
                 }).show()
+    }
+
+    private fun importSection(sourceFile: File) {
+        try {
+            val sectionResult = sectionImporter.import(sourceFile)
+            if (sectionResult.section != null) {
+                // Show an alert if some commands could not be imported
+                if (sectionResult.failedCommands.isNotEmpty()) {
+                    AlertFactory.instance.alert("Warning",  // TODO: i18n
+                            "Some commands cannot not be imported because they are incompatible with your system: \n\n" +
+                                    "${sectionResult.failedCommands.map { "- " + it.title }.joinToString(separator = "\n")}"
+                    ).show()
+                }
+
+                sectionBar.loadSections(targetSection = sectionResult.section)
+            }
+        }catch(ex: IncompatibleOsException) {
+            AlertFactory.instance.alert("Incompatible layout",  // TODO: i18n
+                    "Cannot import the requested layout because it is not compatible with your system."
+            ).show()
+        }
     }
 }

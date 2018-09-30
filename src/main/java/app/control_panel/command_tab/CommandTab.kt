@@ -22,6 +22,7 @@ import system.commands.CommandManager
 import system.commands.exporter.CommandExporter
 import system.commands.importer.CommandImporter
 import system.commands.model.CommandWrapper
+import system.exceptions.IncompatibleOsException
 import system.image.ImageResolver
 import java.io.File
 import java.util.*
@@ -72,7 +73,7 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
             command as CommandWrapper
             if (!command.deleted) {
                 requestEditForCommand(command)
-            }else{
+            } else {
                 showCommandIsDeletedRecoverDialog(command)
             }
         }
@@ -114,7 +115,7 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
         requestEditForCommand(command)
     }
 
-    override val onDeleteRequest: ((List<Command>) -> Unit)? = {commands ->
+    override val onDeleteRequest: ((List<Command>) -> Unit)? = { commands ->
         AlertFactory.instance.confirmation("Delete confirmation", "Do you really want to delete ${commands.size} command(s)?",  // TODO: i18n
                 onYes = {
                     commands.forEach { command ->
@@ -123,13 +124,13 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
                     commandListPanel.loadCommands()
                 }).show()
     }
-    override val onRecoverRequest: ((List<Command>) -> Unit)? = {commands ->
+    override val onRecoverRequest: ((List<Command>) -> Unit)? = { commands ->
         commands.forEach { command ->
             commandManager.undeleteCommand(command)
         }
         commandListPanel.loadCommands()
     }
-    override val onExportRequest: ((List<Command>) -> Unit)? = {commands ->
+    override val onExportRequest: ((List<Command>) -> Unit)? = { commands ->
         val fileChooser = FileChooser()
         fileChooser.title = "Export commands..."  // TODO: i18n
         fileChooser.initialDirectory = File(System.getProperty("user.home"))
@@ -148,17 +149,23 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
 
         val sourceFile = fileChooser.showOpenDialog(null)
         if (sourceFile != null) {
-            val commandResult = commandImporter.import(sourceFile)
-            // Show an alert if some commands could not be imported
-            if (commandResult.failed.isNotEmpty()) {
-                AlertFactory.instance.alert("Warning",  // TODO: i18n
-                        "Some commands cannot not be imported because they are incompatible with your system: \n\n" +
-                                "${commandResult.failed.map { "- " + it.title }.joinToString(separator = "\n")}"
-                ).show()
-            }
+            try {
+                val commandResult = commandImporter.import(sourceFile)
+                // Show an alert if some commands could not be imported
+                if (commandResult.failed.isNotEmpty()) {
+                    AlertFactory.instance.alert("Warning",  // TODO: i18n
+                            "Some commands cannot not be imported because they are incompatible with your system: \n\n" +
+                                    "${commandResult.failed.map { "- " + it.title }.joinToString(separator = "\n")}"
+                    ).show()
+                }
 
-            if (commandResult.commands.isNotEmpty()) {
-                commandListPanel.loadCommandsAndFocus(commandResult.commands.first().id!!)
+                if (commandResult.commands.isNotEmpty()) {
+                    commandListPanel.loadCommandsAndFocus(commandResult.commands.first().id!!)
+                }
+            } catch (ex: IncompatibleOsException) {
+                AlertFactory.instance.alert("Incompatible command(s)",  // TODO: i18n
+                        "Cannot import the requested commands because they are not compatible with your system."
+                ).show()
             }
         }
     }
