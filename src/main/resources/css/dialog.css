@@ -1,7 +1,7 @@
 @import "colors.css";
 @import "font.css";
 @import "ui/ui.css";
-
+@import "dialog/drop_dialog.css";
 @import "dialog/application_select_dialog.css";
 @import "dialog/command_edit_dialog.css";
 

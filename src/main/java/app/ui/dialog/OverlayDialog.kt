@@ -64,7 +64,11 @@ open class OverlayDialog(override val parent: BlurrableStage, val imageResolver:
         val topLeftComponent = defineTopSectionComponent()
         topLeftComponent?.let { topSection.children.add(it) }
         topSection.children.add(spacerPane)
-        parentBox.children.add(topSection)
+
+        // Avoid the top section if there are no components
+        if (topLeftComponent != null || enableCloseBtn) {
+            parentBox.children.add(topSection)
+        }
 
         val contentBox = defineContentBoxComponent()
         VBox.setVgrow(contentBox, Priority.ALWAYS)

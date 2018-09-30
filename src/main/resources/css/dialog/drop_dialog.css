@@ -1,0 +1,13 @@
+.drop-dialog-contentbox {
+    -fx-border-color: -green-gradient;
+    -fx-border-radius: 7px;
+    -fx-border-insets: 30px;
+    -fx-border-width: 3px;
+    -fx-padding: 20px;
+}
+
+.drop-dialog-contentbox > .label {
+    -fx-font-size: 20px;
+    -fx-text-fill: #636363;
+    -fx-font-family: "Nunito Sans Regular";
+}
