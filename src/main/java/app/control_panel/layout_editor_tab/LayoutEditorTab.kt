@@ -24,7 +24,7 @@ import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
 import system.applications.ApplicationManager
 import system.section.SectionManager
-import system.section.export.SectionExporter
+import system.section.exporter.SectionExporter
 import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit

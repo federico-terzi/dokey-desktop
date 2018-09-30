@@ -15,7 +15,6 @@ import javafx.animation.FadeTransition
 import javafx.animation.Interpolator
 import javafx.animation.ParallelTransition
 import javafx.animation.TranslateTransition
-import javafx.application.Platform
 import javafx.fxml.FXMLLoader
 import javafx.scene.CacheHint
 import javafx.scene.Parent
@@ -25,7 +24,6 @@ import javafx.scene.effect.Effect
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
 import javafx.scene.paint.Color
-import javafx.stage.Stage
 import javafx.stage.StageStyle
 import javafx.util.Duration
 import model.parser.component.ComponentParser
@@ -38,9 +36,8 @@ import system.applications.ApplicationManager
 import system.commands.exporter.CommandExporter
 import system.commands.importer.CommandImporter
 import system.section.SectionManager
-import system.section.export.SectionExporter
+import system.section.exporter.SectionExporter
 import system.server.HandshakeDataBuilder
-import system.server.MobileServer
 import system.startup.StartupManager
 import system.storage.StorageManager
 import utils.OSValidator

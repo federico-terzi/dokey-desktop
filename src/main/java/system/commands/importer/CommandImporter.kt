@@ -7,6 +7,7 @@ import model.parser.command.CommandParser
 import system.commands.CommandManager
 import system.commands.model.CommandWrapper
 import system.commands.validator.CommandValidator
+import system.exceptions.IncompatibleOsException
 import utils.OSValidator
 import java.io.File
 import java.util.logging.Logger
@@ -49,7 +50,7 @@ class CommandImporter(val commandValidator: CommandValidator, val commandParser:
         return output
     }
 
-    private fun extractCommandsFromExportJSON(json: JSONObject) : List<Command> {
+    fun extractCommandsFromExportJSON(json: JSONObject) : List<Command> {
         val output = mutableListOf<Command>()
 
         // Check if the OS is compatible

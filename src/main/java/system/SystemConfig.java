@@ -34,7 +34,7 @@ import system.applications.ApplicationManager;
 import system.commands.parsers.RuntimeCommandParser;
 import system.search.SearchEngine;
 import system.section.SectionManager;
-import system.section.export.SectionExporter;
+import system.section.exporter.SectionExporter;
 import system.server.*;
 import system.startup.MACStartupManager;
 import system.startup.MSStartupManager;

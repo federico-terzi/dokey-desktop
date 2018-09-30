@@ -1,3 +1,3 @@
-package system.commands.importer
+package system.exceptions
 
 class IncompatibleOsException : Exception()
