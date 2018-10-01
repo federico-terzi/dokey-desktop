@@ -63,7 +63,7 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
     private val devicesTab = DevicesTab(imageResolver, resourceBundle, handshakeDataBuilder)
 
     private val commandTab = CommandTab(this, imageResolver, resourceBundle, applicationManager,
-            commandManager, commandExporter, commandImporter, settingsManager)
+            commandManager, commandExporter, commandImporter, settingsManager, dndCommandProcessor)
 
     private val settingsTab = SettingsTab(imageResolver, applicationManager, settingsManager, startupManager,
             resourceBundle, storageManager)

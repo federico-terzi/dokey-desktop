@@ -3,6 +3,7 @@ package app.control_panel.command_tab
 import app.alert.AlertFactory
 import app.control_panel.ControlPanelStage
 import app.control_panel.ControlPanelTab
+import app.control_panel.DropDialog
 import app.control_panel.command_tab.list.CommandActionListener
 import app.control_panel.dialog.command_edit_dialog.CommandEditDialog
 import app.ui.panel.CommandListPanel
@@ -10,6 +11,7 @@ import app.ui.control.FloatingActionButton
 import javafx.application.Platform
 import javafx.geometry.Insets
 import javafx.geometry.Pos
+import javafx.scene.input.DragEvent
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
@@ -22,6 +24,7 @@ import system.commands.CommandManager
 import system.commands.exporter.CommandExporter
 import system.commands.importer.CommandImporter
 import system.commands.model.CommandWrapper
+import system.drag_and_drop.DNDCommandProcessor
 import system.exceptions.IncompatibleOsException
 import system.image.ImageResolver
 import java.io.File
@@ -30,7 +33,8 @@ import java.util.*
 class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: ImageResolver,
                  val resourceBundle: ResourceBundle, val applicationManager: ApplicationManager,
                  val commandManager: CommandManager, val commandExporter: CommandExporter,
-                 val commandImporter: CommandImporter, val settingsManager: SettingsManager) : ControlPanelTab(), CommandActionListener {
+                 val commandImporter: CommandImporter, val settingsManager: SettingsManager,
+                 val dndCommandProcessor: DNDCommandProcessor) : ControlPanelTab(), CommandActionListener {
 
     // UI Elements
     private val toolbar = CommandToolbar(controlPanelStage, imageResolver)
@@ -38,6 +42,9 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
             showImplicit = false, showContextMenus = true, commandActionListener = this)
     private val stackPane = StackPane()
     private val addCommandBtn = FloatingActionButton(imageResolver, "Add command")  // TODO: i18n
+
+    // Reference to the dialog that opens when dragging something inside
+    private var dropDialog : DropDialog? = null
 
     init {
         commandListPanel.padding = Insets(0.0, 0.0, 38.0, 0.0)
@@ -75,6 +82,36 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
                 requestEditForCommand(command)
             } else {
                 showCommandIsDeletedRecoverDialog(command)
+            }
+        }
+
+        // Setup the drag and drop importing
+        setOnDragEntered {
+            if (dropDialog == null) {
+                // Check if the dropping file is a dokey exported layout
+                if (validateDropPayload(it)) {
+                    dropDialog = DropDialog(controlPanelStage, imageResolver)
+                    dropDialog?.verifyPayload = this::validateDropPayload
+                    dropDialog?.showWithAnimation()
+                    dropDialog?.onDialogClosed = {
+                        dropDialog = null
+                    }
+                    dropDialog?.onContentDropped = {dragboard ->
+                        // Importing a DKCF command file
+                        if (dragboard.hasFiles() && dragboard.files[0].isFile && dragboard.files[0].extension == "dkcf") {
+                            importCommands(dragboard.files[0])
+                        }else if (dndCommandProcessor.isCompatible(dragboard)) {  // Importing a general item
+                            // Create a new command based on the dropped item
+                            dndCommandProcessor.resolve(dragboard) { command ->
+                                if (command != null) {
+                                    Platform.runLater {
+                                        commandListPanel.loadCommandsAndFocus(command.id!!)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -131,14 +168,23 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
         commandListPanel.loadCommands()
     }
     override val onExportRequest: ((List<Command>) -> Unit)? = { commands ->
-        val fileChooser = FileChooser()
-        fileChooser.title = "Export commands..."  // TODO: i18n
-        fileChooser.initialDirectory = File(System.getProperty("user.home"))
-        fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Dokey Command Format", "*.dkcf"))
+        if (commands.isNotEmpty()) {
+            val fileChooser = FileChooser()
+            fileChooser.title = "Export commands..."  // TODO: i18n
+            fileChooser.initialDirectory = File(System.getProperty("user.home"))
+            fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Dokey Command Format", "*.dkcf"))
 
-        val destinationFile = fileChooser.showSaveDialog(null)
-        if (destinationFile != null) {
-            commandExporter.export(commands, destinationFile)
+            // Generate an initial filename
+            if (commands.size > 1) {
+                fileChooser.initialFileName = "commands.dkcf"
+            }else{
+                fileChooser.initialFileName = "${commands.first().title}.dkcf"
+            }
+
+            val destinationFile = fileChooser.showSaveDialog(null)
+            if (destinationFile != null) {
+                commandExporter.export(commands, destinationFile)
+            }
         }
     }
     override val onImportRequest: (() -> Unit)? = {
@@ -178,5 +224,10 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
                     "Cannot import the requested commands because they are not compatible with your system."
             ).show()
         }
+    }
+
+    private fun validateDropPayload(event: DragEvent) : Boolean {
+        return (event.dragboard.hasFiles() && event.dragboard.files[0].isFile && event.dragboard.files[0].extension == "dkcf")
+                || dndCommandProcessor.isCompatible(event.dragboard)
     }
 }

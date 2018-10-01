@@ -49,6 +49,7 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
     // Used to save section edits with a debouncing mechanism
     val saveSectionSubject = PublishSubject.create<Section>()
 
+    // Reference to the dialog that opens when dragging a section file inside
     private var dropDialog : DropDialog? = null
 
     init {
