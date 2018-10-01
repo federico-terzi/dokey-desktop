@@ -98,17 +98,7 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
 
             val sourceFile = fileChooser.showOpenDialog(null)
             if (sourceFile != null) {
-                // Check if the section already exists and would be overwritten with the import
-                if (sectionImporter.checkIfSectionAlreadyExists(sourceFile)) {
-                    AlertFactory.instance.confirmation("Layout already exist",  // TODO: i18n
-                            "The layout you're trying to import already exist and will be overwritten. " +
-                                    "Do you want to proceed anyway?",
-                            onYes = {
-                                importSection(sourceFile)
-                            }).show()
-                }else{
-                    importSection(sourceFile)
-                }
+                requestImportSection(sourceFile)
             }
         }
 
@@ -148,6 +138,11 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
                     dropDialog?.showWithAnimation()
                     dropDialog?.onDialogClosed = {
                         dropDialog = null
+                    }
+                    dropDialog?.onContentDropped = {dragboard ->
+                        if (dragboard.hasFiles() && dragboard.files[0].isFile) {
+                            requestImportSection(dragboard.files[0])
+                        }
                     }
                 }
             }
@@ -251,7 +246,21 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
                 }).show()
     }
 
-    fun importSection(sourceFile: File) {
+    private fun requestImportSection(sourceFile: File) {
+        // Check if the section already exists and would be overwritten with the import
+        if (sectionImporter.checkIfSectionAlreadyExists(sourceFile)) {
+            AlertFactory.instance.confirmation("Layout already exist",  // TODO: i18n
+                    "The layout you're trying to import already exist and will be overwritten. " +
+                            "Do you want to proceed anyway?",
+                    onYes = {
+                        importSection(sourceFile)
+                    }).show()
+        }else{
+            importSection(sourceFile)
+        }
+    }
+
+    private fun importSection(sourceFile: File) {
         try {
             val sectionResult = sectionImporter.import(sourceFile)
             if (sectionResult.section != null) {

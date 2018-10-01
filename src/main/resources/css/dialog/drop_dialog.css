@@ -4,10 +4,11 @@
     -fx-border-insets: 30px;
     -fx-border-width: 3px;
     -fx-padding: 20px;
+    -fx-spacing: 20px;
 }
 
 .drop-dialog-contentbox > .label {
     -fx-font-size: 20px;
-    -fx-text-fill: #636363;
+    -fx-text-fill: #a3a1a4;
     -fx-font-family: "Nunito Sans Regular";
 }
