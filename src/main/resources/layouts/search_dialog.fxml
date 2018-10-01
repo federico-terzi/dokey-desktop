@@ -18,7 +18,7 @@
                         <Insets />
                      </HBox.margin>
                      <image>
-                        <Image url="@../assets/logo_search.png" />
+                        <Image url="@../assets/searchlogo.png" />
                      </image>
                   </ImageView>
                </children>
