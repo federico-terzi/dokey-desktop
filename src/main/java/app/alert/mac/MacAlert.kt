@@ -3,12 +3,13 @@ package app.alert.mac
 import app.alert.model.Alert
 
 import app.alert.model.AlertOption
+import app.bindings.JavaMacNativeUI
 import javafx.application.Platform
 import system.ResourceUtils
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
-class MacAlert(val library: JavaMacNativeUI, val title: String, val description: String?, val options: List<AlertOption>,
+class MacAlert(val title: String, val description: String?, val options: List<AlertOption>,
                val isCritical: Boolean = false, val runOnJavaFxThread : Boolean = true) : Alert {
     private val waitLock = ReentrantLock()
     private var isWakenUp = false
@@ -35,7 +36,7 @@ class MacAlert(val library: JavaMacNativeUI, val title: String, val description:
         val buttons : Array<String> = options.map { it.text }.toTypedArray()
         val isCriticalInt = if (isCritical) 1 else 0
 
-        library.displayDialog(iconFile, title, description, buttons, buttons.size, isCriticalInt, callback)
+        JavaMacNativeUI.INSTANCE.displayDialog(iconFile, title, description, buttons, buttons.size, isCriticalInt, callback)
     }
 
     override fun showAndWait() {

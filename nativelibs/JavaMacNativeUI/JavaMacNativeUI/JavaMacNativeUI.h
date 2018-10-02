@@ -22,3 +22,16 @@
 // Native method
 void displayDialog(char* imagePath, char* title, char* description, char *buttons[],
                    int buttonsCount, int isCritical, void (*callback)(int));
+
+/*
+ Status ICON methods
+ */
+
+extern NSStatusItem *statusItem;
+extern void (*statusItemClickCallback)(void);
+
+void initializeStatusItem(void);
+void setStatusItemImage(char *imagePath);
+void setStatusItemTooltip(char *tooltip);
+void setStatusItemHighlighted(int highlighted);
+void setStatusItemAction(void (*callback)(void));

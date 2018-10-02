@@ -2,10 +2,11 @@ package app.alert.win
 
 import app.alert.model.Alert
 import app.alert.model.AlertOption
+import app.bindings.JavaWinNativeUI
 import com.sun.jna.WString
 import javafx.application.Platform
 
-class WinComplexAlert(val library: JavaWinNativeUI, val title: String, val description: String?, val options: List<AlertOption>,
+class WinComplexAlert(val title: String, val description: String?, val options: List<AlertOption>,
                       val isCritical: Boolean = false, val includeCancel: Boolean = true, val useCommandLinks: Boolean = false,
                       val runOnJavaFxThread: Boolean = true) : Alert {
 
@@ -42,7 +43,7 @@ class WinComplexAlert(val library: JavaWinNativeUI, val title: String, val descr
         val titleWString = WString(title)
         val descWString = if (description == null) null else WString(description)
 
-        library.displayDialog(titleWString, descWString, isCriticalInt, buttons, buttons.size, includeCancelInt,
+        JavaWinNativeUI.INSTANCE.displayDialog(titleWString, descWString, isCriticalInt, buttons, buttons.size, includeCancelInt,
                 useCommandLinksInt, callback)
     }
 }

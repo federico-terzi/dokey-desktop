@@ -92,3 +92,55 @@ void displayDialog(char* imagePath, char* title, char* description, char *button
         }];
     });
 }
+
+/*
+ Status item methods
+ */
+
+void (*statusItemClickCallback)(void) = NULL;
+NSStatusItem *statusItem = NULL;
+
+void initializeStatusItem() {
+    NSStatusBar *bar = [NSStatusBar systemStatusBar];
+    statusItem = [bar statusItemWithLength:22];
+}
+
+void setStatusItemImage(char *imagePath) {
+    NSString *imagePathString;
+    if (imagePath) {
+        imagePathString = [NSString stringWithUTF8String:imagePath];
+    }
+    
+    NSImage *icon = [[NSImage alloc] initWithContentsOfFile:imagePathString];
+    icon.template = YES;
+    
+    [statusItem.button setImage:icon];
+}
+
+void setStatusItemTooltip(char *tooltip) {
+    NSString *tooltipString;
+    if (tooltip) {
+        tooltipString = [NSString stringWithUTF8String:tooltip];
+    }
+    
+    [statusItem.button setToolTip:tooltipString];
+}
+
+void setStatusItemHighlighted(int highlighted) {
+    if (highlighted == 0) {
+        [statusItem.button highlight:NO];
+    }else{
+        [statusItem.button highlight:YES];
+    }
+}
+
+void setStatusItemAction(void (*callback)(void)) {
+    statusItemClickCallback = callback;
+    [NSEvent addLocalMonitorForEventsMatchingMask: NSEventMaskFromType(NSEventTypeLeftMouseDown) handler:^NSEvent* (NSEvent* event){
+        if (NSPointInRect(event.locationInWindow, statusItem.button.bounds)){
+            statusItemClickCallback();
+            return nil;
+        }
+        return event;
+    }];
+}
