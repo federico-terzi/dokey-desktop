@@ -7,6 +7,7 @@
 //
 
 #import "JavaMacNativeUI.h"
+#import "NSScreen+PointConversion.h"
 
 @implementation JavaMacNativeUI
 
@@ -97,7 +98,7 @@ void displayDialog(char* imagePath, char* title, char* description, char *button
  Status item methods
  */
 
-void (*statusItemClickCallback)(void) = NULL;
+void (*statusItemClickCallback)(int, int) = NULL;
 NSStatusItem *statusItem = NULL;
 
 void initializeStatusItem() {
@@ -134,11 +135,16 @@ void setStatusItemHighlighted(int highlighted) {
     }
 }
 
-void setStatusItemAction(void (*callback)(void)) {
+void setStatusItemAction(void (*callback)(int, int)) {
     statusItemClickCallback = callback;
     [NSEvent addLocalMonitorForEventsMatchingMask: NSEventMaskFromType(NSEventTypeLeftMouseDown) handler:^NSEvent* (NSEvent* event){
         if (NSPointInRect(event.locationInWindow, statusItem.button.bounds)){
-            statusItemClickCallback();
+            NSPoint mouseLoc = [NSEvent mouseLocation];
+            
+            // Convert coordinates of mac mouse button to topLeft coordinates
+            NSScreen *currentScreen = [NSScreen currentScreenForMouseLocation];
+            NSPoint correctedMousePos = [currentScreen flipPoint:mouseLoc];
+            statusItemClickCallback(correctedMousePos.x, correctedMousePos.y);
             return nil;
         }
         return event;

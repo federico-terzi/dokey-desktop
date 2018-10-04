@@ -28,6 +28,7 @@ import javafx.scene.paint.Color
 import javafx.stage.StageStyle
 import javafx.util.Duration
 import model.parser.component.ComponentParser
+import system.BroadcastManager
 import system.ResourceUtils
 import system.SettingsManager
 import system.commands.CommandManager
@@ -188,6 +189,8 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
         val transition = ParallelTransition(fadeTransition, positionTransition)
         transition.play()
+
+        BroadcastManager.getInstance().sendBroadcast(BroadcastManager.CONTROL_PANEL_OPENED_EVENT, null)
     }
 
     fun animateOut(onFinished: () -> Unit) {
@@ -200,6 +203,8 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
         val transition = ParallelTransition(fadeTransition, positionTransition)
         transition.setOnFinished { onFinished() }
         transition.play()
+
+        BroadcastManager.getInstance().sendBroadcast(BroadcastManager.CONTROL_PANEL_CLOSED_EVENT, null)
     }
 
     override fun blurIn() {

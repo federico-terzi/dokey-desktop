@@ -28,10 +28,10 @@ void displayDialog(char* imagePath, char* title, char* description, char *button
  */
 
 extern NSStatusItem *statusItem;
-extern void (*statusItemClickCallback)(void);
+extern void (*statusItemClickCallback)(int, int);
 
 void initializeStatusItem(void);
 void setStatusItemImage(char *imagePath);
 void setStatusItemTooltip(char *tooltip);
 void setStatusItemHighlighted(int highlighted);
-void setStatusItemAction(void (*callback)(void));
+void setStatusItemAction(void (*callback)(int, int));

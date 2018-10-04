@@ -9,12 +9,16 @@
 /* Begin PBXBuildFile section */
 		B63FC18F214B9EF900C93F69 /* JavaMacNativeUI.h in Headers */ = {isa = PBXBuildFile; fileRef = B63FC18E214B9EF900C93F69 /* JavaMacNativeUI.h */; };
 		B63FC191214B9EF900C93F69 /* JavaMacNativeUI.m in Sources */ = {isa = PBXBuildFile; fileRef = B63FC190214B9EF900C93F69 /* JavaMacNativeUI.m */; };
+		B655715321664BDF005782DF /* NSScreen+PointConversion.m in Sources */ = {isa = PBXBuildFile; fileRef = B655715121664BDF005782DF /* NSScreen+PointConversion.m */; };
+		B655715421664BDF005782DF /* NSScreen+PointConversion.h in Headers */ = {isa = PBXBuildFile; fileRef = B655715221664BDF005782DF /* NSScreen+PointConversion.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		B63FC18B214B9EF900C93F69 /* libJavaMacNativeUI.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libJavaMacNativeUI.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		B63FC18E214B9EF900C93F69 /* JavaMacNativeUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JavaMacNativeUI.h; sourceTree = "<group>"; };
 		B63FC190214B9EF900C93F69 /* JavaMacNativeUI.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JavaMacNativeUI.m; sourceTree = "<group>"; };
+		B655715121664BDF005782DF /* NSScreen+PointConversion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSScreen+PointConversion.m"; sourceTree = "<group>"; };
+		B655715221664BDF005782DF /* NSScreen+PointConversion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSScreen+PointConversion.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +51,8 @@
 		B63FC18D214B9EF900C93F69 /* JavaMacNativeUI */ = {
 			isa = PBXGroup;
 			children = (
+				B655715221664BDF005782DF /* NSScreen+PointConversion.h */,
+				B655715121664BDF005782DF /* NSScreen+PointConversion.m */,
 				B63FC18E214B9EF900C93F69 /* JavaMacNativeUI.h */,
 				B63FC190214B9EF900C93F69 /* JavaMacNativeUI.m */,
 			);
@@ -60,6 +66,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B655715421664BDF005782DF /* NSScreen+PointConversion.h in Headers */,
 				B63FC18F214B9EF900C93F69 /* JavaMacNativeUI.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -121,6 +128,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B63FC191214B9EF900C93F69 /* JavaMacNativeUI.m in Sources */,
+				B655715321664BDF005782DF /* NSScreen+PointConversion.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

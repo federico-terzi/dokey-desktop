@@ -30,6 +30,6 @@ public interface JavaMacNativeUI extends Library
     void setStatusItemAction(StatusItemClickCallback callback);
 
     interface StatusItemClickCallback extends Callback {
-        void invoke();
+        void invoke(int x, int y);
     }
 }

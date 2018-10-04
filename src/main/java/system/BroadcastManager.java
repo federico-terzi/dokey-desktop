@@ -28,6 +28,11 @@ public class BroadcastManager {
     public static final int ENABLE_DOKEY_SEARCH_PROPERTY_CHANGED = 100;
 
 
+    public static final int CONTROL_PANEL_OPENED_EVENT = 200;
+    public static final int CONTROL_PANEL_CLOSED_EVENT  = 201;
+
+
+
     // internal variables
     private static BroadcastManager instance = null;
     private Thread eventThread = null;
