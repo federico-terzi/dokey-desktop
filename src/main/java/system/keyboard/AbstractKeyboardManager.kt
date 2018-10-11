@@ -70,8 +70,8 @@ abstract class AbstractKeyboardManager : KeyboardManager {
         keyCodeMap["CTRL"] = 17
         keyCodeMap["ALT"] = 18
         keyCodeMap["PAUSE"] = 19
-        keyCodeMap["CAPS_LOCK"] = 20
-        keyCodeMap["ESC"] = 27
+        keyCodeMap["CAPS"] = 20
+        keyCodeMap["ESCAPE"] = 27
         keyCodeMap["SPACE"] = 32
         keyCodeMap["PAGE_UP"] = 33
         keyCodeMap["PAGE_DOWN"] = 34

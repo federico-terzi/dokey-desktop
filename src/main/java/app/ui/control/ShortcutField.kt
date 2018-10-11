@@ -41,6 +41,11 @@ class ShortcutField : StackPane() {
     fun addKey(key: String) {
         val keyName = convertKeyName(key)
 
+        // Filter out undefinded keys
+        if (keyName == "UNDEFINED") {
+            return
+        }
+
         if (!keys.contains(keyName)) {
             keys.add(keyName)
         }
@@ -70,7 +75,18 @@ class ShortcutField : StackPane() {
     companion object {
         val commonConversionMap = mapOf<String, String>(
                 "CONTROL" to "CTRL",
-                "WINDOWS" to "WIN"
+                "WINDOWS" to "WIN",
+                "COMMAND" to "CMD",
+                "DIGIT1" to "1",
+                "DIGIT2" to "2",
+                "DIGIT3" to "3",
+                "DIGIT4" to "4",
+                "DIGIT5" to "5",
+                "DIGIT6" to "6",
+                "DIGIT7" to "7",
+                "DIGIT8" to "8",
+                "DIGIT9" to "9",
+                "DIGIT0" to "0"
         )
 
         fun convertKeyName(rawKeyName: String) : String {
