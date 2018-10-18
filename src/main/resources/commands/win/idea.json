@@ -4,7 +4,7 @@
     "title": "Commit Changes",
     "desc": "Commit Changes to Version Control",
     "category": "ks",
-    "value": "CTRL+K"
+    "value": "CTRL+k"
   },
   {
     "type": "simple",

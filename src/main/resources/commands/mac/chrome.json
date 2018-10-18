@@ -5,7 +5,7 @@
     "desc": "Open a New Tab in Google Chrome",
     "iconId": "static:tab",
     "category": "ks",
-    "value": "CMD+T"
+    "value": "CMD+t"
   },
   {
     "type": "simple",
@@ -13,7 +13,7 @@
     "desc": "Open a New Window in Google Chrome",
     "iconId": "static:desktop_windows",
     "category": "ks",
-    "value": "CMD+N"
+    "value": "CMD+n"
   },
   {
     "type": "simple",
@@ -21,7 +21,7 @@
     "desc": "Close the current Tab in Google Chrome",
     "iconId": "static:tab_unselected",
     "category": "ks",
-    "value": "CMD+W"
+    "value": "CMD+w"
   },
   {
     "type": "simple",
@@ -45,7 +45,7 @@
     "desc": "Add the current page to the Favourites in Google Chrome",
     "iconId": "static:stars",
     "category": "ks",
-    "value": "CMD+D"
+    "value": "CMD+d"
   },
   {
     "type": "simple",
@@ -53,7 +53,7 @@
     "desc": "Search something in the current page in Google Chrome",
     "iconId": "static:search",
     "category": "ks",
-    "value": "CMD+F"
+    "value": "CMD+f"
   },
   {
     "type": "simple",
@@ -61,7 +61,7 @@
     "desc": "Show Favourites in Google Chrome",
     "iconId": "static:star_border",
     "category": "ks",
-    "value": "CMD+ALT+B"
+    "value": "CMD+ALT+b"
   },
   {
     "type": "simple",
@@ -69,7 +69,7 @@
     "desc": "Show Downloads in Google Chrome",
     "iconId": "static:get_app",
     "category": "ks",
-    "value": "CMD+SHIFT+J"
+    "value": "CMD+SHIFT+j"
   },
   {
     "type": "simple",
@@ -77,7 +77,7 @@
     "desc": "Developer console in Google Chrome",
     "iconId": "static:code",
     "category": "ks",
-    "value": "CMD+ALT+I"
+    "value": "CMD+ALT+i"
   },
   {
     "type": "simple",
@@ -85,7 +85,7 @@
     "desc": "Open a new window in Incognito Mode in Google Chrome",
     "iconId": "static:face",
     "category": "ks",
-    "value": "CMD+SHIFT+N"
+    "value": "CMD+SHIFT+n"
   },
   {
     "type": "simple",
@@ -93,7 +93,7 @@
     "desc": "Print the current page in Google Chrome",
     "iconId": "static:print",
     "category": "ks",
-    "value": "CMD+P"
+    "value": "CMD+p"
   },
   {
     "type": "simple",
@@ -101,7 +101,7 @@
     "desc": "Show History in Google Chrome",
     "iconId": "static:history",
     "category": "ks",
-    "value": "CMD+Y"
+    "value": "CMD+y"
   },
   {
     "type": "simple",
@@ -109,7 +109,7 @@
     "desc": "View the Source of the current page in Google Chrome",
     "iconId": "static:code",
     "category": "ks",
-    "value": "CMD+ALT+U"
+    "value": "CMD+ALT+u"
   },
   {
     "type": "simple",
@@ -117,7 +117,7 @@
     "desc": "Reload the current page in Google Chrome",
     "iconId": "static:refresh",
     "category": "ks",
-    "value": "CMD+SHIFT+R"
+    "value": "CMD+SHIFT+r"
   },
   {
     "type": "simple",
@@ -125,7 +125,7 @@
     "desc": "Reopen the last closed tab and jump to it in Google Chrome",
     "iconId": "static:open_in_browser",
     "category": "ks",
-    "value": "CMD+SHIFT+T"
+    "value": "CMD+SHIFT+t"
   },
   {
     "type": "simple",
@@ -133,7 +133,7 @@
     "desc": "Show or hide the Bookmarks bar in Google Chrome",
     "iconId": "static:space_bar",
     "category": "ks",
-    "value": "CMD+SHIFT+B"
+    "value": "CMD+SHIFT+b"
   },
   {
     "type": "simple",
@@ -149,7 +149,7 @@
     "desc": "Open options to save the current page in Google Chrome",
     "iconId": "static:save",
     "category": "ks",
-    "value": "CMD+S"
+    "value": "CMD+s"
   },
   {
     "type": "simple",
@@ -157,6 +157,6 @@
     "desc": "Turn full-screen mode on or off in Google Chrome",
     "iconId": "static:fullscreen",
     "category": "ks",
-    "value": "CMD+CTRL+F"
+    "value": "CMD+CTRL+f"
   }
 ]
