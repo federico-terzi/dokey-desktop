@@ -20,4 +20,10 @@ public interface WinKeyboardLib extends Library
         Return the number of keys if succeeded, -1 if a key wasn't found in the current keyboard layout.
     */
     int sendShortcut(WString[] keys, int keyCount);
+
+    /**
+        Check if the CAPS LOCK key is pressed and, if so, disable it.
+        Return 0 if the CAPS LOCK has been disabled, 1 if no action occurred.
+    */
+    int forceDisableCapsLock();
 }

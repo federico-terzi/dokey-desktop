@@ -8,3 +8,4 @@
 
 extern "C" WINKEYBOARDLIB_API int sendShortcut(const wchar_t * keys[], int keyCount);
 extern "C" WINKEYBOARDLIB_API int decodeVirtualKey(const wchar_t key);
+extern "C" WINKEYBOARDLIB_API int forceDisableCapsLock();

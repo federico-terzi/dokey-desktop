@@ -39,7 +39,7 @@ class KeyboardShortcutBuilder(val context: BuilderContext, val parent: Blurrable
             specialKeysBox.children.add(button)
 
             button.setOnAction {
-                shortcutField.addKey(key)
+                shortcutField.addSpecialKey(key)
             }
         }
 

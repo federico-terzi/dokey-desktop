@@ -10,6 +10,7 @@ import system.applications.MS.WinExtractIconLib;
 import system.applications.Window;
 import system.bookmarks.ChromeBookmarkImportAgent;
 import system.exceptions.UnsupportedOperatingSystemException;
+import system.keyboard.bindings.WinKeyboardLib;
 import system.storage.StorageManager;
 import utils.OSValidator;
 
@@ -43,8 +44,7 @@ public class WinTestMain {
             System.setProperty("jna.library.path", nativeLibsDirectory.getAbsolutePath());
         }
 
-        boolean res = WinExtractIconLib.extractIcon("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exez",
-                "D:\\prova.png", true);
+        System.out.println(WinKeyboardLib.INSTANCE.forceDisableCapsLock());
 
         System.exit(0);
     }

@@ -5,6 +5,8 @@ import javafx.scene.control.Button
 import javafx.scene.control.TextField
 import javafx.scene.input.KeyEvent
 import javafx.scene.layout.StackPane
+import system.keyboard.bindings.WinKeyboardLib
+import utils.OSValidator
 
 class ShortcutField : StackPane() {
     private val textField = TextField()
@@ -32,17 +34,66 @@ class ShortcutField : StackPane() {
         textField.isEditable = false
 
         textField.addEventFilter(KeyEvent.KEY_PRESSED) { keyEvent ->
-            addKey(keyEvent.code.name.toUpperCase())
+            // Check if the key contains text
+            if (!keyEvent.text.isBlank()) {
+                // Make sure the keyEvent is not a numpad digit key
+                if (keyEvent.code?.name?.toUpperCase()?.startsWith("NUMPAD") == false) {
+                    addKey(keyEvent.text)
+                }else{
+                    addSpecialKey(keyEvent.code.name.toUpperCase())
+                }
+            }else{  // The key does not produce any text, so use the code name
+                // Make sure the pressed key was not caps lock
+                if (keyEvent.code.name.toUpperCase() != "CAPS") {
+                    addSpecialKey(keyEvent.code.name.toUpperCase())
+                }else{  // The user pressed the caps lock, disable it
+                    disableCapsLock()
+                }
+            }
 
             keyEvent.consume()
+        }
+
+        // When the text field is focused, automatically disable CAPS LOCK key
+        textField.focusedProperty().addListener { _, _, focused ->
+            if (focused) {
+                disableCapsLock()
+            }
         }
     }
 
     fun addKey(key: String) {
+        // If the key is +, convert it to PLUS to differentiate it from the + separator
+        val finalKey = if (key == "+") {
+            "PLUS"
+        }else{
+            key
+        }
+
+        if (!keys.contains(finalKey)) {
+            keys.add(finalKey)
+        }
+
+        render()
+    }
+
+    fun addSpecialKey(key: String) {
         val keyName = convertKeyName(key)
 
-        // Filter out undefinded keys
+        // Filter out undefined keys
         if (keyName == "UNDEFINED") {
+            return
+        }
+
+        // ALT_GRAPH is a shortcut to CTRL+ALT, and we want to filter it out.
+        // The problem is that when a user presses ALT_GRAPH, the keyboard first
+        // presses CTRL and then ALT_GRAPH, so as a workaround, if we receive an
+        // ALT_GRAPH key, we ignore it but also remove a previous CTRL if present
+        if (key == "ALT_GRAPH") {
+            if (keys.contains("CTRL")) {
+                keys.remove("CTRL")
+                render()
+            }
             return
         }
 
@@ -97,6 +148,12 @@ class ShortcutField : StackPane() {
 
             // No conversion needed
             return rawKeyName
+        }
+
+        fun disableCapsLock() {
+            if (OSValidator.isWindows()) {
+                WinKeyboardLib.INSTANCE.forceDisableCapsLock()
+            }
         }
     }
 }
