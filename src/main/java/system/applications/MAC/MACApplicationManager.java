@@ -25,7 +25,7 @@ public class MACApplicationManager extends ApplicationManager {
 
     private static final long OPEN_APPLICATION_TIMEOUT = 3000;  // Timeout for the open application request.
 
-    private static final long OPEN_APPLICATION_CHECK_INTERVAL = 500;  // How often to check if an application has focus
+    private static final long OPEN_APPLICATION_CHECK_INTERVAL = 100;  // How often to check if an application has focus
                                                                       // in a openApplication request.
 
     private Application terminalApp = null;
