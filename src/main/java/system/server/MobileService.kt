@@ -3,27 +3,22 @@ package system.server
 import app.MainApp
 import json.JSONObject
 import model.command.Command
-import model.component.CommandResolver
 import net.DEDaemon
 import net.DEManager
 import net.LinkManager
-import net.model.DeviceInfo
 import net.model.ServiceHandler
 import org.reflections.Reflections
 import system.ApplicationSwitchDaemon
 import system.BroadcastManager
 import system.applications.Application
-import system.applications.ApplicationManager
 import system.commands.CommandEngine
 import system.commands.CommandManager
 import system.context.MobileServerContext
 import system.image.ImageResolver
-import system.keyboard.KeyboardManager
 import system.section.SectionManager
 import utils.SystemInfoManager
 import java.io.File
 import java.io.IOException
-import java.io.Serializable
 import java.net.Socket
 import java.util.logging.Logger
 

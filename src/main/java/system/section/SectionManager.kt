@@ -10,6 +10,7 @@ import model.page.Page
 import model.parser.section.SectionParser
 import model.section.*
 import org.apache.commons.codec.digest.DigestUtils
+import system.BroadcastManager
 import system.applications.Application
 import system.applications.ApplicationManager
 import system.commands.CommandManager
@@ -117,6 +118,9 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
         // Load all the sections and populate the section cache
         val sections = loadSections()
         sections.forEach { sectionCache[it.id!!] = it }
+
+        // Register broadcast listeners
+        BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.EDITOR_MODIFIED_COMMAND_EVENT, editorCommandModifiedListener)
     }
 
     /**
@@ -145,6 +149,28 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
             // Update the section
             saveSection(section)
         }
+    }
+
+    /**
+     * Return a list of all the sections containing the specified command.
+     */
+    fun getAllSectionsContainingCommand(commandId: Int) : List<Section> {
+        val output = mutableListOf<Section>()
+        sectionLoop@ for (section in sectionCache.values) {
+            if (section.pages != null) {
+                for (page in section.pages!!) {
+                    if (page.components != null) {
+                        for (component in page.components!!) {
+                            if (component.commandId == commandId) {
+                                output.add(section)
+                                continue@sectionLoop
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return output
     }
 
     private fun generateEmptyPage() : Page {
@@ -318,6 +344,18 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
         }
 
         return null
+    }
+
+
+    private val editorCommandModifiedListener = BroadcastManager.BroadcastListener {
+        val commandId = (it as String?)?.toInt()
+        if (commandId != null) {
+            val sections = getAllSectionsContainingCommand(commandId)
+            sections.forEach {section ->
+                saveSection(section)
+                BroadcastManager.getInstance().sendBroadcast(BroadcastManager.EDITOR_MODIFIED_SECTION_EVENT, section.id)
+            }
+        }
     }
 
     /**
