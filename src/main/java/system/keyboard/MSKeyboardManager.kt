@@ -13,7 +13,7 @@ class MSKeyboardManager : AbstractKeyboardManager() {
 
         // Make sure the shortcut was typed correctly
         if (result <= 0) {
-            LOG.warning("SendShortcutError for keys: ${keys.joinToString("+")}")
+            LOG.warning("KeyboardShortcutDecodeError: decoding keys: ${keys.joinToString("+")}")
         }
     }
 }

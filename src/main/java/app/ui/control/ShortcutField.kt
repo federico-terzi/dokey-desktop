@@ -5,6 +5,7 @@ import javafx.scene.control.Button
 import javafx.scene.control.TextField
 import javafx.scene.input.KeyEvent
 import javafx.scene.layout.StackPane
+import system.keyboard.bindings.MacKeyboardLib
 import system.keyboard.bindings.WinKeyboardLib
 import utils.OSValidator
 
@@ -153,6 +154,8 @@ class ShortcutField : StackPane() {
         fun disableCapsLock() {
             if (OSValidator.isWindows()) {
                 WinKeyboardLib.INSTANCE.forceDisableCapsLock()
+            }else if (OSValidator.isMac()) {
+                MacKeyboardLib.INSTANCE.forceDisableCapsLock()
             }
         }
     }
