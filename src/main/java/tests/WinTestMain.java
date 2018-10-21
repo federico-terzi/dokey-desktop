@@ -11,6 +11,8 @@ import system.applications.Window;
 import system.bookmarks.ChromeBookmarkImportAgent;
 import system.exceptions.UnsupportedOperatingSystemException;
 import system.keyboard.bindings.WinKeyboardLib;
+import system.startup.MSStartupManager;
+import system.startup.StartupManager;
 import system.storage.StorageManager;
 import utils.OSValidator;
 
@@ -20,31 +22,34 @@ import java.util.List;
 
 public class WinTestMain {
     public static void main(String[] args) throws IOException {
-//        ApplicationManager applicationManager = new MSApplicationManager(StorageManager.getDefault(), null);
-//        applicationManager.loadApplications(new ApplicationManager.OnLoadApplicationsListener() {
-//            @Override
-//            public void onPreloadUpdate(String applicationName, int current, int total) {
-//
-//            }
-//
-//            @Override
-//            public void onProgressUpdate(String applicationName, String iconPath, int current, int total) {
-//
-//            }
-//
-//            @Override
-//            public void onApplicationsLoaded() {
-//                List<Window> windows = applicationManager.getWindowList();
-//                System.out.println(windows);
-//            }
-//        });
         // Load native libs directory
         File nativeLibsDirectory = ResourceUtils.getResource("/"+OSValidator.TAG+ "/nativelibs");
         if (nativeLibsDirectory != null) {
             System.setProperty("jna.library.path", nativeLibsDirectory.getAbsolutePath());
         }
 
-        System.out.println(WinKeyboardLib.INSTANCE.forceDisableCapsLock());
+        ApplicationManager applicationManager = new MSApplicationManager(StorageManager.getDefault(), new MSStartupManager(StorageManager.getDefault()));
+        applicationManager.loadApplications(new ApplicationManager.OnLoadApplicationsListener() {
+            @Override
+            public void onPreloadUpdate(String applicationName, int current, int total) {
+
+            }
+
+            @Override
+            public void onProgressUpdate(String applicationName, String iconPath, int current, int total) {
+
+            }
+
+            @Override
+            public void onApplicationsLoaded() {
+                List<Window> windows = applicationManager.getWindowList();
+                for (Window win : windows) {
+                    System.out.println(win);
+                }
+            }
+        });
+//
+//        System.out.println(WinKeyboardLib.INSTANCE.forceDisableCapsLock());
 
         System.exit(0);
     }
