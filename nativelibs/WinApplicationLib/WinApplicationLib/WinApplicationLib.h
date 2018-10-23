@@ -30,3 +30,11 @@ const long APPLICATION_FOCUS_CHECK_INTERVAL = 300;
 	* -2 if the application was open, but could not be focused.
 */
 extern "C" WINAPPLICATIONLIB_API int focusApplication(const wchar_t * applicationId);
+
+/*
+	Extract the application directory for the given dokeyAppId ( store:familyName!AppId )
+	The path will be exported to the pathBuffer. The bufferSize parameter specify the number
+	of characters that the buffer accepts. If the path exceeds that size, it will be truncated.
+	Return 1 if the path was correctly found, -1 if an error occurred.
+*/
+extern "C" WINAPPLICATIONLIB_API int extractUWPApplicationDirectory(const wchar_t * dokeyAppId, __out wchar_t * pathBuffer, int bufferSize);
