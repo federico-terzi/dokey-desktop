@@ -6,4 +6,6 @@
 #define WINAPPLICATIONLIB_API __declspec(dllimport)
 #endif
 
-extern "C" WINAPPLICATIONLIB_API void listActiveApplications(void(*callback)(const wchar_t * executablePath, int isUWPApp));
+#define ActiveAppCallback void(*callback)(HWND hwnd, const wchar_t * executablePath, int isUWPApp, const wchar_t * uwpId)
+
+extern "C" WINAPPLICATIONLIB_API void listActiveApplications(ActiveAppCallback);
