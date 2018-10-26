@@ -14,6 +14,10 @@ typedef int(*ActiveAppCallback)(HWND hwnd, const wchar_t * executablePath, int i
 */
 extern "C" WINAPPLICATIONLIB_API void listActiveApplications(ActiveAppCallback callback);
 
+/*
+	Find the application currently in focus.
+*/
+extern "C" WINAPPLICATIONLIB_API void getActiveApplication(ActiveAppCallback callback);
 
 /*
 	Application Focus
