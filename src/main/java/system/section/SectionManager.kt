@@ -48,10 +48,10 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
     }
 
     fun createSectionForApp(application: Application) : Section {
-        val section = getSection("app:${application.executablePath}", filterDeleted = false)
+        val section = getSection("app:${application.id}", filterDeleted = false)
 
         if (section == null) {  // Section doesn't exist
-            val applicationSection = generateEmptyAppSection(application.executablePath, application.name)
+            val applicationSection = generateEmptyAppSection(application.id, application.name)
             saveSection(applicationSection)
             sectionCache[applicationSection.id!!] = applicationSection
 
@@ -326,7 +326,7 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
                 val application = applicationManager.getApplication(section.appId)
                 if (application != null) {
                     val commands = commandManager.getAppRelatedCommands().filter { it.app == section.appId }
-                    generateAppSectionFromCommands(application.executablePath, application.name, commands)
+                    generateAppSectionFromCommands(application.id, application.name, commands)
                 }else{
                     generateEmptyAppSection(section.appId!!, section.name!!)
                 }

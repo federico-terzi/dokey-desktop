@@ -68,7 +68,7 @@ class KeyboardShortcutBuilder(val context: BuilderContext, val parent: Blurrable
     override fun updateCommand(command: Command) {
         command as KeyboardShortcutCommand
 
-        command.app = applicationButton.application?.executablePath
+        command.app = applicationButton.application?.id
         command.shortcut = shortcutField.getShortcut()
     }
 

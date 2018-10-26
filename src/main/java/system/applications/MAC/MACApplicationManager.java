@@ -39,19 +39,19 @@ public class MACApplicationManager extends ApplicationManager {
     /**
      * Focus an application if already open or start it if not.
      *
-     * @param executablePath path to the application.
+     * @param applicationId path to the application.
      * @return true if succeeded, false otherwise.
      */
     @Override
-    public synchronized boolean openApplication(String executablePath) {
-        if (executablePath == null)
+    public synchronized boolean openApplication(String applicationId) {
+        if (applicationId == null)
             return false;
 
         // Get the application
-        Application application = applicationMap.get(executablePath);
+        Application application = applicationMap.get(applicationId);
         // Not present in the map, analyze it dynamically.
         if (application == null) {
-            application = addApplicationFromAppPath(executablePath);
+            application = addApplicationFromAppPath(applicationId);
         }
 
         // Open it
@@ -65,7 +65,7 @@ public class MACApplicationManager extends ApplicationManager {
         while (waitAmount < OPEN_APPLICATION_TIMEOUT) {
             // Check if the application has taken focus
             Application activeApp = getActiveApplication();
-            if (activeApp != null && activeApp.getExecutablePath().equals(executablePath)){
+            if (activeApp != null && activeApp.getExecutablePath().equals(applicationId)){
                 return true;
             }
 
@@ -83,15 +83,15 @@ public class MACApplicationManager extends ApplicationManager {
 
     /**
      * Return the icon file associated with the specified application.
-     * @param executablePath path to the application
+     * @param applicationId path to the application
      * @return the icon image File object.
      */
     @Override
-    public File getApplicationIcon(String executablePath) {
+    public File getApplicationIcon(String applicationId) {
         // Get the application
-        Application application = applicationMap.get(executablePath);
+        Application application = applicationMap.get(applicationId);
         if (application == null) {
-            application = addApplicationFromAppPath(executablePath);
+            application = addApplicationFromAppPath(applicationId);
         }
 
         // Make sure the application exists
@@ -166,7 +166,7 @@ public class MACApplicationManager extends ApplicationManager {
 
             // Focus terminal app
             if (terminalApp != null)
-                openApplication(terminalApp.getExecutablePath());
+                openApplication(terminalApp.getId());
 
             return true;
         } catch (IOException e) {
@@ -208,12 +208,12 @@ public class MACApplicationManager extends ApplicationManager {
 
     /**
      * Get the application associated with the given executable path.
-     * @param executablePath the path to the application.
+     * @param applicationId the path to the application.
      * @return the Application associated with the executable path if found, null otherwise.
      */
     @Override
-    public Application getApplication(String executablePath) {
-        return applicationMap.get(executablePath);
+    public Application getApplication(String applicationId) {
+        return applicationMap.get(applicationId);
     }
 
     /**

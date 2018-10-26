@@ -7,56 +7,21 @@ import java.io.File
 /**
  * Represents an application installed in the system
  */
-abstract class Application : Comparable<Application>{
-    val name : String
-    val executablePath : String
-    val iconPath : String?
+abstract class Application(val id: String) : Comparable<Application>{
+    abstract val name: String
+    abstract val iconPath: String?
 
-    constructor(name: String, executablePath: String, iconPath: String?) {
-        this.name = name
-        this.executablePath = executablePath
-        this.iconPath = iconPath
-    }
-
-    companion object {
-        /**
-         * Return the String Hash ID for the given executablePath
-         * @return the MD5 hash of the executablePath
-         */
-        fun getHashIDForExecutablePath(executablePath: String) : String {
-            return DigestUtils.md5Hex(executablePath)
-        }
-    }
+    /**
+     * This id can be used to identify the app globally, independently of the computer.
+     * For example, for most apps these will be the application file name, without the local path.
+     */
+    open val globalId = id
 
     /**
      * Open an application.
      * @return true if opened correctly
      */
     abstract fun open() : Boolean
-
-    /**
-     * Return the String Hash ID of the application.
-     * @return the MD5 hash of the executablePath
-     */
-    fun getHashID() : String {
-        return getHashIDForExecutablePath(executablePath)
-    }
-
-    /**
-     * Return the icon file associated with the application if available,
-     * the fallback image otherwise.
-     */
-    fun getIconFile() : File {
-        if (iconPath == null || !File(iconPath).isFile) {
-            return ResourceUtils.getResource("/assets/photo.png")  // Default Fallback
-        }else{
-            return File(iconPath)  // Application icon
-        }
-    }
-
-    override fun toString(): String {
-        return "Application(name='$name', executablePath='$executablePath', iconPath=$iconPath)"
-    }
 
     override fun compareTo(other: Application): Int {
         return this.name.toLowerCase().compareTo(other.name.toLowerCase())
@@ -68,17 +33,31 @@ abstract class Application : Comparable<Application>{
 
         other as Application
 
+        if (id != other.id) return false
         if (name != other.name) return false
-        if (executablePath != other.executablePath) return false
         if (iconPath != other.iconPath) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = name.hashCode()
-        result = 31 * result + executablePath.hashCode()
+        var result = id.hashCode()
+        result = 31 * result + name.hashCode()
         result = 31 * result + (iconPath?.hashCode() ?: 0)
         return result
+    }
+
+    override fun toString(): String {
+        return "Application(id='$id', name='$name', iconPath=$iconPath, globalId='$globalId')"
+    }
+
+    companion object {
+        /**
+         * Return the String Hash ID for the given executablePath
+         * @return the MD5 hash of the executablePath
+         */
+        fun getHashIDForExecutablePath(executablePath: String) : String {
+            return DigestUtils.md5Hex(executablePath)
+        }
     }
 }

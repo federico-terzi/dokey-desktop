@@ -15,7 +15,7 @@ class CommandAgent(context: SearchContext) : AbstractAgent(context) {
         val commands = context.commandManager.searchCommands(query, MAX_RESULTS_FOR_AGENT, activeApplication)
         val commandResults = commands.map {
             // Workaround needed to prioritize the commands related to the active application
-            if (it is AppRelatedCommand && it.app == activeApplication?.executablePath) {
+            if (it is AppRelatedCommand && it.app == activeApplication?.id) {
                 CommandResult(context, it, 60)
             }else{
                 CommandResult(context, it)

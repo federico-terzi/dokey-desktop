@@ -239,10 +239,10 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
 
             if (activeApplication != null) {
                 // Find all the commands related to the app and then the not related ones
-                val appCommands = getAppRelatedCommands().filter { it.app == activeApplication.executablePath && filteringFunction(it) }
+                val appCommands = getAppRelatedCommands().filter { it.app == activeApplication.id && filteringFunction(it) }
                 val noAppCommands = commandMap.values.filter {
                     !(it is AppRelatedCommand)||
-                            it.app != activeApplication.executablePath
+                            it.app != activeApplication.id
                 }.filter(filteringFunction)
 
                 results = appCommands + noAppCommands

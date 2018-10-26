@@ -11,11 +11,6 @@ public abstract class ApplicationManager {
     public static final String INITIALIZED_CHECK_FILENAME = "initialized.txt";
 
     /**
-     * @return the Window object of the active system.window.
-     */
-    public abstract Window getActiveWindow();
-
-    /**
      * @return the PID of the active system.window.
      */
     public abstract int getActivePID();
@@ -31,11 +26,6 @@ public abstract class ApplicationManager {
     public abstract List<Application> getActiveApplications();
 
     /**
-     * Get a list of Window currently active.
-     */
-    public abstract List<Window> getWindowList();
-
-    /**
      * Load the Application(s) installed in the system.
      */
     public abstract void loadApplications(OnLoadApplicationsListener listener);
@@ -46,25 +36,25 @@ public abstract class ApplicationManager {
     public abstract List<Application> getApplicationList();
 
     /**
-     * Get the application associated with the given executable path.
-     * @param executablePath the path to the application.
-     * @return the Application associated with the executable path if found, null otherwise.
+     * Get the application associated with the given id.
+     * @param applicationId the application identifier.
+     * @return the Application associated with the id if found, null otherwise.
      */
-    public abstract Application getApplication(String executablePath);
+    public abstract Application getApplication(String applicationId);
 
     /**
      * Focus an application if already open or start it if not.
-     * @param executablePath path to the application.
+     * @param applicationId id of the application.
      * @return true if succeeded, false otherwise.
      */
-    public abstract boolean openApplication(String executablePath);
+    public abstract boolean openApplication(String applicationId);
 
     /**
      * Return the icon file associated with the specified application.
-     * @param executablePath path to the application
+     * @param applicationId application id
      * @return the icon image File object.
      */
-    public abstract File getApplicationIcon(String executablePath);
+    public abstract File getApplicationIcon(String applicationId);
 
     /**
      * Open the specified file or folder in the file explorer of the current OS.
@@ -104,7 +94,7 @@ public abstract class ApplicationManager {
      */
     public interface OnLoadApplicationsListener {
         void onPreloadUpdate(String applicationName, int current, int total);
-        void onProgressUpdate(String applicationName, String iconPath, int current, int total);
+        void onProgressUpdate(String applicationName, int current, int total);
         void onApplicationsLoaded();
     }
 

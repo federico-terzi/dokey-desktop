@@ -19,7 +19,7 @@ class GetSectionHandler(val context: MobileServerContext) : ServiceHandler {
             val currentlyActiveApplication = context.applicationSwitchDaemon.currentApplication
             if (currentlyActiveApplication !=  null) {
                 associatedApp = currentlyActiveApplication
-                "app:${currentlyActiveApplication.executablePath}"
+                "app:${currentlyActiveApplication.id}"
             }else{
                 null
             }
@@ -59,7 +59,7 @@ class GetSectionHandler(val context: MobileServerContext) : ServiceHandler {
             if (associatedApp != null) {
                 val appJson = JSONObject()
                 appJson.put("name", associatedApp.name)
-                appJson.put("path", associatedApp.executablePath)
+                appJson.put("path", associatedApp.id)  // TODO: change the key to id, and also change it in the mobile app
                 outputJson.put("app", appJson)
             }
         }

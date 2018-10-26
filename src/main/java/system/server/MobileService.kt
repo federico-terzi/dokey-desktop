@@ -96,11 +96,11 @@ class MobileService(val socket : Socket, val key : ByteArray, val commandManager
 
     override fun onApplicationSwitch(application: Application) {
         // Check if the application has an associated section
-        val associatedSection = sectionManager.getSection("app:${application.executablePath}")
+        val associatedSection = sectionManager.getSection("app:${application.id}")
 
         val requestJson = JSONObject()
         requestJson.put("appName", application.name)
-        requestJson.put("path", application.executablePath)
+        requestJson.put("path", application.id)  // TODO: change key to id, and change it also in the mobile app
 
         if (associatedSection != null) {
             requestJson.put("sectionId", associatedSection.id)

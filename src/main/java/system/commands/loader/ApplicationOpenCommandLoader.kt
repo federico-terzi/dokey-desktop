@@ -21,8 +21,8 @@ class ApplicationOpenCommandLoader(val context: CommandTemplateContext) : Comman
 
         for (application in context.applicationManager.applicationList) {
             val command = AppOpenCommand()
-            command.iconId = "app:${application.executablePath}"
-            command.executablePath = application.executablePath
+            command.iconId = "app:${application.id}"
+            command.executablePath = application.id
             command.description = "Open ${application.name}"
             command.title = application.name
             command.implicit = true

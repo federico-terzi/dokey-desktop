@@ -45,10 +45,10 @@ class ApplicationListCell(val imageResolver: ImageResolver) : ListCell<Applicati
     private fun addContent(entry: Application) {
         // Setup the labels
         nameLabel.text = entry.name
-        pathLabel.text = entry.executablePath
+        pathLabel.text = entry.id  // TODO: put something more user friendly here than the path of the application or store id
 
         // Get the image for the application
-        imageResolver.resolveImageAsync("app:${entry.executablePath}", 48) {image, externalThread ->
+        imageResolver.resolveImageAsync("app:${entry.id}", 48) {image, externalThread ->
             if (image != null) {
                 if (externalThread) {
                     Platform.runLater {

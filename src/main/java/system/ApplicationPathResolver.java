@@ -40,7 +40,7 @@ public class ApplicationPathResolver {
         // Populate the filenamePathMap and the applicationPathSet
         for (Application application : appManager.getApplicationList()) {
             // Load the executable file to extract the name
-            File executable = new File(application.getExecutablePath());
+            File executable = new File(application.getExecutablePath());  // TODO: change to include this check inside of the Application object itself
             filenamePathMap.put(executable.getName(), executable.getAbsolutePath());
 
             // Load the applicationPathSet

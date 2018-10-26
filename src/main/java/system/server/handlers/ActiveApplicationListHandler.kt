@@ -14,7 +14,7 @@ class ActiveApplicationListHandler(val context: MobileServerContext) : ServiceHa
         activeApps.forEach { app ->
             val json = JSONObject()
             json.put("name", app.name)
-            json.put("path", app.executablePath)
+            json.put("path", app.id)  // TODO: change the key to id, and also change it in the mobile app
             jsonArray.put(json)
         }
         val outputJson = JSONObject()

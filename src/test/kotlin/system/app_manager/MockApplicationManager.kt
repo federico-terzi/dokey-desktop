@@ -38,15 +38,15 @@ class MockApplicationManager(storageManager: StorageManager) : ApplicationManage
         )
     }
 
-    override fun getApplication(executablePath: String?): Application {
+    override fun getApplication(applicationId: String?): Application {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun openApplication(executablePath: String?): Boolean {
+    override fun openApplication(applicationId: String?): Boolean {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getApplicationIcon(executablePath: String?): File {
+    override fun getApplicationIcon(applicationId: String?): File {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

@@ -27,7 +27,7 @@ class ApplicationSpecificCommandLoader(val context: CommandTemplateContext) : Co
         val commands = mutableListOf<Command>()
 
         for (application in context.applicationManager.applicationList) {
-            val executableFile = File(application.executablePath)
+            val executableFile = File(application.executablePath)  // TODO: correct for the app model
             val executableName = executableFile.name
 
             if (templateMap.containsKey(executableName)) {

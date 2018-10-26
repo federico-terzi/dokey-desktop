@@ -44,11 +44,11 @@ class AppOpenBuilder(val context: BuilderContext, val parent: BlurrableStage) : 
     override fun updateCommand(command: Command) {
         command as AppOpenCommand
 
-        command.executablePath = applicationButton.application?.executablePath
+        command.executablePath = applicationButton.application?.id
 
         // Override the icon if null
         if (command.iconId == null) {
-            command.iconId = "app:${applicationButton.application?.executablePath}"
+            command.iconId = "app:${applicationButton.application?.id}"
         }
     }
 

@@ -26,7 +26,7 @@ class ApplicationSelectButton(val parent: BlurrableStage, val imageResolver: Ima
             _application = value
 
             if (_application != null) {
-                imageView.image = imageResolver.resolveImage("app:${_application?.executablePath}", 24)
+                imageView.image = imageResolver.resolveImage("app:${_application?.id}", 24)
                 nameLabel.text = _application?.name
                 descriptionLabel.text = "Click to change the app..."  // TODO: i18n
             }else{

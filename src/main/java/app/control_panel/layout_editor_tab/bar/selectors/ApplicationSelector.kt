@@ -27,10 +27,10 @@ class ApplicationSelector(context: SelectorContext, sectionBar: SectionBar, sect
             associatedApplication = application
         }
 
-        imageId = "app:${associatedApplication.executablePath}"
+        imageId = "app:${associatedApplication.id}"
 
         // Setup drag and drop
-        val associatedOpenCommand = context.commandManager.getAppOpenCommand(application.executablePath)
+        val associatedOpenCommand = context.commandManager.getAppOpenCommand(application.id)
         if (associatedOpenCommand != null) {
             val dragAndDropPayload = "${DNDCommandProcessor.dragAndDropPrefix}:command:${associatedOpenCommand.id}"
             onDragDetected = EventHandler { event ->

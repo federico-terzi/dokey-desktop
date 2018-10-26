@@ -1,6 +1,7 @@
 package system.applications.MS
 
 import com.sun.jna.Native
+import com.sun.jna.WString
 import com.sun.jna.platform.win32.*
 import com.sun.jna.ptr.IntByReference
 import org.apache.commons.io.FileUtils
@@ -8,7 +9,9 @@ import org.apache.commons.lang3.StringUtils
 import system.applications.Application
 import system.applications.ApplicationManager
 import system.applications.ExternalAppManager
-import system.applications.Window
+import system.applications.MS.model.MSLegacyApplication
+import system.applications.MS.model.MSUWPApplication
+import system.applications.MS.model.exception.ApplicationCreateException
 import system.startup.StartupManager
 import system.storage.StorageManager
 import utils.CaseInsensitiveMap
@@ -16,7 +19,6 @@ import java.awt.GraphicsEnvironment
 import java.awt.Image
 import java.awt.Robot
 import java.awt.event.InputEvent
-import java.awt.event.KeyEvent
 import java.awt.image.BufferedImage
 import java.io.BufferedReader
 import java.io.File
@@ -30,11 +32,9 @@ import javax.swing.Icon
 import javax.swing.ImageIcon
 import javax.swing.filechooser.FileSystemView
 
-const val OPEN_APPLICATION_CHECK_INTERVAL = 300  // Delay to check that the app is effectively open.
-
 class MSApplicationManager(storageManager: StorageManager, private val startupManager: StartupManager) : ApplicationManager(storageManager) {
 
-    // This map will hold the applications, associated with their executable path
+    // This map will hold the applications, associated with their id
     private var applicationMap = CaseInsensitiveMap<Application>()
 
     private val isPowerShellEnabled: Boolean
@@ -79,119 +79,52 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
     /**
      * Focus an application if already open or start it if not.
      *
-     * @param executablePath path to the application.
+     * @param appId path to the application.
      * @param forceRun if the application is not running, start it.
      * @return true if succeeded, false otherwise.
      */
     @Synchronized
-    fun openApplication(executablePath: String?, forceRun: Boolean): Boolean {
-        if (executablePath == null)
+    fun openApplication(appId: String?, forceRun: Boolean): Boolean {
+        if (appId == null)
             return false
 
-        // Get the currently active application PID
-        val activePID = activePID
-
-        // Get windows to find out if application is already open
-        val openWindows = windowList
-
-        // Cycle through windows to find if the app is already open
-        var isApplicationOpen = false
-        var firstOpenWindow: Window? = null
-
-        for (window in openWindows) {
-            if (window.application != null && window.application.executablePath == executablePath) {
-                isApplicationOpen = true
-                firstOpenWindow = window
-                break
-            }
+        val hasBeenFocused = WinApplicationLib.INSTANCE.focusApplication(WString(appId))
+        if (hasBeenFocused > 0) {  // Succeeded in focusing the app
+            return true
+        }else if (hasBeenFocused == -2) {  // the application was open, but could not be focused.
+            return false
         }
 
-        var hasBeenOpened = false
-        var hasAltTabWorkaroundBeenTried = false
+        // Get the requested application and Make sure the app is valid before opening it
+        val application = getApplicationOrAttemptToAddItIfNotExisting(appId) ?: return false
 
-        // Try to open the application until a timeout occurs
-        while (!hasBeenOpened) {
-            if (isApplicationOpen) {
-                firstOpenWindow!!.focusWindow()
-            } else {
-                // Get the requested application
-                var application: Application? = applicationMap[executablePath]
-                if (application == null) {
-                    application = addApplicationFromExecutablePath(executablePath, null, null)
-                }
-                // Make sure the app is valid before opening it
-                if (application == null) {
-                    return false
-                }
-
-                // Try to open the application
-                if (forceRun) {
-                    return application.open()
-                }
-            }
-
-            // Get the current active application PID
-            val currentlyActivePID = getActivePID()
-
-            // If the PIDs are equal, it means that the opening didn't work
-            // or the app was already open
-            if (currentlyActivePID == activePID) {
-                // Get the path of the currently opened application
-                val focusedExecutablePath = getExecutablePathFromPID(activePID)
-
-                // If the executable path is the one requested, it means the app is already open
-                if (focusedExecutablePath != null && focusedExecutablePath == executablePath) {
-                    return true
-                }
-
-                // Try send the ALT-TAB shortcut to unlock the situation
-                if (!hasAltTabWorkaroundBeenTried) {
-                    triggerAppSwitch()
-                    hasAltTabWorkaroundBeenTried = true
-                    LOG.info("WIN LOCK DETECTED: trying with ALT-TAB...")
-                } else {
-                    LOG.info("Cannot open requested application...")
-                    return false
-                }
-            } else {
-                hasBeenOpened = true
-                break
-            }
-
-            // Sleep for a bit
-            try {
-                Thread.sleep(OPEN_APPLICATION_CHECK_INTERVAL.toLong())
-            } catch (e: InterruptedException) {
-                e.printStackTrace()
-            }
-
+        // Try to open the application
+        if (forceRun) {
+            return application.open()
         }
 
-        return hasBeenOpened
+        return false
     }
 
     /**
      * Focus an application if already open or start it if not.
      *
-     * @param executablePath path to the application.
+     * @param applicationId path to the application.
      * @return true if succeeded, false otherwise.
      */
     @Synchronized
-    override fun openApplication(executablePath: String): Boolean {
-        return openApplication(executablePath, true)
+    override fun openApplication(applicationId: String): Boolean {
+        return openApplication(applicationId, true)
     }
 
     /**
      * Return the icon file associated with the specified application.
-     * @param executablePath path to the application
+     * @param applicationId path to the application
      * @return the icon image File object.
      */
-    override fun getApplicationIcon(executablePath: String): File? {
+    override fun getApplicationIcon(applicationId: String): File? {
         // Get the application
-        var application: Application? = applicationMap[executablePath]
-        if (application == null) {
-            application = addApplicationFromExecutablePath(executablePath, null, null)
-        }
+        var application = getApplicationOrAttemptToAddItIfNotExisting(applicationId)
 
         // Make sure the application exists
         return if (application != null) {
@@ -322,45 +255,11 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
 
     /**
      * Get the application associated with the given executable path.
-     * @param executablePath the path to the application.
+     * @param applicationId the path to the application.
      * @return the Application associated with the executable path if found, null otherwise.
      */
-    override fun getApplication(executablePath: String): Application? {
-        return applicationMap[executablePath]
-    }
-
-    /**
-     * @return the Window object of the active system.window.
-     */
-    @Synchronized
-    override fun getActiveWindow(): Window? {
-        // Get the system.window title
-        val buffer = CharArray(1024)
-        val hwnd = User32.INSTANCE.GetForegroundWindow()
-        User32.INSTANCE.GetWindowText(hwnd, buffer, buffer.size)
-        val titleText = Native.toString(buffer)
-
-        // Get the PID
-        val PID = IntByReference()
-        User32.INSTANCE.GetWindowThreadProcessId(hwnd, PID)
-
-        // Filter out dokey
-        if (PID.value == dokeyPID) {
-            return null
-        }
-
-        // Get the executable path
-        val executablePath = getExecutablePathFromPID(PID.value) ?: return null
-
-        // Get the application
-        var application: Application? = applicationMap[executablePath]
-
-        // If application is not present in the list, load it dynamically
-        if (application == null) {
-            application = addApplicationFromExecutablePath(executablePath, null, null)
-        }
-
-        return MSWindow(titleText, application, PID.value, hwnd)
+    override fun getApplication(applicationId: String): Application? {
+        return applicationMap[applicationId]
     }
 
     /**
@@ -377,26 +276,57 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
         return PID.value
     }
 
+    private fun getApplicationOrAttemptToAddItIfNotExisting(appId: String): Application? {
+        // If the application already exists in the memory, return it.
+        if (applicationMap.containsKey(appId)) {
+            return applicationMap[appId]
+        }
+
+        // Check if the application is a legacy win32 app or a UWP app
+        val isUWPApp = appId.startsWith("store:")
+
+        try {
+            val application = if (isUWPApp) {
+                MSUWPApplication(appId)
+            }else{
+                MSLegacyApplication(this, appId)
+            }
+
+            // Save it in the external application storage
+            externalAppManager.externalAppIds.add(appId)
+            externalAppManager.persist()
+
+            // Update the data structure
+            applicationMap[appId] = application
+
+            return application
+        }catch (ex: ApplicationCreateException) {
+            LOG.warning("$ex")
+        }
+
+        return null
+    }
+
     /**
      * @return the active Application
      */
     override fun getActiveApplication(): Application? {
-        val activeWindow = activeWindow
-        return activeWindow?.application
+        var activeApplication : Application? = null
+        WinApplicationLib.INSTANCE.getActiveApplication { _, _, _, appId ->
+            activeApplication = getApplicationOrAttemptToAddItIfNotExisting(appId.toString())
+        }
+        return activeApplication
     }
 
     override fun getActiveApplications(): List<Application> {
-        val apps = HashSet<Application>()
+        val apps = mutableListOf<Application>()
 
-        // Get all the currently active windows to extract the apps.
-        val activeWindows = windowList
-        for (win in activeWindows) {
-            if (win.application != null) {
-                apps.add(win.application)
-            }
+        WinApplicationLib.INSTANCE.listActiveApplications { _, _, _, appId ->
+            val app = getApplicationOrAttemptToAddItIfNotExisting(appId.toString())
+            app?.let { apps.add(app) }
         }
 
-        return ArrayList(apps)
+        return apps
     }
 
     /**
@@ -417,93 +347,6 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
             null
         } else executablePath
 
-    }
-
-    /**
-     * Used when windows is stucked and doesn't change window.
-     */
-    private fun triggerAppSwitch() {
-        if (robot == null)
-            return
-
-        robot!!.keyPress(KeyEvent.VK_ALT)
-        robot!!.delay(40)
-        robot!!.keyPress(KeyEvent.VK_TAB)
-        robot!!.delay(40)
-        robot!!.keyRelease(KeyEvent.VK_ALT)
-        robot!!.delay(40)
-        robot!!.keyRelease(KeyEvent.VK_TAB)
-        robot!!.delay(40)
-    }
-
-    /**
-     * Return the list of Windows currently active.
-     */
-    override fun getWindowList(): List<Window> {
-        val windowList = ArrayList<Window>()
-        User32.INSTANCE.EnumWindows(WinUser.WNDENUMPROC { hwnd, arg1 ->
-            // Using this method to extract only visible windows
-            // https://stackoverflow.com/questions/7277366/why-does-enumwindows-return-more-windows-than-i-expected
-
-            val windowText = CharArray(512)
-            User32.INSTANCE.GetWindowText(hwnd, windowText, 512)
-            val titleText = Native.toString(windowText)
-
-            // Skip the ones that are empty or default.
-            if (titleText.isEmpty() || titleText == "Default IME" || titleText == "MSCTFIME UI") {
-                return@WNDENUMPROC true
-            }
-
-            // Make sure the system.window is visible, skip if not
-            val isWindowVisible = User32.INSTANCE.IsWindowVisible(hwnd)
-            if (!isWindowVisible) {
-                return@WNDENUMPROC true
-            }
-
-            // Filter the windows based on these codes:
-            // https://docs.microsoft.com/en-us/windows/desktop/winmsg/extended-window-styles
-            val code = User32.INSTANCE.GetWindowLong(hwnd, WinUser.GWL_EXSTYLE)
-            val result = (code and 0x00200000) + (code and 0x00000080)
-            //System.out.println(titleText + " - " + code + " - "+Integer.toBinaryString(code) + " - "+result);
-            if (result != 0) {
-                return@WNDENUMPROC true
-            }
-
-            // Get the PID
-            val PID = IntByReference()
-            User32.INSTANCE.GetWindowThreadProcessId(hwnd, PID)
-
-            // Filter out dokey itself
-            if (PID.value == dokeyPID) {
-                return@WNDENUMPROC true
-            }
-
-            // Get the executable path
-            //String executablePath = executablesMap.get(PID.getValue());
-            val executablePath = getExecutablePathFromPID(PID.value) ?: return@WNDENUMPROC true
-
-            // If the executablePath is empty, skip the process
-
-            // Get the application
-            var application: Application? = applicationMap[executablePath]
-
-            // If application is not present in the list, load it dynamically
-            if (application == null) {
-                application = addApplicationFromExecutablePath(executablePath, null, null)
-            }
-
-            // If the application could not be found, return
-            if (application == null) {
-                return@WNDENUMPROC true
-            }
-
-            val window = MSWindow(titleText, application, PID.value, hwnd)
-            windowList.add(window)
-
-            true
-        }, null)
-
-        return windowList
     }
 
     data class AppTarget(val executablePath: String, val targetName: String?)
@@ -529,7 +372,7 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
         // Populate the list
 
         // Load external targets
-        val externalTargets = externalAppManager.externalAppPaths.map {
+        val externalTargets = externalAppManager.externalAppIds.map {
             AppTarget(it, null)
         }
 
@@ -542,15 +385,13 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
         targets.forEachIndexed { current, target ->
             // Make sure the executable file still exists
             if (File(target.executablePath).isFile) {
-                // Get the app icon
-                val iconPath = getIconPath(target.executablePath)
-
                 // Add the application
-                val app = addApplicationFromExecutablePath(target.executablePath, target.targetName, iconPath,
-                        avoidSavingInExternalApps = true)
+                val app = MSLegacyApplication(this, target.executablePath, target.targetName)
+
+                applicationMap[target.executablePath] = app
 
                 // Update the listener
-                listener?.onProgressUpdate(app?.name, iconPath, current, total)
+                listener?.onProgressUpdate(app.name, current, total)
             }
         }
 
@@ -654,55 +495,6 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
     }
 
     /**
-     * Obtain the application of the given executablePath and returns it.
-     * Also add it to the applicationMap.
-     * If applicationName is not specified, it calculates dynamically from the executablePath.
-     * If executablePath is already present in the applicationMap,
-     * to mitigate ambiguities, the application name is forced to the one calculated dynamically.
-     *
-     * @param executablePath  path of the app exe
-     * @param applicationName application name
-     * @param iconPath        the path to the icon. If null is dynamically generated
-     * @return an Application object.
-     */
-    @Synchronized
-    private fun addApplicationFromExecutablePath(executablePath: String, applicationName: String? = null,
-                                                 iconPath: String? = null, avoidSavingInExternalApps : Boolean = false): Application? {
-        var _applicationName = applicationName
-        var _iconPath = iconPath
-        // Make sure the target is an exe file
-        if (executablePath.toLowerCase().endsWith(".exe")) {
-            // Generate the application name if null or if
-            // executablePath is already present, to mitigate ambiguities of the program name,
-            // the executable filename becomes the Application name ( without .exe )
-            if (applicationMap.containsKey(executablePath) || applicationName == null) {
-                _applicationName = calculateAppNameFromExecutablePath(executablePath)
-            }
-
-            // If the application icon is null, find it
-            if (iconPath == null) {
-                _iconPath = getIconPath(executablePath)
-            }
-
-            // Create the application
-            val application = MSApplication(_applicationName!!, executablePath, _iconPath)
-
-            // If the application is not already present in the loaded list, save it in the external list
-            // for future reloading
-            if (applicationMap[executablePath] == null && !avoidSavingInExternalApps) {
-                externalAppManager.externalAppPaths.add(executablePath)
-                externalAppManager.persist()
-            }
-
-            // Add it to the map
-            applicationMap[executablePath] = application
-
-            return application
-        }
-        return null
-    }
-
-    /**
      * Calculate the application name by extracting it from the executable path
      * @param executablePath path to the app exe
      * @return the extracted name.
@@ -734,7 +526,7 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
      * @param executablePath path to the executable.
      * @return the icon associated with the given executable.
      */
-    private fun getIconPath(executablePath: String): String {
+    fun getIconPath(executablePath: String): String {
         // Get the icon file
         var iconFile: File? = null
 
