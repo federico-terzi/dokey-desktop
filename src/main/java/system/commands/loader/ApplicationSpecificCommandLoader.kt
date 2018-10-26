@@ -8,7 +8,6 @@ import system.ResourceUtils
 import system.commands.annotations.RegisterLoader
 import system.commands.general.AppRelatedCommand
 import system.context.CommandTemplateContext
-import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -27,12 +26,9 @@ class ApplicationSpecificCommandLoader(val context: CommandTemplateContext) : Co
         val commands = mutableListOf<Command>()
 
         for (application in context.applicationManager.applicationList) {
-            val executableFile = File(application.executablePath)  // TODO: correct for the app model
-            val executableName = executableFile.name
-
-            if (templateMap.containsKey(executableName)) {
-                val appCommands = loadCommandsFromTemplateFile(templateMap[executableName]!!.file,
-                        application.executablePath)
+            if (templateMap.containsKey(application.globalId)) {
+                val appCommands = loadCommandsFromTemplateFile(templateMap[application.globalId]!!.file,
+                        application.id)
                 commands.addAll(appCommands)
             }
         }
@@ -40,7 +36,7 @@ class ApplicationSpecificCommandLoader(val context: CommandTemplateContext) : Co
         return commands
     }
 
-    private fun loadCommandsFromTemplateFile(file : String, executablePath: String) : List<Command> {
+    private fun loadCommandsFromTemplateFile(file : String, applicationId: String) : List<Command> {
         // Get the template file
         val templateFile = ResourceUtils.getResource("/commands/${CommandLoader.getOSPathSuffix()}/$file")
 
@@ -56,12 +52,12 @@ class ApplicationSpecificCommandLoader(val context: CommandTemplateContext) : Co
 
             // Set the specific application path
             command as AppRelatedCommand
-            command.app = executablePath
+            command.app = applicationId
             command.locked = true
 
             // Set the icon identifier if null
             if (command.iconId == null) {
-                command.iconId = "app:$executablePath"
+                command.iconId = "app:$applicationId"
             }
 
             commands.add(command)

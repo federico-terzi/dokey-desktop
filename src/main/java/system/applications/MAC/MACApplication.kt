@@ -6,16 +6,23 @@ import java.io.File
 /**
  * Represents an application installed in the system
  */
-class MACApplication(name: String, val executablePath: String, iconPath: String?) :
-        Application(executablePath, name, iconPath) {
+class MACApplication(val applicationManager: MACApplicationManager, val appBundlePath: String) : Application(appBundlePath) {
+
+    override val name: String
+    override val iconPath: String by lazy {
+        applicationManager.getIconPath(appBundlePath)
+    }
 
     private val _globalId : String
     override val globalId: String
         get() = _globalId
 
     init {
-        val executableFile = File(executablePath)
-        _globalId = executableFile.name
+        val appBundleDir = File(appBundlePath)
+        _globalId = appBundleDir.name
+
+        // Get the application name by removing the ".app" suffix
+        name = appBundleDir.name.substring(0, appBundleDir.name.length - 4)
     }
 
     /**
@@ -26,7 +33,7 @@ class MACApplication(name: String, val executablePath: String, iconPath: String?
 
         // Execute the process
         try {
-            val proc = runtime.exec(arrayOf("open", executablePath))
+            val proc = runtime.exec(arrayOf("open", appBundlePath))
             return true
         }catch (e : Exception) {
             e.printStackTrace()

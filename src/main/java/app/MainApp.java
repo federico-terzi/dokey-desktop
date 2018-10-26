@@ -315,7 +315,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
                     }
 
                     @Override
-                    public void onProgressUpdate(String applicationName, String iconPath, int current, int total) {
+                    public void onProgressUpdate(String applicationName, int current, int total) {
                         LOG.fine("Loading: " + applicationName + " " + current + "/" + total);
                         // Calculate the percentage
                         double percentage = (current / (double) total) * 0.5 + 0.5;

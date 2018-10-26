@@ -7,7 +7,6 @@ import system.applications.ApplicationManager;
 import system.applications.MS.MSApplicationManager;
 import system.applications.MS.ShellLinkResolver;
 import system.applications.MS.WinExtractIconLib;
-import system.applications.Window;
 import system.bookmarks.ChromeBookmarkImportAgent;
 import system.exceptions.UnsupportedOperatingSystemException;
 import system.keyboard.bindings.WinKeyboardLib;
@@ -36,16 +35,13 @@ public class WinTestMain {
             }
 
             @Override
-            public void onProgressUpdate(String applicationName, String iconPath, int current, int total) {
+            public void onProgressUpdate(String applicationName, int current, int total) {
 
             }
 
             @Override
             public void onApplicationsLoaded() {
-                List<Window> windows = applicationManager.getWindowList();
-                for (Window win : windows) {
-                    System.out.println(win);
-                }
+
             }
         });
 //

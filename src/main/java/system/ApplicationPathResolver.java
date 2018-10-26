@@ -16,12 +16,12 @@ import java.util.Set;
 public class ApplicationPathResolver {
     private ApplicationManager appManager;
 
-    // This map will hold the association between the executable filename ( for example idea.exe or Idea.app )
-    // and the absolute path of the application. Used to convert the path of applications to local paths.
-    private Map<String, String> filenamePathMap = new HashMap<>();
+    // This map will hold the association between the application global id( for example idea.exe or Idea.app )
+    // and the local id of the application. Used to convert the path of applications to local paths.
+    private Map<String, String> globalIdLocalIdMap = new HashMap<>();
 
-    // This set will contain the application executable paths
-    private Set<String> applicationPathSet = new HashSet<>();
+    // This set will contain the application ids
+    private Set<String> applicationIdSet = new HashSet<>();
 
     private boolean isLoaded = false;
 
@@ -34,17 +34,15 @@ public class ApplicationPathResolver {
      */
     public void load() {
         // Reset the maps
-        filenamePathMap = new HashMap<>();
-        applicationPathSet = new HashSet<>();
+        globalIdLocalIdMap = new HashMap<>();
+        applicationIdSet = new HashSet<>();
 
-        // Populate the filenamePathMap and the applicationPathSet
+        // Populate the globalIdLocalIdMap and the applicationIdSet
         for (Application application : appManager.getApplicationList()) {
-            // Load the executable file to extract the name
-            File executable = new File(application.getExecutablePath());  // TODO: change to include this check inside of the Application object itself
-            filenamePathMap.put(executable.getName(), executable.getAbsolutePath());
+            globalIdLocalIdMap.put(application.getGlobalId(), application.getId());
 
-            // Load the applicationPathSet
-            applicationPathSet.add(executable.getAbsolutePath());
+            // Load the applicationIdSet
+            applicationIdSet.add(application.getId());
         }
 
         isLoaded = true;
@@ -53,25 +51,28 @@ public class ApplicationPathResolver {
     /**
      * Searches in the PC to find the application.
      * NOTE: you must call load beforehand.
-     * @param executablePath the requested application path.
-     * @return the new executable path if found, null otherwise.
+     * @param applicationId the requested application id.
+     * @return the application id if found, null otherwise.
      */
-    public String searchApp(String executablePath) {
+    public String searchApp(String applicationId) {
         if (!isLoaded)
             throw new RuntimeException("You must call the load() function before searching for an app.");
 
         // Check if the application is already present
-        if (applicationPathSet.contains(executablePath)) {  // The app is already present in the PC, great.
-            return executablePath;
+        if (applicationIdSet.contains(applicationId)) {  // The app is already present in the PC, great.
+            return applicationId;
         }
 
+        // TODO: fix with new application id model
+        /*
         // Check if the application is present, but in another path
-        File expected = new File(executablePath);
+        File expected = new File(applicationId);
         String executableName = expected.getName();
-        if (filenamePathMap.containsKey(executableName)) {  // App present, but in another path.
+        if (globalIdLocalIdMap.containsKey(executableName)) {  // App present, but in another path.
             // Return the new path
-            return filenamePathMap.get(executableName);
+            return globalIdLocalIdMap.get(executableName);
         }
+        */
 
         // Not found
         return null;

@@ -6,7 +6,6 @@ import system.ResourceUtils;
 import system.startup.StartupManager;
 import system.applications.Application;
 import system.applications.ApplicationManager;
-import system.applications.Window;
 
 import java.io.*;
 import java.net.URL;
@@ -65,7 +64,7 @@ public class MACApplicationManager extends ApplicationManager {
         while (waitAmount < OPEN_APPLICATION_TIMEOUT) {
             // Check if the application has taken focus
             Application activeApp = getActiveApplication();
-            if (activeApp != null && activeApp.getExecutablePath().equals(applicationId)){
+            if (activeApp != null && activeApp.getId().equals(applicationId)){
                 return true;
             }
 
@@ -214,47 +213,6 @@ public class MACApplicationManager extends ApplicationManager {
     @Override
     public Application getApplication(String applicationId) {
         return applicationMap.get(applicationId);
-    }
-
-    /**
-     * @return the Window object of the active system.window.
-     */
-    @Override
-    public synchronized  Window getActiveWindow() {
-        String scriptPath = ResourceUtils.getResource("/applescripts/getActiveWindow.scpt").getAbsolutePath();
-        Runtime runtime = Runtime.getRuntime();
-
-        try {
-            // Execute the process
-            Process proc = runtime.exec(new String[]{"osascript", scriptPath});
-
-            // Get the output
-            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-
-            // Read the fields
-            String appName = br.readLine();
-            int pid = Integer.parseInt(br.readLine());
-            String windowTitle = br.readLine();
-
-            // Get the executable path
-            String executablePath = getExecutablePathFromPID(pid);
-
-            // Get the app folder path
-            String appPath = getAppPathFromExecutablePath(executablePath);
-
-            // Get the application
-            Application application = null;
-            if (appPath != null) {
-                application = addApplicationFromAppPath(appPath);
-            }
-
-            Window window = new MACWindow(windowTitle, application, appName);
-            return window;
-
-        } catch (Exception e) {
-            LOG.info("ERROR ACTIVE WINDOW: "+e.toString());
-        }
-        return null;
     }
 
     /**
@@ -465,56 +423,6 @@ public class MACApplicationManager extends ApplicationManager {
         return -1;
     }
 
-    @Override
-    public List<Window> getWindowList() {
-        String scriptPath = ResourceUtils.getResource("/applescripts/getWindowList.scpt").getAbsolutePath();
-        Runtime runtime = Runtime.getRuntime();
-
-        List<Window> windowList = new ArrayList<>();
-
-        try {
-            // Execute the process
-            Process proc = runtime.exec(new String[]{"osascript", scriptPath});
-
-            // Get the output
-            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-
-            // Read the fields
-            String appName;
-            while ((appName = br.readLine()) != null) {
-                int pid = Integer.parseInt(br.readLine());
-
-                // Get the executable path
-                String executablePath = getExecutablePathFromPID(pid);
-
-                // Get the app folder path
-                String appPath = getAppPathFromExecutablePath(executablePath);
-
-                Application application = null;
-
-                if (appPath != null) {
-                    // Get the application
-                    application = applicationMap.get(appPath);
-
-                    // If not already present, load it
-                    if (application == null) {
-                        application = addApplicationFromAppPath(appPath);
-                    }
-                }
-
-                String windowTitle;
-                while ((windowTitle = br.readLine()) != null && !windowTitle.trim().isEmpty()) {
-                    Window window = new MACWindow(windowTitle, application, appName);
-                    windowList.add(window);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return windowList;
-    }
-
     /**
      * Load the Application(s) installed in the system.
      * Each time it is called, the list is refreshed.
@@ -565,12 +473,12 @@ public class MACApplicationManager extends ApplicationManager {
                 Application application = addApplicationFromAppPath(appPath);
 
                 // Save terminal app if found
-                if (terminalApp == null && application != null && application.getExecutablePath().endsWith("Terminal.app"))
+                if (terminalApp == null && application != null && application.getId().endsWith("Terminal.app"))
                     terminalApp = application;
 
                 // Update the listener and increase the counter
                 if (listener != null && application != null) {
-                    listener.onProgressUpdate(application.getName(), application.getIconPath(), current, fileList.size());
+                    listener.onProgressUpdate(application.getName(), current, fileList.size());
                 }
             }catch(Exception e) {
                 LOG.info("EXCEPTION WITH APP "+app.getName() + " " + e.toString());
@@ -597,17 +505,8 @@ public class MACApplicationManager extends ApplicationManager {
     private synchronized Application addApplicationFromAppPath(String appPath) {
         // Make sure the target is an app
         if (appPath.toLowerCase().endsWith(".app")) {
-            // Get the app folder
-            File app = new File(appPath);
-
-            // Get the application name by removing the ".app" suffix
-            String applicationName = app.getName().substring(0, app.getName().length() - 4);
-
-            // Get the app icon
-            String iconPath = getIconPath(appPath);
-
             // Create the application
-            Application application = new MACApplication(applicationName, appPath, iconPath);
+            Application application = new MACApplication(this, appPath);
 
             // Add it to the map
             applicationMap.put(appPath, application);
@@ -637,7 +536,7 @@ public class MACApplicationManager extends ApplicationManager {
      * @param appPath path to the app folder.
      * @return the icon associated with the given app.
      */
-    private String getIconPath(String appPath) {
+    String getIconPath(String appPath) {
         // Get the icon file
         File iconFile = generateIconFile(appPath);
 

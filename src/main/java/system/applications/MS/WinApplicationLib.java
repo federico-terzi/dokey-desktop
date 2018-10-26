@@ -42,6 +42,6 @@ public interface WinApplicationLib extends Library {
     int extractUWPApplicationDirectory(WString appId, byte[] pathBuffer, int bufferSize);
 
     interface ActiveAppCallback extends Callback {
-        void invoke(WinDef.HWND hwnd, WString executablePath, int isUWPApp, WString appId);
+        boolean invoke(WinDef.HWND hwnd, WString executablePath, int isUWPApp, WString appId);
     }
 }

@@ -127,7 +127,7 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
         var application = getApplicationOrAttemptToAddItIfNotExisting(applicationId)
 
         // Make sure the application exists
-        return if (application != null) {
+        return if (application?.iconPath != null) {
             File(application.iconPath!!)
         } else {
             null
@@ -314,6 +314,7 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
         var activeApplication : Application? = null
         WinApplicationLib.INSTANCE.getActiveApplication { _, _, _, appId ->
             activeApplication = getApplicationOrAttemptToAddItIfNotExisting(appId.toString())
+            false
         }
         return activeApplication
     }
@@ -322,8 +323,10 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
         val apps = mutableListOf<Application>()
 
         WinApplicationLib.INSTANCE.listActiveApplications { _, _, _, appId ->
+            println(appId.toString())
             val app = getApplicationOrAttemptToAddItIfNotExisting(appId.toString())
             app?.let { apps.add(app) }
+            true
         }
 
         return apps

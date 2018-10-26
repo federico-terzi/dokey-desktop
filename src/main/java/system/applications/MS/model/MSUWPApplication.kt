@@ -9,9 +9,9 @@ import system.applications.Application
 class MSUWPApplication(id: String) : Application(id) {
 
     override val name: String
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        get() = id  // TODO: change
     override val iconPath: String?
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        get() = null // TODO: change
 
     init {
         // TODO: check existence using extractUWPApplicationDirectory
