@@ -14,12 +14,7 @@ class MSLegacyApplication(val applicationManager: MSApplicationManager, val exec
         Application(executablePath) {
 
     override val name: String
-
-    // Icon path property is resolved lazily
-    override val iconPath: String by lazy {  // TODO: may need to change synchronization options.
-        // Extract the icon dynamically
-        applicationManager.getIconPath(executablePath)
-    }
+    override val iconPath: String
 
     private val _globalId : String
     override val globalId: String
@@ -39,6 +34,9 @@ class MSLegacyApplication(val applicationManager: MSApplicationManager, val exec
         }else{
             calculateAppNameFromExecutablePath(executablePath)
         }
+
+        // Extract the application icon
+        iconPath = applicationManager.getIconPath(executablePath)
 
         _globalId = executableFile.name
     }
