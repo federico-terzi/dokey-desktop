@@ -8,7 +8,6 @@ import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.layout.VBox
 import model.command.Command
-import system.applications.Application
 import system.commands.general.AppOpenCommand
 
 @RegisterBuilder(type = AppOpenCommand::class)
@@ -27,8 +26,8 @@ class AppOpenBuilder(val context: BuilderContext, val parent: BlurrableStage) : 
     override fun populateUIForCommand(command: Command) {
         command as AppOpenCommand
 
-        val application = if (command.executablePath != null ) {
-            context.applicationManager.getApplication(command.executablePath)
+        val application = if (command.appId != null ) {
+            context.applicationManager.getApplication(command.appId)
         }else{
             null
         }
@@ -44,7 +43,7 @@ class AppOpenBuilder(val context: BuilderContext, val parent: BlurrableStage) : 
     override fun updateCommand(command: Command) {
         command as AppOpenCommand
 
-        command.executablePath = applicationButton.application?.id
+        command.appId = applicationButton.application?.id
 
         // Override the icon if null
         if (command.iconId == null) {

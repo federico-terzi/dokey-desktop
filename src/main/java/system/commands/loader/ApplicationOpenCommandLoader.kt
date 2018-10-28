@@ -1,18 +1,9 @@
 package system.commands.loader
 
-import json.JSONArray
-import json.JSONObject
-import json.JSONTokener
 import model.command.Command
-import system.ResourceUtils
 import system.commands.annotations.RegisterLoader
 import system.commands.general.AppOpenCommand
-import system.commands.general.AppRelatedCommand
 import system.context.CommandTemplateContext
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileNotFoundException
-import java.io.IOException
 
 @RegisterLoader
 class ApplicationOpenCommandLoader(val context: CommandTemplateContext) : CommandLoader {
@@ -22,7 +13,7 @@ class ApplicationOpenCommandLoader(val context: CommandTemplateContext) : Comman
         for (application in context.applicationManager.applicationList) {
             val command = AppOpenCommand()
             command.iconId = "app:${application.id}"
-            command.executablePath = application.id
+            command.appId = application.id
             command.description = "Open ${application.name}"
             command.title = application.name
             command.implicit = true

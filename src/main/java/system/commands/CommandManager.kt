@@ -6,10 +6,8 @@ import model.command.Command
 import model.component.CommandResolver
 import model.parser.command.CommandParser
 import system.applications.Application
-import system.commands.exporter.CommandExporter
 import system.commands.general.AppOpenCommand
 import system.commands.general.AppRelatedCommand
-import system.commands.importer.CommandImporter
 import system.commands.model.CommandWrapper
 import system.storage.StorageManager
 import java.io.*
@@ -268,6 +266,6 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
 
     // Used in the section selector bar
     fun getAppOpenCommand(appPath: String) : Command? {
-        return commandMap.values.find { it is AppOpenCommand && it.executablePath == appPath }
+        return commandMap.values.find { it is AppOpenCommand && it.appId == appPath }
     }
 }

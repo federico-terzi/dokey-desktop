@@ -9,9 +9,9 @@ class AppOpenCommand : SimpleCommandWrapper() {
         category = "ao"  // App Open
     }
 
-    var executablePath : String?
+    var appId : String?
         get() = this.value
-        set(executablePath) {
-            value = executablePath
+        set(appId) {
+            value = appId
         }
 }

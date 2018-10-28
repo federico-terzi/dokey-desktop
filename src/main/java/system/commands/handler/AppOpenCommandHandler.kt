@@ -8,7 +8,7 @@ import system.commands.general.AppOpenCommand
 class AppOpenCommandHandler(context: GeneralContext) : CommandHandler<AppOpenCommand>(context) {
     override fun handleInternal(command: AppOpenCommand) {
         // Focus or open the app
-        command.executablePath?.let {
+        command.appId?.let {
             Thread {
                 context.applicationManager.openApplication(it)
             }.start()

@@ -195,19 +195,19 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
         return DefaultSectionWrapper(section)
     }
 
-    private fun generateEmptyAppSection(executablePath: String, applicationName: String) : SectionWrapper {
+    private fun generateEmptyAppSection(appId: String, applicationName: String) : SectionWrapper {
         // Create the destination section
         val section = DefaultApplicationSection()
-        section.id = "app:$executablePath"
+        section.id = "app:$appId"
         section.name = applicationName
         section.pages = mutableListOf(generateEmptyPage())
         return DefaultSectionWrapper(section)
     }
 
-    private fun generateAppSectionFromCommands(executablePath: String, applicationName: String, commands: List<AppRelatedCommand>): SectionWrapper {
+    private fun generateAppSectionFromCommands(appId: String, applicationName: String, commands: List<AppRelatedCommand>): SectionWrapper {
         // Create the destination section
         val section = DefaultApplicationSection()
-        section.id = "app:$executablePath"
+        section.id = "app:$appId"
         section.name = applicationName
 
         // Create a list of pages by filling them with commands
