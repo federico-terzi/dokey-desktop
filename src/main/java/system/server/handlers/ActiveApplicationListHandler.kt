@@ -10,6 +10,9 @@ class ActiveApplicationListHandler(val context: MobileServerContext) : ServiceHa
 
     override fun onServiceRequest(body: JSONObject?): JSONObject? {
         val activeApps = context.applicationManager.activeApplications
+        // Sort the active applications
+        activeApps.sort()
+
         val jsonArray = JSONArray()
         activeApps.forEach { app ->
             val json = JSONObject()

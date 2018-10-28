@@ -7,7 +7,7 @@
 //
 //        int pid = startupManager.getPID();
 //
-//        String executablePath = startupManager.getExecutablePath(pid);
+//        String appId = startupManager.getAppId(pid);
 //
 //        boolean isBundle = startupManager.isBundledInstance();
 //

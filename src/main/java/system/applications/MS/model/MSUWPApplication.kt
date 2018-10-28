@@ -22,7 +22,7 @@ class MSUWPApplication(id: String) : Application(id) {
     override val name: String
         get() = _name
 
-    private lateinit var _iconPath : String
+    private var _iconPath : String? = null
     override val iconPath: String?
         get() = _iconPath
 

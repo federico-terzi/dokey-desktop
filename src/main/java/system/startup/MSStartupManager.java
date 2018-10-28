@@ -33,7 +33,7 @@ public class MSStartupManager extends StartupManager {
         PsApi.INSTANCE.GetModuleFileNameExA(process, null, pathText, 1024);
         String executablePath = Native.toString(pathText);
 
-        // If the executablePath is empty, return null
+        // If the appId is empty, return null
         if (executablePath.length() == 0) {
             return null;
         }

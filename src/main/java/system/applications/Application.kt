@@ -53,8 +53,8 @@ abstract class Application(val id: String) : Comparable<Application>{
 
     companion object {
         /**
-         * Return the String Hash ID for the given executablePath
-         * @return the MD5 hash of the executablePath
+         * Return the String Hash ID for the given appId
+         * @return the MD5 hash of the appId
          */
         fun getHashIDForExecutablePath(executablePath: String) : String {
             return DigestUtils.md5Hex(executablePath)
