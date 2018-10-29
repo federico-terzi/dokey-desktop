@@ -142,7 +142,7 @@ public class SystemConfig {
 
     @Bean
     public SectionImporter sectionImporter() throws UnsupportedOperatingSystemException {
-        return new SectionImporter(sectionManager(), sectionParser(), commandImporter());
+        return new SectionImporter(sectionManager(), sectionParser(), commandImporter(), applicationPathResolver());
     }
 
     @Bean

@@ -20,9 +20,6 @@ public class ApplicationPathResolver {
     // and the local id of the application. Used to convert the path of applications to local paths.
     private Map<String, String> globalIdLocalIdMap = new HashMap<>();
 
-    // This set will contain the application ids
-    private Set<String> applicationIdSet = new HashSet<>();
-
     private boolean isLoaded = false;
 
     public ApplicationPathResolver(ApplicationManager appManager) {
@@ -35,14 +32,10 @@ public class ApplicationPathResolver {
     public void load() {
         // Reset the maps
         globalIdLocalIdMap = new HashMap<>();
-        applicationIdSet = new HashSet<>();
 
         // Populate the globalIdLocalIdMap and the applicationIdSet
         for (Application application : appManager.getApplicationList()) {
             globalIdLocalIdMap.put(application.getGlobalId(), application.getId());
-
-            // Load the applicationIdSet
-            applicationIdSet.add(application.getId());
         }
 
         isLoaded = true;
@@ -58,21 +51,26 @@ public class ApplicationPathResolver {
         if (!isLoaded)
             throw new RuntimeException("You must call the load() function before searching for an app.");
 
+        if (applicationId == null) {
+            return null;
+        }
+
         // Check if the application is already present
-        if (applicationIdSet.contains(applicationId)) {  // The app is already present in the PC, great.
+        if (appManager.getApplication(applicationId) != null) {  // The app is already present in the PC, great.
             return applicationId;
         }
 
-        // TODO: fix with new application id model
-        /*
         // Check if the application is present, but in another path
-        File expected = new File(applicationId);
-        String executableName = expected.getName();
-        if (globalIdLocalIdMap.containsKey(executableName)) {  // App present, but in another path.
-            // Return the new path
-            return globalIdLocalIdMap.get(executableName);
+        try {
+            File expected = new File(applicationId);
+            String executableName = expected.getName();
+            if (globalIdLocalIdMap.containsKey(executableName)) {  // App present, but in another path.
+                // Return the new path
+                return globalIdLocalIdMap.get(executableName);
+            }
+        }catch(Exception ex) {
+            ex.printStackTrace();
         }
-        */
 
         // Not found
         return null;

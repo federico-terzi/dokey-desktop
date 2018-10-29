@@ -28,6 +28,7 @@ import system.applications.ApplicationManager
 import system.exceptions.IncompatibleOsException
 import system.section.SectionManager
 import system.section.exporter.SectionExporter
+import system.section.importer.RelatedApplicationNotFoundException
 import system.section.importer.SectionImporter
 import java.io.File
 import java.util.*
@@ -278,6 +279,10 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
         }catch(ex: IncompatibleOsException) {
             AlertFactory.instance.alert("Incompatible layout",  // TODO: i18n
                     "Cannot import the requested layout because it is not compatible with your system."
+            ).show()
+        }catch(ex: RelatedApplicationNotFoundException) {
+            AlertFactory.instance.alert("Application not found",  // TODO: i18n
+                    "Cannot import the requested layout because the associated application is not installed in your system."
             ).show()
         }
     }

@@ -5,7 +5,9 @@ import json.JSONTokener
 import model.command.Command
 import model.component.Component
 import model.parser.section.SectionParser
+import model.section.ApplicationSection
 import model.section.Section
+import system.ApplicationPathResolver
 import system.commands.importer.CommandImporter
 import system.exceptions.IncompatibleOsException
 import system.section.SectionManager
@@ -14,7 +16,7 @@ import utils.OSValidator
 import java.io.File
 
 class SectionImporter(val sectionManager: SectionManager, val sectionParser: SectionParser,
-                      val commandImporter: CommandImporter) {
+                      val commandImporter: CommandImporter, val applicationPathResolver: ApplicationPathResolver) {
 
     data class Result(val section: Section?, val failedCommands: List<Command>)
 
@@ -44,6 +46,20 @@ class SectionImporter(val sectionManager: SectionManager, val sectionParser: Sec
             throw IncompatibleOsException()
         }
 
+        // Parse the section
+        val section = sectionParser.fromJSON(json.getJSONObject("section"))
+        // Make sure that if a section is related to an app, the app exists in the current system
+        if (section is ApplicationSection) {
+            // Find the path of the application in the current system
+            val relatedApp = applicationPathResolver.searchApp(section.appId)
+            if (relatedApp == null) {
+                throw RelatedApplicationNotFoundException()
+            }
+            // Update the section id to reflect the new app path
+            section.id = "app:$relatedApp"
+        }
+
+
         // Load command metadata
         val commandJson = json.getJSONObject("commands")
         val rawCommands = commandImporter.extractCommandsFromExportJSON(commandJson)
@@ -65,9 +81,6 @@ class SectionImporter(val sectionManager: SectionManager, val sectionParser: Sec
                 hashCommandMap[hash]!!.add(command)
             }
         }
-
-        // Parse the section
-        val section = sectionParser.fromJSON(json.getJSONObject("section"))
 
         // This list will hold all the commands that cannot be imported
         val toBeDeleted = mutableListOf<Component>()
