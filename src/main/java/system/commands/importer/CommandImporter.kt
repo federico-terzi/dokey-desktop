@@ -15,7 +15,9 @@ import java.util.logging.Logger
 class CommandImporter(val commandValidator: CommandValidator, val commandParser: CommandParser,
                       val commandManager: CommandManager) {
 
-    data class Result(val commands: List<Command>, val failed: List<Command>)
+    data class Result(val commands: List<Command>,          // The list of commands imported correctly
+                      val failed: List<Command>,            // The list of commands that cannot be imported
+                      val newIdMapping: Map<Int, Int>)      // The association between the old ids and the new ones
 
     fun import(sourceFile: File) : Result {
         sourceFile.inputStream().use { stream ->
@@ -29,6 +31,7 @@ class CommandImporter(val commandValidator: CommandValidator, val commandParser:
     fun import(json: JSONObject) : Result {
         val commands = mutableListOf<Command>()
         val failed = mutableListOf<Command>()
+        val newIdMapping = mutableMapOf<Int, Int>()
 
         // Extract the commands fromt the JSON
         val extractedCommands = extractCommandsFromExportJSON(json)
@@ -37,6 +40,8 @@ class CommandImporter(val commandValidator: CommandValidator, val commandParser:
         extractedCommands.forEach {extractedCommand ->
             // Verify that the command is valid
             if (commandValidator.validate(extractedCommand)) {
+                val previousId: Int = extractedCommand.id!!
+
                 // Add the command to the general store
                 val command = commandManager.addCommand(extractedCommand)
 
@@ -48,13 +53,15 @@ class CommandImporter(val commandValidator: CommandValidator, val commandParser:
                 }
 
                 commands.add(command)
+
+                newIdMapping[previousId] = command.id!!
             }else{
                 LOG.warning("Cannot import command: ${extractedCommand}")
                 failed.add(extractedCommand)
             }
         }
 
-        return Result(commands, failed)
+        return Result(commands, failed, newIdMapping)
     }
 
     fun extractCommandsFromExportJSON(json: JSONObject) : List<Command> {

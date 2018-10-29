@@ -62,25 +62,11 @@ class SectionImporter(val sectionManager: SectionManager, val sectionParser: Sec
 
         // Load command metadata
         val commandJson = json.getJSONObject("commands")
-        val rawCommands = commandImporter.extractCommandsFromExportJSON(commandJson)
-        // Create a map that associates raw command id to a command, needed to later put pieces together
-        val oldIdCommandMap = mutableMapOf<Int, Command>()
-        rawCommands.forEach { command ->
-            oldIdCommandMap[command.id!!] = command
-        }
 
         // Now add all the commands to the system
         val commandResult = commandImporter.import(commandJson)
-        // Create a map that associates the content hash to a list of compatible commands
-        val hashCommandMap = mutableMapOf<Int, MutableList<Command>>()
-        commandResult.commands.forEach { command ->
-            val hash = command.contentHash()
-            if (hashCommandMap[hash] == null) {
-                hashCommandMap[hash] = mutableListOf(command)
-            } else {
-                hashCommandMap[hash]!!.add(command)
-            }
-        }
+        val newCommandMap = mutableMapOf<Int, Command>()
+        commandResult.commands.forEach { newCommandMap[it.id!!] = it }
 
         // This list will hold all the commands that cannot be imported
         val toBeDeleted = mutableListOf<Component>()
@@ -88,16 +74,10 @@ class SectionImporter(val sectionManager: SectionManager, val sectionParser: Sec
         // Correct all the section command references
         section.pages?.forEach { page ->
             for (component in page.components ?: emptyList<Component>()) {
-                // Get the reference to the old command
-                val oldCommand = oldIdCommandMap[component.commandId]
-                if (oldCommand == null) {
-                    toBeDeleted.add(component)
-                    continue
-                }
-
-                // Calculate the hash of the old command and use it to find the compatible new commands
-                val oldHash = oldCommand.contentHash()
-                val newCommand: Command? = hashCommandMap[oldHash]?.find { it.contentEquals(oldCommand) }
+                // Get the id of the new one
+                val newId = commandResult.newIdMapping[component.commandId]
+                // Get the new command associated with the new id
+                val newCommand = newCommandMap[newId]
 
                 // If the command is not valid anymore, delete the component
                 if (newCommand == null) {
