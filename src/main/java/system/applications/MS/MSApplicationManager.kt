@@ -270,7 +270,8 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
         return PID.value
     }
 
-    private fun getApplicationOrAttemptToAddItIfNotExisting(appId: String, addToExternalApplications: Boolean = true): Application? {
+    private fun getApplicationOrAttemptToAddItIfNotExisting(appId: String, suggestedName: String? = null,
+                                                            addToExternalApplications: Boolean = true): Application? {
         // If the application already exists in the memory, return it.
         if (applicationMap.containsKey(appId)) {
             return applicationMap[appId]
@@ -283,7 +284,7 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
             val application = if (isUWPApp) {
                 MSUWPApplication(appId)
             }else{
-                MSLegacyApplication(storageManager, appId)
+                MSLegacyApplication(storageManager, appId, _name = suggestedName)
             }
 
             if (addToExternalApplications) {
@@ -361,7 +362,8 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
         val total = targets.size
 
         targets.forEachIndexed { current, target ->
-            val app = getApplicationOrAttemptToAddItIfNotExisting(target.appId, addToExternalApplications = false)
+            val app = getApplicationOrAttemptToAddItIfNotExisting(target.appId, suggestedName = target.targetName,
+                    addToExternalApplications = false)
             if (app != null) {
                 // Update the listener
                 listener?.onProgressUpdate(app.name, current, total)

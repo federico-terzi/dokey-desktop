@@ -15,7 +15,7 @@ import javax.imageio.ImageIO
 /**
  * Represents a classic Win32 application installed in the system.
  */
-class MSLegacyApplication(val storageManager: StorageManager, val executablePath: String, val _name: String? = null) :
+class MSLegacyApplication(val storageManager: StorageManager, val executablePath: String, _name: String? = null) :
         Application(executablePath) {
 
     override val name: String
