@@ -50,7 +50,7 @@ class ComponentButton(context : GridContext, val associatedComponent : Component
         graphic = imageView
         contentDisplay = ContentDisplay.TOP
 
-        context.imageResolver.loadInto(command.iconId, 48, imageView)
+        context.imageResolver.loadInto(command.iconId, 48, imageView, fadeIn = false)
 
         // Add the style
         styleClass.add("component-btn")

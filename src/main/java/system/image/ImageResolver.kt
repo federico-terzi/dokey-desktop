@@ -124,7 +124,7 @@ class ImageResolver(context: ImageSourceContext) {
 
     private val imageViewTargetMap = mutableMapOf<ImageView, String>()
 
-    fun loadInto(imageId: String?, size: Int, imageView: ImageView) {
+    fun loadInto(imageId: String?, size: Int, imageView: ImageView, fadeIn: Boolean = true) {
         // Manage the case of null image id
         if (imageId == null) {
             imageView.image = fallbackImage
@@ -132,7 +132,9 @@ class ImageResolver(context: ImageSourceContext) {
         }
 
         // Setup the image view
-        imageView.opacity = 0.0
+        if (fadeIn) {
+            imageView.opacity = 0.0
+        }
 
         synchronized(imageViewTargetMap) {
             imageViewTargetMap[imageView] = imageId
@@ -156,17 +158,24 @@ class ImageResolver(context: ImageSourceContext) {
                     Platform.runLater {
                         imageView.image = image
 
-                        val transition = FadeTransition(Duration(IMAGE_FADE_IN_DURATION), imageView)
-                        transition.toValue = 1.0
-                        transition.play()
+                        if (fadeIn) {
+                            val transition = FadeTransition(Duration(IMAGE_FADE_IN_DURATION), imageView)
+                            transition.toValue = 1.0
+                            transition.play()
+                        }else{
+                            imageView.opacity = 1.0
+                        }
                     }
                 }else{
                     imageView.image = image
 
-                    val transition = FadeTransition(Duration(IMAGE_FADE_IN_DURATION), imageView)
-                    transition.toValue = 1.0
-                    transition.play()
-
+                    if (fadeIn) {
+                        val transition = FadeTransition(Duration(IMAGE_FADE_IN_DURATION), imageView)
+                        transition.toValue = 1.0
+                        transition.play()
+                    }else{
+                        imageView.opacity = 1.0
+                    }
                 }
             }
         }

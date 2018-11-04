@@ -60,7 +60,7 @@ class ResultViewAdapter(val imageResolver: ImageResolver, val fallback : Image) 
         description.text = result.description
         extraText.text = result.extra ?: ""
 
-        imageResolver.loadInto(result.imageId, 32, image)
+        imageResolver.loadInto(result.imageId, 32, image, fadeIn = false)
 
         // Setup drag and drop
         val dragAndDropPayload = result.generateDragAndDropPayload()
