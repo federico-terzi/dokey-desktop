@@ -1,6 +1,10 @@
 package system.image
 
+import javafx.animation.FadeTransition
+import javafx.application.Platform
 import javafx.scene.image.Image
+import javafx.scene.image.ImageView
+import javafx.util.Duration
 import org.reflections.Reflections
 import system.context.ImageSourceContext
 import system.image.annotations.RegisterSource
@@ -10,6 +14,8 @@ import system.image.sources.ImageSource
 import java.io.File
 import java.io.InputStream
 import java.util.*
+import java.util.concurrent.Executors
+import java.util.concurrent.ThreadPoolExecutor
 
 /**
  * Used to manage and retrieve images.
@@ -20,10 +26,14 @@ import java.util.*
 class ImageResolver(context: ImageSourceContext) {
     val sourceMap = mutableMapOf<String, MetaImageSource>()
 
+    private val executor : ThreadPoolExecutor = Executors.newFixedThreadPool(4) as ThreadPoolExecutor
+
+    private val fallbackImage = ImageResolver.getImage("/assets/image.png", 96)
+
     /**
      * A wrapper around image source, used to add useful informations to the class
      */
-    class MetaImageSource(val imageSource: ImageSource, val useAnotherThread: Boolean,
+    class MetaImageSource(val imageSource: ImageSource,
                           val listable: Boolean) : ImageSource by imageSource
 
     init {
@@ -35,7 +45,7 @@ class ImageResolver(context: ImageSourceContext) {
             annotation as RegisterSource
             val imageSource = handlerClass.getConstructor(ImageSourceContext::class.java).newInstance(context) as ImageSource
             val listable = imageSource is ListableSource
-            val metaImageSource = MetaImageSource(imageSource, annotation.useAnotherThread, listable)
+            val metaImageSource = MetaImageSource(imageSource, listable)
             sourceMap[annotation.scheme] = metaImageSource
         }
     }
@@ -98,18 +108,63 @@ class ImageResolver(context: ImageSourceContext) {
             val imageSource: MetaImageSource = sourceMap[scheme]!!
 
             val cachedImage = imageSource.resolveImageFromCache(id, size)
+
             if (cachedImage != null) {
                 callback(cachedImage, false)
             }else{
-                // Check if the call should be executed in another thread or not
-                if (imageSource.useAnotherThread) {
-                    Thread {
-                        val image = imageSource?.resolveImage(id, size)
-                        callback(image, true)
-                    }.start()
+                executor.execute {
+                    val image = imageSource?.resolveImage(id, size)
+                    callback(image, true)
+                }
+            }
+        }
+    }
+
+    private val imageViewTargetMap = mutableMapOf<ImageView, String>()
+
+    fun loadInto(imageId: String?, size: Int, imageView: ImageView) {
+        // Manage the case of null image id
+        if (imageId == null) {
+            imageView.image = fallbackImage
+            return
+        }
+
+        // Setup the image view
+        imageView.opacity = 0.0
+
+        synchronized(imageViewTargetMap) {
+            imageViewTargetMap[imageView] = imageId
+        }
+
+        resolveImageAsync(imageId, size) {resolvedImage, externalThread ->
+            var isCorrect = true
+
+            synchronized(imageViewTargetMap) {
+                if (imageViewTargetMap[imageView] != imageId) {
+                    isCorrect = false
                 }else{
-                    // Ask the image source to resolve the image
-                    callback(imageSource?.resolveImage(id, size), false)
+                    imageViewTargetMap.remove(imageView)
+                }
+            }
+
+            val image = resolvedImage ?: fallbackImage
+
+            if (isCorrect) {
+                if (externalThread) {
+                    Platform.runLater {
+                        imageView.image = image
+
+                        val transition = FadeTransition(Duration(100.0), imageView)
+                        transition.toValue = 1.0
+                        transition.play()
+                    }
+                }else{
+                    imageView.image = image
+
+                    val transition = FadeTransition(Duration(100.0), imageView)
+                    transition.toValue = 1.0
+                    transition.play()
+
                 }
             }
         }

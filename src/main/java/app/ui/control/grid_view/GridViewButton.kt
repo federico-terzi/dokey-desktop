@@ -19,17 +19,18 @@ class GridViewButton(val imageResolver: ImageResolver) : Button() {
             }else{
                 opacity = 1.0
 
-                imageResolver.resolveImageAsync(newEntry.imageId, 24) {image, externalThread ->
-                    if (image != null) {
-                        if (externalThread) {
-                            Platform.runLater {
-                                imageView.image = image
-                            }
-                        }else{
-                            imageView.image = image
-                        }
-                    }
-                }
+                imageResolver.loadInto(newEntry.imageId, 24, imageView)
+//                imageResolver.resolveImageAsync(newEntry.imageId, 24) {image, externalThread ->
+//                    if (image != null) {
+//                        if (externalThread) {
+//                            Platform.runLater {
+//                                imageView.image = image
+//                            }
+//                        }else{
+//                            imageView.image = image
+//                        }
+//                    }
+//                }
 
                 text = newEntry.name
             }

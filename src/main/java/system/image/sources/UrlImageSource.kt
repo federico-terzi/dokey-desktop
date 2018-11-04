@@ -13,7 +13,7 @@ import java.net.URISyntaxException
 
 
 
-@RegisterSource(scheme = "url", useAnotherThread = true)
+@RegisterSource(scheme = "url")
 class UrlImageSource(context: ImageSourceContext) : AbstractImageSource(context) {
     override fun resolveFileFromCacheInternal(id: String): File? {
         // Calculate the hash of the requested url
