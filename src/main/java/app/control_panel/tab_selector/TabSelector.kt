@@ -39,8 +39,18 @@ class TabSelector(val imageResolver: ImageResolver) : Pane() {
 
         // Add all the listeners
         tabs.forEachIndexed {index, tab ->
-            tab.setOnAction {
-                selectTab(index)
+            tab.setOnMouseClicked {
+                // Based on the mouse position in the tab button, determine if the user
+                // clicked on this tab or on the next/previous
+                val selectedIndex = if (index > 0 && (it.y + (10/3)*it.x) < 73 ) {
+                    index - 1
+                }else if (index < (tabs.size-1) && (it.y - 3*it.x) < -315) {
+                    index + 1
+                } else{
+                    index
+                }
+
+                selectTab(selectedIndex)
             }
         }
 
