@@ -59,6 +59,8 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
         // The section bar must be included in a box as a workaround to add the gradient background without
         // the focus border of javafx
         val sectionBarContainer = VBox()
+        sectionBarContainer.isCache = true
+        sectionBarContainer.cacheHint = CacheHint.SPEED
         sectionBarContainer.styleClass.add("app_scroll_pane_container")
         sectionBar = SectionBar(sectionManager, applicationManager, imageResolver, commandManager)
         sectionBarContainer.children.add(sectionBar)

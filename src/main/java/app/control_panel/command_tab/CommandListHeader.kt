@@ -3,6 +3,7 @@ package app.control_panel.command_tab
 import app.control_panel.command_tab.list.comparator.LastEditComparator
 import app.control_panel.command_tab.list.comparator.NameComparator
 import app.ui.control.SortingButton
+import javafx.scene.CacheHint
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.layout.HBox
@@ -43,5 +44,7 @@ class CommandListHeader(val imageResolver: ImageResolver) : HBox() {
 
         children.addAll(nameSortButton, centralSpacePane, dateSortButton)
 
+        isCache = true
+        cacheHint = CacheHint.SPEED
     }
 }

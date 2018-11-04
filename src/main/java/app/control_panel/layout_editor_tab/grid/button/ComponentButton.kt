@@ -4,6 +4,7 @@ import app.control_panel.layout_editor_tab.grid.GridContext
 import app.control_panel.layout_editor_tab.grid.exception.CommandNotFoundException
 import javafx.application.Platform
 import javafx.event.EventHandler
+import javafx.scene.CacheHint
 import javafx.scene.Cursor
 import javafx.scene.SnapshotParameters
 import javafx.scene.control.ContentDisplay
@@ -102,6 +103,9 @@ class ComponentButton(context : GridContext, val associatedComponent : Component
 
             event.consume()
         }
+
+        isCache = true
+        cacheHint = CacheHint.SPEED
     }
 
     /**

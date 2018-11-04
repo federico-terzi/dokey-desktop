@@ -2,6 +2,7 @@ package app.control_panel.layout_editor_tab.grid.button
 
 import app.control_panel.layout_editor_tab.grid.GridContext
 import app.ui.popup.StyledPopup
+import javafx.scene.CacheHint
 import javafx.scene.control.ContentDisplay
 import javafx.scene.control.ContextMenu
 import javafx.scene.image.ImageView
@@ -23,5 +24,8 @@ class EmptyButton(context : GridContext) : DragButton(context) {
         val contextMenu = ContextMenu()
         // TODO
         setContextMenu(contextMenu)
+
+        isCache = true
+        cacheHint = CacheHint.SPEED
     }
 }
