@@ -166,17 +166,20 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
                     newTab.content.isCache = true
                     newTab.content.cacheHint = CacheHint.SPEED
 
-                    val fadeInTransition = FadeTransition(Duration(200.0), newTab.content)
+                    val fadeInTransition = FadeTransition(Duration(300.0), newTab.content)
                     fadeInTransition.fromValue = 0.0
                     fadeInTransition.toValue = 1.0
 
-                    val translateTransition = TranslateTransition(Duration(200.0), newTab.content)
+                    val translateTransition = TranslateTransition(Duration(300.0), newTab.content)
                     translateTransition.interpolator = Interpolator.EASE_BOTH
                     translateTransition.toY = 0.0
                     translateTransition.fromY = 20.0
 
                     val parallelTransition = ParallelTransition(fadeInTransition, translateTransition)
-                    parallelTransition.setOnFinished { newTab.content.isCache = false }
+                    parallelTransition.setOnFinished {
+                        newTab.content.isCache = false
+                        activeTab.onAnimatedIn()
+                    }
                     parallelTransition.play()
                 }
     }

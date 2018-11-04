@@ -67,6 +67,9 @@ class SectionBar(val sectionManager: SectionManager, override val applicationMan
         }
 
         loadSections()
+        Thread {
+
+        }.start()
     }
 
     fun loadSections(targetSection: Section? = null) {

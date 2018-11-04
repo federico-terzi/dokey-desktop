@@ -210,7 +210,7 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
         newGrid.isCache = true
         newGrid.cacheHint = CacheHint.SPEED
 
-        val SLIDE_DURATION = 0.2
+        val SLIDE_DURATION = 0.3
 
         val slideIn = TranslateTransition(
                 Duration.seconds(SLIDE_DURATION), newGrid)

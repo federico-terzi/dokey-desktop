@@ -29,7 +29,7 @@ class TabSelector(val imageResolver: ImageResolver) : Pane() {
         styleClass.add("tab-selector")
 
         tabs.add(Tab(imageResolver, "Devices", "asset:airplay"))
-        tabs.add(Tab(imageResolver, "Layouts", "asset:layout"))
+        tabs.add(Tab(imageResolver, "Panels", "asset:layout"))
         tabs.add(Tab(imageResolver, "Commands", "asset:command"))
         tabs.add(Tab(imageResolver, "Send", "asset:send"))
         tabs.add(Tab(imageResolver, "Settings", "asset:settings"))

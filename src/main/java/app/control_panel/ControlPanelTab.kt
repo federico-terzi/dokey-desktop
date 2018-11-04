@@ -5,6 +5,7 @@ import javafx.scene.layout.VBox
 
 abstract class ControlPanelTab : VBox() {
     open fun onFocus() {}
+    open fun onAnimatedIn() {}
     open fun onUnfocus() {}
     open fun onGlobalKeyPress(event: KeyEvent) {}
 }
