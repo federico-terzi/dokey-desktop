@@ -34,8 +34,15 @@ class HandshakeDataBuilder(val keyGenerator: KeyGenerator) {
         return ips
     }
 
-    fun getHandshakePayload() : String {
-        val ipAddresses = getAllIpAddresses().joinToString(":")
+    fun getHandshakePayload() : String? {
+        val ipAddressList = getAllIpAddresses()
+
+        // Make sure the pc has at least one active ip address
+        if (ipAddressList.isEmpty()) {
+            return null
+        }
+
+        val ipAddresses = ipAddressList.joinToString(":")
         return "DOKEY;$ipAddresses;${keyGenerator.keyToString};$serverPort"
     }
 }

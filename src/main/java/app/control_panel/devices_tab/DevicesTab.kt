@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
+const val QRCODE_UPDATE_INTERVAL = 1000L
 
 class DevicesTab(val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                  val handshakeDataBuilder: HandshakeDataBuilder) : ControlPanelTab() {
@@ -36,6 +37,10 @@ class DevicesTab(val imageResolver: ImageResolver, val resourceBundle: ResourceB
     private val descriptionLabel = Label(resourceBundle.getString("connect_dokey_app_desc"))
     private val deviceInfoLabel = Label(resourceBundle.getString("connected_devices"))
     private val deviceList = DeviceList(imageResolver)
+
+    private var qrCodeUpdateTimer = Timer()
+    private var oldQRPayload : String? = null
+
     init {
         qrImageView.fitWidth = 300.0
         qrImageView.fitHeight = 300.0
@@ -59,29 +64,65 @@ class DevicesTab(val imageResolver: ImageResolver, val resourceBundle: ResourceB
         children.addAll(qrImageView, titleLabel, descriptionLabel, hBox, deviceList)
     }
 
-    private fun requestQRCode(onQrReady: (Image) -> Unit) {
+    private fun requestQRCode(onQrReady: (Image?) -> Unit, onQrCreationError: () -> Unit) {
         Thread {
             val payload = handshakeDataBuilder.getHandshakePayload()
-            val stream = generateQR(payload, 600, 600)
-            val image = Image(stream, 600.0, 600.0, true, true)
-            Platform.runLater {
-                onQrReady(image)
+            // Make sure the payload is valid
+            if (payload == null) {
+                Platform.runLater { onQrCreationError() }
+                return@Thread
+            }
+
+            // Check if the payload has changed and should be recreated
+            if (payload == oldQRPayload) {
+                Platform.runLater {
+                    onQrReady(null)
+                }
+            }else{
+                val stream = generateQR(payload, 600, 600)
+                val image = Image(stream, 600.0, 600.0, true, true)
+                Platform.runLater {
+                    oldQRPayload = payload
+                    onQrReady(image)
+                }
             }
         }.start()
     }
 
     override fun onFocus() {
-        requestQRCode() {image ->
-            qrImageView.image = image
-        }
+        // Setup and start the qr code update timer that continuously updates the QR with the current net configuration
+        qrCodeUpdateTimer = Timer()
+        oldQRPayload = null
+        qrCodeUpdateTimer.scheduleAtFixedRate(object: TimerTask() {
+            override fun run() {
+                Platform.runLater {
+                    requestQRCode(
+                            onQrReady = {image ->
+                                if (image != null) {
+                                    qrImageView.image = image
+                                }
+                            },
+                            onQrCreationError = {
+                                qrImageView.image = null
+                                // TODO: show an error message instead of the qr code
+                            })
+                }
+            }
+        }, 0, QRCODE_UPDATE_INTERVAL)
 
+        // Register the device list
         deviceList.items = FXCollections.observableArrayList(MobileServer.connectedDevices)
 
+        // Register the broadcast listeners for app wide events
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.DEVICE_CONNECTED, connectedDeviceListChangedEvent)
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.DEVICE_DISCONNECTED, connectedDeviceListChangedEvent)
     }
 
     override fun onUnfocus() {
+        // Unregister the QR code timer
+        qrCodeUpdateTimer.cancel()
+
+        // Unregister the broadcasts
         BroadcastManager.getInstance().unregisterBroadcastListener(BroadcastManager.DEVICE_CONNECTED, connectedDeviceListChangedEvent)
         BroadcastManager.getInstance().unregisterBroadcastListener(BroadcastManager.DEVICE_DISCONNECTED, connectedDeviceListChangedEvent)
     }
