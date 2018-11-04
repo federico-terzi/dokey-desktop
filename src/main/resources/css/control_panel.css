@@ -11,23 +11,21 @@
 
 .root {
     -fx-font-family: "Nunito Sans Light";
-}
-
-#parent-box {
-    -fx-background-insets: 20px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0, 0.3), 20, 0, 4, 4);
+    -fx-background-color: transparent;
 }
 
 .windows-panel {
-    -fx-shape: "M165.4 482C177.133 484.667 191 492.667 207 506 223 492.667 236.867 484.667 248.6 482L389 482C397.837 482 405 474.837 405 466L405-162C405-170.837 397.837-178 389-178L21-178C12.163-178 5-170.837 5-162L5 466C5 474.837 12.163 482 21 482L165.4 482Z";
-    -fx-padding: 20px;
-    -fx-background-color: white;
+    -fx-padding: 30px 37px 40px 37px;
+    -fx-background-image: url("/assets/win-background.png");
+    -fx-background-size: 100% 100%;
+    -fx-background-position: center center;
 }
 
 .mac-panel {
-    -fx-padding: 40px 20px 0px 20px;
-    -fx-shape: "M165.4 30C177.133 27.333 191 19.333 207 6 223 19.333 236.867 27.333 248.6 30L389 30C397.837 30 405 37.163 405 46L405 674C405 682.837 397.837 690 389 690L21 690C12.163 690 5 682.837 5 674L5 46C5 37.163 12.163 30 21 30L165.4 30Z";
-    -fx-background-color: linear-gradient(from 0% 0% to 0% 10%, #e5e5e5, white);
+    -fx-padding: 44px 37px 20px 38px;
+    -fx-background-image: url("/assets/mac-background.png");
+    -fx-background-size: 100% 100%;
+    -fx-background-position: center center;
 }
 
 .main-tab-pane
