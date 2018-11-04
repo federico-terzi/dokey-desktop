@@ -171,7 +171,7 @@ class MSLegacyApplication(val storageManager: StorageManager, val executablePath
          * @param executablePath path to the app exe
          * @return the extracted name.
          */
-        private fun calculateAppNameFromExecutablePath(executablePath: String): String {
+        fun calculateAppNameFromExecutablePath(executablePath: String): String {
             val appExe = File(executablePath)
             // Create the new app name extracting the filename, removing the extension
             // and capitalizing the first letter

@@ -359,10 +359,22 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
         targets.addAll(linkTargets)
         targets.addAll(externalTargets)
 
+        // Find the problematic targets, that is the applications that have multiple links to them
+        // with different names.
+        val problematicTargets = targets.groupBy { it.appId }.filter { it.value.size > 1 }
+
         val total = targets.size
 
         targets.forEachIndexed { current, target ->
-            val app = getApplicationOrAttemptToAddItIfNotExisting(target.appId, suggestedName = target.targetName,
+            // Determine the target name. If the target is a problematic application, extract the name
+            // from the executable path and use that one.
+            val targetName = if (problematicTargets[target.appId] == null) {
+                target.targetName
+            }else{
+                MSLegacyApplication.calculateAppNameFromExecutablePath(target.appId)
+            }
+
+            val app = getApplicationOrAttemptToAddItIfNotExisting(target.appId, suggestedName = targetName,
                     addToExternalApplications = false)
             if (app != null) {
                 // Update the listener
