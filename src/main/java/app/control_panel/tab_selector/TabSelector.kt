@@ -7,14 +7,14 @@ import javafx.scene.shape.Rectangle
 import javafx.scene.shape.SVGPath
 import system.image.ImageResolver
 
-const val TAB_OVERFLOW = 40.0
-const val TAB_INITIAL_OFFSET = -20.0
+const val TAB_OVERFLOW = 50.0
+const val TAB_INITIAL_OFFSET = -25.0
 
 // Unfortunately, due to a graphical glitch, this value cannot be dynamically generated
 // that means that if the number of tab changes, this value must be manually recalculated.
 // This is the formula
 // tabWidth = this.width / tabs.size + TAB_OVERFLOW
-const val TAB_WIDTH = 120.0
+const val TAB_WIDTH = 130.0
 
 const val TAB_SELECTOR_HEIGHT = 60.0
 

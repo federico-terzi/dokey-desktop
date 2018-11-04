@@ -1,14 +1,9 @@
 .tab-selector-tab {
-    -fx-shape: "M35.6570063,-1 L92.3429937,-1 C98.2387429,-1 100.376593,-0.553069998 102.634478,0.360922571 C104.892363,1.27491514 106.788997,2.65597028 108.352028,4.52422054 C109.91506,6.39247081 110.996733,8.28987252 112.806744,13.9009078 L128,61 L0,61 L15.1932556,13.9009078 C17.0032669,8.28987252 18.08494,6.39247081 19.6479716,4.52422054 C21.2110031,2.65597028 23.1076371,1.27491514 25.365522,0.360922571 C27.6234069,-0.553069998 29.7612571,-1 35.6570063,-1 Z";
     -fx-pref-height: 60px;
-
-    -fx-background-color: #e5e5e5;
-
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0, 0.5), 7, 0, 0, 3);
-
-    -fx-border-width: 5px;
-    -fx-border-color: linear-gradient(from 0% 100% to 0% 95%, rgba(0,0,0,0.1), transparent);
-    -fx-border-style: solid;
+    -fx-background-color: transparent;
+    -fx-background-image: url("/assets/tab-background.png");
+    -fx-background-size: 100% 100%;
+    -fx-background-position: center center;
 }
 
 .tab-selector-tab .label {
@@ -17,10 +12,9 @@
 }
 
 .tab-selector-tab.tab-selected {
-    -fx-background-color: white;
-    -fx-border-color: transparent;
+    -fx-background-image: url("/assets/tab-background-selected.png");
 }
 
 .tab-selector {
-    -fx-background-color: #e5e5e5;
+    -fx-background-color: #ffffff;
 }
