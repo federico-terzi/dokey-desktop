@@ -32,9 +32,9 @@ class DropDialog(parent: BlurrableStage, imageResolver: ImageResolver)
         contentBox.styleClass.add("drop-dialog-contentbox")
         contentBox.alignment = Pos.CENTER
 
-        imageView.image = imageResolver.resolveImage("asset:dropfiles", 128)
         imageView.fitWidth = 128.0
         imageView.fitHeight = 128.0
+        imageResolver.loadInto("asset:dropfiles", 128, imageView)
         
         label.text = "Drop here"  // TODO: i18n
 

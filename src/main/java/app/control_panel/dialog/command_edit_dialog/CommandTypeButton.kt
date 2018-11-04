@@ -19,9 +19,9 @@ class CommandTypeButton(val parent: BlurrableStage, val imageResolver: ImageReso
     init {
         styleClass.add("command-type-button")
 
-        imageView.image = imageResolver.resolveImage("asset:sort", 12)
         imageView.fitWidth = 12.0
         imageView.fitHeight = 12.0
+        imageResolver.loadInto("asset:sort", 12, imageView)
 
         text = "Select type" // TODO: i18n
 

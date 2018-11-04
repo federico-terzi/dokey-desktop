@@ -25,10 +25,10 @@ class DeviceListCell(val imageResolver: ImageResolver) : ListCell<DeviceInfo>() 
     init {
         styleClass.add("device-list-cell")
 
-        val image = imageResolver.resolveImage("asset:smartphone", 24)
-        imageView = ImageView(image)
+        imageView = ImageView()
         imageView.fitHeight = 24.0
         imageView.fitWidth = 24.0
+        imageResolver.loadInto("asset:smartphone", 24, imageView)
 
         nameLabel = Label()
         val pane = Pane()

@@ -12,7 +12,7 @@ class IconButton(val imageResolver: ImageResolver, initialImageId : String, val 
         get() = _imageId
         set(value) {
             if (value != null) {
-                imageView.image = imageResolver.resolveImage(value, imageSize)
+                imageResolver.loadInto(value, imageSize, imageView)
             }
             _imageId = value
         }

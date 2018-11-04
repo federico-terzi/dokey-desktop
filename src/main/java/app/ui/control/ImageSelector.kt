@@ -34,9 +34,9 @@ class ImageSelector(val parent: BlurrableStage, val imageResolver: ImageResolver
         button.styleClass.add("image-selector-button")
         button.graphic = imageView
 
-        pencilImage.image = imageResolver.resolveImage("asset:cmd_icon_edit", 20)
         pencilImage.fitWidth = 20.0
         pencilImage.fitHeight = 20.0
+        imageResolver.loadInto("asset:cmd_icon_edit", 20, pencilImage)
 
         children.addAll(button, pencilImage)
 

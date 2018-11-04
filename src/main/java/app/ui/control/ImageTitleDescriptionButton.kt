@@ -21,9 +21,9 @@ open class ImageTitleDescriptionButton(val imageResolver: ImageResolver, val ima
         nameLabel.styleClass.add("image-title-description-button-name")
         descriptionLabel.styleClass.add("image-title-description-button-desc")
 
-        imageView.image = imageResolver.resolveImage(imageId, 24)
         imageView.fitHeight = 24.0
         imageView.fitWidth = 24.0
+        imageResolver.loadInto(imageId, 24, imageView)
 
         val vBox = VBox()
         vBox.children.addAll(nameLabel, descriptionLabel)

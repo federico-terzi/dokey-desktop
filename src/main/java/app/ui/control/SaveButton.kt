@@ -14,10 +14,10 @@ class SaveButton(val imageResolver: ImageResolver, val title: String) : Button()
     init {
         styleClass.add("save-button")
 
-        val image = imageResolver.resolveImage("asset:check-circle", 18)
-        imageView = ImageView(image)
+        imageView = ImageView()
         imageView.fitHeight = 18.0
         imageView.fitWidth = 18.0
+        imageResolver.loadInto("asset:check-circle", 18, imageView)
 
         graphic = imageView
         text = title

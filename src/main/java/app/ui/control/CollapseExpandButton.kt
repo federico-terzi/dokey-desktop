@@ -19,10 +19,10 @@ class CollapseExpandButton(val imageResolver: ImageResolver,
     init {
         styleClass.add("collapse-expand-button")
 
-        val image = imageResolver.resolveImage("asset:expand", 14)
-        imageView = ImageView(image)
+        imageView = ImageView()
         imageView.fitHeight = 14.0
         imageView.fitWidth = 14.0
+        imageResolver.loadInto("asset:expand", 14, imageView)
 
         graphic = imageView
         text = collapsedText

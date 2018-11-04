@@ -28,10 +28,11 @@ class SortingButton(val imageResolver: ImageResolver, val title : String) : Butt
         styleClass.add("sorting-button")
 
         text = title
-        imageView = ImageView(imageResolver.resolveImage("asset:sort", 12))
+        imageView = ImageView()
         imageView.fitWidth = 12.0
         imageView.fitHeight = 12.0
         imageView.opacity = 0.0
+        imageResolver.loadInto("asset:sort", 12, imageView)
 
         graphic = imageView
         contentDisplay = ContentDisplay.RIGHT

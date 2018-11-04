@@ -20,8 +20,6 @@ class ApplicationListCell(val imageResolver: ImageResolver) : ListCell<Applicati
     init {
         styleClass.add("application-list-cell")
 
-        // Setup the image as the default one
-        imageView.image = imageResolver.resolveImage("asset:image", 48)
         imageView.fitHeight = 24.0
         imageView.fitWidth = 24.0
 
@@ -48,17 +46,7 @@ class ApplicationListCell(val imageResolver: ImageResolver) : ListCell<Applicati
         pathLabel.text = entry.id  // TODO: put something more user friendly here than the path of the application or store id
 
         // Get the image for the application
-        imageResolver.resolveImageAsync("app:${entry.id}", 48) {image, externalThread ->
-            if (image != null) {
-                if (externalThread) {
-                    Platform.runLater {
-                        imageView.image = image
-                    }
-                }else{
-                    imageView.image = image
-                }
-            }
-        }
+        imageResolver.loadInto("app:${entry.id}", 48, imageView)
 
         graphic = hBox
     }

@@ -37,7 +37,6 @@ class CommandListCell(val imageResolver: ImageResolver) : ListCell<Command>() {
         styleClass.add("command-list-cell")
 
         // Setup the image as the default one
-        imageView.image = imageResolver.resolveImage("asset:image", 48)
         imageView.fitHeight = 24.0
         imageView.fitWidth = 24.0
 
@@ -81,18 +80,7 @@ class CommandListCell(val imageResolver: ImageResolver) : ListCell<Command>() {
         }
 
         // Get the image for the command
-        val iconId = entry.iconId ?: "asset:image"
-        imageResolver.resolveImageAsync(iconId, 48) {image, externalThread ->
-            if (image != null) {
-                if (externalThread) {
-                    Platform.runLater {
-                        imageView.image = image
-                    }
-                }else{
-                    imageView.image = image
-                }
-            }
-        }
+        imageResolver.loadInto(entry.iconId, 48, imageView)
 
         // Setup the deleted rendering
         deletedProperty.set(entry.deleted)

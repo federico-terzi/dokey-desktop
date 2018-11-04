@@ -53,9 +53,10 @@ class DevicesTab(val imageResolver: ImageResolver, val resourceBundle: ResourceB
         hBox.alignment = Pos.CENTER_LEFT
         hBox.styleClass.add("device-tab-connected-box")
         // TODO: change image
-        val imageView = ImageView(imageResolver.resolveImage("asset:airplay", 20))
+        val imageView = ImageView()
         imageView.fitWidth = 20.0
         imageView.fitHeight = 20.0
+        imageResolver.loadInto("asset:airplay", 20, imageView)
 
         deviceInfoLabel.alignment = Pos.TOP_LEFT
         hBox.children.addAll(imageView, deviceInfoLabel)

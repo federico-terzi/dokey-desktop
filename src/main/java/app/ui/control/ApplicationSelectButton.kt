@@ -26,15 +26,15 @@ class ApplicationSelectButton(val parent: BlurrableStage, val imageResolver: Ima
             _application = value
 
             if (_application != null) {
-                imageView.image = imageResolver.resolveImage("app:${_application?.id}", 24)
+                imageResolver.loadInto("app:${_application?.id}", 24, imageView)
                 nameLabel.text = _application?.name
                 descriptionLabel.text = "Click to change the app..."  // TODO: i18n
             }else{
                 if (allowGlobal) {
-                    imageView.image = imageResolver.resolveImage("asset:world_black", 24)
+                    imageResolver.loadInto("asset:world_black", 24, imageView)
                     nameLabel.text = "Global"  // TODO: i18n
                 }else{
-                    imageView.image = imageResolver.resolveImage("asset:launch", 24)
+                    imageResolver.loadInto("asset:launch", 24, imageView)
                     nameLabel.text = "Not selected"  // TODO: i18n
                 }
 

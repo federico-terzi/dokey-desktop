@@ -17,6 +17,8 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadPoolExecutor
 
+const val IMAGE_FADE_IN_DURATION = 200.0
+
 /**
  * Used to manage and retrieve images.
  * Every image in the system is associated with a scheme and an identifier.
@@ -154,14 +156,14 @@ class ImageResolver(context: ImageSourceContext) {
                     Platform.runLater {
                         imageView.image = image
 
-                        val transition = FadeTransition(Duration(100.0), imageView)
+                        val transition = FadeTransition(Duration(IMAGE_FADE_IN_DURATION), imageView)
                         transition.toValue = 1.0
                         transition.play()
                     }
                 }else{
                     imageView.image = image
 
-                    val transition = FadeTransition(Duration(100.0), imageView)
+                    val transition = FadeTransition(Duration(IMAGE_FADE_IN_DURATION), imageView)
                     transition.toValue = 1.0
                     transition.play()
 

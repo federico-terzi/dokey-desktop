@@ -43,29 +43,14 @@ class ComponentButton(context : GridContext, val associatedComponent : Component
             setTooltip(tooltip)
         }
 
-        // Load the standard image first, then load the correct one asynchronously
-        val defaultImage : Image = ImageResolver.getImage(ComponentButton::class.java.getResourceAsStream("/assets/image.png"), 48)
-
         // Set up the image
-        val imageView = ImageView(defaultImage)
+        val imageView = ImageView()
         imageView.fitHeight = 48.0
         imageView.fitWidth = 48.0
         graphic = imageView
         contentDisplay = ContentDisplay.TOP
 
-        if (command.iconId != null) {
-            context.imageResolver.resolveImageAsync(command.iconId!!, 48) {image, externalThread ->
-                if (image != null) {
-                    if (externalThread) {
-                        Platform.runLater {
-                            imageView.image = image
-                        }
-                    }else{
-                        imageView.image = image
-                    }
-                }
-            }
-        }
+        context.imageResolver.loadInto(command.iconId, 48, imageView)
 
         // Add the style
         styleClass.add("component-btn")

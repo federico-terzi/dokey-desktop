@@ -23,10 +23,11 @@ class ExpandableSearchBar(val imageResolver: ImageResolver) : HBox() {
 
         alignment = Pos.CENTER_LEFT
 
-        imageView = ImageView(imageResolver.resolveImage("asset:search", 18))
+        imageView = ImageView()
         imageView.fitHeight = 18.0
         imageView.fitWidth = 18.0
         imageView.styleClass.add("expandable-search-bar-text-field")
+        imageResolver.loadInto("asset:search", 18, imageView)
 
         textField.promptText = "Search..."  // TODO: make international
         textField.prefWidth = 70.0

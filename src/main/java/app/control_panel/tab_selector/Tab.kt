@@ -58,12 +58,13 @@ class Tab(val imageResolver: ImageResolver, val tabLabel : String, val tabImage 
         nameLabel.opacity = 0.0
         nameLabel.isCache = false
 
-        val image = imageResolver.resolveImage(tabImage, 24)
-        imageView = ImageView(image)
+        imageView = ImageView()
         imageView.fitHeight = 24.0
         imageView.fitWidth = 24.0
         imageView.translateY = UNSELECTED_TAB_VERTICAL_OFFSET
+        imageResolver.loadInto(tabImage, 24, imageView)
         vBox.children.addAll(imageView, nameLabel)
+
 
         isCache = true
         cacheHint = CacheHint.SPEED

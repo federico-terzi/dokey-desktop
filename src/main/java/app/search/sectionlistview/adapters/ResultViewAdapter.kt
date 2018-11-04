@@ -60,29 +60,7 @@ class ResultViewAdapter(val imageResolver: ImageResolver, val fallback : Image) 
         description.text = result.description
         extraText.text = result.extra ?: ""
 
-        // Initially load the fallback image
-        image.image = fallback
-
-        if (result.imageId != null) {
-            // Try to load the associated image asynchronously
-            imageResolver.resolveImageAsync(result.imageId!!, 32) {resolvedImage, externalThread ->
-                /*
-                Check if the image has been loaded in a separate thread and, if so,
-                load the image in the imageview in the JavaFX Thread.
-                This control is useful because postponing the loading may cause
-                some flickering and we try to avoid it when possible.
-                 */
-                if (resolvedImage != null) {
-                    if (externalThread) {
-                        Platform.runLater {
-                            image.image = resolvedImage
-                        }
-                    }else{
-                        image.image = resolvedImage
-                    }
-                }
-            }
-        }
+        imageResolver.loadInto(result.imageId, 32, image)
 
         // Setup drag and drop
         val dragAndDropPayload = result.generateDragAndDropPayload()

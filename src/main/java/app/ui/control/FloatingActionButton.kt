@@ -9,9 +9,10 @@ class FloatingActionButton(imageResolver: ImageResolver, text: String) : Button(
     init {
         styleClass.add("floating-action-button")
 
-        val imageView = ImageView(imageResolver.resolveImage("asset:add_clean", 20))
+        val imageView = ImageView()
         imageView.fitWidth = 20.0
         imageView.fitHeight = 20.0
+        imageResolver.loadInto("asset:add_clean", 20, imageView)
         graphic = imageView
         contentDisplay = ContentDisplay.LEFT
 

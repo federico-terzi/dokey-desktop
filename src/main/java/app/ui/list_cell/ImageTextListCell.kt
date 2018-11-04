@@ -19,8 +19,7 @@ class ImageTextListCell<T>(val imageResolver: ImageResolver,
     init {
         styleClass.add("image-text-list-cell")
 
-        val image = imageResolver.resolveImage("asset:image", 24)
-        imageView = ImageView(image)
+        imageView = ImageView()
         imageView.fitHeight = 24.0
         imageView.fitWidth = 24.0
 
@@ -36,17 +35,7 @@ class ImageTextListCell<T>(val imageResolver: ImageResolver,
 
         titleLabel.text = entry.title
 
-        imageResolver.resolveImageAsync(entry.imageId, 24) {image, externalThread ->
-            if (image != null) {
-                if (externalThread) {
-                    Platform.runLater {
-                        imageView.image = image
-                    }
-                }else{
-                    imageView.image = image
-                }
-            }
-        }
+        imageResolver.loadInto(entry.imageId, 24, imageView)
 
         graphic = hBox
     }
