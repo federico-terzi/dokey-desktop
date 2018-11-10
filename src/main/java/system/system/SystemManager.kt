@@ -70,22 +70,23 @@ abstract class SystemManager {
     abstract fun suspend(): Boolean
 
     /**
-     * Execute the system action specified by the string
+     * Execute the system action specified by the action type
      * @return true if succeeded, false if an error occurred.
      */
-    fun execute(action: String?): Boolean {
-        return when (action) {
-            "shutdown" -> shutdownPC()
-            "restart" -> restart()
-            "suspend" -> suspend()
-            "logout" -> logout()
-            "next_track" -> nextTrack()
-            "prev_track" -> previousTrack()
-            "play_or_pause" -> playOrPause()
-            "volume_down" -> volumeDown()
-            "volume_up" -> volumeUp()
-            "volume_mute" -> volumeMute()
-            else -> false
+    fun execute(actionEnum: SystemAction?): Boolean {
+        when (actionEnum) {
+            SystemAction.SHUTDOWN -> shutdownPC()
+            SystemAction.RESTART -> restart()
+            SystemAction.SUSPEND -> suspend()
+            SystemAction.LOGOUT -> logout()
+            SystemAction.NEXT_TRACK -> nextTrack()
+            SystemAction.PREV_TRACK -> previousTrack()
+            SystemAction.PLAY_OR_PAUSE -> playOrPause()
+            SystemAction.VOLUME_DOWN -> volumeDown()
+            SystemAction.VOLUME_UP -> volumeUp()
+            SystemAction.VOLUME_MUTE -> volumeMute()
         }
+
+        return false
     }
 }

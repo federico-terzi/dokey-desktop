@@ -1,5 +1,5 @@
 .styled-combo-box {
-    -fx-background-color: linear-gradient(to bottom right, -start-green-gradient, -stop-green-gradient);
+    -fx-background-color: linear-gradient(to bottom right, #eeeeee, #e2e2e2);
     -fx-background-radius: 20px;
     -fx-font-size: 12px;
     -fx-font-family: "Nunito Sans Bold";

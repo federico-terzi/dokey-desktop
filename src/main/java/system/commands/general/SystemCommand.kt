@@ -2,6 +2,7 @@ package system.commands.general
 
 import system.commands.annotations.RegisterCommand
 import system.commands.model.SimpleCommandWrapper
+import system.system.SystemAction
 
 @RegisterCommand(title = "System Action", iconId = "asset:SHUTDOWN")
 class SystemCommand : SimpleCommandWrapper() {
@@ -9,9 +10,9 @@ class SystemCommand : SimpleCommandWrapper() {
         category = "system"
     }
 
-    var actionType : String?
-        get() = this.value
+    var actionType : SystemAction?
+        get() = SystemAction.find(this.value)
         set(actionType) {
-            value = actionType
+            value = actionType?.actionId
         }
 }
