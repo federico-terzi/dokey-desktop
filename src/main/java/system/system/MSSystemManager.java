@@ -1,5 +1,7 @@
 package system.system;
 
+import com.sun.jna.Pointer;
+import system.keyboard.bindings.WinKeyboardLib;
 import system.system.SystemManager;
 import com.sun.jna.platform.win32.*;
 import com.sun.jna.platform.win32.WinDef.HWND;
@@ -10,6 +12,8 @@ import java.io.IOException;
  * Windows system manager.
  */
 public class MSSystemManager extends SystemManager {
+    private static final int MAX_ATTEMPTS = 5;
+
     @Override
     public boolean restart() {
         Runtime runtime = Runtime.getRuntime();
@@ -74,63 +78,53 @@ public class MSSystemManager extends SystemManager {
         return false;
     }
 
+    private boolean attemptToSendKey(int virtualKey) {
+        /*
+        When sending an input from the dokey search bar, we must ensure that a window is currently in the foreground.
+        If that's not true ( like in the instant of the dokey search bar closing ) the call to sendInput will fail.
+        This workaround "waits" until a new window is in the foreground.
+         */
+        int attempts = 0;
+        while (User32.INSTANCE.GetForegroundWindow() == null && attempts < MAX_ATTEMPTS) {
+            attempts++;
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        WinKeyboardLib.INSTANCE.sendKey(virtualKey);
+
+        return attempts < MAX_ATTEMPTS;
+    }
+
     @Override
     public boolean volumeDown() {
-        HWND hwnd = User32.INSTANCE.GetForegroundWindow();
-        // Constant reference
-        // https://msdn.microsoft.com/en-us/library/windows/desktop/ms646247(v=vs.85).aspx
-        User32.INSTANCE.SendMessage(hwnd, 0x0319, new WinDef.WPARAM(0), new WinDef.LPARAM(0x90000));
-
-        return true;
+        return attemptToSendKey(0xAE);
     }
 
     @Override
     public boolean volumeUp() {
-        HWND hwnd = User32.INSTANCE.GetForegroundWindow();
-        // Constant reference
-        // https://msdn.microsoft.com/en-us/library/windows/desktop/ms646247(v=vs.85).aspx
-        User32.INSTANCE.SendMessage(hwnd, 0x0319, new WinDef.WPARAM(0), new WinDef.LPARAM(0xA0000));
-
-        return true;
+        return attemptToSendKey(0xAF);
     }
 
     @Override
     public boolean volumeMute() {
-        HWND hwnd = User32.INSTANCE.GetForegroundWindow();
-        // Constant reference
-        // https://msdn.microsoft.com/en-us/library/windows/desktop/ms646247(v=vs.85).aspx
-        User32.INSTANCE.SendMessage(hwnd, 0x0319, new WinDef.WPARAM(0), new WinDef.LPARAM(0x80000));
-
-        return true;
+        return attemptToSendKey(0xAD);
     }
 
     @Override
     public boolean playOrPause() {
-        HWND hwnd = User32.INSTANCE.GetForegroundWindow();
-        // Constant reference
-        // https://msdn.microsoft.com/en-us/library/windows/desktop/ms646247(v=vs.85).aspx
-        User32.INSTANCE.SendMessage(hwnd, 0x0319, new WinDef.WPARAM(0), new WinDef.LPARAM(0xE0000));
-
-        return true;
+        return attemptToSendKey(0xB3);
     }
 
     @Override
     public boolean nextTrack() {
-        HWND hwnd = User32.INSTANCE.GetForegroundWindow();
-        // Constant reference
-        // https://msdn.microsoft.com/en-us/library/windows/desktop/ms646247(v=vs.85).aspx
-        User32.INSTANCE.SendMessage(hwnd, 0x0319, new WinDef.WPARAM(0), new WinDef.LPARAM(0xB0000));
-
-        return true;
+        return attemptToSendKey(0xB0);
     }
 
     @Override
     public boolean previousTrack() {
-        HWND hwnd = User32.INSTANCE.GetForegroundWindow();
-        // Constant reference
-        // https://msdn.microsoft.com/en-us/library/windows/desktop/ms646247(v=vs.85).aspx
-        User32.INSTANCE.SendMessage(hwnd, 0x0319, new WinDef.WPARAM(0), new WinDef.LPARAM(0xC0000));
-
-        return true;
+        return attemptToSendKey(0xB1);
     }
 }

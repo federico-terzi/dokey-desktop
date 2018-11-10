@@ -22,6 +22,11 @@ public interface WinKeyboardLib extends Library
     int sendShortcut(WString[] keys, int keyCount);
 
     /**
+        Send a single key press, with the specified virtual key
+    */
+    int sendKey(int virtualKey);
+
+    /**
         Check if the CAPS LOCK key is pressed and, if so, disable it.
         Return 0 if the CAPS LOCK has been disabled, 1 if no action occurred.
     */
