@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * Windows system manager.
  */
-public class MSSystemManager implements SystemManager {
+public class MSSystemManager extends SystemManager {
     @Override
     public boolean restart() {
         Runtime runtime = Runtime.getRuntime();

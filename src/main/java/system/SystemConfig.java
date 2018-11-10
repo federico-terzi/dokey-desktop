@@ -250,6 +250,17 @@ public class SystemConfig {
 
             @NotNull
             @Override
+            public SystemManager getSystemManager() {
+                try {
+                    return systemManager();
+                } catch (UnsupportedOperatingSystemException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            @NotNull
+            @Override
             public ApplicationSwitchDaemon getApplicationSwitchDaemon() {
                 try {
                     return applicationSwitchDaemon();

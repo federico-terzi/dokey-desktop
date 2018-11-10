@@ -5,7 +5,7 @@ import system.system.SystemManager;
 
 import java.io.IOException;
 
-public class MACSystemManager implements SystemManager {
+public class MACSystemManager extends SystemManager {
     private static final int VOLUME_STEP = 20;
 
     @Override

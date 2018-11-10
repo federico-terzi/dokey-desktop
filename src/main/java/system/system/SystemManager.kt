@@ -1,47 +1,47 @@
-package system.system;
+package system.system
 
 /**
  * This interface can be used to dispatch some system specific commands
  * like shutdownPC, volume, ecc.
  */
-public interface SystemManager {
+abstract class SystemManager {
     // MEDIA COMMANDS
 
     /**
      * Turn down the sound volume.
      * @return true if succeeded, false if an error occurred.
      */
-    boolean volumeDown();
+    abstract fun volumeDown(): Boolean
 
     /**
      * Turn up the sound volume.
      * @return true if succeeded, false if an error occurred.
      */
-    boolean volumeUp();
+    abstract fun volumeUp(): Boolean
 
     /**
      * Mute the sound volume.
      * @return true if succeeded, false if an error occurred.
      */
-    boolean volumeMute();
+    abstract fun volumeMute(): Boolean
 
     /**
      * Send the play/pause command.
      * @return true if succeeded, false if an error occurred.
      */
-    boolean playOrPause();
+    abstract fun playOrPause(): Boolean
 
     /**
      * Go to the next track.
      * @return true if succeeded, false if an error occurred.
      */
-    boolean nextTrack();
+    abstract fun nextTrack(): Boolean
 
     /**
      * Go to the previous track.
      * @return true if succeeded, false if an error occurred.
      */
-    boolean previousTrack();
+    abstract fun previousTrack(): Boolean
 
     // SYSTEM COMMANDS
 
@@ -49,23 +49,43 @@ public interface SystemManager {
      * Shutdown the computer.
      * @return true if succeeded, false if an error occurred.
      */
-    boolean shutdownPC();
+    abstract fun shutdownPC(): Boolean
 
     /**
      * Restart the computer.
      * @return true if succeeded, false if an error occurred.
      */
-    boolean restart();
+    abstract fun restart(): Boolean
 
     /**
      * Log out the user from the computer.
      * @return true if succeeded, false if an error occurred.
      */
-    boolean logout();
+    abstract fun logout(): Boolean
 
     /**
      * Suspend the computer.
      * @return true if succeeded, false if an error occurred.
      */
-    boolean suspend();
+    abstract fun suspend(): Boolean
+
+    /**
+     * Execute the system action specified by the string
+     * @return true if succeeded, false if an error occurred.
+     */
+    fun execute(action: String?): Boolean {
+        return when (action) {
+            "shutdown" -> shutdownPC()
+            "restart" -> restart()
+            "suspend" -> suspend()
+            "logout" -> logout()
+            "next_track" -> nextTrack()
+            "prev_track" -> previousTrack()
+            "play_or_pause" -> playOrPause()
+            "volume_down" -> volumeDown()
+            "volume_up" -> volumeUp()
+            "volume_mute" -> volumeMute()
+            else -> false
+        }
+    }
 }

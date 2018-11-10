@@ -15,5 +15,87 @@
     "iconId": "static:web",
     "quick": ":docs",
     "value": "https://dokey.io/docs/"
+  },
+
+
+  {
+    "type": "simple",
+    "title": "Shutdown",
+    "desc": "Power off the computer",
+    "category": "system",
+    "iconId": "static:power_settings_new",
+    "value": "shutdown"
+  },
+  {
+    "type": "simple",
+    "title": "Logout",
+    "desc": "Disconnect from the current user",
+    "category": "system",
+    "iconId": "static:exit_to_app",
+    "value": "logout"
+  },
+  {
+    "type": "simple",
+    "title": "Next Track",
+    "desc": "Skip to the next track",
+    "category": "system",
+    "iconId": "static:skip_next",
+    "value": "next_track"
+  },
+  {
+    "type": "simple",
+    "title": "Previous Track",
+    "desc": "Skip to the previous track",
+    "category": "system",
+    "iconId": "static:skip_previous",
+    "value": "prev_track"
+  },
+  {
+    "type": "simple",
+    "title": "Play/Pause",
+    "desc": "Play ( or Pause ) the current track",
+    "category": "system",
+    "iconId": "static:play_arrow",
+    "value": "play_or_pause"
+  },
+  {
+    "type": "simple",
+    "title": "Restart",
+    "desc": "Reboot the computer",
+    "category": "system",
+    "iconId": "static:settings_backup_restore",
+    "value": "restart"
+  },
+  {
+    "type": "simple",
+    "title": "Suspend",
+    "desc": "Put the computer to sleep",
+    "category": "system",
+    "iconId": "static:snooze",
+    "value": "suspend"
+  },
+  {
+    "type": "simple",
+    "title": "Volume Down",
+    "desc": "Turn down the volume",
+    "category": "system",
+    "iconId": "static:volume_down",
+    "value": "volume_down"
+  },
+  {
+    "type": "simple",
+    "title": "Volume Up",
+    "desc": "Turn up the volume",
+    "category": "system",
+    "iconId": "static:volume_up",
+    "value": "volume_up"
+  },
+  {
+    "type": "simple",
+    "title": "Volume Mute",
+    "desc": "Mute the volume and get some silence",
+    "category": "system",
+    "iconId": "static:volume_off",
+    "value": "volume_mute"
   }
 ]
