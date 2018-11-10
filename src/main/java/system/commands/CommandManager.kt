@@ -8,6 +8,7 @@ import model.parser.command.CommandParser
 import system.applications.Application
 import system.commands.general.AppOpenCommand
 import system.commands.general.AppRelatedCommand
+import system.commands.general.SystemCommand
 import system.commands.model.CommandWrapper
 import system.storage.StorageManager
 import java.io.*
@@ -258,6 +259,10 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
 
     fun getAppRelatedCommands() : Collection<AppRelatedCommand> {
         return commandMap.values.filter { it is AppRelatedCommand }.map { it as AppRelatedCommand }.filter { it.app != null }
+    }
+
+    fun getSystemCommands() : Collection<SystemCommand> {
+        return commandMap.values.filter { it is SystemCommand }.map { it as SystemCommand }
     }
 
     fun getCommandsForApp(appPath: String) : Collection<AppRelatedCommand> {

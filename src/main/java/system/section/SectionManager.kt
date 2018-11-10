@@ -3,6 +3,7 @@ package system.section
 import json.JSONException
 import json.JSONObject
 import json.JSONTokener
+import model.command.Command
 import model.component.Component
 import model.component.RuntimeComponent
 import model.page.DefaultPage
@@ -173,19 +174,19 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
         return output
     }
 
-    private fun generateEmptyPage() : Page {
+    private fun generateEmptyPage(colCount: Int = DEFAULT_PAGE_COLS, rowCount: Int = DEFAULT_PAGE_ROWS) : Page {
         val page = DefaultPage()
-        page.colCount = DEFAULT_PAGE_COLS
-        page.rowCount = DEFAULT_PAGE_ROWS
+        page.colCount = colCount
+        page.rowCount = rowCount
         page.components = mutableListOf()
         return page
     }
 
     private fun generateSystemSection(): SectionWrapper {
-        val section = SystemSection()
-        section.name = "System"
-        section.pages = mutableListOf(generateEmptyPage())
-        return DefaultSectionWrapper(section)
+        // Get the available system commands in the system
+        val systemCommands = commandManager.getSystemCommands().toList()
+        return generateSectionFromCommands(SystemSection::class.java, sectionName = "System", commands = systemCommands,
+                pageRows = 3, pageCols = 3)
     }
 
     private fun generateLaunchpadSection(): SectionWrapper {
@@ -204,26 +205,32 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
         return DefaultSectionWrapper(section)
     }
 
-    private fun generateAppSectionFromCommands(appId: String, applicationName: String, commands: List<AppRelatedCommand>): SectionWrapper {
+    private fun generateSectionFromCommands(sectionClass: Class<out Section>, sectionName: String, commands: List<Command>,
+                                            sectionId: String? = null,
+                                            pageCols : Int = DEFAULT_PAGE_COLS, pageRows: Int = DEFAULT_PAGE_ROWS): SectionWrapper {
         // Create the destination section
-        val section = DefaultApplicationSection()
-        section.id = "app:$appId"
-        section.name = applicationName
+        val section = sectionClass.newInstance()
+
+        section.name = sectionName
+        if (sectionId != null) {
+            section.id = sectionId
+        }
+
 
         // Create a list of pages by filling them with commands
-        val pages = mutableListOf<Page>(generateEmptyPage())
+        val pages = mutableListOf<Page>(generateEmptyPage(colCount = pageCols, rowCount = pageRows))
 
         var currentPage = 0
         var currentX = 0
         var currentY = 0
 
         commands.forEach { command ->
-            if (currentY >= DEFAULT_PAGE_ROWS ) {
+            if (currentY >= pageRows ) {
                 currentX = 0
                 currentY = 0
                 currentPage++
 
-                val page = generateEmptyPage()
+                val page = generateEmptyPage(colCount = pageCols, rowCount = pageRows)
                 pages.add(page)
             }
 
@@ -234,7 +241,7 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
             pages[currentPage].components?.add(component)
 
             currentX++
-            if (currentX >= DEFAULT_PAGE_COLS) {
+            if (currentX >= pageCols) {
                 currentX = 0
                 currentY++
             }
@@ -242,6 +249,11 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
 
         section.pages = pages
         return DefaultSectionWrapper(section)
+    }
+
+    private fun generateAppSectionFromCommands(appId: String, applicationName: String, commands: List<AppRelatedCommand>): SectionWrapper {
+        return generateSectionFromCommands(DefaultApplicationSection::class.java, sectionName = applicationName,
+                commands = commands, sectionId = "app:$appId")
     }
 
     private fun getSectionFile(sectionId: String) : File {
