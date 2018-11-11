@@ -41,7 +41,6 @@ public class ADBDiscoveryServer extends Thread{
                 Socket socket = serverSocket.accept();
 
                 // Send the server info
-
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 
                 // Write the server port
