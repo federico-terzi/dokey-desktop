@@ -87,7 +87,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
 
     private ServerSocket serverSocket;  // This is the server socket later used by the EngineServer
 
-    private InitializationStage initializationStage;
+    private IntroStage introStage;
     private ControlPanelStage controlPanelStage;
     private SearchStage searchStage;
 
@@ -280,13 +280,10 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
      * Start the application loading process
      */
     private void loadApplications() throws IOException {
-        IntroStage introStage = context.getBean(IntroStage.class);
-        introStage.show();
-
         // Create and show the initialization stage if first startup
         if (isFirstStartup) {
-            initializationStage = new InitializationStage(resourceBundle);
-            initializationStage.show();
+            introStage = context.getBean(IntroStage.class);
+            introStage.show();
         }
 
         // Task for loading the applications
@@ -302,12 +299,12 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
                         double percentage = (current / (double) total) * 0.5;
 
                         // Update the intro if visible
-                        if (initializationStage != null) {
+                        if (introStage != null) {
                             Platform.runLater(new Runnable() {
                                 @Override
                                 public void run() {
-                                    // Update the initialization stage
-                                    initializationStage.updateAppStatus(applicationName, percentage);
+                                    // Update the intro stage
+                                    introStage.setProgress(percentage);
                                 }
                             });
                         }
@@ -320,12 +317,12 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
                         double percentage = (current / (double) total) * 0.5 + 0.5;
 
                         // Update the intro if visible
-                        if (initializationStage != null) {
+                        if (introStage != null) {
                             Platform.runLater(new Runnable() {
                                 @Override
                                 public void run() {
-                                    // Update the initialization stage
-                                    initializationStage.updateAppStatus(applicationName, percentage);
+                                    // Update the intro stage
+                                    introStage.setProgress(percentage);
                                 }
                             });
                         }
@@ -338,9 +335,14 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
                             @Override
                             public void run() {
                                 MainApp.this.onApplicationsLoaded();
+                                if (introStage != null) {
+                                    introStage.setProgress(100.0);
+                                }
                             }
                         });
 
+                        // TODO
+                        /*
                         // Set up automatic startup if checked
                         if (initializationStage != null && initializationStage.isStartupBoxChecked()) {
                             if (startupManager.isBundledInstance()) {
@@ -350,6 +352,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
                                 LOG.warning("CANNOT ENABLE STARTUP FROM JAVA INSTANCE");
                             }
                         }
+                         */
                     }
                 });
                 return null;
@@ -363,11 +366,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
      * Called when all applications are loaded.
      */
     private void onApplicationsLoaded() {
-        // Hide the initialization
-        if (initializationStage != null) {
-            initializationStage.hide();
-        }
-
         // Initialize command manager
         commandManager = context.getBean(CommandManager.class);
         commandManager.initialize();

@@ -23,7 +23,7 @@ class IntroStage(val resourceBundle: ResourceBundle, val imageResolver: ImageRes
 
     private val googlePlayBtn = Button()
 
-    private val slides = mutableListOf(
+    private val slides = mutableListOf(  // TODO: i18n
             IntroSlide("Welcome", "Supercharge your productivity with Dokey", "asset:intro1"),
             IntroSlide("Customize", "Get hundreds of fully customizable built-in interfaces", "asset:intro2"),
             IntroSlide("Search", "Boost your workflow with the powerful all-in-one Search bar", "asset:intro3"),
@@ -32,6 +32,21 @@ class IntroStage(val resourceBundle: ResourceBundle, val imageResolver: ImageRes
     )
 
     private var currentSlide = 0
+
+    var progress: Double
+        get() = controller.progressBar.progress
+        set(value) {
+            controller.progressBar.progress = value
+
+            if (value > 99) {
+                launchBtn.isDisable = false
+                controller.statusLabel.text = "Ready"  // TODO: i18n
+            }else{
+                launchBtn.isDisable = true
+            }
+        }
+
+    var onIntroCompleted : (() -> Unit)? = null
 
     init {
         val fxmlLoader = FXMLLoader(ResourceUtils.getResource("/layouts/intro.fxml").toURI().toURL())
@@ -48,6 +63,7 @@ class IntroStage(val resourceBundle: ResourceBundle, val imageResolver: ImageRes
 
         controller.statusLabel.text = "Installing..."  // TODO: i18n
 
+        // Setup google play button
         run {
             val googlePlayImageView = ImageView()
             googlePlayImageView.fitWidth = 150.0
@@ -58,6 +74,7 @@ class IntroStage(val resourceBundle: ResourceBundle, val imageResolver: ImageRes
             controller.contentBox.children.add(googlePlayBtn)
         }
 
+        // Setup launch button
         run {
             launchBtn.styleClass.add("launch-btn")
             launchBtn.isVisible = false
@@ -65,6 +82,7 @@ class IntroStage(val resourceBundle: ResourceBundle, val imageResolver: ImageRes
 
         controller.buttonBox.children.addAll(launchBtn, prevSlideBtn, nextSlideBtn)
 
+        // Previous/Next button actions
         prevSlideBtn.setOnAction {
             if (currentSlide > 0) {
                 currentSlide--
@@ -77,10 +95,17 @@ class IntroStage(val resourceBundle: ResourceBundle, val imageResolver: ImageRes
                 loadSlide(currentSlide)
             }
         }
+        launchBtn.setOnAction {
+            onIntroCompleted?.invoke()
+            close()
+        }
 
         loadSlide(0)
     }
 
+    /**
+     * Render the interface based on the current slide
+     */
     private fun loadSlide(index: Int) {
         controller.titleLabel.text = slides[index].title
         controller.descriptionLabel.text = slides[index].description
@@ -113,6 +138,9 @@ class IntroStage(val resourceBundle: ResourceBundle, val imageResolver: ImageRes
         loadTabIndicators(index)
     }
 
+    /**
+     * Render the balls that mark the current tab
+     */
     private fun loadTabIndicators(index: Int) {
         controller.ballBox.children.clear()
 
