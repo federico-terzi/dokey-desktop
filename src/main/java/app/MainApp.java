@@ -3,6 +3,7 @@ package app;
 import app.alert.AlertFactory;
 import app.control_panel.ControlPanelStage;
 import app.control_panel.appearance.position.PositionResolver;
+import app.intro.IntroStage;
 import app.notifications.NotificationFactory;
 import app.search.stages.SearchStage;
 import app.stages.InitializationStage;
@@ -279,6 +280,9 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
      * Start the application loading process
      */
     private void loadApplications() throws IOException {
+        IntroStage introStage = context.getBean(IntroStage.class);
+        introStage.show();
+
         // Create and show the initialization stage if first startup
         if (isFirstStartup) {
             initializationStage = new InitializationStage(resourceBundle);

@@ -4,6 +4,7 @@ import app.control_panel.ControlPanelStage;
 import app.control_panel.appearance.position.PositionResolver;
 import app.control_panel.appearance.position.MACPositionResolver;
 import app.control_panel.appearance.position.MSPositionResolver;
+import app.intro.IntroStage;
 import app.search.stages.SearchStage;
 import app.tray_icon.MSTrayIconManager;
 import app.tray_icon.MacTrayIconManager;
@@ -86,6 +87,12 @@ public class AppConfig {
         return new ControlPanelStage(sectionManager, imageResolver, resourceBundle, componentParser, commandManager,
                 applicationManager,handshakeDataBuilder, dndCommandProcessor, settingsManager, startupManager,
                 storageManager, commandExporter, commandImporter, sectionExporter, sectionImporter);
+    }
+
+    @Bean
+    @Lazy
+    public IntroStage introStage() {
+        return new IntroStage(resourceBundle, imageResolver);
     }
 
 //    @Bean

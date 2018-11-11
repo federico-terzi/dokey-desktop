@@ -1,0 +1,21 @@
+@import "colors.css";
+@import "font.css";
+@import "ui/ui.css";
+
+.root {
+    -fx-background-color: white;
+}
+
+.label {
+    -fx-font-family: "Nunito Sans Bold";
+}
+
+.statusLabel {
+    -fx-font-size: 17px;
+    -fx-padding: 20px;
+}
+
+.buttonBox {
+    -fx-padding: 5px;
+    -fx-spacing: 0px;
+}

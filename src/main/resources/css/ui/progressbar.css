@@ -1,0 +1,12 @@
+.progress-bar > .track{
+    -fx-background-color: #eeeeee;
+    -fx-background-radius: 0px;
+}
+
+.progress-bar > .bar {
+    -fx-background-color: -green-gradient;
+    -fx-background-radius: 0px;
+    -fx-background-insets: 0px;
+    -fx-padding: 0px;
+    -fx-pref-height: 11px;
+}
