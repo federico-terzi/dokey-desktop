@@ -22,10 +22,11 @@
                        GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS"
                         fx:id="imageView"
             />
-            <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" alignment="CENTER_LEFT">
+            <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" alignment="CENTER_LEFT" styleClass="content-box"
+            fx:id="contentBox">
                <children>
-                  <Label text="Title" fx:id="titleLabel" styleClass="titleLabel"/>
-                  <Label text="Description" fx:id="descriptionLabel" styleClass="descriptionLabel" />
+                  <Label text="Title" fx:id="titleLabel" styleClass="title-label"/>
+                  <Label text="Description" fx:id="descriptionLabel" styleClass="description-label" wrapText="true" />
                </children>
             </VBox>
          </children>
@@ -45,9 +46,9 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <Label text="Status" fx:id="statusLabel" styleClass="statusLabel"/>
-                  <HBox GridPane.columnIndex="1" />
-                  <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" fx:id="buttonBox" alignment="CENTER_RIGHT" styleClass="buttonBox"/>
+                  <Label text="Status" fx:id="statusLabel" styleClass="status-label"/>
+                  <HBox GridPane.columnIndex="1" fx:id="ballBox" alignment="CENTER" spacing="2"/>
+                  <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" fx:id="buttonBox" alignment="CENTER_RIGHT" styleClass="button-box"/>
                </children>
             </GridPane>
          </children>

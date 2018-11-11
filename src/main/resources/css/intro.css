@@ -10,22 +10,61 @@
     -fx-font-family: "Nunito Sans Bold";
 }
 
-.statusLabel {
+.status-label {
     -fx-font-size: 17px;
     -fx-padding: 20px;
 }
 
-.buttonBox {
-    -fx-padding: 5px;
-    -fx-spacing: 0px;
+.button-box {
+    -fx-padding: 5px 12px 5px 5px;
+    -fx-spacing: 5px;
 }
 
-.titleLabel {
+.icon-button {
+    -fx-padding: 0px;
+}
+
+.content-box {
+    -fx-padding: 0px 0px 0px 20px;
+}
+
+.title-label {
     -fx-font-size: 22px;
     -fx-padding: 0px 0px 10px 0px;
 }
 
-.descriptionLabel {
+.description-label {
     -fx-font-family: "Nunito Sans Regular";
     -fx-font-size: 15px;
+    -fx-max-width: 280px;
+}
+
+.ball {
+    -fx-effect: innershadow( one-pass-box , #eeeeee , 20 , 1 , 1 , 1 );
+}
+
+.ball-selected {
+    -fx-effect: innershadow( one-pass-box , -start-green-gradient, 20 , 1 , 1 , 1 );
+}
+
+.google-play-btn {
+    -fx-background-color: transparent;
+    -fx-padding: 20px 0px 0px 0px;
+}
+
+.google-play-btn:hover {
+    -fx-effect: innershadow( one-pass-box , rgba(255,255,255,0.3), 270 , 1 , 1 , 1 );
+}
+
+.launch-btn {
+    -fx-background-color: linear-gradient(to bottom right, -start-green-gradient, -stop-green-gradient);
+    -fx-background-radius: 20px;
+    -fx-font-size: 13px;
+    -fx-font-family: "Nunito Sans Bold";
+    -fx-padding: 8px 14px 8px 14px;
+    -fx-text-fill: white;
+}
+
+.launch-btn:hover {
+    -fx-effect: innershadow( one-pass-box , rgba(255,255,255,0.3), 270 , 1 , 1 , 1 );
 }
