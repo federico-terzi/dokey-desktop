@@ -19,9 +19,11 @@ public class ADBDiscoveryServer extends Thread{
     private volatile boolean shouldStop = false;
 
     private ServerInfo serverInfo;
+    private byte[] key;
 
-    public ADBDiscoveryServer(ServerInfo serverInfo) {
+    public ADBDiscoveryServer(ServerInfo serverInfo, byte[] key) {
         this.serverInfo = serverInfo;
+        this.key = key;
 
         setName("ADB Discovery Server");
     }
@@ -29,7 +31,7 @@ public class ADBDiscoveryServer extends Thread{
     @Override
     public void run() {
         try {
-            ServerSocket serverSocket = new ServerSocket(ADBManager.DISCOVERY_PORT);
+            ServerSocket serverSocket = new ServerSocket(ADBManager.DISCOVERY_PORT, 0, InetAddress.getLoopbackAddress());
 
             // Get the payload
             byte[] deviceInfoPayload = serverInfo.getDeviceInfo().json().toString().getBytes(Charset.forName("UTF-8"));
@@ -45,6 +47,10 @@ public class ADBDiscoveryServer extends Thread{
                 // Write the server port
                 // NOTE: not using the local server port, but the one used by the ADB reversed proxy.
                 dos.writeInt(ADBManager.REMOTE_PORT);
+
+                // Write the key
+                dos.writeInt(key.length);
+                dos.write(key, 0, key.length);
 
                 // Write the payload length
                 dos.writeInt(deviceInfoPayload.length);

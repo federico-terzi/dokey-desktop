@@ -240,12 +240,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         ServerInfo serverInfo = SystemInfoManager.getServerInfo(serverSocket.getLocalPort());
 
         // Initialize the ADB manager
-        adbManager = new ADBManager(this, serverInfo);
-
-//        // Initialize the sections
-//        SectionManager sectionManager = context.getBean(SectionManager.class);
-//        sectionManager.getLaunchpadSection();
-//        sectionManager.getSystemSection();
+        adbManager = new ADBManager(this, serverInfo, keyGenerator.getKey());
 
         // Initialize the system manager
         systemManager = context.getBean(SystemManager.class);

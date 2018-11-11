@@ -23,7 +23,7 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
     // Create the logger
     private final static Logger LOG = Logger.getGlobal();
 
-    public ADBManager(OnUSBDeviceConnectedListener listener, ServerInfo serverInfo) {
+    public ADBManager(OnUSBDeviceConnectedListener listener, ServerInfo serverInfo, byte[] key) {
         this.listener = listener;
         this.serverInfo = serverInfo;
 
@@ -59,7 +59,7 @@ public class ADBManager implements ADBDaemon.OnDiscoveryUpdatedListener {
         // Make sure ADB is enabled
         if (adbFound) {
             daemon = new ADBDaemon(adbPath, this);
-            adbDiscoveryServer = new ADBDiscoveryServer(serverInfo);
+            adbDiscoveryServer = new ADBDiscoveryServer(serverInfo, key);
         }else{
             LOG.warning("ADB can't be executed!");
         }
