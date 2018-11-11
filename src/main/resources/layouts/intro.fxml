@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="559.0" prefWidth="815.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.intro.IntroController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="815.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.intro.IntroController">
    <center>
       <GridPane BorderPane.alignment="CENTER">
         <columnConstraints>
@@ -22,10 +22,10 @@
                        GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS"
                         fx:id="imageView"
             />
-            <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1">
+            <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" alignment="CENTER_LEFT">
                <children>
-                  <Label text="Welcome" />
-                  <Label text="Supercharge your productivity with Dokey" />
+                  <Label text="Title" fx:id="titleLabel" styleClass="titleLabel"/>
+                  <Label text="Description" fx:id="descriptionLabel" styleClass="descriptionLabel" />
                </children>
             </VBox>
          </children>

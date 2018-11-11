@@ -10,4 +10,6 @@ public class IntroController {
     public Label statusLabel;
     public HBox buttonBox;
     public ImageView imageView;
+    public Label descriptionLabel;
+    public Label titleLabel;
 }

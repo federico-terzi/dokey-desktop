@@ -19,3 +19,13 @@
     -fx-padding: 5px;
     -fx-spacing: 0px;
 }
+
+.titleLabel {
+    -fx-font-size: 22px;
+    -fx-padding: 0px 0px 10px 0px;
+}
+
+.descriptionLabel {
+    -fx-font-family: "Nunito Sans Regular";
+    -fx-font-size: 15px;
+}
