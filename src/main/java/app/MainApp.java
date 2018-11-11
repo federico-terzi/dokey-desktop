@@ -24,6 +24,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 import net.model.DeviceInfo;
 import net.model.ServerInfo;
 import org.springframework.context.ApplicationContext;
@@ -283,6 +284,10 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         // Create and show the initialization stage if first startup
         if (isFirstStartup) {
             introStage = context.getBean(IntroStage.class);
+            introStage.setOnIntroCompleted((Function0<Unit>) () -> {
+                showControlPanel();
+                return Unit.INSTANCE;
+            });
             introStage.show();
         }
 
@@ -341,10 +346,8 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
                             }
                         });
 
-                        // TODO
-                        /*
-                        // Set up automatic startup if checked
-                        if (initializationStage != null && initializationStage.isStartupBoxChecked()) {
+                        // Set up automatic startup
+                        if (introStage != null) {
                             if (startupManager.isBundledInstance()) {
                                 startupManager.enableAutomaticStartup();
                                 LOG.warning("AUTOMATIC STARTUP ENABLED");
@@ -352,7 +355,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
                                 LOG.warning("CANNOT ENABLE STARTUP FROM JAVA INSTANCE");
                             }
                         }
-                         */
                     }
                 });
                 return null;
