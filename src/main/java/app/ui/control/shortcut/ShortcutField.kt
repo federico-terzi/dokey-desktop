@@ -1,5 +1,7 @@
-package app.ui.control
+package app.ui.control.shortcut
 
+import com.sun.jna.Callback
+import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.scene.control.Button
 import javafx.scene.control.TextField
@@ -14,6 +16,8 @@ class ShortcutField : StackPane() {
     private val clearButton = Button("Clear")  // TODO: i18n
 
     val keys = mutableListOf<String>()
+
+    private val keyProcessor = KeyProcessor.getInstance()
 
     init {
         styleClass.add("shortcut-field")
@@ -39,7 +43,7 @@ class ShortcutField : StackPane() {
             if (!keyEvent.text.isBlank()) {
                 // Make sure the keyEvent is not a numpad digit key
                 if (keyEvent.code?.name?.toUpperCase()?.startsWith("NUMPAD") == false) {
-                    addKey(keyEvent.text)
+                    keyProcessor.requestTextKeyPressed(keyEvent)
                 }else{
                     addSpecialKey(keyEvent.code.name.toUpperCase())
                 }
@@ -53,6 +57,10 @@ class ShortcutField : StackPane() {
             }
 
             keyEvent.consume()
+        }
+
+        keyProcessor.onTextKeyPressed = { key ->
+            addKey(key)
         }
 
         // When the text field is focused, automatically disable CAPS LOCK key

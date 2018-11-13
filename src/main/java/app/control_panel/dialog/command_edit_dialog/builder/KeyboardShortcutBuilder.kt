@@ -1,11 +1,10 @@
 package app.control_panel.dialog.command_edit_dialog.builder
 
-import app.control_panel.dialog.app_select_dialog.ApplicationSelectDialog
 import app.control_panel.dialog.command_edit_dialog.builder.annotation.RegisterBuilder
 import app.control_panel.dialog.command_edit_dialog.validation.ValidationException
 import app.ui.control.ApplicationSelectButton
 import app.ui.control.RoundBorderButton
-import app.ui.control.ShortcutField
+import app.ui.control.shortcut.ShortcutField
 import app.ui.stage.BlurrableStage
 import javafx.geometry.Insets
 import javafx.geometry.Pos

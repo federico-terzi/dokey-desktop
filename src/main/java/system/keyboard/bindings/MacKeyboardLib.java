@@ -26,6 +26,17 @@ public interface MacKeyboardLib extends Library {
         void invoke(int response);
     }
 
+    /*
+     Transform the given key to the original key, removing the effects of the given modifier
+     keys. The result is returned using the given callback.
+     */
+    void removeModifiersFromKey(String key, int control, int alt, int shift, int command,
+                                RemoveModifiersFromKeyCallback callback);
+
+    interface RemoveModifiersFromKeyCallback extends Callback {
+        void invoke(String key);
+    }
+
     /**
      * Disable the CAPS LOCK.
      * Return 0 if correctly disabled, -1 if an error occurred

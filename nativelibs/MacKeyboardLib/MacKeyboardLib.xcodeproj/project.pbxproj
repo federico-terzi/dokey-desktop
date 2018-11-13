@@ -7,17 +7,39 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B6236067219B0EF700E46B51 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B6236066219B0EF700E46B51 /* main.m */; };
 		B6ECE2D7217901FA00153A00 /* MacKeyboardLib.h in Headers */ = {isa = PBXBuildFile; fileRef = B6ECE2D6217901FA00153A00 /* MacKeyboardLib.h */; };
 		B6ECE2D9217901FA00153A00 /* MacKeyboardLib.m in Sources */ = {isa = PBXBuildFile; fileRef = B6ECE2D8217901FA00153A00 /* MacKeyboardLib.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		B6236062219B0EF700E46B51 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		B6236064219B0EF700E46B51 /* Test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Test; sourceTree = BUILT_PRODUCTS_DIR; };
+		B6236066219B0EF700E46B51 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B6ECE2D3217901FA00153A00 /* libMacKeyboardLib.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libMacKeyboardLib.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6ECE2D6217901FA00153A00 /* MacKeyboardLib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MacKeyboardLib.h; sourceTree = "<group>"; };
 		B6ECE2D8217901FA00153A00 /* MacKeyboardLib.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MacKeyboardLib.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		B6236061219B0EF700E46B51 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B6ECE2D0217901FA00153A00 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -28,10 +50,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B6236065219B0EF700E46B51 /* Test */ = {
+			isa = PBXGroup;
+			children = (
+				B6236066219B0EF700E46B51 /* main.m */,
+			);
+			path = Test;
+			sourceTree = "<group>";
+		};
 		B6ECE2CA217901FA00153A00 = {
 			isa = PBXGroup;
 			children = (
 				B6ECE2D5217901FA00153A00 /* MacKeyboardLib */,
+				B6236065219B0EF700E46B51 /* Test */,
 				B6ECE2D4217901FA00153A00 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -40,6 +71,7 @@
 			isa = PBXGroup;
 			children = (
 				B6ECE2D3217901FA00153A00 /* libMacKeyboardLib.dylib */,
+				B6236064219B0EF700E46B51 /* Test */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -67,6 +99,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		B6236063219B0EF700E46B51 /* Test */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B6236068219B0EF700E46B51 /* Build configuration list for PBXNativeTarget "Test" */;
+			buildPhases = (
+				B6236060219B0EF700E46B51 /* Sources */,
+				B6236061219B0EF700E46B51 /* Frameworks */,
+				B6236062219B0EF700E46B51 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Test;
+			productName = Test;
+			productReference = B6236064219B0EF700E46B51 /* Test */;
+			productType = "com.apple.product-type.tool";
+		};
 		B6ECE2D2217901FA00153A00 /* MacKeyboardLib */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = B6ECE2DC217901FA00153A00 /* Build configuration list for PBXNativeTarget "MacKeyboardLib" */;
@@ -93,6 +142,9 @@
 				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = "Federico Terzi";
 				TargetAttributes = {
+					B6236063219B0EF700E46B51 = {
+						CreatedOnToolsVersion = 9.4.1;
+					};
 					B6ECE2D2217901FA00153A00 = {
 						CreatedOnToolsVersion = 9.4.1;
 					};
@@ -111,11 +163,20 @@
 			projectRoot = "";
 			targets = (
 				B6ECE2D2217901FA00153A00 /* MacKeyboardLib */,
+				B6236063219B0EF700E46B51 /* Test */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		B6236060219B0EF700E46B51 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B6236067219B0EF700E46B51 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B6ECE2CF217901FA00153A00 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -127,6 +188,22 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		B6236069219B0EF700E46B51 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		B623606A219B0EF700E46B51 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		B6ECE2DA217901FA00153A00 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -263,6 +340,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		B6236068219B0EF700E46B51 /* Build configuration list for PBXNativeTarget "Test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B6236069219B0EF700E46B51 /* Debug */,
+				B623606A219B0EF700E46B51 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		B6ECE2CE217901FA00153A00 /* Build configuration list for PBXProject "MacKeyboardLib" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

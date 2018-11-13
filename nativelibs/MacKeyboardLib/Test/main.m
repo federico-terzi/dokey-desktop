@@ -1,15 +1,14 @@
 //
-//  MacKeyboardLib.m
-//  MacKeyboardLib
+//  main.m
+//  Test
 //
-//  Created by Federico Terzi on 18/10/2018.
+//  Created by FreddyT on 13/11/2018.
 //  Copyright © 2018 Federico Terzi. All rights reserved.
 //
 
-#import "MacKeyboardLib.h"
-#include <IOKit/IOKitLib.h>
-#include <IOKit/hidsystem/IOHIDLib.h>
-#include <IOKit/hidsystem/IOHIDParameter.h>
+#import <Foundation/Foundation.h>
+#include <CoreFoundation/CoreFoundation.h>
+#include <Carbon/Carbon.h> /* For kVK_ constants, and TIS functions. */
 
 // Keys that change based on the current keyboard layout
 const int variableKeys[] = {
@@ -106,79 +105,6 @@ int decodeVirtualKey(NSString *key, const UCKeyboardLayout *keyboardLayout,
     return -1;
 }
 
-/*
- Send the given keyboard shortcut to the system.
- The function is executed on the main thread and the "callback" will be called to
- receive the result. In particular, the first argument of the callback function will be:
- The number of keys if succeeded, -1 if a key wasn't found int the current keyboard layout.
- */
-void sendShortcut(const char * keys[], int keyCount, void (*callback)(int)) {
-    dispatch_async(dispatch_get_main_queue(), ^(void){
-        // Initialize the keyboard layout
-        TISInputSourceRef currentKeyboard = TISCopyCurrentKeyboardInputSource();
-        CFDataRef layoutData = TISGetInputSourceProperty(currentKeyboard, kTISPropertyUnicodeKeyLayoutData);
-        const UCKeyboardLayout *keyboardLayout = (const UCKeyboardLayout *)CFDataGetBytePtr(layoutData);
-        uint8 keyboardType = LMGetKbdType();
-        
-        // Get all the virtual keys for the shortcut
-        NSMutableArray * virtualKeys = [[NSMutableArray alloc] init];
-        bool isValid = true;
-        
-        for (int i = 0; i<keyCount; i++) {
-            NSString *currentKeyString = [NSString stringWithUTF8String:keys[i]];
-            int currentVirtualKey = decodeVirtualKey(currentKeyString, keyboardLayout, keyboardType);
-            
-            if (currentVirtualKey != -1) {
-                [virtualKeys addObject:[NSNumber numberWithInt:currentVirtualKey]];
-            }else{
-                isValid = false;
-                break;
-            }
-        }
-        
-        CFRelease(currentKeyboard);
-        
-        if (!isValid) {
-            if (callback) {
-                callback(-1);
-            }
-            return;
-        }
-        
-        // Send the key events
-        
-        // Send all the key presses
-        for (id currentVirtualKey in virtualKeys) {
-            int virtualKey = [currentVirtualKey intValue];
-            CGEventRef keydown;
-            keydown = CGEventCreateKeyboardEvent (NULL, (CGKeyCode)virtualKey, true);
-            CGEventPost(kCGHIDEventTap, keydown);
-            CFRelease(keydown);
-            
-            usleep(20000);
-        }
-        
-        // Send all the key releases ( in reverse order )
-        for (id currentVirtualKey in [virtualKeys reverseObjectEnumerator]) {
-            int virtualKey = [currentVirtualKey intValue];
-            CGEventRef keyup;
-            keyup = CGEventCreateKeyboardEvent (NULL, (CGKeyCode)virtualKey, false);
-            CGEventPost(kCGHIDEventTap, keyup);
-            CFRelease(keyup);
-            
-            usleep(20000);
-        }
-        
-        if (callback) {
-            callback((int) [virtualKeys count]);
-        }
-    });
-}
-
-/*
- Transform the given key to the original key, removing the effects of the given modifier
- keys. The result is returned using the given callback.
- */
 void removeModifiersFromKey(const char * key, int control, int alt, int shift, int command,
                             void (*callback)(const char * key)) {
     // Dispatch the command in the app main thread, because it's forbidden to obtain the current
@@ -267,32 +193,84 @@ void removeModifiersFromKey(const char * key, int control, int alt, int shift, i
 }
 
 /*
- Disable the CAPS LOCK.
- Return 0 if correctly disabled, -1 if an error occurred
+ Send the given keyboard shortcut to the system.
+ The function is executed on the main thread and the "callback" will be called to
+ receive the result. In particular, the first argument of the callback function will be:
+ The number of keys if succeeded, -1 if a key wasn't found int the current keyboard layout.
  */
-int forceDisableCapsLock() {
-    kern_return_t kr;
-    io_service_t ios;
-    io_connect_t ioc;
-    CFMutableDictionaryRef mdict;
-    mdict = IOServiceMatching(kIOHIDSystemClass);
-    ios = IOServiceGetMatchingService(kIOMasterPortDefault, (CFDictionaryRef) mdict);
-    if (!ios) {
-        if (mdict) CFRelease(mdict);
-        return -1;
-    }
-    kr = IOServiceOpen(ios, mach_task_self(), kIOHIDParamConnectType, &ioc);
-    IOObjectRelease(ios);
-    if (kr != KERN_SUCCESS) {
-        return -1;
-    }
-    kr = IOHIDSetModifierLockState(ioc, kIOHIDCapsLockState, 0);
-    if (kr != KERN_SUCCESS) {
-        IOServiceClose(ioc);
-        return -1;
-    }
+void sendShortcut(const char * keys[], int keyCount, void (*callback)(int)) {
     
-    IOServiceClose(ioc);
+    
+    dispatch_async(dispatch_get_main_queue(), ^(void){
+        // Initialize the keyboard layout
+        TISInputSourceRef currentKeyboard = TISCopyCurrentKeyboardInputSource();
+        CFDataRef layoutData = TISGetInputSourceProperty(currentKeyboard, kTISPropertyUnicodeKeyLayoutData);
+        const UCKeyboardLayout *keyboardLayout = (const UCKeyboardLayout *)CFDataGetBytePtr(layoutData);
+        uint8 keyboardType = LMGetKbdType();
+        
+        // Get all the virtual keys for the shortcut
+        NSMutableArray * virtualKeys = [[NSMutableArray alloc] init];
+        bool isValid = true;
+        
+        for (int i = 0; i<keyCount; i++) {
+            NSString *currentKeyString = [NSString stringWithUTF8String:keys[i]];
+            int currentVirtualKey = decodeVirtualKey(currentKeyString, keyboardLayout, keyboardType);
+            
+            if (currentVirtualKey != -1) {
+                [virtualKeys addObject:[NSNumber numberWithInt:currentVirtualKey]];
+            }else{
+                isValid = false;
+                break;
+            }
+        }
+        
+        CFRelease(currentKeyboard);
+        
+        if (!isValid) {
+            if (callback) {
+                callback(-1);
+            }
+            return;
+        }
+        
+        // Send the key events
+        
+        // Send all the key presses
+        for (id currentVirtualKey in virtualKeys) {
+            int virtualKey = [currentVirtualKey intValue];
+            CGEventRef keydown;
+            keydown = CGEventCreateKeyboardEvent (NULL, (CGKeyCode)virtualKey, true);
+            CGEventPost(kCGHIDEventTap, keydown);
+            CFRelease(keydown);
+            
+            usleep(20000);
+        }
+        
+        // Send all the key releases ( in reverse order )
+        for (id currentVirtualKey in [virtualKeys reverseObjectEnumerator]) {
+            int virtualKey = [currentVirtualKey intValue];
+            CGEventRef keyup;
+            keyup = CGEventCreateKeyboardEvent (NULL, (CGKeyCode)virtualKey, false);
+            CGEventPost(kCGHIDEventTap, keyup);
+            CFRelease(keyup);
+            
+            usleep(20000);
+        }
+        
+        if (callback) {
+            callback((int) [virtualKeys count]);
+        }
+    });
+}
+
+void print(const char * result) {
+    NSLog(@"%s", result);
+}
+
+int main() {
+    removeModifiersFromKey("{", 0, 1, 1, 0, print);
+    
+    while(1){}
     
     return 0;
 }
