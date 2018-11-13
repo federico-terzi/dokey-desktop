@@ -64,3 +64,17 @@ int getActivePID() {
     NSRunningApplication *frontApp = [[NSWorkspace sharedWorkspace] frontmostApplication];
     return [frontApp processIdentifier];
 }
+
+int activateRunningApplication(const char * appPath) {
+    NSString *appPathString = [NSString stringWithUTF8String:appPath];
+    NSArray *runningApps = [[NSWorkspace sharedWorkspace] runningApplications];
+    for (id app in runningApps) {
+        NSString *bundlePath = [app bundleURL].path;
+        if ([bundlePath isEqualToString:appPathString]) {
+            [app activateWithOptions: NSApplicationActivateIgnoringOtherApps];
+            return 1;
+        }
+    }
+    
+    return 0;
+}

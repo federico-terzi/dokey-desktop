@@ -42,4 +42,11 @@ public interface MacApplicationLib extends Library {
      Return the PID of the currently active application.
      */
     int getActivePID();
+
+    /*
+     Activate ( focus ) the given application.
+     If succeeded, return 1.
+     If the application is not running, nothing will occur and the method will return 0.
+     */
+    int activateRunningApplication(String appPath);
 }
