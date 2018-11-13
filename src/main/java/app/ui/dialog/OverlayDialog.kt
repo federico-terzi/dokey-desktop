@@ -93,7 +93,6 @@ open class OverlayDialog(override val parent: BlurrableStage, val imageResolver:
     open fun onClose() {
         closeWithAnimation()
         Platform.runLater { parent.blurOut() }
-        parent.requestFocus()
     }
 
     fun showWithAnimation() {
