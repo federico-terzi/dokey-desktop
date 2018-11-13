@@ -9,7 +9,7 @@ import java.io.File
 class MACApplication(val applicationManager: MACApplicationManager, val appBundlePath: String) : Application(appBundlePath) {
 
     override val name: String
-    override val iconPath: String by lazy {
+    override val iconPath: String? by lazy {
         applicationManager.getIconPath(appBundlePath)
     }
 
