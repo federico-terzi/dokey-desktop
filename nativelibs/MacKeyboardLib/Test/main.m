@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <Quartz/Quartz.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <Carbon/Carbon.h> /* For kVK_ constants, and TIS functions. */
 
@@ -268,9 +269,7 @@ void print(const char * result) {
 }
 
 int main() {
-    removeModifiersFromKey("{", 0, 1, 1, 0, print);
-    
-    while(1){}
+    simulateMediaKey(0);
     
     return 0;
 }

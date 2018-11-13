@@ -36,3 +36,8 @@ void sendShortcut(const char * keys[], int keyCount, void (*callback)(int));
  Return 0 if correctly disabled, -1 if an error occurred
  */
 int forceDisableCapsLock(void);
+
+/*
+ Simulate the pressure of the given media key.
+ */
+void simulateMediaKey(int mediaKey);

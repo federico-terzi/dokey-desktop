@@ -7,6 +7,7 @@
 //
 
 #import "MacKeyboardLib.h"
+#import <Quartz/Quartz.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hidsystem/IOHIDLib.h>
 #include <IOKit/hidsystem/IOHIDParameter.h>
@@ -295,4 +296,31 @@ int forceDisableCapsLock() {
     IOServiceClose(ioc);
     
     return 0;
+}
+
+void _postMediaKey(int mediaKey, int isDown) {
+    unsigned int modifierFlags = (isDown == 1) ? 0xa00 : 0xb00;
+    unsigned int data = mediaKey << 16 | ((isDown == 1) ? 0xa : 0xb) << 8;
+    NSEvent *event = [NSEvent otherEventWithType:NSEventTypeSystemDefined
+                                        location:NSMakePoint(0, 0)
+                                   modifierFlags:modifierFlags
+                                       timestamp:0
+                                    windowNumber:0
+                                         context:0
+                                         subtype:8
+                                           data1:data
+                                           data2:-1];
+    CGEventRef cgEvent = [event CGEvent];
+    CGEventPost(0, cgEvent);
+    NX_KEYTYPE_SOUND_UP
+    CFRelease(cgEvent);
+}
+
+/*
+ Simulate the pressure of the given media key.
+ */
+void simulateMediaKey(int mediaKey) {
+    _postMediaKey(mediaKey, 1);
+    usleep(20000);
+    _postMediaKey(mediaKey, 0);
 }

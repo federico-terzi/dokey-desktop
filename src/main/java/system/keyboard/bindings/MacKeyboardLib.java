@@ -42,4 +42,19 @@ public interface MacKeyboardLib extends Library {
      * Return 0 if correctly disabled, -1 if an error occurred
      */
     int forceDisableCapsLock();
+
+    int NX_KEYTYPE_SOUND_UP = 0;
+    int NX_KEYTYPE_SOUND_DOWN = 1;
+    int NX_KEYTYPE_MUTE = 7;
+    int NX_KEYTYPE_PLAY = 16;
+    int NX_KEYTYPE_NEXT = 17;
+    int NX_KEYTYPE_PREVIOUS = 18;
+    int NX_KEYTYPE_FAST = 19;
+    int NX_KEYTYPE_REWIND = 20;
+
+    /*
+     Simulate the pressure of the given media key.
+     Keys -> hidsystem/ev_keymap.h
+     */
+    void simulateMediaKey(int mediaKey);
 }
