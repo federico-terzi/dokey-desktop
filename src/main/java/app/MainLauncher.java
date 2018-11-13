@@ -1,5 +1,6 @@
 package app;
 
+import com.sun.jna.Native;
 import system.ResourceUtils;
 import utils.OSValidator;
 

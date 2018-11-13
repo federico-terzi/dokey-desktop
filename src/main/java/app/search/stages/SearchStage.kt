@@ -18,11 +18,13 @@ import javafx.stage.StageStyle
 import org.reflections.Reflections
 import system.ResourceUtils
 import system.applications.Application
+import system.applications.ApplicationManager
 import system.image.ImageResolver
 import system.search.SearchEngine
 import system.search.annotations.FilterableResult
 import system.search.results.Result
 import system.search.results.ResultCategory
+import utils.OSValidator
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -147,7 +149,7 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
                     resultFilter = null
                     elaborateResults()
                 } else {  // CLOSE
-                    close()
+                    closeAndRefocus()
                 }
             } else if (event.code == KeyCode.ALT) { // Filter
                 val currentResult = listView.getSelectedResult()
@@ -168,7 +170,7 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
         // Detect if window lose focus
         focusedProperty().addListener { _, _, isFocused ->
             if (isFocused == false)
-                close()
+                closeAndRefocus()
         }
 
         registerFilterableResults()
@@ -351,6 +353,17 @@ constructor(private val resourceBundle: ResourceBundle, private val searchEngine
         resultClasses.forEach { resultClass ->
             filterableResults.add((resultClass as Class<out Result>).kotlin)
         }
+    }
+
+    /**
+     * In some systems, after the window has focused, the bar should focus back to the original
+     * application ( like in MacOS ), because the OS does not do that automatically.
+     */
+    private fun closeAndRefocus() {
+        if (OSValidator.isMac()) {
+            Platform.runLater { activeApplication?.open() }
+        }
+        close()
     }
 
     companion object {

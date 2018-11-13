@@ -312,8 +312,6 @@ void _postMediaKey(int mediaKey, int isDown) {
                                            data2:-1];
     CGEventRef cgEvent = [event CGEvent];
     CGEventPost(0, cgEvent);
-    NX_KEYTYPE_SOUND_UP
-    CFRelease(cgEvent);
 }
 
 /*
