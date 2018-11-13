@@ -7,7 +7,7 @@ import java.math.BigDecimal
 
 class CalculatorResult(context: SearchContext, val query : String, val result: BigDecimal) : AbstractResult(context) {
     override val title: String
-        get() = "$query = $result"
+        get() = "$query = ${result.toPlainString()}"
     override val description: String?
         get() = "${context.resourceBundle.getString("result_of_expression")} $result"
 
