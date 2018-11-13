@@ -79,9 +79,6 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
     private val tabSelector = TabSelector(imageResolver)
 
-    // Saved in a variable because when blurring the stage this effect is resetted
-    private var dropShadowEffect : Effect? = null
-
     override val parent: BlurrableStage? = null
 
     init {
@@ -185,6 +182,9 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
     }
 
     fun animateIn() {
+        // Reset the effects of the control panel
+        controller.parent_box.effect = null
+
         val fadeTransition = StageOpacityTransition(Duration.millis(200.0), this)
         val positionTransition = StagePositionTransition(Duration.millis(200.0), this)
         positionTransition.toY = this.y
@@ -211,9 +211,6 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
     }
 
     override fun blurIn() {
-        // Backup the effect for later recovery when blurring
-        dropShadowEffect = controller.parent_box.effect
-
         val transition = BlurTransition(controller.parent_box, Duration(200.0), 0.0, 10.0,
                 0.0, -0.2)
         transition.play()
@@ -222,7 +219,6 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
     override fun blurOut() {
         val transition = BlurTransition(controller.parent_box, Duration(200.0), 10.0, 0.0,
                 -0.2, 0.0)
-        transition.setOnFinished { controller.parent_box.effect = dropShadowEffect }
         transition.play()
     }
 
