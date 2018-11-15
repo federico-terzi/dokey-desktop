@@ -90,6 +90,7 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
         this.title = "Dokey Control Panel"
         this.scene = scene
         this.isAlwaysOnTop = true
+        this.isResizable = false
         initStyle(StageStyle.TRANSPARENT)
         scene.fill = Color.TRANSPARENT
         this.icons.add(Image(ControlPanelStage::class.java.getResourceAsStream("/assets/icon.png")))

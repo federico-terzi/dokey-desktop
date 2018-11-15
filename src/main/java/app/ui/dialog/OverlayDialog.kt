@@ -42,6 +42,7 @@ open class OverlayDialog(override val parent: BlurrableStage, val imageResolver:
         this.title = "Dokey"
         this.scene = scene
         this.isAlwaysOnTop = true
+        this.isResizable = false
         initStyle(StageStyle.TRANSPARENT)
         initModality(Modality.APPLICATION_MODAL)
         initOwner(parent)
