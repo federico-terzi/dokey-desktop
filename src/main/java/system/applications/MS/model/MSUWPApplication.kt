@@ -126,6 +126,10 @@ class MSUWPApplication(id: String) : Application(id) {
         _iconPath = iconFile.absolutePath
     }
 
+    private fun getNameWithoutPrefix(): String {
+        return id.removePrefix("store:")
+    }
+
     /**
      * Open an application.
      */
@@ -134,7 +138,7 @@ class MSUWPApplication(id: String) : Application(id) {
 
         // Execute the process
         try {
-            val proc = runtime.exec(arrayOf("explorer.exe", "shell:AppsFolder\\$id"))
+            val proc = runtime.exec(arrayOf("explorer.exe", "shell:AppsFolder\\${getNameWithoutPrefix()}"))
             return true
         } catch (e: Exception) {
             e.printStackTrace()
