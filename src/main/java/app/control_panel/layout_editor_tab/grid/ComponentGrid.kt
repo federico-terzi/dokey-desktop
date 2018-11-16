@@ -1,7 +1,6 @@
 package app.control_panel.layout_editor_tab.grid
 
 import app.control_panel.dialog.command_edit_dialog.CommandEditDialog
-import app.control_panel.dialog.command_select_dialog.CommandSelectDialog
 import app.control_panel.layout_editor_tab.grid.button.ComponentButton
 import app.control_panel.layout_editor_tab.grid.button.DragButton
 import app.control_panel.layout_editor_tab.grid.button.EmptyButton
@@ -18,7 +17,6 @@ import javafx.scene.layout.RowConstraints
 import javafx.stage.Stage
 import model.component.CommandResolver
 import model.component.Component
-import model.component.RuntimeComponent
 import model.parser.component.ComponentParser
 import system.applications.ApplicationManager
 import system.commands.CommandManager
@@ -135,10 +133,17 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
         // Add all the components
         for (col in componentMatrix.indices) {
             for (row in 0 until componentMatrix[0].size) {
-                if (componentMatrix[col][row] != null) {
+                val button = if (componentMatrix[col][row] != null) {
                     addComponentToGridPane(componentMatrix[col][row])
                 } else {
                     addEmptyButtonToGridPane(col, row)
+                }
+
+                // Setup common listeners
+                button?.onDeselectAllRequested = {
+                    if (!it.isShiftDown) {
+                        unselectAllButtons()
+                    }
                 }
             }
         }
@@ -152,12 +157,6 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
      */
     private fun addEmptyButtonToGridPane(col: Int, row: Int) : EmptyButton? {
         val emptyButton = EmptyButton(this)
-
-        emptyButton.onSelected = {
-            if (!it.isShiftDown) {
-                unselectAllButtons()
-            }
-        }
 
         /*
         emptyButton.setOnMouseClicked{
@@ -257,12 +256,6 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
                 render()
             }
 
-        }
-
-        current.onSelected = {
-            if (!it.isShiftDown) {
-                unselectAllButtons()
-            }
         }
 
         current.onDoubleClicked = {
@@ -368,6 +361,14 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
         }
 
         render()
+    }
+
+    fun copySelected() {
+        // Find all the selected buttons and delete the corresponding component for each of them
+        this.children.filter { it is ComponentButton && it.selected }.forEach {
+            it as ComponentButton
+            println(it.associatedComponent)
+        }
     }
 
     /**

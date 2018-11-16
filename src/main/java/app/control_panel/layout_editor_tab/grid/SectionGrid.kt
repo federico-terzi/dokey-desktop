@@ -6,6 +6,10 @@ import javafx.animation.*
 import javafx.scene.CacheHint
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
+import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyCodeCombination
+import javafx.scene.input.KeyCombination
+import javafx.scene.input.KeyEvent
 import javafx.scene.layout.VBox
 import model.component.Component
 import model.page.Page
@@ -193,11 +197,18 @@ class SectionGrid(val parent: BlurrableStage, val section: Section,
         return currentPane
     }
 
-    /**
-     * Delete all selected commands from all the grids
-     */
-    fun deleteSelected() {
-        componentGrids.values.forEach { it.deleteSelected() }
+    // Key Shortcuts
+    val copyKeystrokeCombination = KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN)
+    val pasteKeystrokeCombination = KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN)
+
+    fun onKeyPress(event: KeyEvent) {
+        if (event.code == KeyCode.BACK_SPACE || event.code == KeyCode.DELETE) {
+            componentGrids.values.forEach { it.deleteSelected() }
+        }else if (copyKeystrokeCombination.match(event)) {
+            componentGrids.values.forEach { it.copySelected() }
+        }else if (pasteKeystrokeCombination.match(event)) {
+
+        }
     }
 
     private fun rotate(angle: Int) {

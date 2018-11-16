@@ -11,9 +11,7 @@ import io.reactivex.subjects.PublishSubject
 import javafx.animation.*
 import javafx.scene.CacheHint
 import javafx.scene.control.ScrollPane
-import javafx.scene.input.DragEvent
-import javafx.scene.input.KeyCode
-import javafx.scene.input.KeyEvent
+import javafx.scene.input.*
 import javafx.scene.layout.VBox
 import javafx.stage.FileChooser
 import javafx.util.Duration
@@ -159,9 +157,8 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
     }
 
     override fun onGlobalKeyPress(event: KeyEvent) {
-        if (event.code == KeyCode.BACK_SPACE || event.code == KeyCode.DELETE) {
-            sectionGrid?.deleteSelected()
-        }
+        // Forword the event to the section grid
+        sectionGrid?.onKeyPress(event)
     }
 
     fun requestSection(targetSectionId: String?) {

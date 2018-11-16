@@ -24,6 +24,8 @@ import javafx.scene.control.Tab
 import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
 import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyCodeCombination
+import javafx.scene.input.KeyCombination
 import javafx.scene.paint.Color
 import javafx.scene.transform.Transform
 import javafx.stage.StageStyle
@@ -133,10 +135,10 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
         scene.setOnKeyReleased {
             if (it.code == KeyCode.ESCAPE) {  // Close the dialog on ESC key pressed
                 animateOut(null)
+            }else{
+                // Notify the active tab
+                activeTab.onGlobalKeyPress(it)
             }
-
-            // Notify the active tab
-            activeTab.onGlobalKeyPress(it)
         }
     }
 
