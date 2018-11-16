@@ -1,6 +1,5 @@
 package app.control_panel.layout_editor_tab.grid
 
-import app.control_panel.layout_editor_tab.GlobalKeyboardListener
 import app.control_panel.layout_editor_tab.model.ScreenOrientation
 import app.ui.stage.BlurrableStage
 import javafx.animation.*
@@ -16,7 +15,6 @@ import javafx.util.Duration
 import system.commands.CommandManager
 import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
-import javafx.stage.Stage
 import system.applications.ApplicationManager
 import java.util.*
 
@@ -28,7 +26,6 @@ class SectionGrid(val parent: BlurrableStage, val section: Section,
                   val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                   val componentParser: ComponentParser, val commandManager: CommandManager,
                   val applicationManager: ApplicationManager,
-                  val globalKeyboardListener: GlobalKeyboardListener,
                   val dndCommandProcessor: DNDCommandProcessor)
     : VBox() {
 
@@ -92,7 +89,7 @@ class SectionGrid(val parent: BlurrableStage, val section: Section,
         // Add the pages
         for (page in section.pages!!) {
             // Create the page grid
-            val grid = ComponentGrid(parent, generateMatrix(page), screenOrientation, globalKeyboardListener, commandManager,
+            val grid = ComponentGrid(parent, generateMatrix(page), screenOrientation,commandManager,
                     applicationManager, dndCommandProcessor,
                     resourceBundle, imageResolver, componentParser, commandManager)
 

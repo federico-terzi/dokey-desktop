@@ -39,7 +39,7 @@ const val MAX_PAGES = 6
 class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManager: SectionManager,
                       val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                       val componentParser: ComponentParser, val commandManager: CommandManager,
-                      val applicationManager: ApplicationManager, val globalKeyboardListener: GlobalKeyboardListener,
+                      val applicationManager: ApplicationManager,
                       val dndCommandProcessor: DNDCommandProcessor, val sectionExporter: SectionExporter,
                       val sectionImporter: SectionImporter) : ControlPanelTab() {
     val layoutToolbar = LayoutToolbar(imageResolver, applicationManager)
@@ -175,7 +175,7 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
 
         // Create the section grid
         sectionGrid = SectionGrid(controlPanelStage, section, imageResolver, resourceBundle, componentParser,
-                commandManager, applicationManager, globalKeyboardListener, dndCommandProcessor)
+                commandManager, applicationManager, dndCommandProcessor)
         sectionGrid!!.onSectionModified = { section ->
             saveSectionSubject.onNext(section)
         }

@@ -2,7 +2,6 @@ package app.control_panel.layout_editor_tab.grid
 
 import app.control_panel.dialog.command_edit_dialog.CommandEditDialog
 import app.control_panel.dialog.command_select_dialog.CommandSelectDialog
-import app.control_panel.layout_editor_tab.GlobalKeyboardListener
 import app.control_panel.layout_editor_tab.grid.button.ComponentButton
 import app.control_panel.layout_editor_tab.grid.button.DragButton
 import app.control_panel.layout_editor_tab.grid.button.EmptyButton
@@ -10,7 +9,6 @@ import app.control_panel.layout_editor_tab.grid.button.SelectableButton
 import app.control_panel.layout_editor_tab.model.ScreenOrientation
 import app.ui.stage.BlurrableStage
 import javafx.geometry.HPos
-import javafx.scene.Parent
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
 import javafx.scene.layout.ColumnConstraints
@@ -30,7 +28,7 @@ import java.util.*
 
 
 class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array<Component?>>,
-                    val screenOrientation: ScreenOrientation, val globalKeyboardListener: GlobalKeyboardListener,
+                    val screenOrientation: ScreenOrientation,
                     val commandManager: CommandManager, val applicationManager: ApplicationManager,
                     override val dndCommandProcessor: DNDCommandProcessor,
                     override val resourceBundle: ResourceBundle,
@@ -152,9 +150,16 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
      * @param col the col index in the component matrix.
      * @param row the row index in the component matrix.
      */
-    private fun addEmptyButtonToGridPane(col: Int, row: Int) {
+    private fun addEmptyButtonToGridPane(col: Int, row: Int) : EmptyButton? {
         val emptyButton = EmptyButton(this)
 
+        emptyButton.onSelected = {
+            if (!it.isShiftDown) {
+                unselectAllButtons()
+            }
+        }
+
+        /*
         emptyButton.setOnMouseClicked{
             val popup = ActionPopup(imageResolver)
 
@@ -196,8 +201,11 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
             popup.showForComponent(parent, emptyButton)
             //popup.showUnderMouse(parent, it.screenX, it.screenY)
         }
+        */
 
         addButtonToGridPane(col, row, emptyButton)
+
+        return emptyButton
     }
 
     /**
@@ -206,10 +214,10 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
      * @param component the component to add.
      * @return
      */
-    fun addComponentToGridPane(component: Component?) {
+    fun addComponentToGridPane(component: Component?) : SelectableButton? {
         // Make sure the component is not null
         if (component == null)
-            return
+            return null
 
         // Extract the coordinates from the component
         val col = component!!.x!!
@@ -251,24 +259,19 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
 
         }
 
-        current.setOnMouseClicked {
-            if (it.clickCount == 2) {  // Double click
-                current.onComponentActionListener?.onComponentEdit()
-            }else{  // Single click
-                if (!current.selected) {
-                    // If shift is not pressed, unselect all the other buttons
-                    if (!globalKeyboardListener.isShiftPressed) {
-                        unselectAllButtons()
-                    }
-
-                    current.selected = true
-                }else{
-                    current.selected = false
-                }
+        current.onSelected = {
+            if (!it.isShiftDown) {
+                unselectAllButtons()
             }
         }
 
+        current.onDoubleClicked = {
+            current.onComponentActionListener?.onComponentEdit()
+        }
+
         addButtonToGridPane(col, row, current)
+
+        return current
     }
 
     /**
@@ -350,7 +353,7 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
         }
     }
 
-    fun unselectAllButtons() {
+    private fun unselectAllButtons() {
         this.children.filter { it is SelectableButton }.forEach {
             it as SelectableButton
             it.selected = false

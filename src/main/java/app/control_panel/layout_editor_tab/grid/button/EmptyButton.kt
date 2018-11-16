@@ -8,15 +8,16 @@ import javafx.scene.control.ContextMenu
 import javafx.scene.image.ImageView
 import system.image.ImageResolver
 
-class EmptyButton(context : GridContext) : DragButton(context) {
+class EmptyButton(context : GridContext) : SelectableButton(context) {
     init {
         // Set up the button design
         styleClass.add("empty-btn")
 
-        val image = ImageResolver.getImage(EmptyButton::class.java.getResourceAsStream("/assets/add_clean.png"), 24)
-        val imageView = ImageView(image)
-        imageView.setFitWidth(24.0)
-        imageView.setFitHeight(24.0)
+        val imageView = ImageView()
+        imageView.fitWidth = 48.0
+        imageView.fitHeight = 48.0
+        context.imageResolver.loadInto("asset:emptybtn", 48, imageView, fadeIn = false)
+
         graphic = imageView
         contentDisplay = ContentDisplay.TOP
 

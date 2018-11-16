@@ -6,7 +6,6 @@ import app.ui.animation.StagePositionTransition
 import app.control_panel.command_tab.CommandTab
 import app.control_panel.controllers.ControlPanelController
 import app.control_panel.devices_tab.DevicesTab
-import app.control_panel.layout_editor_tab.GlobalKeyboardListener
 import app.control_panel.layout_editor_tab.LayoutEditorTab
 import app.control_panel.settings_tab.SettingsTab
 import app.control_panel.tab_selector.TabSelector
@@ -15,16 +14,18 @@ import javafx.animation.FadeTransition
 import javafx.animation.Interpolator
 import javafx.animation.ParallelTransition
 import javafx.animation.TranslateTransition
+import javafx.embed.swing.SwingFXUtils
 import javafx.fxml.FXMLLoader
 import javafx.scene.CacheHint
 import javafx.scene.Parent
 import javafx.scene.Scene
+import javafx.scene.SnapshotParameters
 import javafx.scene.control.Tab
-import javafx.scene.effect.Effect
 import javafx.scene.image.Image
+import javafx.scene.image.WritableImage
 import javafx.scene.input.KeyCode
-import javafx.scene.input.TransferMode
 import javafx.scene.paint.Color
+import javafx.scene.transform.Transform
 import javafx.stage.StageStyle
 import javafx.util.Duration
 import model.parser.component.ComponentParser
@@ -44,7 +45,9 @@ import system.server.HandshakeDataBuilder
 import system.startup.StartupManager
 import system.storage.StorageManager
 import utils.OSValidator
+import java.io.File
 import java.util.*
+import javax.imageio.ImageIO
 
 class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                         val componentParser: ComponentParser, val commandManager: CommandManager,
@@ -53,12 +56,12 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
                         val startupManager: StartupManager, val storageManager: StorageManager,
                         val commandExporter: CommandExporter, val commandImporter: CommandImporter,
                         val sectionExporter: SectionExporter, val sectionImporter: SectionImporter)
-    : BlurrableStage(), GlobalKeyboardListener {
+    : BlurrableStage(){
 
     private val controller : ControlPanelController
 
     private val layoutEditorTab = LayoutEditorTab(this, sectionManager, imageResolver, resourceBundle, componentParser,
-            commandManager, applicationManager, this, dndCommandProcessor, sectionExporter,
+            commandManager, applicationManager, dndCommandProcessor, sectionExporter,
             sectionImporter)
 
     private val devicesTab = DevicesTab(imageResolver, resourceBundle, handshakeDataBuilder)
@@ -74,8 +77,6 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
     // This variable will hold the currently active control panel tab
     private var activeTab : ControlPanelTab
-
-    override var isShiftPressed: Boolean = false
 
     private val tabSelector = TabSelector(imageResolver)
 
@@ -129,15 +130,8 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
         setupTabPaneAnimation()
 
         // Keyboard listeners for detecting if a key is pressed or not
-        scene.setOnKeyPressed {
-            if (it.code == KeyCode.SHIFT) {
-                isShiftPressed = true
-            }
-        }
         scene.setOnKeyReleased {
-            if (it.code == KeyCode.SHIFT) {
-                isShiftPressed = false
-            }else if (it.code == KeyCode.ESCAPE) {  // Close the dialog on ESC key pressed
+            if (it.code == KeyCode.ESCAPE) {  // Close the dialog on ESC key pressed
                 animateOut(null)
             }
 

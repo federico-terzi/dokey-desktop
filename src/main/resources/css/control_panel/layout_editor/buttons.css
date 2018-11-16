@@ -1,4 +1,9 @@
 .drag-button {
+    -fx-background-color: transparent;
+    -fx-background-insets: 4px;
+    -fx-background-radius: 4px;
+    -fx-opacity: 1;
+    -fx-text-fill: black;
     -fx-border-insets: 2px;
     -fx-pref-height: 10px;
     -fx-pref-width: 80px;
@@ -6,40 +11,11 @@
 
 /*Empty Button*/
 
-.empty-btn {
-    -fx-background-color: transparent;
-    -fx-background-insets: 10px;
-    -fx-background-radius: 12px;
-    -fx-border-radius: 10px;
-    -fx-border-style: solid;
-    -fx-border-width: 2px;
-    -fx-border-insets: 15px;
-    -fx-border-color: -light-gray;
-    -fx-padding: 0px;
-}
-
-.empty-btn .image-view{
-    -fx-effect: innershadow( one-pass-box , -light-gray , 7 , 1 , 1 , 1 );
-}
-
-.empty-btn:hover {
-    -fx-opacity: 1;
-    -fx-border-color: black;
-}
-
 .empty-btn:hover .image-view{
     -fx-effect: innershadow( one-pass-box , black, 7 , 1 , 1 , 1 );
 }
 
 /*Component Button*/
-
-.component-btn {
-    -fx-background-color: transparent;
-    -fx-background-insets: 4px;
-    -fx-background-radius: 4px;
-    -fx-opacity: 1;
-    -fx-text-fill: black;
-}
 
 .component-btn .label{
     -fx-text-fill: black;
