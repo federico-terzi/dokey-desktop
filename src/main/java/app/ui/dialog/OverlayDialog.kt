@@ -12,6 +12,7 @@ import javafx.scene.Node
 import javafx.scene.Scene
 import javafx.scene.effect.Effect
 import javafx.scene.image.Image
+import javafx.scene.input.KeyCode
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Pane
 import javafx.scene.layout.Priority
@@ -50,6 +51,13 @@ open class OverlayDialog(override val parent: BlurrableStage, val imageResolver:
         this.icons.add(Image(OverlayDialog::class.java.getResourceAsStream("/assets/icon.png")))
 
         maxHeight = 600.0
+
+        // Setup key listener
+        scene.setOnKeyReleased {
+            if (it.code == KeyCode.ESCAPE) {  // Close the dialog on ESC key pressed
+                onClose()
+            }
+        }
 
         // Blur the control panel stage
         Platform.runLater {
@@ -112,7 +120,10 @@ open class OverlayDialog(override val parent: BlurrableStage, val imageResolver:
         transition.play()
     }
 
-    fun closeWithAnimation() {
+    /**
+     * This should not be called directly to close the dialog, use onClose() instead.
+     */
+    private fun closeWithAnimation() {
         val fadeTransition = StageOpacityTransition(Duration.millis(200.0), this)
         fadeTransition.to = 0.0
         val positionTransition = StagePositionTransition(Duration.millis(200.0), this)

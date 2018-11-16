@@ -137,6 +137,8 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
         scene.setOnKeyReleased {
             if (it.code == KeyCode.SHIFT) {
                 isShiftPressed = false
+            }else if (it.code == KeyCode.ESCAPE) {  // Close the dialog on ESC key pressed
+                animateOut(null)
             }
 
             // Notify the active tab
@@ -197,7 +199,7 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
         BroadcastManager.getInstance().sendBroadcast(BroadcastManager.CONTROL_PANEL_OPENED_EVENT, null)
     }
 
-    fun animateOut(onFinished: () -> Unit) {
+    fun animateOut(onFinished: (() -> Unit)?) {
         val fadeTransition = StageOpacityTransition(Duration.millis(200.0), this)
         fadeTransition.to = 0.0
         val positionTransition = StagePositionTransition(Duration.millis(200.0), this)
@@ -205,7 +207,10 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
         positionTransition.fromY = this.y
 
         val transition = ParallelTransition(fadeTransition, positionTransition)
-        transition.setOnFinished { onFinished() }
+        transition.setOnFinished {
+            onFinished?.invoke()
+            close()
+        }
         transition.play()
 
         BroadcastManager.getInstance().sendBroadcast(BroadcastManager.CONTROL_PANEL_CLOSED_EVENT, null)

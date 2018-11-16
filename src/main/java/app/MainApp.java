@@ -503,7 +503,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     }
 
     private void hideControlPanel() {
-        controlPanelStage.animateOut(() -> {controlPanelStage.hide(); return Unit.INSTANCE;});
+        controlPanelStage.animateOut(null);
     }
 
     public void onEditorOpenRequest() {
