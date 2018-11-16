@@ -8,6 +8,7 @@ import org.apache.commons.io.FileUtils
 import system.applications.Application
 import system.applications.ApplicationManager
 import system.applications.ExternalAppManager
+import system.applications.MS.model.MSAbstractApplication
 import system.applications.MS.model.MSLegacyApplication
 import system.applications.MS.model.MSUWPApplication
 import system.applications.MS.model.exception.ApplicationCreateException
@@ -34,7 +35,7 @@ import javax.swing.filechooser.FileSystemView
 class MSApplicationManager(storageManager: StorageManager, private val startupManager: StartupManager) : ApplicationManager(storageManager) {
 
     // This map will hold the applications, associated with their id
-    private var applicationMap = CaseInsensitiveMap<Application>()
+    private var applicationMap = CaseInsensitiveMap<MSAbstractApplication>()
 
     private var robot: Robot? = null  // Used for the key and alt tab workaround.
 
@@ -82,7 +83,7 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
         if (appId == null)
             return false
 
-        val hasBeenFocused = WinApplicationLib.INSTANCE.focusApplication(WString(appId))
+        val hasBeenFocused = WinApplicationLib.INSTANCE.focusApplication(WString(appId), null, null, 0)
         if (hasBeenFocused > 0) {  // Succeeded in focusing the app
             return true
         }else if (hasBeenFocused == -2) {  // the application was open, but could not be focused.
@@ -91,6 +92,15 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
 
         // Get the requested application and Make sure the app is valid before opening it
         val application = getApplicationOrAttemptToAddItIfNotExisting(appId) ?: return false
+
+        // If the application is a UWP app, we have to consider some special cases, like when
+        // the app is minimized or in another desktop
+        if (application is MSUWPApplication && application.lastKnownHandle != null) {
+            val result = WinApplicationLib.INSTANCE.focusApplication(null, application.lastKnownHandle, lastActiveHandleList, lastActiveHandleList?.size ?: 0)
+            if (result > 0) {
+                return true
+            }
+        }
 
         // Try to open the application
         if (forceRun) {
@@ -271,7 +281,7 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
     }
 
     private fun getApplicationOrAttemptToAddItIfNotExisting(appId: String, suggestedName: String? = null,
-                                                            addToExternalApplications: Boolean = true): Application? {
+                                                            addToExternalApplications: Boolean = true): MSAbstractApplication? {
         // If the application already exists in the memory, return it.
         if (applicationMap.containsKey(appId)) {
             return applicationMap[appId]
@@ -316,14 +326,44 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
         return activeApplication
     }
 
-    override fun getActiveApplications(): List<Application> {
-        val apps = mutableListOf<Application>()
-
-        WinApplicationLib.INSTANCE.listActiveApplications { _, _, _, appId ->
-            val app = getApplicationOrAttemptToAddItIfNotExisting(appId.toString())
-            app?.let { apps.add(app) }
-            true
+    // This list holds all the apps previously found with the getActiveApplications() call and is
+    // used to mitigate the problem of partial UWP store apps results.
+    private var lastActiveApps = mutableSetOf<MSAbstractApplication>()
+    private val lastActiveHandleList : Array<WinDef.HWND>?
+        get() {
+            return if (lastActiveApps.size > 0) {
+                lastActiveApps.mapNotNull { it.lastKnownHandle }.toTypedArray()
+            }else {
+                null
+            }
         }
+
+    override fun getActiveApplications(): List<Application> {
+        val apps = mutableListOf<MSAbstractApplication>()
+
+        WinApplicationLib.INSTANCE.listActiveApplications({ hwnd, _, isUWPApp, appId ->
+            if (isUWPApp <= 1) {  // App is either a Legacy app or a visible UWP app
+                val app = getApplicationOrAttemptToAddItIfNotExisting(appId.toString())
+                app?.lastKnownHandle = hwnd
+                app?.let { apps.add(app) }
+            }else{  // The result is a PARTIAL UWP APP and we could not extract all information about it
+                    // because it was detached from the ApplicationFrameHost. The only thing we could do is to
+                    // check if the handle was previously registered in the last active apps
+                val app = lastActiveApps.find { it.lastKnownHandle == hwnd }
+                app?.lastKnownHandle = hwnd
+                if (app != null) {
+                    apps.add(app)
+                }
+            }
+            true
+        }, lastActiveHandleList, lastActiveHandleList?.size ?: 0)
+
+        // Reset the last known handle for the apps that are not active anymore
+        val inactiveApps = lastActiveApps.minus(apps)
+        inactiveApps.forEach { it.lastKnownHandle = null }
+
+        // Save the active apps for the next call
+        lastActiveApps = apps.toMutableSet()
 
         return apps
     }

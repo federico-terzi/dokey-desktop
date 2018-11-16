@@ -16,7 +16,7 @@ import javax.imageio.ImageIO
  * Represents a classic Win32 application installed in the system.
  */
 class MSLegacyApplication(val storageManager: StorageManager, val executablePath: String, _name: String? = null) :
-        Application(executablePath) {
+        MSAbstractApplication(executablePath) {
 
     override val name: String
     override val iconPath: String?

@@ -16,7 +16,7 @@ import javax.xml.parsers.DocumentBuilderFactory
  * Represents a UWP windows application installed in the system.
  * These category also includes the WindowsStore apps.
  */
-class MSUWPApplication(id: String) : Application(id) {
+class MSUWPApplication(id: String) : MSAbstractApplication(id) {
 
     private lateinit var _name : String
     override val name: String

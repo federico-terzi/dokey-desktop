@@ -16,7 +16,7 @@ public interface WinApplicationLib extends Library {
         Enumerate all the active applications, by invoking the callback for each one found.
         Note: the callback is invoked only once per application.
     */
-    void listActiveApplications(ActiveAppCallback callback);
+    void listActiveApplications(ActiveAppCallback callback, WinDef.HWND[] lastActiveHandles, int lastActiveHandlesSize);
 
     /*
         Find the application currently in focus.
@@ -31,7 +31,7 @@ public interface WinApplicationLib extends Library {
         * -1 if the application was not open.
         * -2 if the application was open, but could not be focused.
     */
-    int focusApplication(WString appId);
+    int focusApplication(WString appId, WinDef.HWND appHwnd, WinDef.HWND[] lastActiveHandles, int lastActiveHandlesSize);
 
     /*
         Extract the application directory for the given dokeyAppId ( store:familyName!AppId )
