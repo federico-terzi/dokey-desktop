@@ -1,14 +1,12 @@
 package app.control_panel.layout_editor_tab.grid
 
 import app.control_panel.dialog.command_edit_dialog.CommandEditDialog
-import app.control_panel.layout_editor_tab.action.ActionManager
 import app.control_panel.layout_editor_tab.action.ActionReceiver
-import app.control_panel.layout_editor_tab.action.component.MoveComponentAction
 import app.control_panel.layout_editor_tab.grid.button.ComponentButton
-import app.control_panel.layout_editor_tab.grid.button.DragButton
 import app.control_panel.layout_editor_tab.grid.button.EmptyButton
 import app.control_panel.layout_editor_tab.grid.button.SelectableButton
-import app.control_panel.layout_editor_tab.grid.model.ComponentReference
+import app.control_panel.layout_editor_tab.grid.dnd.ComponentDragReference
+import app.control_panel.layout_editor_tab.grid.exception.OutOfMatrixBoundsException
 import app.control_panel.layout_editor_tab.model.ScreenOrientation
 import app.ui.stage.BlurrableStage
 import javafx.geometry.HPos
@@ -52,25 +50,8 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
     // Listener used to swap the position of every component in the two lists
     var onSwapComponentsRequest: ((List<Component>, List<Component>) -> Unit)? = null
 
-    /**
-     * @return the row count based on the current screen orientation.
-     */
-    protected val orientedRowCount: Int
-        get() = if (screenOrientation === ScreenOrientation.PORTRAIT) {
-            componentMatrix.size
-        } else {
-            componentMatrix[0].size
-        }
-
-    /**
-     * @return the col count based on the current screen orientation.
-     */
-    protected val orientedColCount: Int
-        get() = if (screenOrientation === ScreenOrientation.PORTRAIT) {
-            componentMatrix[0].size
-        } else {
-            componentMatrix.size
-        }
+    private val rowCount: Int = componentMatrix.size
+    private val colCount: Int = componentMatrix[0].size
 
     // The list of selected components in the current grid
     private val selectedComponents : List<Component>
@@ -96,7 +77,7 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
      * Setup the GridPane constraint to have equally large buttons
      */
     private fun setupConstraints() {
-        for (rowIndex in 0 until orientedRowCount) {
+        for (rowIndex in 0 until rowCount) {
             val rc = RowConstraints()
             rc.vgrow = Priority.ALWAYS // allow row to grow
             rc.isFillHeight = true // ask nodes to fill height for row
@@ -104,45 +85,13 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
             // other settings as needed...
             rowConstraints.add(rc)
         }
-        for (colIndex in 0 until orientedColCount) {
+        for (colIndex in 0 until colCount) {
             val cc = ColumnConstraints()
             cc.hgrow = Priority.ALWAYS // allow column to grow
             cc.isFillWidth = true // ask nodes to fill space for column
             cc.percentWidth = 100.0
             // other settings as needed...
             columnConstraints.add(cc)
-        }
-    }
-
-    /**
-     * Given the col and row in the component matrix, return the actual col in the grid based on
-     * the screen orientation.
-     *
-     * @param col the col index in the component matrix.
-     * @param row the row index in the component matrix.
-     * @return the actual col in the grid based on the screen orientation.
-     */
-    protected fun getOrientedCol(col: Int, row: Int): Int {
-        return if (screenOrientation === ScreenOrientation.PORTRAIT) {
-            col
-        } else {
-            row
-        }
-    }
-
-    /**
-     * Given the col and row in the component matrix, return the actual row in the grid based on
-     * the screen orientation.
-     *
-     * @param col the col index in the component matrix.
-     * @param row the row index in the component matrix.
-     * @return the actual row in the grid based on the screen orientation.
-     */
-    protected fun getOrientedRow(col: Int, row: Int): Int {
-        return if (screenOrientation === ScreenOrientation.PORTRAIT) {
-            row
-        } else {
-            componentMatrix.size - 1 - col  // Number of columns - 1 - col
         }
     }
 
@@ -154,8 +103,8 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
         children.clear()
 
         // Add all the components
-        for (col in componentMatrix.indices) {
-            for (row in 0 until componentMatrix[0].size) {
+        for (col in 0 until colCount) {
+            for (row in 0 until rowCount) {
                 if (componentMatrix[col][row] != null) {
                     addComponentToGridPane(componentMatrix[col][row])
                 } else {
@@ -278,8 +227,9 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
             current.onComponentActionListener?.onComponentEdit()
         }
 
-        current.requestSelectedComponents = {
-            val reference = ComponentReference(selectedComponents, pageIndex, sectionId)
+        current.requestSelectedComponentReference = {
+            val reference = ComponentDragReference(selectedComponents, pageIndex, sectionId,
+                    col, row)
             reference
         }
 
@@ -298,8 +248,19 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
      */
     private fun addButtonToGridPane(col: Int, row: Int, button: SelectableButton) {
         // Set up the drag and drop
-        button.onComponentDropped = { componentReference ->
-            true
+        button.onComponentsDropped = { componentReference ->
+            // Generate the mask for the given components
+            val mask = generateSelectionMask(componentReference.components, componentReference.dragX, componentReference.dragY )
+
+            // Get the conflicting components
+            try {
+                val conflicts = getMaskConflicts(mask, col, row)
+                println(conflicts.size)
+
+                true
+            }catch (e: OutOfMatrixBoundsException) {
+                false
+            }
         }
 
         button.onExternalResourceDropped = { newCommand ->
@@ -315,19 +276,74 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
             true
         }
 
-        button.onDeselectAllRequested = {
-            if (!it.isShiftDown) {
-                unselectAllButtons()
-            }
+        button.onDeselectAllRequest = {
+            unselectAllButtons()
         }
 
-        // Adjust the grid position based on the orientation
-        val gridCol = getOrientedCol(col, row)
-        val gridRow = getOrientedRow(col, row)
-
         // Add the component to the grid
-        this.add(button, gridCol, gridRow, 1, 1)
+        this.add(button, col, row, 1, 1)
         GridPane.setHalignment(button, HPos.CENTER)
+    }
+
+    /**
+     * This method is used to generate a list of translated pairs, corresponding to the coordinates
+     * of the given components. For example, imagine that two components are selected:
+     * * Component 1 ( x = 1, y = 0 )
+     * * Component 2 ( x = 1, y = 1 )
+     * And the dragging started on the (1, 0) component
+     * This function will output this list
+     * [(0, 0), (0, 1)]
+     */
+    private fun generateSelectionMask(components: List<Component>, x: Int, y: Int) : List<Pair<Int, Int>> {
+        if (components.isEmpty()) {
+            return emptyList()
+        }
+
+        // Convert the selected coordinates into a mask
+        val coordinates = components.map { Pair(it.x!!, it.y!!) }
+
+        // Translate the coordinates to the origin
+        val translatedCoordinates = coordinates.map { Pair(it.first - x, it.second - y) }
+
+        return translatedCoordinates
+    }
+
+    /**
+     * Return a translated mask based on the given coordinates
+     */
+    private fun generateTargetCoordinates(mask: List<Pair<Int, Int>>, x: Int, y: Int) : List<Pair<Int, Int>> {
+        return mask.map { Pair(it.first + x, it.second + y) }
+    }
+
+    /**
+     * Return the list of the components that are overlapping with the current drop mask
+     */
+    private fun getMaskConflicts(mask: List<Pair<Int, Int>>, x: Int, y: Int) : List<Component> {
+        val coordinates = generateTargetCoordinates(mask, x, y)
+
+        // Find the minimum and maximums
+        val minX : Int = coordinates.map { it.first }.min()!!
+        val minY : Int = coordinates.map { it.second }.min()!!
+        val maxX : Int = coordinates.map { it.first }.max()!!
+        val maxY : Int = coordinates.map { it.second }.max()!!
+
+        // Check that the bounds of the mask do not exit the matrix
+        if (minX < 0) {
+            throw OutOfMatrixBoundsException()
+        }else if (minY < 0) {
+            throw OutOfMatrixBoundsException()
+        }else if (maxX >= colCount) {
+            throw OutOfMatrixBoundsException()
+        }else if (maxY >= rowCount) {
+            throw OutOfMatrixBoundsException()
+        }
+
+        // Check which components are overridden by the mask
+        val overlapping = coordinates.map {
+            componentMatrix[it.first][it.second]
+        }.filterNotNull()
+
+        return overlapping
     }
 
     private fun unselectAllButtons() {

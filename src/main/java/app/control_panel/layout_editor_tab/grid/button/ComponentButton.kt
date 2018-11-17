@@ -2,8 +2,7 @@ package app.control_panel.layout_editor_tab.grid.button
 
 import app.control_panel.layout_editor_tab.grid.GridContext
 import app.control_panel.layout_editor_tab.grid.exception.CommandNotFoundException
-import app.control_panel.layout_editor_tab.grid.model.ComponentReference
-import javafx.application.Platform
+import app.control_panel.layout_editor_tab.grid.dnd.ComponentDragReference
 import javafx.event.EventHandler
 import javafx.scene.CacheHint
 import javafx.scene.Cursor
@@ -12,16 +11,12 @@ import javafx.scene.control.ContentDisplay
 import javafx.scene.control.ContextMenu
 import javafx.scene.control.MenuItem
 import javafx.scene.control.Tooltip
-import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.input.ClipboardContent
 import javafx.scene.input.TransferMode
 import javafx.scene.paint.Color
-import json.JSONObject
 import model.command.Command
 import model.component.Component
-import model.page.Page
-import model.section.Section
 import system.image.ImageResolver
 import utils.OSValidator
 import java.util.*
@@ -29,7 +24,7 @@ import java.util.*
 
 class ComponentButton(context : GridContext, val associatedComponent : Component) : SelectableButton(context) {
     // Used to request to the component grid which components are selected
-    var requestSelectedComponents: (() -> ComponentReference)? = null
+    var requestSelectedComponentReference: (() -> ComponentDragReference)? = null
 
     var onComponentActionListener: OnComponentActionListener? = null
 
@@ -76,9 +71,19 @@ class ComponentButton(context : GridContext, val associatedComponent : Component
         // Set the drag and drop
         onDragDetected = EventHandler { event ->
             // Get the selected components
-            val componentReference = requestSelectedComponents?.invoke()
+            var componentReference = requestSelectedComponentReference?.invoke()
+
+            // If the dragged component is not in the selection, request to deselect all the others
+            // and select only the current one. Then, request again the selected components
+            if (associatedComponent !in componentReference?.components ?: emptyList()) {
+                onDeselectAllRequest?.invoke()
+                selected = true
+                componentReference = requestSelectedComponentReference?.invoke()
+            }
 
             if (componentReference != null) {
+
+
                 // TODO: change image drag when there are multiple elements
                 val db = startDragAndDrop(TransferMode.MOVE)
 

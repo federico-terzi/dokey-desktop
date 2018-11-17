@@ -21,7 +21,7 @@ class ActionManager {
             val action = undoStack.pop()
             action.unExecute()
 
-            print("undo $action")
+            println("undo $action")
 
             if (action is SectionRelatedAction) {
                 action.relatedSections.forEach { section ->
@@ -38,7 +38,7 @@ class ActionManager {
             val action = redoStack.pop()
             action.execute()
 
-            print("redo $action")
+            println("redo $action")
 
             if (action is SectionRelatedAction) {
                 action.relatedSections.forEach { section ->

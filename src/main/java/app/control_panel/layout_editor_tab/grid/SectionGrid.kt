@@ -1,6 +1,7 @@
 package app.control_panel.layout_editor_tab.grid
 
 import app.control_panel.layout_editor_tab.action.ActionReceiver
+import app.control_panel.layout_editor_tab.action.component.AddComponentAction
 import app.control_panel.layout_editor_tab.action.component.DeleteComponentAction
 import app.control_panel.layout_editor_tab.action.component.MultipleSectionRelatedAction
 import app.control_panel.layout_editor_tab.action.model.Action
@@ -86,12 +87,21 @@ class SectionGrid(val parent: BlurrableStage, val section: Section,
                     resourceBundle, imageResolver, componentParser, commandManager,
                     this)
 
+            grid.onAddComponentsRequest = { components ->
+                // Create a multiple action to add all the components at once
+                val addActions = components.map { AddComponentAction(section, page, it) }
+                val action = MultipleSectionRelatedAction(addActions)
+                actionReceiver.notifyAction(action)
+            }
+
             grid.onDeleteComponentsRequest = { components ->
                 // Create a multiple action to delete all the components at once
                 val deleteActions = components.map { DeleteComponentAction(section, page, it) }
                 val action = MultipleSectionRelatedAction(deleteActions)
                 actionReceiver.notifyAction(action)
             }
+
+
 
             // Create the tab and add the page grid
             val tab = Tab()

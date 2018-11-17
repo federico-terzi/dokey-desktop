@@ -1,7 +1,7 @@
 package app.control_panel.layout_editor_tab.grid.button
 
 import app.control_panel.layout_editor_tab.grid.GridContext
-import app.control_panel.layout_editor_tab.grid.model.ComponentReference
+import app.control_panel.layout_editor_tab.grid.dnd.ComponentDragReference
 import javafx.animation.RotateTransition
 import javafx.application.Platform
 import javafx.event.EventHandler
@@ -11,11 +11,9 @@ import javafx.scene.input.TransferMode
 import javafx.util.Duration
 import json.JSONObject
 import model.command.Command
-import model.component.Component
-import model.component.RuntimeComponent
 
 open class DragButton(val context : GridContext) : Button() {
-    var onComponentDropped : ((ComponentReference) -> Boolean)? = null
+    var onComponentsDropped : ((ComponentDragReference) -> Boolean)? = null
     var onExternalResourceDropped: ((Command) -> Boolean)? = null
 
     var gridX : Int = -1
@@ -86,10 +84,10 @@ open class DragButton(val context : GridContext) : Button() {
                     val json = event.dragboard.string.substring(COMPONENT_DRAG_PREFIX.length)  // Remove the first COMPONENT_DRAG_PREFIX string
 
                     // Get the component reference
-                    val componentReference = ComponentReference.fromJson(context.componentParser, JSONObject(json))
+                    val componentReference = ComponentDragReference.fromJson(context.componentParser, JSONObject(json))
 
                     // Notify the listener
-                    success = onComponentDropped?.invoke(componentReference) ?: false
+                    success = onComponentsDropped?.invoke(componentReference) ?: false
 
                 }else if(context.dndCommandProcessor.isCompatible(event.dragboard)) {  // EXTERNAL ELEMENT
                     loading = true

@@ -19,7 +19,8 @@ open class SelectableButton(context : GridContext) : DragButton(context) {
             _selected = value
         }
 
-    var onDeselectAllRequested: ((MouseEvent) -> Unit)? = null
+    var onDeselectAllRequest: (() -> Unit)? = null
+
     var onDoubleClicked: ((MouseEvent) -> Unit)? = null
 
     init {
@@ -28,12 +29,18 @@ open class SelectableButton(context : GridContext) : DragButton(context) {
                 if (it.clickCount == 2) {
                     onDoubleClicked?.invoke(it)
                 }else{
-                    onDeselectAllRequested?.invoke(it)
+                    if (!it.isShiftDown) {
+                        onDeselectAllRequest?.invoke()
+                    }
+
                     selected = !selected
                 }
             }else{
                 if (!selected) {
-                    onDeselectAllRequested?.invoke(it)
+                    if (!it.isShiftDown) {
+                        onDeselectAllRequest?.invoke()
+                    }
+
                     selected = true
                 }
             }
