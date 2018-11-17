@@ -1,7 +1,7 @@
 package app.control_panel.layout_editor_tab.action
 
 import app.control_panel.layout_editor_tab.action.model.Action
-import app.control_panel.layout_editor_tab.action.model.SectionRelated
+import app.control_panel.layout_editor_tab.action.model.SectionRelatedAction
 import model.section.Section
 import java.util.*
 
@@ -21,8 +21,12 @@ class ActionManager {
             val action = undoStack.pop()
             action.unExecute()
 
-            if (action is SectionRelated) {
-                onSectionModified?.invoke(action.section)
+            print("undo $action")
+
+            if (action is SectionRelatedAction) {
+                action.relatedSections.forEach { section ->
+                    onSectionModified?.invoke(section)
+                }
             }
 
             redoStack.push(action)
@@ -34,8 +38,12 @@ class ActionManager {
             val action = redoStack.pop()
             action.execute()
 
-            if (action is SectionRelated) {
-                onSectionModified?.invoke(action.section)
+            print("redo $action")
+
+            if (action is SectionRelatedAction) {
+                action.relatedSections.forEach { section ->
+                    onSectionModified?.invoke(section)
+                }
             }
 
             undoStack.push(action)

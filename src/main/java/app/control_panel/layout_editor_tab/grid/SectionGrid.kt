@@ -2,6 +2,7 @@ package app.control_panel.layout_editor_tab.grid
 
 import app.control_panel.layout_editor_tab.action.ActionReceiver
 import app.control_panel.layout_editor_tab.action.component.DeleteComponentAction
+import app.control_panel.layout_editor_tab.action.component.MultipleSectionRelatedAction
 import app.control_panel.layout_editor_tab.action.model.Action
 import app.control_panel.layout_editor_tab.model.ScreenOrientation
 import app.ui.stage.BlurrableStage
@@ -78,21 +79,18 @@ class SectionGrid(val parent: BlurrableStage, val section: Section,
         componentGrids = HashMap<Tab, ComponentGrid>()
 
         // Add the pages
-        for (page in section.pages!!) {
+        section.pages?.forEachIndexed { index, page ->
             // Create the page grid
-            val grid = ComponentGrid(parent, generateMatrix(page), ScreenOrientation.PORTRAIT, commandManager,
-                    applicationManager, dndCommandProcessor,
+            val grid = ComponentGrid(parent, generateMatrix(page), index, section.id!!, ScreenOrientation.PORTRAIT,
+                    commandManager, applicationManager, dndCommandProcessor,
                     resourceBundle, imageResolver, componentParser, commandManager,
                     this)
 
-            grid.onDeleteComponentRequest = { component ->
-                val action = DeleteComponentAction(section, page, component)
+            grid.onDeleteComponentsRequest = { components ->
+                // Create a multiple action to delete all the components at once
+                val deleteActions = components.map { DeleteComponentAction(section, page, it) }
+                val action = MultipleSectionRelatedAction(deleteActions)
                 actionReceiver.notifyAction(action)
-            }
-
-            grid.onNewComponentRequest = {component ->
-                page.components?.add(component)
-                onSectionModified?.invoke(section)
             }
 
             // Create the tab and add the page grid

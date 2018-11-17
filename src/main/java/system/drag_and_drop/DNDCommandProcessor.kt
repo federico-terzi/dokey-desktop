@@ -32,7 +32,7 @@ class DNDCommandProcessor(val commandManager: CommandManager) {
     /**
      * Obtain ( or create ) a command from the given dragboard data
      */
-    fun resolve(dragboard: Dragboard, callback: ((Command?) -> Unit)) : Unit {
+    fun resolve(dragboard: Dragboard, callback: ((Command?) -> Unit)) {
         if (dragboard.hasString() && dragboard.string.startsWith(dragAndDropPrefix)) {
             // Extract the type and the payload from the dragboard data
             // The data is in this form: DOKEY_PAYLOAD:type:payload

@@ -3,10 +3,12 @@ package app.control_panel.layout_editor_tab.grid
 import app.control_panel.dialog.command_edit_dialog.CommandEditDialog
 import app.control_panel.layout_editor_tab.action.ActionManager
 import app.control_panel.layout_editor_tab.action.ActionReceiver
+import app.control_panel.layout_editor_tab.action.component.MoveComponentAction
 import app.control_panel.layout_editor_tab.grid.button.ComponentButton
 import app.control_panel.layout_editor_tab.grid.button.DragButton
 import app.control_panel.layout_editor_tab.grid.button.EmptyButton
 import app.control_panel.layout_editor_tab.grid.button.SelectableButton
+import app.control_panel.layout_editor_tab.grid.model.ComponentReference
 import app.control_panel.layout_editor_tab.model.ScreenOrientation
 import app.ui.stage.BlurrableStage
 import javafx.geometry.HPos
@@ -19,6 +21,7 @@ import javafx.scene.layout.RowConstraints
 import javafx.stage.Stage
 import model.component.CommandResolver
 import model.component.Component
+import model.component.RuntimeComponent
 import model.parser.component.ComponentParser
 import system.applications.ApplicationManager
 import system.commands.CommandManager
@@ -28,6 +31,7 @@ import java.util.*
 
 
 class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array<Component?>>,
+                    val pageIndex: Int, val sectionId: String,
                     val screenOrientation: ScreenOrientation,
                     val commandManager: CommandManager, val applicationManager: ApplicationManager,
                     override val dndCommandProcessor: DNDCommandProcessor,
@@ -36,8 +40,17 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
                     override val commandResolver: CommandResolver,
                     override val actionReceiver: ActionReceiver) : GridPane(), GridContext {
 
-    var onNewComponentRequest: ((Component) -> Unit)? = null
-    var onDeleteComponentRequest : ((Component) -> Unit)? = null
+    var onAddComponentsRequest: ((List<Component>) -> Unit)? = null
+
+    // Listener used to delete a list of components
+    var onDeleteComponentsRequest : ((List<Component>) -> Unit)? = null
+
+    // Listener used to update the position of a component list. The second Pair list represents the new coordinates
+    // for each component
+    var onMoveComponentsRequest: ((List<Component>, List<Pair<Int, Int>>) -> Unit)? = null
+
+    // Listener used to swap the position of every component in the two lists
+    var onSwapComponentsRequest: ((List<Component>, List<Component>) -> Unit)? = null
 
     /**
      * @return the row count based on the current screen orientation.
@@ -58,6 +71,13 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
         } else {
             componentMatrix.size
         }
+
+    // The list of selected components in the current grid
+    private val selectedComponents : List<Component>
+        get() = this.children.filter { it is ComponentButton && it.selected }.map {
+                    it as ComponentButton
+                    it.associatedComponent
+                }
 
     init {
         render()
@@ -241,20 +261,26 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
             }
 
             override fun onComponentDelete() {
-                onDeleteComponentRequest?.invoke(component)
+                onDeleteComponentsRequest?.invoke(listOf(component))
             }
 
             // When the component is dropped away, request the
             // deletion from the grid
             override fun onComponentDroppedAway() {
-                deleteComponent(component!!, true)
-                render()
+//                deleteComponent(component!!, true)
+//                render()
+                // TODO
             }
 
         }
 
         current.onDoubleClicked = {
             current.onComponentActionListener?.onComponentEdit()
+        }
+
+        current.requestSelectedComponents = {
+            val reference = ComponentReference(selectedComponents, pageIndex, sectionId)
+            reference
         }
 
         addButtonToGridPane(col, row, current)
@@ -272,43 +298,19 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
      */
     private fun addButtonToGridPane(col: Int, row: Int, button: SelectableButton) {
         // Set up the drag and drop
-        button.onComponentDropped = {newComponent ->
-            var toBeSwapped : Optional<Component> = Optional.empty()
+        button.onComponentDropped = { componentReference ->
+            true
+        }
 
-            // The component already present in the newComponent requested position. If null, the position is empty.
-            val alreadyPresentComponent = componentMatrix[col][row]
-
-            if (alreadyPresentComponent != null && !newComponent.commandId!!.equals(alreadyPresentComponent!!.commandId!!)) {
-                toBeSwapped = Optional.of(alreadyPresentComponent)
-            }
-
-            // If a component is present where the drop is going, swap them
-            if (toBeSwapped.isPresent()) {
-                val oldComponent = toBeSwapped.get()
-
-                // Delete the component
-                deleteComponent(oldComponent, true)
-
-                // Replace the oldComponent position with the new one
-                oldComponent.x = newComponent.x
-                oldComponent.y = newComponent.y
-
-                componentMatrix[oldComponent.x!!][oldComponent.y!!] = oldComponent
-
-                // Notify the listener
-                onNewComponentRequest?.invoke(oldComponent)
-            }
-
-            // Change the component coordinates
-            newComponent.y = row
-            newComponent.x = col
-
-            componentMatrix[col][row] = newComponent
+        button.onExternalResourceDropped = { newCommand ->
+            // Create a component with the given command
+            val component = RuntimeComponent(commandResolver)
+            component.x = col
+            component.y = row
+            component.commandId = newCommand.id
 
             // Notify the listener
-            onNewComponentRequest?.invoke(newComponent)
-
-            render()
+            onAddComponentsRequest?.invoke(listOf(component))
 
             true
         }
@@ -328,25 +330,6 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
         GridPane.setHalignment(button, HPos.CENTER)
     }
 
-    /**
-     * Delete the given component from the componentMatrix, and send a notification to the
-     * associated listener.
-     *
-     * @param component      the component to delete.
-     * @param notifyListener if true, the listener will be notified of the deletion.
-     */
-    private fun deleteComponent(component: Component, notifyListener: Boolean) {
-        // Delete the component from the matrix, making sure that the component is the one requested
-        if (componentMatrix[component.x!!][component.y!!] == component) {
-            componentMatrix[component.x!!][component.y!!] = null
-        }
-
-        // Notify the listener
-        if (notifyListener) {
-            onDeleteComponentRequest?.invoke(component)
-        }
-    }
-
     private fun unselectAllButtons() {
         this.children.filter { it is SelectableButton }.forEach {
             it as SelectableButton
@@ -355,20 +338,15 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
     }
 
     fun deleteSelected() {
-        // Find all the selected buttons and delete the corresponding component for each of them
-        this.children.filter { it is ComponentButton && it.selected }.forEach {
-            it as ComponentButton
-            deleteComponent(it.associatedComponent, true)
-        }
-
-        render()
+        onDeleteComponentsRequest?.invoke(selectedComponents)
     }
 
     fun copySelected() {
         // Find all the selected buttons and delete the corresponding component for each of them
-        this.children.filter { it is ComponentButton && it.selected }.forEach {
-            it as ComponentButton
-            println(it.associatedComponent)
+        val components = selectedComponents
+        // TODO
+        components.forEach {
+            println(it)
         }
     }
 

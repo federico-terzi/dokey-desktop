@@ -6,14 +6,19 @@ import model.component.Component
 import model.page.Page
 import model.section.Section
 
-class DeleteComponentAction(val section: Section, val page: Page, val component: Component) : Action, SectionRelatedAction {
+class MoveComponentAction(val section: Section, val page: Page, val component: Component, val newX: Int, val newY: Int) : Action, SectionRelatedAction {
     override val relatedSections: List<Section> = listOf(section)
 
+    private val initialX = component.x
+    private val initialY = component.y
+
     override fun execute() {
-        page.components?.remove(component)
+        component.x = newX
+        component.y = newY
     }
 
     override fun unExecute() {
-        page.components?.add(component)
+        component.x = initialX
+        component.y = initialY
     }
 }

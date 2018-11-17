@@ -1,6 +1,7 @@
 package app.control_panel.layout_editor_tab.grid.button
 
 import app.control_panel.layout_editor_tab.grid.GridContext
+import app.control_panel.layout_editor_tab.grid.model.ComponentReference
 import javafx.animation.RotateTransition
 import javafx.application.Platform
 import javafx.event.EventHandler
@@ -9,12 +10,13 @@ import javafx.scene.control.Button
 import javafx.scene.input.TransferMode
 import javafx.util.Duration
 import json.JSONObject
+import model.command.Command
 import model.component.Component
 import model.component.RuntimeComponent
 
 open class DragButton(val context : GridContext) : Button() {
-
-    var onComponentDropped : ((Component) -> Boolean)? = null
+    var onComponentDropped : ((ComponentReference) -> Boolean)? = null
+    var onExternalResourceDropped: ((Command) -> Boolean)? = null
 
     var gridX : Int = -1
     var gridY : Int = -1
@@ -83,29 +85,20 @@ open class DragButton(val context : GridContext) : Button() {
                     // Get the drop json
                     val json = event.dragboard.string.substring(COMPONENT_DRAG_PREFIX.length)  // Remove the first COMPONENT_DRAG_PREFIX string
 
+                    // Get the component reference
+                    val componentReference = ComponentReference.fromJson(context.componentParser, JSONObject(json))
+
                     // Notify the listener
-                    onComponentDropped?.let {
-                        // Create the component
-                        val component = context.componentParser.fromJSON(JSONObject(json))
-                        success = it(component)
-                    }
+                    success = onComponentDropped?.invoke(componentReference) ?: false
+
                 }else if(context.dndCommandProcessor.isCompatible(event.dragboard)) {  // EXTERNAL ELEMENT
                     loading = true
 
                     // Try to resolve the correct command basend on the clipboard data
-                    val command = context.dndCommandProcessor.resolve(event.dragboard) { command ->
+                    context.dndCommandProcessor.resolve(event.dragboard) { command ->
                         if (command != null) {
                             Platform.runLater {
-                                // Create a component with the given command
-                                val component = RuntimeComponent(context.commandResolver)
-                                component.x = gridX
-                                component.y = gridY
-                                component.commandId = command.id
-
-                                // Notify the listener
-                                onComponentDropped?.let {
-                                    success = it(component)
-                                }
+                                onExternalResourceDropped?.invoke(command)
                             }
                         }
                     }

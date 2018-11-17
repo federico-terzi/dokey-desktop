@@ -10,7 +10,7 @@ import app.control_panel.dialog.app_select_dialog.ApplicationSelectDialog
 import app.control_panel.layout_editor_tab.action.ActionManager
 import app.control_panel.layout_editor_tab.action.ActionReceiver
 import app.control_panel.layout_editor_tab.action.model.Action
-import app.control_panel.layout_editor_tab.action.model.SectionRelated
+import app.control_panel.layout_editor_tab.action.model.SectionRelatedAction
 import io.reactivex.subjects.PublishSubject
 import javafx.animation.*
 import javafx.scene.CacheHint
@@ -166,9 +166,11 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
     override fun notifyAction(action: Action) {
         actionManager.execute(action)
 
-        // If the action is related to a section, notify the section change
-        if (action is SectionRelated) {
-            onSectionModified(action.section)
+        // If the action is section related, notify the sections change
+        if (action is SectionRelatedAction) {
+            action.relatedSections.forEach { section ->
+                onSectionModified(section)
+            }
         }
     }
 

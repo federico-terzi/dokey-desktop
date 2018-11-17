@@ -3,9 +3,7 @@ package app.control_panel.layout_editor_tab.action.model
 /**
  * Group multiple actions together
  */
-class MultipleAction(vararg actions: Action) : Action {
-    private val actions : List<Action> = actions.toList()
-
+open class MultipleAction(val actions: List<Action>) : Action {
     override fun execute() {
         this.actions.forEach { action ->
             action.execute()

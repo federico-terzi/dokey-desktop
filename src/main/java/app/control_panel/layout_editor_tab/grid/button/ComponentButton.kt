@@ -2,6 +2,7 @@ package app.control_panel.layout_editor_tab.grid.button
 
 import app.control_panel.layout_editor_tab.grid.GridContext
 import app.control_panel.layout_editor_tab.grid.exception.CommandNotFoundException
+import app.control_panel.layout_editor_tab.grid.model.ComponentReference
 import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.scene.CacheHint
@@ -16,14 +17,20 @@ import javafx.scene.image.ImageView
 import javafx.scene.input.ClipboardContent
 import javafx.scene.input.TransferMode
 import javafx.scene.paint.Color
+import json.JSONObject
 import model.command.Command
 import model.component.Component
+import model.page.Page
+import model.section.Section
 import system.image.ImageResolver
 import utils.OSValidator
 import java.util.*
 
 
 class ComponentButton(context : GridContext, val associatedComponent : Component) : SelectableButton(context) {
+    // Used to request to the component grid which components are selected
+    var requestSelectedComponents: (() -> ComponentReference)? = null
+
     var onComponentActionListener: OnComponentActionListener? = null
 
     init {
@@ -68,7 +75,11 @@ class ComponentButton(context : GridContext, val associatedComponent : Component
 
         // Set the drag and drop
         onDragDetected = EventHandler { event ->
-            if (associatedComponent != null) {
+            // Get the selected components
+            val componentReference = requestSelectedComponents?.invoke()
+
+            if (componentReference != null) {
+                // TODO: change image drag when there are multiple elements
                 val db = startDragAndDrop(TransferMode.MOVE)
 
                 val sp = SnapshotParameters()
@@ -86,11 +97,12 @@ class ComponentButton(context : GridContext, val associatedComponent : Component
                 db.setDragView(snapshot, offsetX, offsetY)
 
                 val content = ClipboardContent()
-                content.putString(DragButton.Companion.COMPONENT_DRAG_PREFIX + associatedComponent.json().toString())
+                val payload = componentReference.json()
+                content.putString(DragButton.Companion.COMPONENT_DRAG_PREFIX + payload.toString())
                 db.setContent(content)
-
-                event.consume()
             }
+
+            event.consume()
         }
         onDragDone = EventHandler { event ->
             if (event.transferMode == TransferMode.MOVE) {
