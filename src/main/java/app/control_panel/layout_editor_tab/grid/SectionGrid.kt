@@ -1,12 +1,12 @@
 package app.control_panel.layout_editor_tab.grid
 
+import app.control_panel.layout_editor_tab.CopyManager
 import app.control_panel.layout_editor_tab.action.ActionReceiver
 import app.control_panel.layout_editor_tab.action.component.AddComponentAction
 import app.control_panel.layout_editor_tab.action.component.DeleteComponentAction
 import app.control_panel.layout_editor_tab.action.component.MoveComponentAction
 import app.control_panel.layout_editor_tab.action.component.MultipleSectionRelatedAction
 import app.control_panel.layout_editor_tab.action.model.Action
-import app.control_panel.layout_editor_tab.model.ScreenOrientation
 import app.ui.stage.BlurrableStage
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
@@ -35,7 +35,8 @@ class SectionGrid(val parent: BlurrableStage, val section: Section,
                   val componentParser: ComponentParser, val commandManager: CommandManager,
                   val applicationManager: ApplicationManager,
                   val dndCommandProcessor: DNDCommandProcessor,
-                  val actionReceiver: ActionReceiver, val sectionManager: SectionManager)
+                  val actionReceiver: ActionReceiver, val sectionManager: SectionManager,
+                  val copyManager: CopyManager)
     : VBox(), ActionReceiver {
 
     var onSectionModified : ((Section) -> Unit)? = null
@@ -46,6 +47,8 @@ class SectionGrid(val parent: BlurrableStage, val section: Section,
 
     // This map will hold the component grid for each tab.
     private var componentGrids = HashMap<Tab, ComponentGrid>()
+
+    private var tabPane : TabPane = TabPane()
 
     init {
         invalidate()
@@ -76,7 +79,7 @@ class SectionGrid(val parent: BlurrableStage, val section: Section,
      */
     private fun createView(): VBox {
         // Create the tabpane for the pages and set it up
-        val tabPane = TabPane()
+        tabPane = TabPane()
         tabPane.styleClass.add("section-tab-pane")
 
         componentGrids = HashMap<Tab, ComponentGrid>()
@@ -87,7 +90,11 @@ class SectionGrid(val parent: BlurrableStage, val section: Section,
             val grid = ComponentGrid(parent, generateMatrix(page), index, section.id!!,
                     commandManager, applicationManager, dndCommandProcessor,
                     resourceBundle, imageResolver, componentParser, commandManager,
-                    this)
+                    this, copyManager)
+
+            grid.onRefreshRequest = {
+                invalidate()
+            }
 
             grid.onAddComponentsRequest = { components ->
                 // Create a multiple action to add all the components at once
@@ -299,17 +306,24 @@ class SectionGrid(val parent: BlurrableStage, val section: Section,
     val pasteKeystrokeCombination = KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN)
 
     fun onKeyPress(event: KeyEvent) {
-        if (event.code == KeyCode.BACK_SPACE || event.code == KeyCode.DELETE) {
-            componentGrids.values.forEach { it.deleteSelected() }
-        }else if (copyKeystrokeCombination.match(event)) {
-            componentGrids.values.forEach { it.copySelected() }
-        }else if (pasteKeystrokeCombination.match(event)) {
+        // Get the currently selected grid
+        val currentGrid = getCurrentComponentGrid()
 
+        if (event.code == KeyCode.BACK_SPACE || event.code == KeyCode.DELETE) {
+            currentGrid?.deleteSelected()
+        }else if (copyKeystrokeCombination.match(event)) {
+            currentGrid?.copySelected()
+        }else if (pasteKeystrokeCombination.match(event)) {
+            currentGrid?.pasteRequest()
         }
     }
 
     override fun notifyAction(action: Action) {
         actionReceiver.notifyAction(action)
+    }
+
+    private fun getCurrentComponentGrid() : ComponentGrid? {
+        return tabPane.tabs[tabPane.selectionModel.selectedIndex].content as? ComponentGrid
     }
 
     companion object {

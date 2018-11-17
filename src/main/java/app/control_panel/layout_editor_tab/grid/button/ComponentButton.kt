@@ -29,6 +29,9 @@ class ComponentButton(context : GridContext, val associatedComponent : Component
     var onComponentEditRequest: (() -> Unit)? = null
     var onComponentDeleteRequest: (() -> Unit)? = null
 
+    // Do not accept external command overriding without asking
+    override var acceptExternalCommands: Boolean = false
+
     init {
         // Get the associated command
         val command : Command? = context.commandResolver.getCommand(associatedComponent.commandId!!)

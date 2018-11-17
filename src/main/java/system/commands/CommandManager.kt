@@ -12,6 +12,8 @@ import system.commands.general.SystemCommand
 import system.commands.model.CommandWrapper
 import system.storage.StorageManager
 import java.io.*
+import java.util.*
+import java.util.concurrent.ThreadLocalRandom
 import java.util.logging.Logger
 
 
@@ -32,6 +34,8 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
     // of a command to a list of possible instances.
     // This is useful to avoid adding commands equal in content.
     private val conflictMap = mutableMapOf<Int, MutableList<Command>>()
+
+    private val random = Random()
 
     /**
      * Load all the commands.
@@ -195,6 +199,18 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
         command as CommandWrapper
         command.deleted = false
         return saveCommand(command)
+    }
+
+    @Synchronized
+    fun duplicateCommand(command: Command) : Command {
+        val newCommand = commandParser.fromJSON(command.json())
+        newCommand.id = ++maxId
+        newCommand.title = "${command.title} Copy ${random.nextInt()}"
+
+        newCommand as CommandWrapper
+        newCommand.locked = false
+
+        return addCommand(newCommand)
     }
 
     /**

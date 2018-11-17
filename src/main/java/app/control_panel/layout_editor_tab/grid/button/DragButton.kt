@@ -61,6 +61,8 @@ open class DragButton(val context : GridContext) : Button() {
             _loading = value
         }
 
+    open var acceptExternalCommands = true
+
     init {
         styleClass.add("drag-button")
 
@@ -85,7 +87,10 @@ open class DragButton(val context : GridContext) : Button() {
 
                     onComponentsDragEntered?.invoke(componentReference)
                 }else if (context.dndCommandProcessor.isCompatible(event.dragboard)) {  // EXTERNAL CONTENT
-                    dragDestination = true
+                    if (acceptExternalCommands)
+                        dragDestination = true
+                    else
+                        dragError = true
                 }
             }
 
@@ -97,6 +102,7 @@ open class DragButton(val context : GridContext) : Button() {
                 onComponentsDragExited?.invoke()
             }else if (context.dndCommandProcessor.isCompatible(event.dragboard)) {  // EXTERNAL CONTENT
                 dragDestination = false
+                dragError = false
             }
 
             event.consume()
@@ -117,13 +123,15 @@ open class DragButton(val context : GridContext) : Button() {
                     success = onComponentsDropped?.invoke(componentReference) ?: false
 
                 }else if(context.dndCommandProcessor.isCompatible(event.dragboard)) {  // EXTERNAL ELEMENT
-                    loading = true
+                    if (acceptExternalCommands) {
+                        loading = true
 
-                    // Try to resolve the correct command basend on the clipboard data
-                    context.dndCommandProcessor.resolve(event.dragboard) { command ->
-                        if (command != null) {
-                            Platform.runLater {
-                                onExternalResourceDropped?.invoke(command)
+                        // Try to resolve the correct command basend on the clipboard data
+                        context.dndCommandProcessor.resolve(event.dragboard) { command ->
+                            if (command != null) {
+                                Platform.runLater {
+                                    onExternalResourceDropped?.invoke(command)
+                                }
                             }
                         }
                     }

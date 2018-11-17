@@ -1,12 +1,14 @@
 package app.control_panel.layout_editor_tab.grid
 
 import app.control_panel.dialog.command_edit_dialog.CommandEditDialog
+import app.control_panel.layout_editor_tab.CopyManager
 import app.control_panel.layout_editor_tab.action.ActionReceiver
 import app.control_panel.layout_editor_tab.grid.button.ComponentButton
 import app.control_panel.layout_editor_tab.grid.button.DragButton
 import app.control_panel.layout_editor_tab.grid.button.EmptyButton
 import app.control_panel.layout_editor_tab.grid.button.SelectableButton
 import app.control_panel.layout_editor_tab.grid.dnd.ComponentDragReference
+import app.control_panel.layout_editor_tab.grid.exception.NotEnoughSpaceException
 import app.control_panel.layout_editor_tab.grid.exception.OutOfMatrixBoundsException
 import app.ui.stage.BlurrableStage
 import javafx.geometry.HPos
@@ -31,7 +33,8 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
                     override val resourceBundle: ResourceBundle,
                     override val imageResolver: ImageResolver, override val componentParser: ComponentParser,
                     override val commandResolver: CommandResolver,
-                    override val actionReceiver: ActionReceiver) : StackPane(), GridContext {
+                    override val actionReceiver: ActionReceiver,
+                    val copyManager: CopyManager) : StackPane(), GridContext {
 
     var onAddComponentsRequest: ((List<Component>) -> Unit)? = null
 
@@ -44,6 +47,9 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
 
     // Listener used to swap the position of every component in the two lists
     var onSwapComponentsRequest: ((ComponentDragReference, List<Component>) -> Unit)? = null
+
+    // Request to refresh the current section
+    var onRefreshRequest : (() -> Unit)? = null
 
     private val rowCount: Int = componentMatrix.size
     private val colCount: Int = componentMatrix[0].size
@@ -249,7 +255,7 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
                     val dialog = CommandEditDialog(parent, imageResolver, applicationManager, commandManager)
                     dialog.loadCommand(command)
                     dialog.onCommandSaved = {
-                        render()
+                        onRefreshRequest?.invoke()
                     }
                     dialog.showWithAnimation()
                 }
@@ -519,11 +525,62 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
     }
 
     fun copySelected() {
-        // Find all the selected buttons and delete the corresponding component for each of them
-        val components = selectedComponents
-        // TODO
-        components.forEach {
-            println(it)
+        // Put all the selected components in the clipboard
+        copyManager.clipboardComponents = selectedComponents
+    }
+
+    fun pasteRequest() {
+        if (!copyManager.hasElements()) {
+            return
         }
+
+        // Get the number of elements to copy
+        val componentCounts = copyManager.clipboardComponents.size
+
+        // Get the selected empty buttons, and extract the coordinates
+        val selectedEmptyTargets = grid.children.filter { it is EmptyButton && it.selected }.map { it as DragButton ; Pair(it.gridX, it.gridY)}
+
+        // Get all empty buttons targets that are not in the selected target list
+        val emptyTargets = grid.children.filter { it is EmptyButton }
+                .map { it as DragButton ; Pair(it.gridX, it.gridY)}
+                .minus(selectedEmptyTargets)
+                .sortedBy { it.second * 10 + it.first }
+
+        var finalTargets : List<Pair<Int, Int>>
+
+        if (selectedEmptyTargets.size < componentCounts) {
+            val tempTargets = mutableListOf<Pair<Int, Int>>()
+            tempTargets.addAll(selectedEmptyTargets)
+            tempTargets.addAll(emptyTargets.take(componentCounts - selectedEmptyTargets.size))
+
+            // Make sure there are enough targets
+            if (tempTargets.size < componentCounts) {
+                throw NotEnoughSpaceException()
+            }
+
+            finalTargets = tempTargets
+        }else{
+            finalTargets = selectedEmptyTargets.take(componentCounts)
+        }
+
+        // Duplicate the components
+        val newComponents = copyManager.clipboardComponents.mapIndexed { index, component ->
+            val command = commandManager.getCommand(component.commandId!!)
+            if (command != null) {
+                // Duplicate the associated command
+                val newCommand = commandManager.duplicateCommand(command)
+
+                val newComponent = RuntimeComponent(commandResolver)
+                newComponent.commandId = newCommand.id
+                newComponent.x = finalTargets[index].first
+                newComponent.y = finalTargets[index].second
+                newComponent
+            }else{
+            null
+            }
+        }.filterNotNull()
+
+        // Add all the new components
+        onAddComponentsRequest?.invoke(newComponents)
     }
 }

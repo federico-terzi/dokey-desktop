@@ -59,6 +59,9 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
     // Action manager used to implement the Undo/Redo functionality
     private val actionManager = ActionManager()
 
+    // Used to manage Copy/Paste operations of Components
+    private val copyManager = CopyManager()
+
     init {
         children.add(layoutToolbar)
 
@@ -215,7 +218,8 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
 
         // Create the section grid
         sectionGrid = SectionGrid(controlPanelStage, section, imageResolver, resourceBundle, componentParser,
-                commandManager, applicationManager, dndCommandProcessor, this, sectionManager)
+                commandManager, applicationManager, dndCommandProcessor, this, sectionManager,
+                copyManager)
         sectionGrid!!.onSectionModified = { section ->
             saveSectionSubject.onNext(section)
         }
