@@ -13,6 +13,9 @@ import json.JSONObject
 import model.command.Command
 
 open class DragButton(val context : GridContext) : Button() {
+    var onComponentsDragEntered : ((ComponentDragReference) -> Unit)? = null
+    var onComponentsDragExited : (() -> Unit)? = null
+
     var onComponentsDropped : ((ComponentDragReference) -> Boolean)? = null
     var onExternalResourceDropped: ((Command) -> Boolean)? = null
 
@@ -29,6 +32,18 @@ open class DragButton(val context : GridContext) : Button() {
                 styleClass.remove("drag-entered")
             }
             _dragDestination = value
+        }
+
+    private var _dragError = false
+    var dragError : Boolean
+        get() = _dragError
+        set(value) {
+            if (value) {
+                styleClass.add("drag-error")
+            } else {
+                styleClass.remove("drag-error")
+            }
+            _dragError = value
         }
 
     private var _loading : Boolean = false
@@ -61,7 +76,15 @@ open class DragButton(val context : GridContext) : Button() {
 
         onDragEntered = EventHandler { event ->
             if (event.gestureSource !== this@DragButton) {
-                if ((event.dragboard.hasString() && event.dragboard.string.startsWith(COMPONENT_DRAG_PREFIX)) || context.dndCommandProcessor.isCompatible(event.dragboard)) {
+                if (event.dragboard.hasString() && event.dragboard.string.startsWith(COMPONENT_DRAG_PREFIX)) {  // COMPONENT MOVE
+                    // Get the drop json
+                    val json = event.dragboard.string.substring(COMPONENT_DRAG_PREFIX.length)  // Remove the first COMPONENT_DRAG_PREFIX string
+
+                    // Get the component reference
+                    val componentReference = ComponentDragReference.fromJson(context.componentParser, JSONObject(json))
+
+                    onComponentsDragEntered?.invoke(componentReference)
+                }else if (context.dndCommandProcessor.isCompatible(event.dragboard)) {  // EXTERNAL CONTENT
                     dragDestination = true
                 }
             }
@@ -70,7 +93,11 @@ open class DragButton(val context : GridContext) : Button() {
         }
 
         onDragExited = EventHandler { event ->
-            dragDestination = false
+            if (event.dragboard.hasString() && event.dragboard.string.startsWith(COMPONENT_DRAG_PREFIX)) {  // COMPONENT MOVE
+                onComponentsDragExited?.invoke()
+            }else if (context.dndCommandProcessor.isCompatible(event.dragboard)) {  // EXTERNAL CONTENT
+                dragDestination = false
+            }
 
             event.consume()
         }

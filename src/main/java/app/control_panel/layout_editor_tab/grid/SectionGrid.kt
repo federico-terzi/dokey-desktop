@@ -84,7 +84,7 @@ class SectionGrid(val parent: BlurrableStage, val section: Section,
         // Add the pages
         section.pages?.forEachIndexed { index, page ->
             // Create the page grid
-            val grid = ComponentGrid(parent, generateMatrix(page), index, section.id!!, ScreenOrientation.PORTRAIT,
+            val grid = ComponentGrid(parent, generateMatrix(page), index, section.id!!,
                     commandManager, applicationManager, dndCommandProcessor,
                     resourceBundle, imageResolver, componentParser, commandManager,
                     this)

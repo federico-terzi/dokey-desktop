@@ -44,6 +44,10 @@
     -fx-text-fill: white;
 }
 
+.drag-error{
+    -fx-background-color: -red-gradient;
+}
+
 .empty-btn.drag-entered  {
     -fx-border-color: white;
     -fx-background-insets: 4px;

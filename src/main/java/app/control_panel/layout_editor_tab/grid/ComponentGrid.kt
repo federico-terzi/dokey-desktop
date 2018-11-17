@@ -3,6 +3,7 @@ package app.control_panel.layout_editor_tab.grid
 import app.control_panel.dialog.command_edit_dialog.CommandEditDialog
 import app.control_panel.layout_editor_tab.action.ActionReceiver
 import app.control_panel.layout_editor_tab.grid.button.ComponentButton
+import app.control_panel.layout_editor_tab.grid.button.DragButton
 import app.control_panel.layout_editor_tab.grid.button.EmptyButton
 import app.control_panel.layout_editor_tab.grid.button.SelectableButton
 import app.control_panel.layout_editor_tab.grid.dnd.ComponentDragReference
@@ -30,7 +31,6 @@ import java.util.*
 
 class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array<Component?>>,
                     val pageIndex: Int, val sectionId: String,
-                    val screenOrientation: ScreenOrientation,
                     val commandManager: CommandManager, val applicationManager: ApplicationManager,
                     override val dndCommandProcessor: DNDCommandProcessor,
                     override val resourceBundle: ResourceBundle,
@@ -59,6 +59,9 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
                     it as ComponentButton
                     it.associatedComponent
                 }
+
+    // Indicate whether the user is drag and dropping components or not ( For example when moving )
+    private var isDragAndDropping = false
 
     init {
         render()
@@ -190,9 +193,6 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
         // Get the current button
         val current = ComponentButton(this, component)
 
-        current.gridX = col
-        current.gridY = row
-
         current.onComponentActionListener = object : ComponentButton.OnComponentActionListener {
             override fun onComponentEdit() {
                 if (component.commandId == null) {
@@ -259,7 +259,12 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
                 // Get the conflicting components
                 val conflicts = getMaskConflicts(targetCoordinates)
 
-                if (conflicts.isEmpty()) {  // MOVE TO EMPTY SPACE
+                if (conflicts.size == (componentReference.components.intersect(conflicts)).size) {  // MOVE
+                    // Explanation:
+                    // The user is moving the elements if the number of conflicts is equal to the size of the
+                    // intersection between the components and the conflicts.
+                    // Think about dragging two horizontal elements right by one position, they are overlapping.
+
                     // Notify the listener
                     onMoveComponentsRequest?.invoke(componentReference, targetCoordinates)
 
@@ -275,6 +280,16 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
             }catch (e: OutOfMatrixBoundsException) {
                 return false
             }
+        }
+
+        button.onComponentsDragEntered = {
+            isDragAndDropping = true
+            renderDragAndDropDestinations(it, col, row)
+        }
+
+        button.onComponentsDragExited = {
+            isDragAndDropping = false
+            resetDragAndDropDestinations()
         }
 
         button.onExternalResourceDropped = { newCommand ->
@@ -293,6 +308,9 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
         button.onDeselectAllRequest = {
             unselectAllButtons()
         }
+
+        button.gridX = col
+        button.gridY = row
 
         // Add the component to the grid
         this.add(button, col, row, 1, 1)
@@ -359,6 +377,52 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
         }.filterNotNull()
 
         return overlapping
+    }
+
+    private fun resetDragAndDropDestinations() {
+        // Reset all the drag destinations
+        this.children.filter { it is DragButton }.forEach {
+            it as DragButton
+            it.dragDestination = false
+            it.dragError = false
+        }
+    }
+
+    private fun renderDragAndDropDestinations(componentReference: ComponentDragReference, x: Int, y: Int) {
+        // Find all the cells that will be marked as targets
+        val mask = generateSelectionMask(componentReference.components, componentReference.dragX, componentReference.dragY )
+
+        var errorTargets = listOf<Pair<Int, Int>>()
+
+        try {
+            // Get the target positions, and check if the bounds are exceeded
+            val targetCoordinates = generateTargetCoordinates(mask, x, y)
+
+            // Get the conflicting components
+            val conflicts = getMaskConflicts(targetCoordinates)
+
+            if (conflicts.size == (componentReference.components.intersect(conflicts)).size ||
+                    conflicts.size == componentReference.components.size) {  // MOVE OR SWAP
+                this.children.filter { it is DragButton }.forEach {
+                    it as DragButton
+                    if (Pair(it.gridX, it.gridY) in targetCoordinates) {
+                        it.dragDestination = true
+                    }
+                }
+                return
+            }
+
+            errorTargets = targetCoordinates
+        }catch (e: OutOfMatrixBoundsException) {
+            errorTargets = listOf(Pair(x, y))
+        }
+
+        this.children.filter { it is DragButton }.forEach {
+            it as DragButton
+            if (Pair(it.gridX, it.gridY) in errorTargets) {
+                it.dragError = true
+            }
+        }
     }
 
     private fun unselectAllButtons() {
