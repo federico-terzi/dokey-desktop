@@ -12,3 +12,11 @@
     -fx-background-color: transparent;
     -fx-padding: 0;
 }
+
+.selection-box {
+    -fx-background-color: transparent;
+    -fx-border-color: -green-gradient;
+    -fx-border-radius: 6px;
+    -fx-border-width: 2px;
+    -fx-border-style: segments(5, 5) line-cap round;
+}

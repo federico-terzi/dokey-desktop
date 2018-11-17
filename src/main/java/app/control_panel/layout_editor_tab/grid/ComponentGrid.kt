@@ -8,16 +8,11 @@ import app.control_panel.layout_editor_tab.grid.button.EmptyButton
 import app.control_panel.layout_editor_tab.grid.button.SelectableButton
 import app.control_panel.layout_editor_tab.grid.dnd.ComponentDragReference
 import app.control_panel.layout_editor_tab.grid.exception.OutOfMatrixBoundsException
-import app.control_panel.layout_editor_tab.model.ScreenOrientation
 import app.ui.stage.BlurrableStage
 import javafx.geometry.HPos
-import javafx.scene.control.Alert
-import javafx.scene.control.ButtonType
-import javafx.scene.layout.ColumnConstraints
-import javafx.scene.layout.GridPane
-import javafx.scene.layout.Priority
-import javafx.scene.layout.RowConstraints
-import javafx.stage.Stage
+import javafx.geometry.Pos
+import javafx.scene.input.MouseEvent
+import javafx.scene.layout.*
 import model.component.CommandResolver
 import model.component.Component
 import model.component.RuntimeComponent
@@ -36,7 +31,7 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
                     override val resourceBundle: ResourceBundle,
                     override val imageResolver: ImageResolver, override val componentParser: ComponentParser,
                     override val commandResolver: CommandResolver,
-                    override val actionReceiver: ActionReceiver) : GridPane(), GridContext {
+                    override val actionReceiver: ActionReceiver) : StackPane(), GridContext {
 
     var onAddComponentsRequest: ((List<Component>) -> Unit)? = null
 
@@ -55,7 +50,7 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
 
     // The list of selected components in the current grid
     private val selectedComponents : List<Component>
-        get() = this.children.filter { it is ComponentButton && it.selected }.map {
+        get() = grid.children.filter { it is ComponentButton && it.selected }.map {
                     it as ComponentButton
                     it.associatedComponent
                 }
@@ -63,19 +58,72 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
     // Indicate whether the user is drag and dropping components or not ( For example when moving )
     private var isDragAndDropping = false
 
+    // This is the grid that will hold all the buttons
+    private val grid = GridPane()
+    private val selectionBox = Pane()
+
+    private var _isBoxSelecting = false
+    private var isBoxSelecting
+        get() = _isBoxSelecting
+        set(value) {
+            if (value) {
+                selectionBox.opacity = 1.0
+            }else{
+                selectionBox.opacity = 0.0
+                selectionBox.maxWidth = 0.0
+                selectionBox.maxHeight = 0.0
+                selectionBox.translateX = 0.0
+                selectionBox.translateY = 0.0
+                startSelectionX = 0.0
+                startSelectionY = 0.0
+            }
+            _isBoxSelecting = value
+        }
+    private var startSelectionX : Double = 0.0
+    private var startSelectionY : Double = 0.0
+    private var endSelectionX : Double = 0.0
+    private var endSelectionY : Double = 0.0
+
     init {
         render()
 
         setupConstraints()
 
-        this.styleClass.add("component-grid")
+        grid.styleClass.add("component-grid")
+        selectionBox.styleClass.add("selection-box")
 
-        // When the background of the grid is clicked, unselect all buttons
-        setOnMouseClicked {
-            unselectAllButtons()
+        isBoxSelecting = false
+
+        this.alignment = Pos.TOP_LEFT
+
+        children.addAll(grid, selectionBox)
+
+        this.setOnMousePressed {
+            // When the background of the grid is clicked, unselect all buttons ( unless shift is pressed )
+            if (!it.isShiftDown) {
+                unselectAllButtons()
+            }
+
+            startSelectionX = it.x
+            startSelectionY = it.y
+            selectionBox.translateX = startSelectionX
+            selectionBox.translateY = startSelectionY
+            isBoxSelecting = true
+        }
+
+        this.setOnMouseDragged {
+            if (isBoxSelecting) {
+                endSelectionX = it.x
+                endSelectionY = it.y
+
+                renderSelectionBox(it)
+            }
+        }
+
+        this.setOnMouseReleased {
+            isBoxSelecting = false
         }
     }
-
     /**
      * Setup the GridPane constraint to have equally large buttons
      */
@@ -86,7 +134,7 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
             rc.isFillHeight = true // ask nodes to fill height for row
             rc.percentHeight = 100.0
             // other settings as needed...
-            rowConstraints.add(rc)
+            grid.rowConstraints.add(rc)
         }
         for (colIndex in 0 until colCount) {
             val cc = ColumnConstraints()
@@ -94,7 +142,7 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
             cc.isFillWidth = true // ask nodes to fill space for column
             cc.percentWidth = 100.0
             // other settings as needed...
-            columnConstraints.add(cc)
+            grid.columnConstraints.add(cc)
         }
     }
 
@@ -302,7 +350,7 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
         button.gridY = row
 
         // Add the component to the grid
-        this.add(button, col, row, 1, 1)
+        grid.add(button, col, row, 1, 1)
         GridPane.setHalignment(button, HPos.CENTER)
     }
 
@@ -370,7 +418,7 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
 
     private fun resetDragAndDropDestinations() {
         // Reset all the drag destinations
-        this.children.filter { it is DragButton }.forEach {
+        grid.children.filter { it is DragButton }.forEach {
             it as DragButton
             it.dragDestination = false
             it.dragError = false
@@ -392,7 +440,7 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
 
             if (conflicts.size == (componentReference.components.intersect(conflicts)).size ||
                     conflicts.size == componentReference.components.size) {  // MOVE OR SWAP
-                this.children.filter { it is DragButton }.forEach {
+                grid.children.filter { it is DragButton }.forEach {
                     it as DragButton
                     if (Pair(it.gridX, it.gridY) in targetCoordinates) {
                         it.dragDestination = true
@@ -406,7 +454,7 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
             errorTargets = listOf(Pair(x, y))
         }
 
-        this.children.filter { it is DragButton }.forEach {
+        grid.children.filter { it is DragButton }.forEach {
             it as DragButton
             if (Pair(it.gridX, it.gridY) in errorTargets) {
                 it.dragError = true
@@ -415,11 +463,56 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
     }
 
     private fun unselectAllButtons() {
-        this.children.filter { it is SelectableButton }.forEach {
+        grid.children.filter { it is SelectableButton }.forEach {
             it as SelectableButton
             it.selected = false
         }
     }
+
+    private fun renderSelectionBox(it: MouseEvent) {
+        // Calculate the bounds
+        val x = if (endSelectionX > startSelectionX) {
+            startSelectionX
+        }else{
+            endSelectionX
+        }
+        val y = if (endSelectionY > startSelectionY) {
+            startSelectionY
+        }else{
+            endSelectionY
+        }
+        val width = if (endSelectionX > startSelectionX) {
+            endSelectionX - startSelectionX
+        }else{
+            startSelectionX - it.x
+        }
+        val height = if (endSelectionY > startSelectionY) {
+            endSelectionY - startSelectionY
+        }else{
+            startSelectionY - it.y
+        }
+
+        // Update the selection box
+        selectionBox.translateX = x
+        selectionBox.translateY = y
+        selectionBox.maxWidth = width
+        selectionBox.maxHeight = height
+
+        // Unless pressing the shift, unselect all the previous buttons
+        if (!it.isShiftDown) {
+            unselectAllButtons()
+        }
+
+        // Calculate the elements that are within the box and select them
+        grid.children.filter { it is ComponentButton &&
+                (it.layoutX + it.width / 2) > x && (it.layoutX + it.width / 2) < (x+width) &&
+                (it.layoutY + it.height / 2) > y && (it.layoutY + it.height / 2) < (y+height)
+        }.forEach {
+            it as ComponentButton
+            it.selected = true
+        }
+    }
+
 
     fun deleteSelected() {
         onDeleteComponentsRequest?.invoke(selectedComponents)

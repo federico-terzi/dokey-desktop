@@ -11,6 +11,11 @@ open class SelectableButton(context : GridContext) : DragButton(context) {
     var selected : Boolean
         get() = _selected
         set(value) {
+            // Avoid double selections
+            if (value == _selected) {
+                return
+            }
+
             if (value) {
                 styleClass.add("selected")
             } else {
