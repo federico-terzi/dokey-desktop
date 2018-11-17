@@ -1,9 +1,10 @@
 package app.control_panel.layout_editor_tab.grid
 
+import app.control_panel.layout_editor_tab.action.ActionReceiver
+import app.control_panel.layout_editor_tab.action.component.DeleteComponentAction
+import app.control_panel.layout_editor_tab.action.model.Action
 import app.control_panel.layout_editor_tab.model.ScreenOrientation
 import app.ui.stage.BlurrableStage
-import javafx.animation.*
-import javafx.scene.CacheHint
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
 import javafx.scene.input.KeyCode
@@ -15,7 +16,6 @@ import model.component.Component
 import model.page.Page
 import model.parser.component.ComponentParser
 import model.section.Section
-import javafx.util.Duration
 import system.commands.CommandManager
 import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
@@ -30,25 +30,12 @@ class SectionGrid(val parent: BlurrableStage, val section: Section,
                   val imageResolver: ImageResolver, val resourceBundle: ResourceBundle,
                   val componentParser: ComponentParser, val commandManager: CommandManager,
                   val applicationManager: ApplicationManager,
-                  val dndCommandProcessor: DNDCommandProcessor)
-    : VBox() {
+                  val dndCommandProcessor: DNDCommandProcessor,
+                  val actionReceiver: ActionReceiver)
+    : VBox(), ActionReceiver {
 
     var onSectionModified : ((Section) -> Unit)? = null
     var onRequestAddPage : ((Section) -> Unit)? = null
-
-    private var _screenOrientation : ScreenOrientation = ScreenOrientation.PORTRAIT
-
-    var screenOrientation : ScreenOrientation
-        get() = _screenOrientation
-        set(value) {
-            if (value == ScreenOrientation.PORTRAIT && _screenOrientation == ScreenOrientation.LANDSCAPE) {
-                _screenOrientation = value
-                rotate(90)
-            } else if (value == ScreenOrientation.LANDSCAPE && _screenOrientation === ScreenOrientation.PORTRAIT) {
-                _screenOrientation = value
-                rotate(-90)
-            }
-        }
 
     private var activePage : Page? = null
     private var activePane : VBox? = null
@@ -93,13 +80,14 @@ class SectionGrid(val parent: BlurrableStage, val section: Section,
         // Add the pages
         for (page in section.pages!!) {
             // Create the page grid
-            val grid = ComponentGrid(parent, generateMatrix(page), screenOrientation,commandManager,
+            val grid = ComponentGrid(parent, generateMatrix(page), ScreenOrientation.PORTRAIT, commandManager,
                     applicationManager, dndCommandProcessor,
-                    resourceBundle, imageResolver, componentParser, commandManager)
+                    resourceBundle, imageResolver, componentParser, commandManager,
+                    this)
 
             grid.onDeleteComponentRequest = { component ->
-                page.components?.remove(component)
-                onSectionModified?.invoke(section)
+                val action = DeleteComponentAction(section, page, component)
+                actionReceiver.notifyAction(action)
             }
 
             grid.onNewComponentRequest = {component ->
@@ -211,41 +199,8 @@ class SectionGrid(val parent: BlurrableStage, val section: Section,
         }
     }
 
-    private fun rotate(angle: Int) {
-        val newView = createView()
-        val oldContent = activePane
-
-        oldContent!!.setCache(true)
-        oldContent!!.setCacheHint(CacheHint.SPEED)
-
-        val rotate = RotateTransition(
-                Duration.seconds(ROTATE_SECTION_DURATION), oldContent)
-
-        rotate.toAngle = angle.toDouble()
-        rotate.setOnFinished { event -> render(newView) }
-
-        val fadeOut = FadeTransition(
-                Duration.seconds(ENTER_SECTION_FADE_DURATION), oldContent)
-        fadeOut.fromValue = 1.0
-        fadeOut.toValue = 0.5
-
-        val fadeIn = FadeTransition(
-                Duration.seconds(ENTER_SECTION_FADE_DURATION), newView)
-        fadeIn.fromValue = 0.5
-        fadeIn.toValue = 1.0
-
-        SequentialTransition(ParallelTransition(rotate, fadeOut), fadeIn).play()
-    }
-
-    fun fadeIn() {
-        activePane!!.setCache(true)
-        activePane!!.setCacheHint(CacheHint.SPEED)
-        val fadeIn = FadeTransition(
-                Duration.seconds(0.4), activePane)
-        fadeIn.fromValue = 0.0
-        fadeIn.toValue = 1.0
-        fadeIn.setOnFinished { event -> activePane!!.setCache(false) }
-        fadeIn.play()
+    override fun notifyAction(action: Action) {
+        actionReceiver.notifyAction(action)
     }
 
     companion object {

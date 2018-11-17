@@ -127,6 +127,11 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
         if (conflicting) {
             // Find and retrieve the conflicting one
             val conflictingCommand = conflictMap[hash]!!.filter { it.contentEquals(command) }.first()
+            command as CommandWrapper
+            // If the command was previously deleted, recover it so it can be used
+            if (command.deleted) {
+                undeleteCommand(command)
+            }
             return conflictingCommand
         }else{
             command as CommandWrapper

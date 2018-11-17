@@ -7,6 +7,10 @@ import app.control_panel.DropDialog
 import app.control_panel.layout_editor_tab.grid.SectionGrid
 import app.control_panel.layout_editor_tab.bar.SectionBar
 import app.control_panel.dialog.app_select_dialog.ApplicationSelectDialog
+import app.control_panel.layout_editor_tab.action.ActionManager
+import app.control_panel.layout_editor_tab.action.ActionReceiver
+import app.control_panel.layout_editor_tab.action.model.Action
+import app.control_panel.layout_editor_tab.action.model.SectionRelated
 import io.reactivex.subjects.PublishSubject
 import javafx.animation.*
 import javafx.scene.CacheHint
@@ -39,7 +43,8 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
                       val componentParser: ComponentParser, val commandManager: CommandManager,
                       val applicationManager: ApplicationManager,
                       val dndCommandProcessor: DNDCommandProcessor, val sectionExporter: SectionExporter,
-                      val sectionImporter: SectionImporter) : ControlPanelTab() {
+                      val sectionImporter: SectionImporter) : ControlPanelTab(), ActionReceiver {
+
     val layoutToolbar = LayoutToolbar(imageResolver, applicationManager)
     val sectionBar: SectionBar
     var sectionGrid: SectionGrid? = null
@@ -50,6 +55,9 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
 
     // Reference to the dialog that opens when dragging a section file inside
     private var dropDialog : DropDialog? = null
+
+    // Action manager used to implement the Undo/Redo functionality
+    private val actionManager = ActionManager()
 
     init {
         children.add(layoutToolbar)
@@ -149,6 +157,19 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
                 }
             }
         }
+
+        actionManager.onSectionModified = { section ->
+            onSectionModified(section)
+        }
+    }
+
+    override fun notifyAction(action: Action) {
+        actionManager.execute(action)
+
+        // If the action is related to a section, notify the section change
+        if (action is SectionRelated) {
+            onSectionModified(action.section)
+        }
     }
 
     override fun onFocus() {
@@ -156,9 +177,29 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
         sectionBar.selectSection(0)
     }
 
+    private fun onSectionModified(section: Section) {
+        // If the current section grid is related to this action, render it again
+        if (sectionGrid?.section == section) {
+            sectionGrid?.invalidate()
+        }
+
+        // Save the section
+        saveSectionSubject.onNext(section)
+    }
+
+    // Key Shortcuts
+    val undoKeystrokeCombination = KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN)
+    val redoKeystrokeCombination = KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN)
+
     override fun onGlobalKeyPress(event: KeyEvent) {
-        // Forword the event to the section grid
-        sectionGrid?.onKeyPress(event)
+        if (undoKeystrokeCombination.match(event)) {
+            actionManager.undo()
+        }else if (redoKeystrokeCombination.match(event)) {
+            actionManager.redo()
+        }else{
+            // Forword the event to the section grid
+            sectionGrid?.onKeyPress(event)
+        }
     }
 
     fun requestSection(targetSectionId: String?) {
@@ -172,7 +213,7 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
 
         // Create the section grid
         sectionGrid = SectionGrid(controlPanelStage, section, imageResolver, resourceBundle, componentParser,
-                commandManager, applicationManager, dndCommandProcessor)
+                commandManager, applicationManager, dndCommandProcessor, this)
         sectionGrid!!.onSectionModified = { section ->
             saveSectionSubject.onNext(section)
         }

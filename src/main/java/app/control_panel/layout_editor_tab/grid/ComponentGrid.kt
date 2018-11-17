@@ -1,6 +1,8 @@
 package app.control_panel.layout_editor_tab.grid
 
 import app.control_panel.dialog.command_edit_dialog.CommandEditDialog
+import app.control_panel.layout_editor_tab.action.ActionManager
+import app.control_panel.layout_editor_tab.action.ActionReceiver
 import app.control_panel.layout_editor_tab.grid.button.ComponentButton
 import app.control_panel.layout_editor_tab.grid.button.DragButton
 import app.control_panel.layout_editor_tab.grid.button.EmptyButton
@@ -31,7 +33,8 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
                     override val dndCommandProcessor: DNDCommandProcessor,
                     override val resourceBundle: ResourceBundle,
                     override val imageResolver: ImageResolver, override val componentParser: ComponentParser,
-                    override val commandResolver: CommandResolver) : GridPane(), GridContext {
+                    override val commandResolver: CommandResolver,
+                    override val actionReceiver: ActionReceiver) : GridPane(), GridContext {
 
     var onNewComponentRequest: ((Component) -> Unit)? = null
     var onDeleteComponentRequest : ((Component) -> Unit)? = null
@@ -133,17 +136,10 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
         // Add all the components
         for (col in componentMatrix.indices) {
             for (row in 0 until componentMatrix[0].size) {
-                val button = if (componentMatrix[col][row] != null) {
+                if (componentMatrix[col][row] != null) {
                     addComponentToGridPane(componentMatrix[col][row])
                 } else {
                     addEmptyButtonToGridPane(col, row)
-                }
-
-                // Setup common listeners
-                button?.onDeselectAllRequested = {
-                    if (!it.isShiftDown) {
-                        unselectAllButtons()
-                    }
                 }
             }
         }
@@ -245,8 +241,7 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
             }
 
             override fun onComponentDelete() {
-                deleteComponent(component!!, true)
-                render()
+                onDeleteComponentRequest?.invoke(component)
             }
 
             // When the component is dropped away, request the
@@ -275,7 +270,7 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
      * @param row    the row index in the component matrix.
      * @param button the button to add.
      */
-    private fun addButtonToGridPane(col: Int, row: Int, button: DragButton) {
+    private fun addButtonToGridPane(col: Int, row: Int, button: SelectableButton) {
         // Set up the drag and drop
         button.onComponentDropped = {newComponent ->
             var toBeSwapped : Optional<Component> = Optional.empty()
@@ -316,6 +311,12 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
             render()
 
             true
+        }
+
+        button.onDeselectAllRequested = {
+            if (!it.isShiftDown) {
+                unselectAllButtons()
+            }
         }
 
         // Adjust the grid position based on the orientation
