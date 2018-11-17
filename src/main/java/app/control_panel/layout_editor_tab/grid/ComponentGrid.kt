@@ -193,38 +193,27 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
         // Get the current button
         val current = ComponentButton(this, component)
 
-        current.onComponentActionListener = object : ComponentButton.OnComponentActionListener {
-            override fun onComponentEdit() {
-                if (component.commandId == null) {
-                    return
+        current.onComponentEditRequest = {
+            if (component.commandId != null) {
+                val command = commandManager.getCommand(component.commandId!!)
+
+                if (command != null) {
+                    val dialog = CommandEditDialog(parent, imageResolver, applicationManager, commandManager)
+                    dialog.loadCommand(command)
+                    dialog.onCommandSaved = {
+                        render()
+                    }
+                    dialog.showWithAnimation()
                 }
-
-                val command = commandManager.getCommand(component.commandId!!) ?: return
-
-                val dialog = CommandEditDialog(parent, imageResolver, applicationManager, commandManager)
-                dialog.loadCommand(command)
-                dialog.onCommandSaved = {
-                    render()
-                }
-                dialog.showWithAnimation()
             }
+        }
 
-            override fun onComponentDelete() {
-                onDeleteComponentsRequest?.invoke(listOf(component))
-            }
-
-            // When the component is dropped away, request the
-            // deletion from the grid
-            override fun onComponentDroppedAway() {
-//                deleteComponent(component!!, true)
-//                render()
-                // TODO
-            }
-
+        current.onComponentDeleteRequest = {
+            onDeleteComponentsRequest?.invoke(listOf(component))
         }
 
         current.onDoubleClicked = {
-            current.onComponentActionListener?.onComponentEdit()
+            current.onComponentEditRequest?.invoke()
         }
 
         current.requestSelectedComponentReference = {
@@ -392,7 +381,7 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
         // Find all the cells that will be marked as targets
         val mask = generateSelectionMask(componentReference.components, componentReference.dragX, componentReference.dragY )
 
-        var errorTargets = listOf<Pair<Int, Int>>()
+        var errorTargets: List<Pair<Int, Int>>
 
         try {
             // Get the target positions, and check if the bounds are exceeded
@@ -443,38 +432,5 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
         components.forEach {
             println(it)
         }
-    }
-
-    /**
-     * Show a Dialog to ask for delete confirmation.
-     *
-     * @return true if accepted, false otherwise.
-     */
-    private fun requestOverrideComponentsDialog(): Boolean {
-        val alert = Alert(Alert.AlertType.CONFIRMATION)
-        val stage = alert.dialogPane.scene.window as Stage  // TODO
-        //stage.icons.add(Image(ShortcutDialogStage::class.java!!.getResourceAsStream("/assets/icon.png")))
-        alert.title = resourceBundle.getString("overwrite_button")
-        alert.headerText = resourceBundle.getString("overwrite_button_msg")
-        alert.contentText = resourceBundle.getString("overwrite_button_msg2")
-
-        val result = alert.showAndWait()
-        return if (result.get() === ButtonType.OK) {  // Overwrite
-            true
-        } else {  // Don't overwite
-            false
-        }
-    }
-
-    fun setHeight(height: Int) {
-        this.prefHeight = height.toDouble()
-        this.maxHeight = height.toDouble()
-        this.minHeight = height.toDouble()
-    }
-
-    fun setWidth(width: Int) {
-        this.prefWidth = width.toDouble()
-        this.maxWidth = width.toDouble()
-        this.minWidth = width.toDouble()
     }
 }

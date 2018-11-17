@@ -26,7 +26,8 @@ class ComponentButton(context : GridContext, val associatedComponent : Component
     // Used to request to the component grid which components are selected
     var requestSelectedComponentReference: (() -> ComponentDragReference)? = null
 
-    var onComponentActionListener: OnComponentActionListener? = null
+    var onComponentEditRequest: (() -> Unit)? = null
+    var onComponentDeleteRequest: (() -> Unit)? = null
 
     init {
         // Get the associated command
@@ -109,17 +110,6 @@ class ComponentButton(context : GridContext, val associatedComponent : Component
 
             event.consume()
         }
-        onDragDone = EventHandler { event ->
-            if (event.transferMode == TransferMode.MOVE) {
-                if (onComponentActionListener != null) {
-                    onComponentActionListener!!.onComponentDroppedAway()
-                }
-            }
-
-            cursor = Cursor.DEFAULT
-
-            event.consume()
-        }
 
         isCache = true
         cacheHint = CacheHint.SPEED
@@ -132,9 +122,7 @@ class ComponentButton(context : GridContext, val associatedComponent : Component
     protected fun getContextMenu(items: MutableList<MenuItem>) {
         val edit = MenuItem(context.resourceBundle.getString("edit"))
         edit.onAction = EventHandler {
-            if (onComponentActionListener != null) {
-                onComponentActionListener!!.onComponentEdit()
-            }
+            onComponentEditRequest?.invoke()
         }
 
         val editImage = ImageResolver.getImage(ComponentButton::class.java.getResourceAsStream("/assets/edit.png"), 16)
@@ -145,9 +133,7 @@ class ComponentButton(context : GridContext, val associatedComponent : Component
 
         val delete = MenuItem(context.resourceBundle.getString("delete"))
         delete.onAction = EventHandler {
-            if (onComponentActionListener != null) {
-                onComponentActionListener!!.onComponentDelete()
-            }
+            onComponentDeleteRequest?.invoke()
         }
         val deleteImage = ImageResolver.getImage(ComponentButton::class.java.getResourceAsStream("/assets/delete.png"), 16)
         val deleteImageView = ImageView(deleteImage)
@@ -157,11 +143,5 @@ class ComponentButton(context : GridContext, val associatedComponent : Component
 
         items.add(edit)
         items.add(delete)
-    }
-
-    interface OnComponentActionListener {
-        fun onComponentEdit()
-        fun onComponentDelete()
-        fun onComponentDroppedAway()
     }
 }
