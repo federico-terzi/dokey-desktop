@@ -3,6 +3,7 @@ package app.control_panel.layout_editor_tab.grid
 import app.control_panel.layout_editor_tab.action.ActionReceiver
 import app.control_panel.layout_editor_tab.action.component.AddComponentAction
 import app.control_panel.layout_editor_tab.action.component.DeleteComponentAction
+import app.control_panel.layout_editor_tab.action.component.MoveComponentAction
 import app.control_panel.layout_editor_tab.action.component.MultipleSectionRelatedAction
 import app.control_panel.layout_editor_tab.action.model.Action
 import app.control_panel.layout_editor_tab.model.ScreenOrientation
@@ -22,6 +23,7 @@ import system.commands.CommandManager
 import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
 import system.applications.ApplicationManager
+import system.section.SectionManager
 import java.util.*
 
 
@@ -33,7 +35,7 @@ class SectionGrid(val parent: BlurrableStage, val section: Section,
                   val componentParser: ComponentParser, val commandManager: CommandManager,
                   val applicationManager: ApplicationManager,
                   val dndCommandProcessor: DNDCommandProcessor,
-                  val actionReceiver: ActionReceiver)
+                  val actionReceiver: ActionReceiver, val sectionManager: SectionManager)
     : VBox(), ActionReceiver {
 
     var onSectionModified : ((Section) -> Unit)? = null
@@ -101,7 +103,106 @@ class SectionGrid(val parent: BlurrableStage, val section: Section,
                 actionReceiver.notifyAction(action)
             }
 
+            grid.onMoveComponentsRequest = { componentDragReference, newPositions ->
+                // In order to move the components, we have to make the following actions
+                // * Delete the component from the old section
+                // * Move the component to the new coordinates
+                // * Add the component to the new section
 
+                // Obtain a reference to the old section and page instances
+                val oldSection : Section? = if (componentDragReference.sectionId == section.id) {
+                    section
+                }else{
+                    sectionManager.getSection(componentDragReference.sectionId)
+                }
+                val oldPage : Page? = oldSection?.pages?.get(componentDragReference.pageIndex)
+
+                // Make sure they are valid
+                if (oldSection != null && oldPage != null) {
+                    // Create all the delete actions
+                    val deleteActions = componentDragReference.components.map {
+                        DeleteComponentAction(oldSection, oldPage, it)
+                    }
+
+                    // Create all the move actions
+                    val moveActions = componentDragReference.components.mapIndexed { index, component ->
+                        MoveComponentAction(oldSection, oldPage, component, newPositions[index].first, newPositions[index].second)
+                    }
+
+                    // Create all the add actions
+                    val addActions = componentDragReference.components.map {
+                        AddComponentAction(section, page, it)
+                    }
+
+                    // Join all those actions into a single one
+                    val action = MultipleSectionRelatedAction(deleteActions + moveActions + addActions)
+                    actionReceiver.notifyAction(action)
+                }
+            }
+
+            grid.onSwapComponentsRequest = { componentDragReference, targetComponents ->
+                // In order to swap the components, we have to make the following actions
+                // * Delete the component from the old section
+                // * Move the component to the coordinates of the target component
+                // * Add the component to the target section
+                // * Delete the old component from the target section
+                // * Move the old component to the original position of the component
+                // * Add the old component to the old section
+
+                // Obtain a reference to the old section and page instances
+                val oldSection : Section? = if (componentDragReference.sectionId == section.id) {
+                    section
+                }else{
+                    sectionManager.getSection(componentDragReference.sectionId)
+                }
+                val oldPage : Page? = oldSection?.pages?.get(componentDragReference.pageIndex)
+
+                // Make sure they are valid
+                if (oldSection != null && oldPage != null) {
+                    // Get the target positions for both the lists
+                    val oldPositions = componentDragReference.components.map { Pair(it.x!!, it.y!!) }
+                    val targetPositions = targetComponents.map { Pair(it.x!!, it.y!!) }
+
+                    // MOVE THE NEW COMPONENTS
+
+                    // Create all the delete actions
+                    val newDeleteActions = componentDragReference.components.map {
+                        DeleteComponentAction(oldSection, oldPage, it)
+                    }
+
+                    // Create all the move actions
+                    val newMoveActions = componentDragReference.components.mapIndexed { index, component ->
+                        MoveComponentAction(oldSection, oldPage, component, targetPositions[index].first, targetPositions[index].second)
+                    }
+
+                    // Create all the add actions
+                    val newAddActions = componentDragReference.components.map {
+                        AddComponentAction(section, page, it)
+                    }
+
+                    // MOVE THE OLD COMPONENTS
+
+                    // Create all the delete actions
+                    val oldDeleteActions = targetComponents.map {
+                        DeleteComponentAction(section, page, it)
+                    }
+
+                    // Create all the move actions
+                    val oldMoveActions = targetComponents.mapIndexed { index, component ->
+                        MoveComponentAction(section, page, component, oldPositions[index].first, oldPositions[index].second)
+                    }
+
+                    // Create all the add actions
+                    val oldAddActions = targetComponents.map {
+                        AddComponentAction(oldSection, oldPage, it)
+                    }
+
+                    // Join all those actions into a single one
+                    val action = MultipleSectionRelatedAction(newDeleteActions + newMoveActions + newAddActions +
+                                                                      oldDeleteActions + oldMoveActions + oldAddActions)
+                    actionReceiver.notifyAction(action)
+                }
+            }
 
             // Create the tab and add the page grid
             val tab = Tab()

@@ -45,10 +45,10 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
 
     // Listener used to update the position of a component list. The second Pair list represents the new coordinates
     // for each component
-    var onMoveComponentsRequest: ((List<Component>, List<Pair<Int, Int>>) -> Unit)? = null
+    var onMoveComponentsRequest: ((ComponentDragReference, List<Pair<Int, Int>>) -> Unit)? = null
 
     // Listener used to swap the position of every component in the two lists
-    var onSwapComponentsRequest: ((List<Component>, List<Component>) -> Unit)? = null
+    var onSwapComponentsRequest: ((ComponentDragReference, List<Component>) -> Unit)? = null
 
     private val rowCount: Int = componentMatrix.size
     private val colCount: Int = componentMatrix[0].size
@@ -248,18 +248,32 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
      */
     private fun addButtonToGridPane(col: Int, row: Int, button: SelectableButton) {
         // Set up the drag and drop
-        button.onComponentsDropped = { componentReference ->
+        button.onComponentsDropped = fun (componentReference: ComponentDragReference) : Boolean {
             // Generate the mask for the given components
             val mask = generateSelectionMask(componentReference.components, componentReference.dragX, componentReference.dragY )
 
-            // Get the conflicting components
             try {
-                val conflicts = getMaskConflicts(mask, col, row)
-                println(conflicts.size)
+                // Get the target positions, and check if the bounds are exceeded
+                val targetCoordinates = generateTargetCoordinates(mask, col, row)
 
-                true
+                // Get the conflicting components
+                val conflicts = getMaskConflicts(targetCoordinates)
+
+                if (conflicts.isEmpty()) {  // MOVE TO EMPTY SPACE
+                    // Notify the listener
+                    onMoveComponentsRequest?.invoke(componentReference, targetCoordinates)
+
+                    return true
+                }else if (conflicts.size == componentReference.components.size) {  // SWAP
+                    // Notify the listener
+                    onSwapComponentsRequest?.invoke(componentReference, conflicts)
+
+                    return true
+                }
+
+                return false
             }catch (e: OutOfMatrixBoundsException) {
-                false
+                return false
             }
         }
 
@@ -312,14 +326,8 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
      * Return a translated mask based on the given coordinates
      */
     private fun generateTargetCoordinates(mask: List<Pair<Int, Int>>, x: Int, y: Int) : List<Pair<Int, Int>> {
-        return mask.map { Pair(it.first + x, it.second + y) }
-    }
-
-    /**
-     * Return the list of the components that are overlapping with the current drop mask
-     */
-    private fun getMaskConflicts(mask: List<Pair<Int, Int>>, x: Int, y: Int) : List<Component> {
-        val coordinates = generateTargetCoordinates(mask, x, y)
+        // Generate the translated coordinates
+        val coordinates = mask.map { Pair(it.first + x, it.second + y) }
 
         // Find the minimum and maximums
         val minX : Int = coordinates.map { it.first }.min()!!
@@ -338,8 +346,15 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
             throw OutOfMatrixBoundsException()
         }
 
+        return coordinates
+    }
+
+    /**
+     * Return the list of the components that are overlapping with the current drop mask
+     */
+    private fun getMaskConflicts(targetCoordinates: List<Pair<Int, Int>>) : List<Component> {
         // Check which components are overridden by the mask
-        val overlapping = coordinates.map {
+        val overlapping = targetCoordinates.map {
             componentMatrix[it.first][it.second]
         }.filterNotNull()
 
