@@ -183,52 +183,21 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
         val emptyButton = EmptyButton(this)
 
         emptyButton.onDoubleClicked = {
-            showCommandEditDialog(x = col, y = row, avoidBlurIn = true)
-        }
+            val dialog = CommandSelectDialog(parent, imageResolver, commandManager)
+            dialog.onCommandSelected = { command ->
+                // Create a component with the given command
+                val component = RuntimeComponent(commandManager)
+                component.x = col
+                component.y = row
+                component.commandId = command.id
 
-        /*
-        emptyButton.setOnMouseClicked{
-            val popup = ActionPopup(imageResolver)
-
-            popup.onExistingCommandRequested = {
-                val dialog = CommandSelectDialog(parent, imageResolver, commandManager)
-                dialog.onCommandSelected = { command ->
-                    // Create a component with the given command
-                    val component = RuntimeComponent(commandManager)
-                    component.x = col
-                    component.y = row
-                    component.commandId = command.id
-
-                    componentMatrix[col][row] = component
-
-                    onNewComponentRequest?.invoke(component)
-
-                    render()
-                }
-                dialog.showWithAnimation()
+                onAddComponentsRequest?.invoke(listOf(component))
             }
-            popup.onNewCommandRequested =  {
-                val dialog = CommandEditDialog(parent, imageResolver, applicationManager, commandManager)
-                dialog.onCommandSaved = {command ->
-                    // Create a component with the given command
-                    val component = RuntimeComponent(commandManager)
-                    component.x = col
-                    component.y = row
-                    component.commandId = command.id
-
-                    componentMatrix[col][row] = component
-
-                    onNewComponentRequest?.invoke(component)
-
-                    render()
-                }
-                dialog.showWithAnimation()
+            dialog.onNewCommandRequested = {
+                showCommandEditDialog(x = col, y = row, avoidBlurIn = true)
             }
-
-            popup.showForComponent(parent, emptyButton)
-            //popup.showUnderMouse(parent, it.screenX, it.screenY)
+            dialog.showWithAnimation()
         }
-        */
 
         addButtonToGridPane(col, row, emptyButton)
 
