@@ -93,10 +93,7 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
             if (commandId >= 0) { // Command saved correctly
                 BroadcastManager.getInstance().sendBroadcast(BroadcastManager.EDITOR_MODIFIED_COMMAND_EVENT, commandId.toString())
 
-                onCommandSaved?.let {
-                    val command = commandManager.getCommand(commandId)
-                    it(command!!)
-                }
+                onCommandSaved?.invoke(commandManager.getCommand(commandId)!!)
 
                 onClose()
             }

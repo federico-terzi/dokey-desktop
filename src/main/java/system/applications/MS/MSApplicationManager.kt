@@ -299,7 +299,7 @@ class MSApplicationManager(storageManager: StorageManager, private val startupMa
 
             if (addToExternalApplications) {
                 // Save it in the external application storage
-                externalAppManager.externalAppIds.add(appId)
+                externalAppManager.add(appId)
                 externalAppManager.persist()
             }
 

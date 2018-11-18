@@ -1,4 +1,4 @@
-package app.control_panel.layout_editor_tab.action.model
+package app.control_panel.action.model
 
 /**
  * Group multiple actions together

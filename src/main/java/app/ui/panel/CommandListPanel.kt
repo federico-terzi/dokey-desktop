@@ -4,11 +4,16 @@ import app.control_panel.command_tab.CommandListHeader
 import app.control_panel.command_tab.list.CommandActionListener
 import app.control_panel.command_tab.list.CommandListView
 import app.control_panel.command_tab.list.comparator.NameComparator
+import app.control_panel.dialog.command_edit_dialog.CommandEditDialog
+import app.ui.control.FloatingActionButton
 import app.ui.model.Sorting
 import app.ui.stage.BlurrableStage
 import javafx.application.Platform
 import javafx.collections.FXCollections
+import javafx.geometry.Insets
+import javafx.geometry.Pos
 import javafx.scene.layout.Priority
+import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 import model.command.Command
 import system.commands.CommandManager
@@ -18,7 +23,7 @@ import java.util.Comparator
 class CommandListPanel(val parent: BlurrableStage, val imageResolver: ImageResolver, val commandManager: CommandManager,
                        var showImplicit: Boolean = true, var showDeleted: Boolean = false,
                        val showContextMenus : Boolean = false, commandActionListener: CommandActionListener? = null)
-    : VBox() {
+    : StackPane() {
 
     // UI Elements
     private val listHeader = CommandListHeader(imageResolver)
@@ -34,11 +39,23 @@ class CommandListPanel(val parent: BlurrableStage, val imageResolver: ImageResol
     private var currentFilter: Class<out Command>? = null
 
     var onCommandSelected : ((Command) -> Unit)? = null
+    var onNewCommandRequested : (() -> Unit)? = null
+
+    private val addCommandBtn = FloatingActionButton(imageResolver, "Add command")  // TODO: i18n
+
+    private val contentBox = VBox()
+
 
     init {
+        alignment = Pos.BOTTOM_RIGHT
+
         VBox.setVgrow(commandListView, Priority.ALWAYS)
 
-        children.addAll(listHeader, commandListView)
+        // Move the addCommandButton a bit higher
+        addCommandBtn.translateY = -40.0
+
+        contentBox.children.addAll(listHeader, commandListView)
+        children.addAll(contentBox, addCommandBtn)
 
         // Setup the list view
         commandListView.items = commands
@@ -56,6 +73,11 @@ class CommandListPanel(val parent: BlurrableStage, val imageResolver: ImageResol
                     onCommandSelected?.invoke(command)
                 }
             }
+        }
+
+        // Setup add command button listener
+        addCommandBtn.setOnAction {
+            onNewCommandRequested?.invoke()
         }
     }
 

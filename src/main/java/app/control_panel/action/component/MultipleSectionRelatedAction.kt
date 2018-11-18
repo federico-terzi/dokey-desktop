@@ -1,7 +1,7 @@
-package app.control_panel.layout_editor_tab.action.component
+package app.control_panel.action.component
 
-import app.control_panel.layout_editor_tab.action.model.MultipleAction
-import app.control_panel.layout_editor_tab.action.model.SectionRelatedAction
+import app.control_panel.action.model.MultipleAction
+import app.control_panel.action.model.SectionRelatedAction
 import model.section.Section
 
 class MultipleSectionRelatedAction(actions : List<SectionRelatedAction>) : MultipleAction(actions), SectionRelatedAction {

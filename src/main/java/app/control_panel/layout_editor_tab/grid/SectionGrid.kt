@@ -1,12 +1,12 @@
 package app.control_panel.layout_editor_tab.grid
 
 import app.control_panel.layout_editor_tab.CopyManager
-import app.control_panel.layout_editor_tab.action.ActionReceiver
-import app.control_panel.layout_editor_tab.action.component.AddComponentAction
-import app.control_panel.layout_editor_tab.action.component.DeleteComponentAction
-import app.control_panel.layout_editor_tab.action.component.MoveComponentAction
-import app.control_panel.layout_editor_tab.action.component.MultipleSectionRelatedAction
-import app.control_panel.layout_editor_tab.action.model.Action
+import app.control_panel.action.ActionReceiver
+import app.control_panel.action.component.AddComponentAction
+import app.control_panel.action.component.DeleteComponentAction
+import app.control_panel.action.component.MoveComponentAction
+import app.control_panel.action.component.MultipleSectionRelatedAction
+import app.control_panel.action.model.Action
 import app.ui.stage.BlurrableStage
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane

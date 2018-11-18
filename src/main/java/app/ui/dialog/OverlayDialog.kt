@@ -58,11 +58,6 @@ open class OverlayDialog(override val parent: BlurrableStage, val imageResolver:
                 onClose()
             }
         }
-
-        // Blur the control panel stage
-        Platform.runLater {
-            parent.blurIn()
-        }
     }
 
     fun initializeUI() {
@@ -99,25 +94,37 @@ open class OverlayDialog(override val parent: BlurrableStage, val imageResolver:
     open protected fun defineTopSectionComponent() : Node? = null
     open protected fun defineContentBoxComponent() : VBox? = null
 
-    open fun onClose() {
-        closeWithAnimation()
-        Platform.runLater { parent.blurOut() }
+    open fun onClose(withAnimation: Boolean = true) {
+        if (withAnimation) {
+            closeWithAnimation()
+            Platform.runLater { parent.blurOut() }
+        }else{
+            onDialogClosed?.invoke()
+            close()
+        }
     }
 
-    fun showWithAnimation() {
+    fun showWithAnimation(avoidBlurIn : Boolean = false) {
         show()
 
         // Position the dialog over the stage
         x = parent.x + (parent.width - width) / 2
         y = parent.y + (parent.height - height) / 2
 
+        this.opacity = 0.5
         val fadeTransition = StageOpacityTransition(Duration.millis(200.0), this)
         val positionTransition = StagePositionTransition(Duration.millis(200.0), this)
         positionTransition.toY = this.y
         positionTransition.fromY = this.y + 25
+        fadeTransition.to = 1.0
 
         val transition = ParallelTransition(fadeTransition, positionTransition)
         transition.play()
+
+        // Blur the control panel stage
+        if (!avoidBlurIn) {
+            parent.blurIn()
+        }
     }
 
     /**

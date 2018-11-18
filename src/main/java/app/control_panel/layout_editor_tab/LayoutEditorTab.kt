@@ -7,10 +7,10 @@ import app.control_panel.DropDialog
 import app.control_panel.layout_editor_tab.grid.SectionGrid
 import app.control_panel.layout_editor_tab.bar.SectionBar
 import app.control_panel.dialog.app_select_dialog.ApplicationSelectDialog
-import app.control_panel.layout_editor_tab.action.ActionManager
-import app.control_panel.layout_editor_tab.action.ActionReceiver
-import app.control_panel.layout_editor_tab.action.model.Action
-import app.control_panel.layout_editor_tab.action.model.SectionRelatedAction
+import app.control_panel.action.ActionManager
+import app.control_panel.action.ActionReceiver
+import app.control_panel.action.model.Action
+import app.control_panel.action.model.SectionRelatedAction
 import io.reactivex.subjects.PublishSubject
 import javafx.animation.*
 import javafx.scene.CacheHint
@@ -43,7 +43,7 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
                       val componentParser: ComponentParser, val commandManager: CommandManager,
                       val applicationManager: ApplicationManager,
                       val dndCommandProcessor: DNDCommandProcessor, val sectionExporter: SectionExporter,
-                      val sectionImporter: SectionImporter) : ControlPanelTab(), ActionReceiver {
+                      val sectionImporter: SectionImporter, val actionManager: ActionManager) : ControlPanelTab(), ActionReceiver {
 
     val layoutToolbar = LayoutToolbar(imageResolver, applicationManager)
     val sectionBar: SectionBar
@@ -55,9 +55,6 @@ class LayoutEditorTab(val controlPanelStage: ControlPanelStage, val sectionManag
 
     // Reference to the dialog that opens when dragging a section file inside
     private var dropDialog : DropDialog? = null
-
-    // Action manager used to implement the Undo/Redo functionality
-    private val actionManager = ActionManager()
 
     // Used to manage Copy/Paste operations of Components
     private val copyManager = CopyManager()

@@ -312,7 +312,7 @@ class MACApplicationManager(storageManager: StorageManager, private val startupM
 
             if (addToExternalApplications) {
                 // Save it in the external application storage
-                externalAppManager.externalAppIds.add(appPath)
+                externalAppManager.add(appPath)
                 externalAppManager.persist()
             }
 

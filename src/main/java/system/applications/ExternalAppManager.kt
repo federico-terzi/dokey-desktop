@@ -28,6 +28,12 @@ class ExternalAppManager(val storageManager: StorageManager) {
 
     }
 
+    @Synchronized
+    fun add(app: String) {
+        externalAppIds.add(app)
+    }
+
+    @Synchronized
     fun persist() {
         // Convert all the entries to JSON
         val entries = JSONArray()

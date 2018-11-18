@@ -21,6 +21,7 @@ class CommandSelectDialog(parent: BlurrableStage, imageResolver: ImageResolver, 
     private val contentBox = VBox()
 
     var onCommandSelected : ((Command) -> Unit)? = null
+    var onNewCommandRequested :(() -> Unit)? = null
 
     init {
         commandListPanel.padding = Insets(0.0, 0.0,10.0, 0.0)
@@ -42,6 +43,11 @@ class CommandSelectDialog(parent: BlurrableStage, imageResolver: ImageResolver, 
         commandListPanel.onCommandSelected = {
             onCommandSelected?.invoke(it)
             onClose()
+        }
+
+        commandListPanel.onNewCommandRequested = {
+            onNewCommandRequested?.invoke()
+            onClose(withAnimation = false)
         }
 
         commandListPanel.loadCommands()

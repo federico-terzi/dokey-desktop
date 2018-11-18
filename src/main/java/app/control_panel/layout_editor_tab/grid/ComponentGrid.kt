@@ -2,7 +2,8 @@ package app.control_panel.layout_editor_tab.grid
 
 import app.control_panel.dialog.command_edit_dialog.CommandEditDialog
 import app.control_panel.layout_editor_tab.CopyManager
-import app.control_panel.layout_editor_tab.action.ActionReceiver
+import app.control_panel.action.ActionReceiver
+import app.control_panel.dialog.command_select_dialog.CommandSelectDialog
 import app.control_panel.layout_editor_tab.grid.button.ComponentButton
 import app.control_panel.layout_editor_tab.grid.button.DragButton
 import app.control_panel.layout_editor_tab.grid.button.EmptyButton
@@ -179,6 +180,33 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
      */
     private fun addEmptyButtonToGridPane(col: Int, row: Int) : EmptyButton? {
         val emptyButton = EmptyButton(this)
+
+        emptyButton.onDoubleClicked = {
+            val dialog = CommandSelectDialog(parent, imageResolver, commandManager)
+            dialog.onCommandSelected = { command ->
+                // Create a component with the given command
+                val component = RuntimeComponent(commandManager)
+                component.x = col
+                component.y = row
+                component.commandId = command.id
+
+                onAddComponentsRequest?.invoke(listOf(component))
+            }
+            dialog.onNewCommandRequested = {
+                val newCommandDialog = CommandEditDialog(parent, imageResolver, applicationManager, commandManager)
+                newCommandDialog.onCommandSaved = {command ->
+                    // Create a component with the given command
+                    val component = RuntimeComponent(commandManager)
+                    component.x = col
+                    component.y = row
+                    component.commandId = command.id
+
+                    onAddComponentsRequest?.invoke(listOf(component))
+                }
+                newCommandDialog.showWithAnimation(avoidBlurIn = true)
+            }
+            dialog.showWithAnimation()
+        }
 
         /*
         emptyButton.setOnMouseClicked{

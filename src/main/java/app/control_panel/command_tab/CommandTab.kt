@@ -40,8 +40,7 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
     private val toolbar = CommandToolbar(controlPanelStage, imageResolver)
     private val commandListPanel = CommandListPanel(controlPanelStage, imageResolver, commandManager,
             showImplicit = false, showContextMenus = true, commandActionListener = this)
-    private val stackPane = StackPane()
-    private val addCommandBtn = FloatingActionButton(imageResolver, "Add command")  // TODO: i18n
+
 
     // Reference to the dialog that opens when dragging something inside
     private var dropDialog : DropDialog? = null
@@ -51,21 +50,7 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
 
         VBox.setVgrow(commandListPanel, Priority.ALWAYS)
 
-        stackPane.alignment = Pos.BOTTOM_RIGHT
-
-        // Move the addCommandButton a bit higher
-        addCommandBtn.translateY = -40.0
-
-        stackPane.children.addAll(commandListPanel, addCommandBtn)
-        VBox.setVgrow(stackPane, Priority.ALWAYS)
-
-        children.addAll(toolbar, stackPane)
-
-        // Setup add command button listener
-        addCommandBtn.setOnAction {
-            val dialog = CommandEditDialog(controlPanelStage, imageResolver, applicationManager, commandManager)
-            dialog.showWithAnimation()
-        }
+        children.addAll(toolbar, commandListPanel)
 
         // Setup the search bar listener
         toolbar.onSearchChanged = { query ->
@@ -83,6 +68,11 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
             } else {
                 showCommandIsDeletedRecoverDialog(command)
             }
+        }
+
+        commandListPanel.onNewCommandRequested = {
+            val dialog = CommandEditDialog(controlPanelStage, imageResolver, applicationManager, commandManager)
+            dialog.showWithAnimation()
         }
 
         // Setup the drag and drop importing

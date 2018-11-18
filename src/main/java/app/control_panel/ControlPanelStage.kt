@@ -1,5 +1,6 @@
 package app.control_panel
 
+import app.control_panel.action.ActionManager
 import app.ui.animation.BlurTransition
 import app.ui.animation.StageOpacityTransition
 import app.ui.animation.StagePositionTransition
@@ -62,9 +63,12 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
     private val controller : ControlPanelController
 
+    // Action manager used to implement the Undo/Redo functionality
+    private val actionManager = ActionManager()
+
     private val layoutEditorTab = LayoutEditorTab(this, sectionManager, imageResolver, resourceBundle, componentParser,
             commandManager, applicationManager, dndCommandProcessor, sectionExporter,
-            sectionImporter)
+            sectionImporter, actionManager)
 
     private val devicesTab = DevicesTab(imageResolver, resourceBundle, handshakeDataBuilder)
 
