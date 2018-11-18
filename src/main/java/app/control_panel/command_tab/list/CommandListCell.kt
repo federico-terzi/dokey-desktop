@@ -58,8 +58,6 @@ class CommandListCell(val imageResolver: ImageResolver) : ListCell<Command>() {
         hBox.minWidth = 0.0
         hBox.prefWidth = 1.0
         graphic = hBox
-
-        deletedProperty.addListener { _, _, newValue -> pseudoClassStateChanged(DELETED_PSEUDO_CLASS, newValue) }
     }
 
     private fun addContent(entry: Command) {
@@ -82,9 +80,6 @@ class CommandListCell(val imageResolver: ImageResolver) : ListCell<Command>() {
         // Get the image for the command
         imageResolver.loadInto(entry.iconId, 48, imageView)
 
-        // Setup the deleted rendering
-        deletedProperty.set(entry.deleted)
-
         graphic = hBox
     }
 
@@ -96,9 +91,5 @@ class CommandListCell(val imageResolver: ImageResolver) : ListCell<Command>() {
         } else {
             addContent(result!!)
         }
-    }
-
-    companion object {
-        val DELETED_PSEUDO_CLASS = PseudoClass.getPseudoClass("deleted")
     }
 }

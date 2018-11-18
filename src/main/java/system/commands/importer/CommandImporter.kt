@@ -45,13 +45,6 @@ class CommandImporter(val commandValidator: CommandValidator, val commandParser:
                 // Add the command to the general store
                 val command = commandManager.addCommand(extractedCommand)
 
-                // If the command is deleted, make it visible again
-                command as CommandWrapper
-                if (command.deleted) {
-                    command.deleted = false
-                    commandManager.saveCommand(command)
-                }
-
                 commands.add(command)
 
                 newIdMapping[previousId] = command.id!!

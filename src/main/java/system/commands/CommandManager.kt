@@ -132,10 +132,6 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
             // Find and retrieve the conflicting one
             val conflictingCommand = conflictMap[hash]!!.filter { it.contentEquals(command) }.first()
             command as CommandWrapper
-            // If the command was previously deleted, recover it so it can be used
-            if (command.deleted) {
-                undeleteCommand(command)
-            }
             return conflictingCommand
         }else{
             command as CommandWrapper
@@ -158,12 +154,17 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
     }
 
     /**
+     * Generate the target file for the given command
+     */
+    private fun generateCommandFile(command: Command) : File = File(storageManager.commandDir, "${command.id}.json")
+
+    /**
      * Save the changes of an existing command.
      * To add a NEW command, use addCommand() instead.
      */
     @Synchronized
     fun saveCommand(command: Command) : Boolean {
-        val destFile = File(storageManager.commandDir, "${command.id}.json")
+        val destFile = generateCommandFile(command)
         command.lastEdit = System.currentTimeMillis()
         return writeCommandToFile(command, destFile)
     }
@@ -191,14 +192,19 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
 
     fun deleteCommand(command: Command) : Boolean {
         command as CommandWrapper
-        command.deleted = true
-        return saveCommand(command)
-    }
 
-    fun undeleteCommand(command: Command) : Boolean {
-        command as CommandWrapper
-        command.deleted = false
-        return saveCommand(command)
+        // If the command is locked, block the delection
+        if (command.locked) {
+            return false
+        }
+
+        // Delete the file, and remove it from the cache
+        val result = generateCommandFile(command).delete()
+        if (result) {
+            commandMap.remove(command.id!!)
+        }
+
+        return true
     }
 
     @Synchronized
@@ -233,15 +239,11 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
      * Return all the commands t
      */
     fun searchCommands(query : String? = null, limit: Int = 0, activeApplication: Application? = null,
-                       showImplicit : Boolean = true, showDeleted : Boolean = false) : Collection<Command> {
+                       showImplicit : Boolean = true) : Collection<Command> {
         var results = commandMap.values.toList()
 
         if (!showImplicit) {
             results = results.filter { it.implicit == false }
-        }
-
-        if (!showDeleted) {
-            results = results.filter { it.deleted == false }
         }
 
         if (query != null) {

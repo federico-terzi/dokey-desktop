@@ -22,10 +22,4 @@ interface CommandWrapper : Command {
      * and give small value to the user. ( As the AppOpenCommand )
      */
     var implicit : Boolean
-
-    /**
-     * If true, the command is disabled. It means that the command is not visible in the dokey search,
-     * command tab or anywhere else.
-     */
-    var deleted : Boolean
 }

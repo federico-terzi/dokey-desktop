@@ -8,18 +8,12 @@
 .command-list-view .list-cell:odd {
     -fx-background-color: #eeeeee;
 }
-.command-list-view .list-cell:deleted {
-    -fx-background-color: -red-gradient;
-}
 
 .command-list-view .list-cell:filled:selected{
     -fx-background-color: -green-gradient;
 }
 .command-list-view .list-cell:filled:selected .label, .command-list-view .list-cell:filled:deleted .label{
     -fx-text-fill: black;
-}
-.command-list-view .list-cell:filled:selected:deleted {
-    -fx-background-color: -blue-gradient;
 }
 
 .command-list-view .scroll-bar .increment-arrow,

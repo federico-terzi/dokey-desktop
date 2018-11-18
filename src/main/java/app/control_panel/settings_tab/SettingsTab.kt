@@ -29,7 +29,6 @@ class SettingsTab(val imageResolver: ImageResolver, val applicationManager: Appl
 
     private val autolaunchBtn = ToggleButton()
     private val enableDokeySearchBtn = ToggleButton()
-    private val showDeletedCommandsBtn = ToggleButton()
     private val supportBtn = RoundedButton("Contact us")  // TODO: i18n
     private val creditsBtn = RoundedButton("View credits")  // TODO: i18n
 
@@ -45,11 +44,10 @@ class SettingsTab(val imageResolver: ImageResolver, val applicationManager: Appl
         // Setup settings UI
         val autolaunchEntry = SettingEntry("Autolaunch", "Start Dokey at System Startup", autolaunchBtn)  // TODO: i18n
         val enableDokeySearchEntry = SettingEntry("Dokey Search", "Enable Dokey search bar", enableDokeySearchBtn)  // TODO: i18n
-        val showDeletedCommandsEntry = SettingEntry("Show Deleted Commands", "Show the deleted commands in the tab", showDeletedCommandsBtn)  // TODO: i18n
         val supportEntry = SettingEntry("Support", "Contact us for any question", supportBtn)  // TODO: i18n
         val creditsEntry = SettingEntry("Credits", "Dokey uses Open Source software", creditsBtn)  // TODO: i18n
 
-        normalSettingsPane.children.addAll(autolaunchEntry, enableDokeySearchEntry, showDeletedCommandsEntry, supportEntry, creditsEntry)
+        normalSettingsPane.children.addAll(autolaunchEntry, enableDokeySearchEntry, supportEntry, creditsEntry)
         normalSettingsPane.children.add(showAdvancedBtn)
 
         // Setup advanced settings UI
@@ -98,9 +96,6 @@ class SettingsTab(val imageResolver: ImageResolver, val applicationManager: Appl
         enableDokeySearchBtn.onToggle = { checked ->
             settingsManager.dokeySearchEnabled = checked
         }
-        showDeletedCommandsBtn.onToggle = { checked ->
-            settingsManager.showDeletedCommands = checked
-        }
 
         creditsBtn.setOnAction {
             applicationManager.openWebLink("https://dokey.io/credits.html")
@@ -128,7 +123,6 @@ class SettingsTab(val imageResolver: ImageResolver, val applicationManager: Appl
     override fun onFocus() {
         // Load all the settings
         enableDokeySearchBtn.checked = settingsManager.dokeySearchEnabled
-        showDeletedCommandsBtn.checked = settingsManager.showDeletedCommands
         autolaunchBtn.checked = startupManager.isAutomaticStartupEnabled
     }
 }

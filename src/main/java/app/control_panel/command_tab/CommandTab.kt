@@ -63,11 +63,7 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
 
         commandListPanel.onCommandSelected = { command ->
             command as CommandWrapper
-            if (!command.deleted) {
-                requestEditForCommand(command)
-            } else {
-                showCommandIsDeletedRecoverDialog(command)
-            }
+            requestEditForCommand(command)
         }
 
         commandListPanel.onNewCommandRequested = {
@@ -107,7 +103,6 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
     }
 
     override fun onFocus() {
-        commandListPanel.showDeleted = settingsManager.showDeletedCommands
         commandListPanel.loadCommands()
 
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.EDITOR_MODIFIED_COMMAND_EVENT, commandModifiedEvent)
@@ -126,14 +121,6 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
         }
     }
 
-    private fun showCommandIsDeletedRecoverDialog(command: CommandWrapper) {
-        AlertFactory.instance.confirmation("Deleted command", "This command was previously deleted, do you want to recover it?",  // TODO: i18n
-                onYes = {
-                    commandManager.undeleteCommand(command)
-                    commandListPanel.loadCommands()
-                }).show()
-    }
-
     /**
      * CONTEXT MENU ACTIONS
      */
@@ -143,19 +130,17 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
     }
 
     override val onDeleteRequest: ((List<Command>) -> Unit)? = { commands ->
-        AlertFactory.instance.confirmation("Delete confirmation", "Do you really want to delete ${commands.size} command(s)?",  // TODO: i18n
-                onYes = {
-                    commands.forEach { command ->
-                        commandManager.deleteCommand(command)
-                    }
-                    commandListPanel.loadCommands()
-                }).show()
-    }
-    override val onRecoverRequest: ((List<Command>) -> Unit)? = { commands ->
-        commands.forEach { command ->
-            commandManager.undeleteCommand(command)
+        // Check how many commands are not locked
+        val notLocked = commands.filter { it as CommandWrapper ; !it.locked }
+        if (notLocked.isNotEmpty()) {
+            AlertFactory.instance.confirmation("Delete confirmation", "Do you really want to delete ${notLocked.size} command(s)?",  // TODO: i18n
+                    onYes = {
+                        notLocked.forEach { command ->
+                            commandManager.deleteCommand(command)
+                        }
+                        commandListPanel.loadCommands()
+                    }).show()
         }
-        commandListPanel.loadCommands()
     }
     override val onExportRequest: ((List<Command>) -> Unit)? = { commands ->
         if (commands.isNotEmpty()) {

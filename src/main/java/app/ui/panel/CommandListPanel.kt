@@ -21,7 +21,7 @@ import system.image.ImageResolver
 import java.util.Comparator
 
 class CommandListPanel(val parent: BlurrableStage, val imageResolver: ImageResolver, val commandManager: CommandManager,
-                       var showImplicit: Boolean = true, var showDeleted: Boolean = false,
+                       var showImplicit: Boolean = true,
                        val showContextMenus : Boolean = false, commandActionListener: CommandActionListener? = null)
     : StackPane() {
 
@@ -84,7 +84,7 @@ class CommandListPanel(val parent: BlurrableStage, val imageResolver: ImageResol
     fun loadCommands(onLoaded: (() -> Unit)? = null) {
         Thread {
             var results = commandManager.searchCommands(query = currentQuery,
-                    showImplicit = showImplicit, showDeleted = showDeleted).toMutableList()
+                    showImplicit = showImplicit).toMutableList()
 
             if (currentFilter != null) {
                 results = results.filter { it.javaClass == currentFilter }.toMutableList()
