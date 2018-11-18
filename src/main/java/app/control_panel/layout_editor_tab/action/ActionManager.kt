@@ -14,6 +14,7 @@ class ActionManager {
     fun execute(action: Action) {
         action.execute()
         undoStack.push(action)
+        redoStack.clear()  // Empty the redo stack
     }
 
     fun undo() {
