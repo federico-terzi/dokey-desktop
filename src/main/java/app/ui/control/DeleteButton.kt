@@ -6,8 +6,8 @@ import javafx.scene.control.ContentDisplay
 import javafx.scene.image.ImageView
 import system.image.ImageResolver
 
-class SaveButton(imageResolver: ImageResolver, title: String) : StyledButton(imageResolver, title, "asset:check-circle") {
+class DeleteButton(imageResolver: ImageResolver, title: String) : StyledButton(imageResolver, title, "asset:delete") {
     init {
-        styleClass.add("save-button")
+        styleClass.add("delete-button")
     }
 }

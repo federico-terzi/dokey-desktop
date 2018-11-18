@@ -10,6 +10,7 @@ import app.ui.dialog.OverlayDialog
 import app.ui.stage.BlurrableStage
 import javafx.geometry.Pos
 import javafx.scene.Node
+import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import model.command.Command
@@ -32,6 +33,8 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
     private var currentCommand: Command? = null
 
     private val saveButton = SaveButton(imageResolver, "Save")  // TODO: i18n
+    private val deleteButton = DeleteButton(imageResolver, "Delete")  // TODO: i18n
+    private val lockImage = IconButton(imageResolver, "asset:lock", 18, noPadding = true)
     private val contentBox = VBox()
 
     private val imageSelector = ImageSelector(this, imageResolver)
@@ -49,6 +52,7 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
     private val builderContainer = VBox()
 
     var onCommandSaved : ((Command) -> Unit)? = null
+    var onCommandDeleteRequest : ((Command) -> Unit)? = null
 
     init {
         contentBox.alignment = Pos.TOP_CENTER
@@ -70,6 +74,10 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
 
         advancedPane.isManaged = false
         advancedPane.isVisible = false
+
+        lockImage.isVisible = false
+        deleteButton.isVisible = false
+        deleteButton.isManaged = false
 
         contentBox.children.addAll(imageSelector, titleTextField, descriptionTextField, advancedPane,
                 expandButton, commandTypeButton, builderContainer)
@@ -96,6 +104,12 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
                 onCommandSaved?.invoke(commandManager.getCommand(commandId)!!)
 
                 onClose()
+            }
+        }
+
+        deleteButton.setOnAction {
+            if (currentCommand != null) {
+                onCommandDeleteRequest?.invoke(currentCommand!!)
             }
         }
 
@@ -142,6 +156,12 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
 
             // If locked also show the advanced pane to change the quick command
             expandAdvanced()
+
+            // If locked, show the lock one
+            lockImage.isVisible = true
+        }else{
+            deleteButton.isVisible = true
+            deleteButton.isManaged = true
         }
 
         // Load the correct builder UI
@@ -263,7 +283,11 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
     }
 
     override fun defineTopSectionComponent(): Node? {
-        return saveButton
+        val hbox = HBox()
+        hbox.spacing = 6.0
+        hbox.alignment = Pos.CENTER_LEFT
+        hbox.children.addAll(saveButton, deleteButton, lockImage)
+        return hbox
     }
 
     override fun defineContentBoxComponent(): VBox? {

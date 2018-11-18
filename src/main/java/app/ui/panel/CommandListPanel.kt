@@ -41,7 +41,7 @@ class CommandListPanel(val parent: BlurrableStage, val imageResolver: ImageResol
     var onCommandSelected : ((Command) -> Unit)? = null
     var onNewCommandRequested : (() -> Unit)? = null
 
-    private val addCommandBtn = FloatingActionButton(imageResolver, "Add command")  // TODO: i18n
+    private val addCommandBtn = FloatingActionButton(imageResolver, "New command")  // TODO: i18n
 
     private val contentBox = VBox()
 

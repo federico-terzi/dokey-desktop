@@ -1,0 +1,14 @@
+.styled-button {
+    -fx-font-family: "Nunito Sans Bold";
+    -fx-font-size: 12px;
+    -fx-padding: 5px 14px 6px 6px;
+    -fx-background-radius: 20px;
+}
+
+.save-button {
+    -fx-background-color: linear-gradient(to bottom right, -start-green-gradient, -stop-green-gradient);
+}
+
+.delete-button {
+    -fx-background-color: linear-gradient(to bottom right, -stop-red-gradient, -start-red-gradient);
+}

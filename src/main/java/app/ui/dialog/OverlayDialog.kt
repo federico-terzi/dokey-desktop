@@ -8,6 +8,7 @@ import app.ui.stage.BlurrableStage
 import javafx.animation.Interpolator
 import javafx.animation.ParallelTransition
 import javafx.application.Platform
+import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.Scene
 import javafx.scene.effect.Effect
@@ -63,6 +64,7 @@ open class OverlayDialog(override val parent: BlurrableStage, val imageResolver:
     fun initializeUI() {
         // Load the top section
         topSection.styleClass.add("top-section")
+        topSection.alignment = Pos.CENTER_LEFT
         val spacerPane = Pane()
         HBox.setHgrow(spacerPane, Priority.ALWAYS)
         val topLeftComponent = defineTopSectionComponent()
