@@ -4,12 +4,14 @@ import json.JSONObject
 import json.JSONTokener
 import model.command.Command
 import model.component.CommandResolver
+import model.component.Component
 import model.parser.command.CommandParser
 import system.applications.Application
 import system.commands.general.AppOpenCommand
 import system.commands.general.AppRelatedCommand
 import system.commands.general.SystemCommand
 import system.commands.model.CommandWrapper
+import system.section.SectionManager
 import system.storage.StorageManager
 import java.io.*
 import java.util.*
@@ -34,6 +36,9 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
     // of a command to a list of possible instances.
     // This is useful to avoid adding commands equal in content.
     private val conflictMap = mutableMapOf<Int, MutableList<Command>>()
+
+    // This is used to delete all the reference to a deleted command
+    lateinit var sectionManager: SectionManager
 
     private val random = Random()
 
@@ -202,9 +207,14 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
         val result = generateCommandFile(command).delete()
         if (result) {
             commandMap.remove(command.id!!)
+
+            // Delete the command from all sections
+            sectionManager.deleteCommandFromAllSections(command)
+
+            return true
         }
 
-        return true
+        return false
     }
 
     @Synchronized

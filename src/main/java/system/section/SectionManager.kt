@@ -153,6 +153,35 @@ class SectionManager(val storageManager: StorageManager, val sectionParser: Sect
     }
 
     /**
+     * Cycle through all sections, to remove the specified command
+     */
+    fun deleteCommandFromAllSections(command: Command) {
+        sectionCache.values.forEach { section ->
+            var hasBeenUpdated = false
+
+            section.pages?.forEach { page ->
+                val toBeDeleted = mutableListOf<Component>()
+
+                page.components?.forEach { component ->
+                    // Delete the specified command
+                    if (component.commandId == command.id) {
+                        toBeDeleted.add(component)
+                    }
+                }
+
+                if (toBeDeleted.size > 0) {
+                    page.components?.removeAll(toBeDeleted)
+                    hasBeenUpdated = true
+                }
+            }
+
+            if (hasBeenUpdated) {
+                saveSection(section)
+            }
+        }
+    }
+
+    /**
      * Return a list of all the sections containing the specified command.
      */
     fun getAllSectionsContainingCommand(commandId: Int) : List<Section> {

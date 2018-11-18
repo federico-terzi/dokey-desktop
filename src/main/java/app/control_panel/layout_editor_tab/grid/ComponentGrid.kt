@@ -16,6 +16,7 @@ import javafx.geometry.HPos
 import javafx.geometry.Pos
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.*
+import model.command.Command
 import model.component.CommandResolver
 import model.component.Component
 import model.component.RuntimeComponent
@@ -182,30 +183,7 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
         val emptyButton = EmptyButton(this)
 
         emptyButton.onDoubleClicked = {
-            val dialog = CommandSelectDialog(parent, imageResolver, commandManager)
-            dialog.onCommandSelected = { command ->
-                // Create a component with the given command
-                val component = RuntimeComponent(commandManager)
-                component.x = col
-                component.y = row
-                component.commandId = command.id
-
-                onAddComponentsRequest?.invoke(listOf(component))
-            }
-            dialog.onNewCommandRequested = {
-                val newCommandDialog = CommandEditDialog(parent, imageResolver, applicationManager, commandManager)
-                newCommandDialog.onCommandSaved = {command ->
-                    // Create a component with the given command
-                    val component = RuntimeComponent(commandManager)
-                    component.x = col
-                    component.y = row
-                    component.commandId = command.id
-
-                    onAddComponentsRequest?.invoke(listOf(component))
-                }
-                newCommandDialog.showWithAnimation(avoidBlurIn = true)
-            }
-            dialog.showWithAnimation()
+            showCommandEditDialog(x = col, y = row, avoidBlurIn = true)
         }
 
         /*
@@ -280,12 +258,7 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
                 val command = commandManager.getCommand(component.commandId!!)
 
                 if (command != null) {
-                    val dialog = CommandEditDialog(parent, imageResolver, applicationManager, commandManager)
-                    dialog.loadCommand(command)
-                    dialog.onCommandSaved = {
-                        onRefreshRequest?.invoke()
-                    }
-                    dialog.showWithAnimation()
+                    showCommandEditDialog(command)
                 }
             }
         }
@@ -545,6 +518,32 @@ class ComponentGrid(val parent: BlurrableStage, val componentMatrix: Array<Array
             it as ComponentButton
             it.selected = true
         }
+    }
+
+    private fun showCommandEditDialog(command: Command? = null, x: Int? = null, y: Int? = null, avoidBlurIn: Boolean = false) {
+        val dialog = CommandEditDialog(parent, imageResolver, applicationManager, commandManager)
+
+        if (command != null) {
+            dialog.loadCommand(command)
+        }
+
+        dialog.onCommandSaved = {newCommand ->
+            if (command == null) { // NEW COMMAND
+                // Create a component with the given command
+                val component = RuntimeComponent(commandManager)
+                component.x = x
+                component.y = y
+                component.commandId = newCommand.id
+
+                onAddComponentsRequest?.invoke(listOf(component))
+            }else{  // EDIT COMMAND
+                onRefreshRequest?.invoke()
+            }
+        }
+        dialog.onCommandDelete = { command, result ->
+            onRefreshRequest?.invoke()
+        }
+        dialog.showWithAnimation(avoidBlurIn = avoidBlurIn)
     }
 
 

@@ -376,6 +376,9 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         sectionManager = context.getBean(SectionManager.class);
         sectionManager.initialize();
 
+        // Inject the section manager reference, needed for some operations
+        commandManager.setSectionManager(sectionManager);
+
         // Initialize the control panel
         controlPanelStage = context.getBean(ControlPanelStage.class);
 

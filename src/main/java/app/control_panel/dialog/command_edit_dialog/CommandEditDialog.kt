@@ -52,7 +52,7 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
     private val builderContainer = VBox()
 
     var onCommandSaved : ((Command) -> Unit)? = null
-    var onCommandDeleteRequest : ((Command) -> Unit)? = null
+    var onCommandDelete : ((Command, result: Boolean) -> Unit)? = null
 
     init {
         contentBox.alignment = Pos.TOP_CENTER
@@ -109,7 +109,13 @@ class CommandEditDialog(parent: BlurrableStage, imageResolver: ImageResolver,
 
         deleteButton.setOnAction {
             if (currentCommand != null) {
-                onCommandDeleteRequest?.invoke(currentCommand!!)
+                AlertFactory.instance.confirmation("Delete confirmation", "Do you really want to delete the command?",  // TODO: i18n
+                        onYes = {
+                            val result = commandManager.deleteCommand(currentCommand!!)
+                            onCommandDelete?.invoke(currentCommand!!, result)
+
+                            onClose()
+                        }).show()
             }
         }
 
