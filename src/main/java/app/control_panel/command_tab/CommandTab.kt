@@ -203,6 +203,6 @@ class CommandTab(val controlPanelStage: ControlPanelStage, val imageResolver: Im
 
     private fun validateDropPayload(event: DragEvent) : Boolean {
         return (event.dragboard.hasFiles() && event.dragboard.files[0].isFile && event.dragboard.files[0].extension == "dkcf")
-                || dndCommandProcessor.isCompatible(event.dragboard)
+                || dndCommandProcessor.isCompatible(event.dragboard, excludeCommandTabDrops = true)
     }
 }

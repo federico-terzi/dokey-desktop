@@ -12,14 +12,19 @@ import java.io.File
 class DNDCommandProcessor(val commandManager: CommandManager) {
     companion object {
         val dragAndDropPrefix = "DOKEY_PAYLOAD"
+        val commandTabGeneratedSuffix = "COMMAND_TAB"  // Used to discriminate drag and drops generated from the command tab
     }
 
     /**
      * Check if the given dragboard is compatible with the importing
      */
-    fun isCompatible(dragboard: Dragboard) : Boolean {
+    fun isCompatible(dragboard: Dragboard, excludeCommandTabDrops :Boolean = false) : Boolean {
         if (dragboard.hasString() && dragboard.string.startsWith(dragAndDropPrefix)) {
-            return true
+            if (!excludeCommandTabDrops) {
+                return true
+            }else{
+                return !dragboard.string.endsWith(commandTabGeneratedSuffix)
+            }
         }else if(dragboard.hasFiles() && dragboard.files.size > 0) {
             return true
         }else if(dragboard.hasUrl() && dragboard.url.startsWith("http")) {
@@ -37,7 +42,7 @@ class DNDCommandProcessor(val commandManager: CommandManager) {
             // Extract the type and the payload from the dragboard data
             // The data is in this form: DOKEY_PAYLOAD:type:payload
             val type = dragboard.string.split(":")[1]
-            val payload = dragboard.string.split("$dragAndDropPrefix:$type:")[1]
+            val payload = dragboard.string.split("$dragAndDropPrefix:$type:")[1].split(":")[0]
             when (type) {
                 "command" -> {
                     val commandId = payload.toInt()

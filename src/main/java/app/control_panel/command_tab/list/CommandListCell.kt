@@ -5,17 +5,24 @@ import javafx.application.Platform
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.css.PseudoClass
 import javafx.geometry.Pos
+import javafx.scene.Cursor
+import javafx.scene.SnapshotParameters
 import javafx.scene.control.ContextMenu
 import javafx.scene.control.Label
 import javafx.scene.control.ListCell
 import javafx.scene.control.MenuItem
 import javafx.scene.image.ImageView
+import javafx.scene.input.ClipboardContent
+import javafx.scene.input.TransferMode
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
+import javafx.scene.paint.Color
 import model.command.Command
 import system.commands.model.CommandWrapper
+import system.drag_and_drop.DNDCommandProcessor
 import system.image.ImageResolver
+import utils.OSValidator
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -79,6 +86,40 @@ class CommandListCell(val imageResolver: ImageResolver) : ListCell<Command>() {
 
         // Get the image for the command
         imageResolver.loadInto(entry.iconId, 48, imageView)
+
+        // Setup drag and drop
+        val dragAndDropPayload = "${DNDCommandProcessor.dragAndDropPrefix}:command:${entry.id}:${DNDCommandProcessor.commandTabGeneratedSuffix}"
+        hBox.setOnDragDetected { event ->
+            val db = hBox.startDragAndDrop(TransferMode.MOVE)
+
+            val sp = SnapshotParameters()
+            sp.fill = Color.TRANSPARENT
+            val snapshot = hBox.snapshot(sp, null)
+
+            var offsetX = 0.0
+            var offsetY = 0.0
+
+            // Workaround to compensate the position offset in the
+            // Windows OS
+            if (OSValidator.isWindows()) {
+                offsetX = snapshot.width / 2
+                offsetY = snapshot.height / 2
+            }
+
+            db.setDragView(snapshot, offsetX, offsetY)
+
+            val content = ClipboardContent()
+            content.putString(dragAndDropPayload)
+
+            db.setContent(content)
+
+            event.consume()
+        }
+        hBox.setOnDragDone{ event ->
+            hBox.cursor = Cursor.DEFAULT
+
+            event.consume()
+        }
 
         graphic = hBox
     }

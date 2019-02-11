@@ -15,7 +15,7 @@ import system.image.ImageResolver
 
 const val UNSELECTED_TAB_VERTICAL_OFFSET = 10.0
 
-class Tab(val imageResolver: ImageResolver, val tabLabel : String, val tabImage : String) : Button() {
+class Tab(val imageResolver: ImageResolver, val tabLabel : String, val tabImage : String, var dragEnabled : Boolean = false) : Button() {
     private val nameLabel : Label
     private val imageView : ImageView
 
@@ -45,6 +45,7 @@ class Tab(val imageResolver: ImageResolver, val tabLabel : String, val tabImage 
 
             _selected = value
         }
+
 
     init {
         styleClass.add("tab-selector-tab")

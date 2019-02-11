@@ -1,9 +1,7 @@
 package app.control_panel.tab_selector
 
 import javafx.application.Platform
-import javafx.scene.Group
 import javafx.scene.layout.Pane
-import javafx.scene.shape.Rectangle
 import javafx.scene.shape.SVGPath
 import system.image.ImageResolver
 
@@ -29,9 +27,9 @@ class TabSelector(val imageResolver: ImageResolver) : Pane() {
         styleClass.add("tab-selector")
 
         tabs.add(Tab(imageResolver, "Devices", "asset:airplay"))
-        tabs.add(Tab(imageResolver, "Panels", "asset:layout"))
-        tabs.add(Tab(imageResolver, "Commands", "asset:command"))
-        tabs.add(Tab(imageResolver, "Send", "asset:send"))
+        tabs.add(Tab(imageResolver, "Panels", "asset:layout", dragEnabled = true))
+        tabs.add(Tab(imageResolver, "Commands", "asset:command", dragEnabled = true))
+        tabs.add(Tab(imageResolver, "Send", "asset:send", dragEnabled = true))
         tabs.add(Tab(imageResolver, "Settings", "asset:settings"))
 
         // Add all the tabs in reverse
@@ -51,6 +49,12 @@ class TabSelector(val imageResolver: ImageResolver) : Pane() {
                 }
 
                 selectTab(selectedIndex)
+            }
+
+            tab.setOnDragEntered {
+                if (tab.dragEnabled) {
+                    selectTab(index)
+                }
             }
         }
 
