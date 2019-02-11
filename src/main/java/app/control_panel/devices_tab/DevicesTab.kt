@@ -2,16 +2,12 @@ package app.control_panel.devices_tab
 
 import app.control_panel.ControlPanelTab
 import app.control_panel.devices_tab.device_list.DeviceList
-import javafx.scene.input.KeyEvent
 import system.image.ImageResolver
 import system.server.HandshakeDataBuilder
 import java.util.*
 import com.google.zxing.client.j2se.MatrixToImageWriter
-import java.nio.file.FileSystems
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream
 import javafx.application.Platform
 import javafx.collections.FXCollections
 import javafx.geometry.Pos
@@ -19,10 +15,8 @@ import javafx.scene.control.Label
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
-import javafx.scene.layout.VBox
 import system.BroadcastManager
 import system.server.MobileServer
-import utils.SystemInfoManager
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
@@ -37,6 +31,7 @@ class DevicesTab(val imageResolver: ImageResolver, val resourceBundle: ResourceB
     private val descriptionLabel = Label(resourceBundle.getString("connect_dokey_app_desc"))
     private val deviceInfoLabel = Label(resourceBundle.getString("connected_devices"))
     private val deviceList = DeviceList(imageResolver)
+    private val deviceHeaderBox = HBox()
 
     private var qrCodeUpdateTimer = Timer()
     private var oldQRPayload : String? = null
@@ -49,9 +44,10 @@ class DevicesTab(val imageResolver: ImageResolver, val resourceBundle: ResourceB
         descriptionLabel.styleClass.add("device-tab-description-label")
         descriptionLabel.isWrapText = true
 
-        val hBox = HBox()
-        hBox.alignment = Pos.CENTER_LEFT
-        hBox.styleClass.add("device-tab-connected-box")
+        deviceHeaderBox.alignment = Pos.CENTER_LEFT
+        deviceHeaderBox.styleClass.add("device-tab-connected-box")
+        deviceHeaderBox.isVisible = false
+
         // TODO: change image
         val imageView = ImageView()
         imageView.fitWidth = 20.0
@@ -59,10 +55,10 @@ class DevicesTab(val imageResolver: ImageResolver, val resourceBundle: ResourceB
         imageResolver.loadInto("asset:airplay", 20, imageView)
 
         deviceInfoLabel.alignment = Pos.TOP_LEFT
-        hBox.children.addAll(imageView, deviceInfoLabel)
+        deviceHeaderBox.children.addAll(imageView, deviceInfoLabel)
 
         alignment = Pos.TOP_CENTER
-        children.addAll(qrImageView, titleLabel, descriptionLabel, hBox, deviceList)
+        children.addAll(qrImageView, titleLabel, descriptionLabel, deviceHeaderBox, deviceList)
     }
 
     private fun requestQRCode(onQrReady: (Image?) -> Unit, onQrCreationError: () -> Unit) {
@@ -131,6 +127,7 @@ class DevicesTab(val imageResolver: ImageResolver, val resourceBundle: ResourceB
     private val connectedDeviceListChangedEvent = BroadcastManager.BroadcastListener {
         Platform.runLater {
             deviceList.items = FXCollections.observableArrayList(MobileServer.connectedDevices)
+            deviceHeaderBox.isVisible = deviceList.items.isNotEmpty()
         }
     }
 
