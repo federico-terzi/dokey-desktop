@@ -1,5 +1,6 @@
 package app.intro
 
+import app.MainApp
 import app.ui.control.IconButton
 import javafx.fxml.FXMLLoader
 import javafx.geometry.Pos
@@ -12,6 +13,7 @@ import javafx.stage.Stage
 import javafx.stage.StageStyle
 import system.ResourceUtils
 import system.image.ImageResolver
+import java.net.URI
 import java.util.*
 
 class IntroStage(val resourceBundle: ResourceBundle, val imageResolver: ImageResolver) : Stage() {
@@ -71,6 +73,9 @@ class IntroStage(val resourceBundle: ResourceBundle, val imageResolver: ImageRes
             googlePlayImageView.image = ImageResolver.getImage(IntroStage::class.java.getResourceAsStream("/assets/google-play-btn.png"), 300)
             googlePlayBtn.graphic = googlePlayImageView
             googlePlayBtn.styleClass.add("google-play-btn")
+            googlePlayBtn.setOnAction {
+                java.awt.Desktop.getDesktop().browse(URI(MainApp.PLAYSTORE_URL));
+            }
             controller.contentBox.children.add(googlePlayBtn)
         }
 

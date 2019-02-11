@@ -63,7 +63,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     public static final String DOCS_URL = "https://dokey.io/docs/";
     public static final String EDITOR_DOCS_URL = "https://dokey.io/docs/editor/";
     public static final String DOWNLOAD_URL = "https://dokey.io/#download";
-    public static final String PLAYSTORE_URL = "https://dokey.io/";  // TODO: change
+    public static final String PLAYSTORE_URL = "https://play.google.com/store/apps/details?id=io.rocketguys.dokey";
 
     private static StorageManager storageManager;
 
