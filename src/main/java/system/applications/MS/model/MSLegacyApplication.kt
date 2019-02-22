@@ -54,7 +54,7 @@ class MSLegacyApplication(val storageManager: StorageManager, val executablePath
 
         // Execute the process
         try {
-            val proc = runtime.exec(arrayOf(executablePath))
+            val proc = runtime.exec(arrayOf("explorer.exe", executablePath))
             return true
         }catch (e : Exception) {
             e.printStackTrace()
