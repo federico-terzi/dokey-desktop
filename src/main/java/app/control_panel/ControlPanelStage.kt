@@ -119,7 +119,6 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
 
         // Initially select the first one
         activeTab = tabs[0]
-        activeTab.onFocus()
 
         // Setup the tab change listener
         tabSelector.onTabSelected = {tabIndex ->
@@ -196,6 +195,8 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
         val transition = ParallelTransition(fadeTransition, positionTransition)
         transition.play()
 
+        activeTab.onFocus()
+
         BroadcastManager.getInstance().sendBroadcast(BroadcastManager.CONTROL_PANEL_OPENED_EVENT, null)
     }
 
@@ -212,6 +213,8 @@ class ControlPanelStage(val sectionManager: SectionManager, val imageResolver: I
             close()
         }
         transition.play()
+
+        activeTab.onUnfocus()
 
         BroadcastManager.getInstance().sendBroadcast(BroadcastManager.CONTROL_PANEL_CLOSED_EVENT, null)
     }
