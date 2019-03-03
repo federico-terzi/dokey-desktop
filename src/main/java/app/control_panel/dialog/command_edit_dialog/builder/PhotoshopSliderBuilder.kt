@@ -40,6 +40,14 @@ class PhotoshopSliderBuilder(val context: BuilderContext, val parent: BlurrableS
 
         typeComboBox.promptText = "Select Type..."  // TODO: i18n
         typeComboBox.items = FXCollections.observableArrayList(PhotoshopSliderAction.values().toList())
+        typeComboBox.setOnAction {
+            val type = typeComboBox.selectionModel.selectedItem
+            defaultMin = type.defaultMin
+            defaultMax = type.defaultMax
+
+            minTextField.text = defaultMin.toString()
+            maxTextField.text = defaultMax.toString()
+        }
 
         resetBtn.setOnAction {
             minTextField.text = defaultMin.toString()
@@ -52,8 +60,8 @@ class PhotoshopSliderBuilder(val context: BuilderContext, val parent: BlurrableS
 
         typeComboBox.selectionModel.select(command.slider)
 
-        defaultMin = command.defaultMin!!
-        defaultMax = command.defaultMax!!
+        defaultMin = command.slider!!.defaultMin
+        defaultMax = command.slider!!.defaultMax
 
         minTextField.text = command.min!!.toString()
         maxTextField.text = command.max!!.toString()

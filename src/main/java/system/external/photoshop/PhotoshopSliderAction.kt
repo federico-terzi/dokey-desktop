@@ -1,7 +1,7 @@
 package system.external.photoshop
 
-enum class PhotoshopSliderAction(val actionId: String, val actionLabel: String) {
-    LAYER_OPACITY("opacity", "Change Layer Opacity");
+enum class PhotoshopSliderAction(val actionId: String, val actionLabel: String, val defaultMin: Float, val defaultMax: Float) {
+    LAYER_OPACITY("opacity", "Change Layer Opacity", 0f, 100f);
 
     override fun toString(): String {
         return actionLabel
