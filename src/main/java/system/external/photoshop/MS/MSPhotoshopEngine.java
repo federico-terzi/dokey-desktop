@@ -33,18 +33,10 @@ public class MSPhotoshopEngine extends PhotoshopEngine {
         try {
             return executeJavascriptInternal(code, params);
         }catch (COMException exception) {
-            // Probably photoshop was closed and the reference to the instance is not valid anymore.
-            // We should try to connect again to photoshop and re-send the command. If even in this
-            // case it doesn't work, we should stop.
             initialize();
+            log.warning("Could not execute Photoshop command: "+exception.toString());
         }
-
-        try {
-            return executeJavascriptInternal(code, params);
-        }catch (COMException exception) {
-            log.warning("Could not execute Photoshop command: "+exception.getMessage());
-            return false;
-        }
+        return false;
     }
 
     private boolean executeJavascriptInternal(String code, Double[] params) {
