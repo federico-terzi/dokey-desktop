@@ -1,6 +1,7 @@
 package tests;
 
 import json.JSONObject;
+import model.command.AnalogCommand;
 import model.command.Command;
 import model.command.SimpleCommand;
 import net.DEManager;
@@ -74,6 +75,11 @@ public class ClientTestMain {
         System.out.println("Connected!");
 
         try {
+            for (int i = 0; i<4; i++) {
+                // Read the initial dokey numbers
+                socket.getInputStream().read();
+            }
+
             LinkManager manager = new LinkManager(socket, SystemInfoManager.getDeviceInfo(), 3,
                     8, true, key, false, null,
                     new DEManager.OnConnectionListener() {
@@ -121,12 +127,26 @@ public class ClientTestMain {
                             System.out.println("Error");
                         }
                     });
-                }else if (line.startsWith("command")) {  // SERVICE
+                }else if (line.startsWith("command")) {
                     StringTokenizer st = new StringTokenizer(line, ":");
                     st.nextToken();
                     String commandId = st.nextToken();
                     Command command = new SimpleCommand();
                     command.setId(Integer.valueOf(commandId));
+                    manager.sendCommand(command, new LinkManager.OnCommandAcknowledgedListener() {
+                        @Override
+                        public void onCommandAcknowledged() {
+                            System.out.println("ACK");
+                        }
+                    });
+                }else if (line.startsWith("analog")) {  // SERVICE
+                    StringTokenizer st = new StringTokenizer(line, ":");
+                    st.nextToken();
+                    String commandId = st.nextToken();
+                    String value = st.nextToken();
+                    AnalogCommand command = new AnalogCommand();
+                    command.setId(Integer.valueOf(commandId));
+                    command.setValue(Float.valueOf(value));
                     manager.sendCommand(command, new LinkManager.OnCommandAcknowledgedListener() {
                         @Override
                         public void onCommandAcknowledged() {

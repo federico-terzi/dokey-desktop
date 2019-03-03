@@ -16,7 +16,7 @@ public class MSPhotoshopEngine extends PhotoshopEngine {
 
     private Logger log = Logger.getGlobal();
 
-    public void initialize() {
+    private void initialize() {
         if (!initialized) {
             Ole32.INSTANCE.CoInitializeEx(Pointer.NULL, Ole32.COINIT_MULTITHREADED);
             bindPhotoshopReference();

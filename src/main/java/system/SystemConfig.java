@@ -350,6 +350,17 @@ public class SystemConfig {
 
             @NotNull
             @Override
+            public PhotoshopManager getPhotoshopManager() {
+                try {
+                    return photoshopManager();
+                } catch (UnsupportedOperatingSystemException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @NotNull
+            @Override
             public CommandManager getCommandManager() {
                 return commandManager();
             }
