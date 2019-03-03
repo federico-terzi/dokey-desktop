@@ -3,7 +3,7 @@ package system.commands.specific
 import system.commands.annotations.RegisterCommand
 import system.commands.model.AnalogCommandWrapper
 
-@RegisterCommand(title = "Photoshop Slider", iconId = "asset:folder")
+@RegisterCommand(title = "Photoshop Slider", iconId = "asset:sliders")
 class PhotoshopSliderCommand : AnalogCommandWrapper() {
     init {
         category = "photoshop"
