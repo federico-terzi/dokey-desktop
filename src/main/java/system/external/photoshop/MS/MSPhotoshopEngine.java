@@ -17,20 +17,16 @@ public class MSPhotoshopEngine extends PhotoshopEngine {
     private Logger log = Logger.getGlobal();
 
     private void initialize() {
-        if (!initialized) {
-            Ole32.INSTANCE.CoInitializeEx(Pointer.NULL, Ole32.COINIT_MULTITHREADED);
-            bindPhotoshopReference();
-            initialized = true;
-        }
-    }
-
-    private void bindPhotoshopReference() {
+        Ole32.INSTANCE.CoInitializeEx(Pointer.NULL, Ole32.COINIT_MULTITHREADED);
         reference = new PhotoshopCOMReference();
+        initialized = true;
     }
 
     @Override
     public boolean executeJavascript(@NotNull String code, @NotNull Double[] params) {
-        initialize();
+        if (!initialized) {
+            initialize();
+        }
 
         boolean firstTry = true;
 
@@ -40,7 +36,7 @@ public class MSPhotoshopEngine extends PhotoshopEngine {
             // Probably photoshop was closed and the reference to the instance is not valid anymore.
             // We should try to connect again to photoshop and re-send the command. If even in this
             // case it doesn't work, we should stop.
-            bindPhotoshopReference();
+            initialize();
         }
 
         try {
