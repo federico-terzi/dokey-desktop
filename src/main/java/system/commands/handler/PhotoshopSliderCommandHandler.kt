@@ -7,6 +7,6 @@ import system.context.GeneralContext
 @RegisterHandler(commandType = PhotoshopSliderCommand::class)
 class PhotoshopSliderCommandHandler(context: GeneralContext) : CommandHandler<PhotoshopSliderCommand>(context) {
     override fun handleInternal(command: PhotoshopSliderCommand) {
-        context.photoshopManager.moveSlider(command.sliderId!!, command.value!!.toDouble())
+        context.photoshopManager.moveSlider(command.slider!!, command.value!!.toDouble())
     }
 }
