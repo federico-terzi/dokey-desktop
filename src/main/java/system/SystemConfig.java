@@ -26,6 +26,10 @@ import system.commands.validator.CommandValidator;
 import system.context.GeneralContext;
 import system.drag_and_drop.DNDCommandProcessor;
 import system.exceptions.UnsupportedOperatingSystemException;
+import system.external.photoshop.MAC.MACPhotoshopEngine;
+import system.external.photoshop.MS.MSPhotoshopEngine;
+import system.external.photoshop.PhotoshopEngine;
+import system.external.photoshop.PhotoshopManager;
 import system.image.ImageResolver;
 import system.keyboard.KeyboardManager;
 import system.keyboard.MACKeyboardManager;
@@ -233,6 +237,23 @@ public class SystemConfig {
     @Bean
     public ApplicationPathResolver applicationPathResolver() throws UnsupportedOperatingSystemException {
         return new ApplicationPathResolver(applicationManager());
+    }
+
+    @Bean
+    @Lazy
+    public PhotoshopEngine photoshopEngine() throws UnsupportedOperatingSystemException {
+        if (OSValidator.isWindows()) {  // WINDOWS
+            return new MSPhotoshopEngine();
+        }else if (OSValidator.isMac()) {  // MAC OSX
+            return new MACPhotoshopEngine();
+        }
+        throw new UnsupportedOperatingSystemException("This Operating system is not supported by Dokey");
+    }
+
+    @Bean
+    @Lazy
+    public PhotoshopManager photoshopManager() throws UnsupportedOperatingSystemException {
+        return new PhotoshopManager(photoshopEngine());
     }
 
     public GeneralContext generalContext() {

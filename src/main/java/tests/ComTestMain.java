@@ -116,7 +116,11 @@ public class ComTestMain {
     }
 
     public static void setOpacity(Photoshop p, double val) {
-        p.doJavascript("var idsetd = charIDToTypeID( \"setd\" );\r\n    var desc5 = new ActionDescriptor();\r\n    var idnull = charIDToTypeID( \"null\" );\r\n        var ref2 = new ActionReference();\r\n        var idLyr = charIDToTypeID( \"Lyr \" );\r\n        var idOrdn = charIDToTypeID( \"Ordn\" );\r\n        var idTrgt = charIDToTypeID( \"Trgt\" );\r\n        ref2.putEnumerated( idLyr, idOrdn, idTrgt );\r\n    desc5.putReference( idnull, ref2 );\r\n    var idT = charIDToTypeID( \"T   \" );\r\n        var desc6 = new ActionDescriptor();\r\n        var idOpct = charIDToTypeID( \"Opct\" );\r\n        var idPrc = charIDToTypeID( \"#Prc\" );\r\n        desc6.putUnitDouble( idOpct, idPrc, arguments[0] );\r\n    var idLyr = charIDToTypeID( \"Lyr \" );\r\n    desc5.putObject( idT, idLyr, desc6 );\r\nexecuteAction( idsetd, desc5, DialogModes.NO );\r\n", new double[] {val});
+        //p.doJavascript("var idsetd = charIDToTypeID( \"setd\" );\r\n    var desc5 = new ActionDescriptor();\r\n    var idnull = charIDToTypeID( \"null\" );\r\n        var ref2 = new ActionReference();\r\n        var idLyr = charIDToTypeID( \"Lyr \" );\r\n        var idOrdn = charIDToTypeID( \"Ordn\" );\r\n        var idTrgt = charIDToTypeID( \"Trgt\" );\r\n        ref2.putEnumerated( idLyr, idOrdn, idTrgt );\r\n    desc5.putReference( idnull, ref2 );\r\n    var idT = charIDToTypeID( \"T   \" );\r\n        var desc6 = new ActionDescriptor();\r\n        var idOpct = charIDToTypeID( \"Opct\" );\r\n        var idPrc = charIDToTypeID( \"#Prc\" );\r\n        desc6.putUnitDouble( idOpct, idPrc, arguments[0] );\r\n    var idLyr = charIDToTypeID( \"Lyr \" );\r\n    desc5.putObject( idT, idLyr, desc6 );\r\nexecuteAction( idsetd, desc5, DialogModes.NO );\r\n", new double[] {val});
+        p.doJavascript("app.activeDocument.activeLayer.opacity=arguments[0];", new double[] {val});
+    }
+    public static void setBrush(Photoshop p, double val) {
+        p.doJavascript("var idsetd = charIDToTypeID( \"setd\" );\r\n    var desc9 = new ActionDescriptor();\r\n    var idnull = charIDToTypeID( \"null\" );\r\n        var ref4 = new ActionReference();\r\n        var idBrsh = charIDToTypeID( \"Brsh\" );\r\n        var idOrdn = charIDToTypeID( \"Ordn\" );\r\n        var idTrgt = charIDToTypeID( \"Trgt\" );\r\n        ref4.putEnumerated( idBrsh, idOrdn, idTrgt );\r\n    desc9.putReference( idnull, ref4 );\r\n    var idT = charIDToTypeID( \"T   \" );\r\n        var desc10 = new ActionDescriptor();\r\n        var idmasterDiameter = stringIDToTypeID( \"masterDiameter\" );\r\n        var idPxl = charIDToTypeID( \"#Pxl\" );\r\n        desc10.putUnitDouble( idmasterDiameter, idPxl, arguments[0] );\r\n    var idBrsh = charIDToTypeID( \"Brsh\" );\r\n    desc9.putObject( idT, idBrsh, desc10 );\r\nexecuteAction( idsetd, desc9, DialogModes.NO ); refresh();", new double[] {val});
     }
 
     public void demo() {
@@ -124,6 +128,8 @@ public class ComTestMain {
         Photoshop photoshop = new Photoshop();
         for (int i = 0; i<100; i++) {
             setOpacity(photoshop, i);
+//            setBrush(photoshop, i);
+
         }
 
 
