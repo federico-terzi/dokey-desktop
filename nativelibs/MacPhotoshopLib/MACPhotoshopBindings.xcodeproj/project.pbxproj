@@ -1,0 +1,408 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B6173730222DD17A00EBCBCE /* MACPhotoshopBindings.h in Headers */ = {isa = PBXBuildFile; fileRef = B617372F222DD17A00EBCBCE /* MACPhotoshopBindings.h */; };
+		B6173732222DD17A00EBCBCE /* MACPhotoshopBindings.m in Sources */ = {isa = PBXBuildFile; fileRef = B6173731222DD17A00EBCBCE /* MACPhotoshopBindings.m */; };
+		B617373F222DD60A00EBCBCE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B617373E222DD60A00EBCBCE /* main.m */; };
+		B6173748222DD73900EBCBCE /* libMACPhotoshopBindings.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B617372C222DD17A00EBCBCE /* libMACPhotoshopBindings.dylib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B6173745222DD72F00EBCBCE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B6173724222DD17A00EBCBCE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B617372B222DD17A00EBCBCE;
+			remoteInfo = MACPhotoshopBindings;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B617373A222DD60A00EBCBCE /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		B617372C222DD17A00EBCBCE /* libMACPhotoshopBindings.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libMACPhotoshopBindings.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		B617372F222DD17A00EBCBCE /* MACPhotoshopBindings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MACPhotoshopBindings.h; sourceTree = "<group>"; };
+		B6173731222DD17A00EBCBCE /* MACPhotoshopBindings.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MACPhotoshopBindings.m; sourceTree = "<group>"; };
+		B617373C222DD60A00EBCBCE /* Test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Test; sourceTree = BUILT_PRODUCTS_DIR; };
+		B617373E222DD60A00EBCBCE /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B617372A222DD17A00EBCBCE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B6173739222DD60A00EBCBCE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B6173748222DD73900EBCBCE /* libMACPhotoshopBindings.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B6173723222DD17A00EBCBCE = {
+			isa = PBXGroup;
+			children = (
+				B617372E222DD17A00EBCBCE /* MACPhotoshopBindings */,
+				B617373D222DD60A00EBCBCE /* Test */,
+				B617372D222DD17A00EBCBCE /* Products */,
+				B6173747222DD73900EBCBCE /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		B617372D222DD17A00EBCBCE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B617372C222DD17A00EBCBCE /* libMACPhotoshopBindings.dylib */,
+				B617373C222DD60A00EBCBCE /* Test */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B617372E222DD17A00EBCBCE /* MACPhotoshopBindings */ = {
+			isa = PBXGroup;
+			children = (
+				B617372F222DD17A00EBCBCE /* MACPhotoshopBindings.h */,
+				B6173731222DD17A00EBCBCE /* MACPhotoshopBindings.m */,
+			);
+			path = MACPhotoshopBindings;
+			sourceTree = "<group>";
+		};
+		B617373D222DD60A00EBCBCE /* Test */ = {
+			isa = PBXGroup;
+			children = (
+				B617373E222DD60A00EBCBCE /* main.m */,
+			);
+			path = Test;
+			sourceTree = "<group>";
+		};
+		B6173747222DD73900EBCBCE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		B6173728222DD17A00EBCBCE /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B6173730222DD17A00EBCBCE /* MACPhotoshopBindings.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		B617372B222DD17A00EBCBCE /* MACPhotoshopBindings */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B6173735222DD17A00EBCBCE /* Build configuration list for PBXNativeTarget "MACPhotoshopBindings" */;
+			buildPhases = (
+				B6173728222DD17A00EBCBCE /* Headers */,
+				B6173729222DD17A00EBCBCE /* Sources */,
+				B617372A222DD17A00EBCBCE /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MACPhotoshopBindings;
+			productName = MACPhotoshopBindings;
+			productReference = B617372C222DD17A00EBCBCE /* libMACPhotoshopBindings.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		B617373B222DD60A00EBCBCE /* Test */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B6173740222DD60A00EBCBCE /* Build configuration list for PBXNativeTarget "Test" */;
+			buildPhases = (
+				B6173738222DD60A00EBCBCE /* Sources */,
+				B6173739222DD60A00EBCBCE /* Frameworks */,
+				B617373A222DD60A00EBCBCE /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B6173746222DD72F00EBCBCE /* PBXTargetDependency */,
+			);
+			name = Test;
+			productName = Test;
+			productReference = B617373C222DD60A00EBCBCE /* Test */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B6173724222DD17A00EBCBCE /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1010;
+				ORGANIZATIONNAME = "Federico Terzi";
+				TargetAttributes = {
+					B617372B222DD17A00EBCBCE = {
+						CreatedOnToolsVersion = 10.1;
+					};
+					B617373B222DD60A00EBCBCE = {
+						CreatedOnToolsVersion = 10.1;
+					};
+				};
+			};
+			buildConfigurationList = B6173727222DD17A00EBCBCE /* Build configuration list for PBXProject "MACPhotoshopBindings" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = B6173723222DD17A00EBCBCE;
+			productRefGroup = B617372D222DD17A00EBCBCE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B617372B222DD17A00EBCBCE /* MACPhotoshopBindings */,
+				B617373B222DD60A00EBCBCE /* Test */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B6173729222DD17A00EBCBCE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B6173732222DD17A00EBCBCE /* MACPhotoshopBindings.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B6173738222DD60A00EBCBCE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B617373F222DD60A00EBCBCE /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B6173746222DD72F00EBCBCE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B617372B222DD17A00EBCBCE /* MACPhotoshopBindings */;
+			targetProxy = B6173745222DD72F00EBCBCE /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		B6173733222DD17A00EBCBCE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		B6173734222DD17A00EBCBCE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		B6173736222DD17A00EBCBCE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = N69XJWRM3X;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		B6173737222DD17A00EBCBCE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = N69XJWRM3X;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		B6173741222DD60A00EBCBCE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = N69XJWRM3X;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		B6173742222DD60A00EBCBCE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = N69XJWRM3X;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B6173727222DD17A00EBCBCE /* Build configuration list for PBXProject "MACPhotoshopBindings" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B6173733222DD17A00EBCBCE /* Debug */,
+				B6173734222DD17A00EBCBCE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B6173735222DD17A00EBCBCE /* Build configuration list for PBXNativeTarget "MACPhotoshopBindings" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B6173736222DD17A00EBCBCE /* Debug */,
+				B6173737222DD17A00EBCBCE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B6173740222DD60A00EBCBCE /* Build configuration list for PBXNativeTarget "Test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B6173741222DD60A00EBCBCE /* Debug */,
+				B6173742222DD60A00EBCBCE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B6173724222DD17A00EBCBCE /* Project object */;
+}
