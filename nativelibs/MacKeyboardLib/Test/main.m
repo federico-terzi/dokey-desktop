@@ -269,7 +269,9 @@ void print(const char * result) {
 }
 
 int main() {
-    simulateMediaKey(0);
+    //simulateMediaKey(0);
+    
+    NSLog(AXIsProcessTrusted() ? @"Yes" : @"No");
     
     return 0;
 }

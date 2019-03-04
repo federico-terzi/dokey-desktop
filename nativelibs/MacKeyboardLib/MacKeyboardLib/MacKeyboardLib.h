@@ -41,3 +41,15 @@ int forceDisableCapsLock(void);
  Simulate the pressure of the given media key.
  */
 void simulateMediaKey(int mediaKey);
+
+/*
+ Check if accessibility permissions have been granted to dokey.
+ Return 0 if not authorized, 1 if authorized.
+ */
+int isAccessibilityEnabled(void);
+
+/*
+ If Dokey does not have accessibility permissions, prompt the user with
+ a dialog to enable them
+ */
+void showAccessibilityPrompt(void);

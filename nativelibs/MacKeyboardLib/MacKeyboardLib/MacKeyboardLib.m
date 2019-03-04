@@ -322,3 +322,24 @@ void simulateMediaKey(int mediaKey) {
     usleep(20000);
     _postMediaKey(mediaKey, 0);
 }
+
+/*
+ Check if accessibility permissions have been granted to dokey.
+ Return 0 if not authorized, 1 if authorized.
+ */
+int isAccessibilityEnabled() {
+    if (AXIsProcessTrusted()) {
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+/*
+ If Dokey does not have accessibility permissions, prompt the user with
+ a dialog to enable them
+ */
+void showAccessibilityPrompt() {
+    NSDictionary *options = @{(__bridge id)kAXTrustedCheckOptionPrompt: @YES};
+    AXIsProcessTrustedWithOptions((CFDictionaryRef)options);
+}

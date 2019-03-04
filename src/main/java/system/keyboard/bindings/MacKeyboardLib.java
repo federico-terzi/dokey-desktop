@@ -57,4 +57,16 @@ public interface MacKeyboardLib extends Library {
      Keys -> hidsystem/ev_keymap.h
      */
     void simulateMediaKey(int mediaKey);
+
+    /*
+     Check if accessibility permissions have been granted to dokey.
+     Return 0 if not authorized, 1 if authorized.
+     */
+    int isAccessibilityEnabled();
+
+    /*
+     If Dokey does not have accessibility permissions, prompt the user with
+     a dialog to enable them
+     */
+    void showAccessibilityPrompt();
 }
