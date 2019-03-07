@@ -225,3 +225,5 @@ pip-log.txt
 out/
 remotekey-desktop.iml
 */xcuserdata/
+
+packager/tmp/
