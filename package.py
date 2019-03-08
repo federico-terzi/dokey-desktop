@@ -50,9 +50,17 @@ def build(jre, skip_gradle, name, appclass, id, vendor):
 
     # Check javapackager
     try:
-        subprocess.check_output([PACKAGER_PATH, "-help"])
-    except subprocess.CalledProcessError:
+        subprocess.run([PACKAGER_PATH, "-help"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except FileNotFoundError:
         raise Exception("Could not find javapackager, have you added it to the path? Usually it is located into the bin directory of the JDK")
+
+    # Check Inno Setup
+    if TARGET_OS == "windows":
+        try:
+            subprocess.run(["iscc"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except FileNotFoundError:
+            raise Exception("Could not find Inno Setup, you can download it here ( unicode version is better ): http://www.jrsoftware.org/isdl.php")
+
 
     if not skip_gradle:
         print("STARTING GRADLE BUILING PROGESS")
