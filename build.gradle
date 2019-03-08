@@ -33,7 +33,7 @@ sourceCompatibility = 1.8
 
 // Remove the image directories from the JAR, because they will
 // be included outside the jar
-sourceSets.main.resources.excludes = ["/sicons", "/sysicons", "/webicons", "/win", "/mac", "/commands"]
+sourceSets.main.resources.excludes = ["/sicons", "/webicons", "/win", "/mac", "/commands"]
 
 repositories {
     mavenCentral()

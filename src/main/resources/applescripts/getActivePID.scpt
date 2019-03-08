@@ -1,1 +1,0 @@
-global frontApp, frontAppPIDtell application "System Events"	set frontApp to first application process whose frontmost is true	set frontAppPID to unix id of frontAppend telllog frontAppPID
