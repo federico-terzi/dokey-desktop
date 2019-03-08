@@ -17,8 +17,8 @@ def cli():
 @click.option('--skip-gradle', '-s', default=False, is_flag=True, help='Avoid the Gradle JAR building phase ( useful when already built )')
 @click.option('--name', default="Dokey", help='Name of the target application.')
 @click.option('--appclass', default="app.MainLauncher", help='Main class of the application that will be launched first.')
-@click.option('--id', default="com.rocketguys.Dokey", help='The identifier of the app, as reverse DNS order ( such as com.example.app )')
-@click.option('--vendor', default="Rocket Guys", help='Vendor of the app')
+@click.option('--id', default="io.dokey.Dokey", help='The identifier of the app, as reverse DNS order ( such as com.example.app )')
+@click.option('--vendor', default="Dokey", help='Vendor of the app')
 def build(jre, skip_gradle, name, appclass, id, vendor):
     """Build Dokey distribution"""
     # Check operating system

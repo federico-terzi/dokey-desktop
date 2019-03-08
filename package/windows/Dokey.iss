@@ -51,6 +51,7 @@ Source: "APPLICATION_NAME\*"; DestDir: "{app}"; Flags: ignoreversion recursesubd
 
 [Icons]
 Name: "{group}\APPLICATION_NAME"; Filename: "{app}\APPLICATION_NAME.exe"; IconFilename: "{app}\APPLICATION_NAME.ico"; Check: APPLICATION_MENU_SHORTCUT()
+Name: "{group}\Dokey Log"; Filename: "{%USERPROFILE}\.dokey\log.txt"
 Name: "{commondesktop}\APPLICATION_NAME"; Filename: "{app}\APPLICATION_NAME.exe";  IconFilename: "{app}\APPLICATION_NAME.ico"; Check: APPLICATION_DESKTOP_SHORTCUT()
 SECONDARY_LAUNCHERS
 
@@ -60,6 +61,8 @@ Filename: "{app}\RUN_FILENAME.exe"; Description: "{cm:LaunchProgram,APPLICATION_
 Filename: "{app}\RUN_FILENAME.exe"; Parameters: "-install -svcName ""APPLICATION_NAME"" -svcDesc ""APPLICATION_DESCRIPTION"" -mainExe ""APPLICATION_LAUNCHER_FILENAME"" START_ON_INSTALL RUN_AT_STARTUP"; Check: APPLICATION_SERVICE()
 
 [UninstallRun]
+Filename: "{cmd}"; Parameters: "/C ""taskkill /im Dokey.exe /f /t"
+Filename: "{cmd}"; Parameters: "/C ""taskkill /im adb.exe /f /t"
 Filename: "{app}\RUN_FILENAME.exe "; Parameters: "-uninstall -svcName APPLICATION_NAME STOP_ON_UNINSTALL"; Check: APPLICATION_SERVICE()
 
 [Code]
