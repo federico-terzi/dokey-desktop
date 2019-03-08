@@ -119,7 +119,9 @@ def build(jre, skip_gradle, name, appclass, id, vendor):
     print("Launching javapackager with parameters:", packager_options)
     _packager_options = ["javapackager"]
     _packager_options.extend(packager_options)
-    subprocess.run(_packager_options)
+    my_env = os.environ.copy()
+    my_env["PACKAGERPATH"] = os.path.abspath(os.path.join("package", TARGET_OS))
+    subprocess.run(_packager_options, env=my_env)
 
     # TODO: copy needed resources, jar and package files in a temp directory and then run java packager
     # TODO: code signing

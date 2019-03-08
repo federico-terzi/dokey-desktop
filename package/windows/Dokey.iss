@@ -1,6 +1,9 @@
 ;This file will be executed next to the application bundle image
 ;I.e. current directory will contain folder APPLICATION_NAME with application files
 [Setup]
+
+#define PACKAGERPATH GetEnv('PACKAGERPATH')
+
 AppId={{PRODUCT_APP_IDENTIFIER}}
 AppName=APPLICATION_NAME
 AppVersion=APPLICATION_VERSION
@@ -31,8 +34,9 @@ UninstallDisplayIcon={app}\APPLICATION_NAME.ico
 UninstallDisplayName=APPLICATION_NAME
 WizardImageStretch=No
 WizardSmallImageFile=APPLICATION_NAME-setup-icon.bmp   
-WizardImageFile="C:\Users\Freddy\Documents\GitHub\remotekey-desktop\package\windows\Dokey-welcome.bmp"
+WizardImageFile={#PACKAGERPATH}\Dokey-welcome.bmp
 ArchitecturesInstallIn64BitMode=ARCHITECTURE_BIT_MODE
+
 FILE_ASSOCIATIONS
 
 [Languages]
