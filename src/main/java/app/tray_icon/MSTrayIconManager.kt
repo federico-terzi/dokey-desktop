@@ -46,11 +46,18 @@ class MSTrayIconManager(resourceBundle: ResourceBundle) : AbstractTrayIconManage
         // Setup the click listener
         trayIcon?.addMouseListener(object: MouseAdapter() {
             override fun mouseClicked(e: MouseEvent?) {
-                // Update the icon position
-                _iconX = e!!.x
-                _iconY = e!!.y
+                when (e!!.button) {
+                    1 -> {  // LEFT CLICK
+                        // Update the icon position
+                        _iconX = e!!.x
+                        _iconY = e!!.y
 
-                onTrayIconClicked?.invoke()
+                        onTrayIconClicked?.invoke()
+                    }
+                    3 -> {  // RIGHT CLICK
+
+                    }
+                }
             }
         })
 
