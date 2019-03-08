@@ -106,11 +106,15 @@ class CommandManager(val commandParser: CommandParser, val storageManager: Stora
         maxId = 0
 
         for (file in commandDir.listFiles()) {
-            val command = readCommandFromFile(file)
-            commands.add(command)
+            try {
+                val command = readCommandFromFile(file)
+                commands.add(command)
 
-            if (command.id!! > maxId) {
-                maxId = command.id!!
+                if (command.id!! > maxId) {
+                    maxId = command.id!!
+                }
+            }catch (e: Exception) {
+                LOG.warning("Exception when loading command: "+ e.toString())
             }
         }
 
