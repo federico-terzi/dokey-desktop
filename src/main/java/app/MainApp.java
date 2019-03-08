@@ -35,6 +35,7 @@ import system.adb.ADBManager;
 import system.bookmarks.BookmarkManager;
 import system.commands.CommandManager;
 import system.applications.ApplicationManager;
+import system.logging.LoggerOutputStream;
 import system.section.SectionManager;
 import system.server.*;
 import system.startup.StartupManager;
@@ -153,23 +154,24 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
             }
         }
 
+        // Setup error/output redirection to file
+        File logFile = new File(StorageManager.getDefault().getStorageDir(), LOG_FILENAME);
+        try {
+            PrintStream fileStream = new PrintStream(logFile);
+            LoggerOutputStream loggerOutputStream = new LoggerOutputStream(System.out, fileStream);
+            PrintStream loggerStream = new PrintStream(loggerOutputStream, true);
+            System.setOut(loggerStream);
+            System.setErr(loggerStream);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
         // Set the logging level
         Handler consoleHandler = new ConsoleHandler();
         consoleHandler.setLevel(level);
         LOG.setUseParentHandlers( false );
         LOG.setLevel(level);
         LOG.addHandler(consoleHandler);
-
-        // Configure the file handler
-        File logFile = new File(StorageManager.getDefault().getStorageDir(), LOG_FILENAME);
-        try {
-            FileHandler fileHandler = new FileHandler(logFile.getAbsolutePath());
-            LOG.addHandler(fileHandler);
-            SimpleFormatter formatter = new SimpleFormatter();
-            fileHandler.setFormatter(formatter);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         // Set up the language resources
         if (!ignoreLanguage) {
