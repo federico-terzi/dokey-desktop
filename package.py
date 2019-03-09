@@ -19,7 +19,8 @@ def cli():
 @click.option('--appclass', default="app.MainLauncher", help='Main class of the application that will be launched first.')
 @click.option('--id', default="io.dokey.Dokey", help='The identifier of the app, as reverse DNS order ( such as com.example.app )')
 @click.option('--vendor', default="Dokey", help='Vendor of the app')
-def build(jre, skip_gradle, name, appclass, id, vendor):
+@click.option('--maxmemory', default=64, help='Maximum JVM heap size in Mb')
+def build(jre, skip_gradle, name, appclass, id, vendor, maxmemory):
     """Build Dokey distribution"""
     # Check operating system
     GRADLE_PATH = "gradlew"
@@ -111,7 +112,7 @@ def build(jre, skip_gradle, name, appclass, id, vendor):
 
     packager_options = ["-deploy", "-outdir", OUTPUT_PATH, "-outfile", name, "-name", name, "-title", name, "-v",
                         "-srcdir", TMP_DIR, "-appclass", appclass, "-BappVersion="+VERSION, "-Bidentifier="+id,
-                        "-Bvendor="+vendor]
+                        "-Bvendor="+vendor, f"-BjvmOptions=-Xmx{maxmemory}m"]
 
     # Specify JRE version if needed
     if jre is not None:
