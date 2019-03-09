@@ -21,6 +21,7 @@ import system.drag_and_drop.DNDCommandProcessor;
 import system.exceptions.UnsupportedOperatingSystemException;
 import system.image.ImageResolver;
 import system.applications.ApplicationManager;
+import system.internal_ipc.IPCServer;
 import system.search.SearchEngine;
 import system.section.SectionManager;
 import system.section.exporter.SectionExporter;
@@ -60,6 +61,7 @@ public class AppConfig {
     @Autowired private ComponentParser componentParser;
     @Autowired private DNDCommandProcessor dndCommandProcessor;
     @Autowired private HandshakeDataBuilder handshakeDataBuilder;
+    @Autowired private IPCServer ipcServer;
 
     @Bean
     public TrayIconManager trayIconManager() throws UnsupportedOperatingSystemException {

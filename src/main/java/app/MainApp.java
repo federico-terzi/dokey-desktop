@@ -35,6 +35,8 @@ import system.adb.ADBManager;
 import system.bookmarks.BookmarkManager;
 import system.commands.CommandManager;
 import system.applications.ApplicationManager;
+import system.internal_ipc.IPCManager;
+import system.internal_ipc.IPCServer;
 import system.logging.LoggerOutputStream;
 import system.section.SectionManager;
 import system.server.*;
@@ -53,6 +55,8 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.*;
+
+import static system.internal_ipc.IPCManagerKt.IPC_OPEN_COMMAND;
 
 @Service
 public class MainApp extends Application implements ADBManager.OnUSBDeviceConnectedListener, MobileWorker.OnDeviceConnectionListener {
@@ -86,6 +90,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
     private PositionResolver positionResolver;
     private KeyGenerator keyGenerator;
     private HandshakeDataBuilder handshakeDataBuilder;
+    private IPCServer ipcServer;
 
     private ServerSocket serverSocket;  // This is the server socket later used by the EngineServer
 
@@ -154,8 +159,18 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
             }
         }
 
+        // Initialize the storage manager
+        storageManager = StorageManager.getDefault();
+
+        // Check if dokey is already running. If so, show a dialog and terminate.
+        if (checkIfDokeyIsAlreadyRunning()) {
+            LOG.severe("Another instance of dokey was already running. Sending opening request...");
+            IPCManager.INSTANCE.sendCommand(IPC_OPEN_COMMAND, null);
+            System.exit(5);
+        }
+
         // Setup error/output redirection to file
-        File logFile = new File(StorageManager.getDefault().getStorageDir(), LOG_FILENAME);
+        File logFile = new File(storageManager.getStorageDir(), LOG_FILENAME);
         try {
             PrintStream fileStream = new PrintStream(logFile);
             LoggerOutputStream loggerOutputStream = new LoggerOutputStream(System.out, fileStream);
@@ -180,16 +195,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         }
 
         LOG.info("VERSION: "+DOKEY_VERSION + " VNUM: "+DOKEY_VERSION_NUMBER+" MIN_VER: "+DOKEY_MOBILE_MIN_VERSION);
-
-        // Initialize the storage manager
-        storageManager = StorageManager.getDefault();
-
-        // Check if dokey is already running. If so, show a dialog and terminate.
-        if (checkIfDokeyIsAlreadyRunning()) {
-            LOG.severe("Another instance of dokey was already running. Terminating.");
-            showAlreadyRunningDialog();
-            System.exit(5);
-        }
 
         launch(args);
     }
@@ -387,6 +392,9 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         // Initialize the application path resolver
         applicationPathResolver.load();
 
+        // Initialize the IPC server
+        ipcServer = context.getBean(IPCServer.class);
+
         // Start the engine server
         startEngineServer();
     }
@@ -403,6 +411,9 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
 
         // Start the active apps daemon
         activeApplicationsDaemon.start();
+
+        // Start the IPC server
+        ipcServer.start();
 
         // Start the mobile server
         mobileServer = context.getBean(MobileServer.class, serverSocket, keyGenerator.getKey());
@@ -464,19 +475,6 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
             e.printStackTrace();
         }
         return false;
-    }
-
-    /**
-     * Show a dialog to the user warning that dokey is already running, and the application will stop.
-     */
-    private static void showAlreadyRunningDialog() {
-        // TODO: i18n
-        app.alert.model.Alert alert = AlertFactory.Companion.getInstance()
-                .alert(
-                        "Dokey is already running!",
-                        "Only one instance of Dokey can run at a time.",
-                        false);
-        alert.showAndWait();
     }
 
     /**

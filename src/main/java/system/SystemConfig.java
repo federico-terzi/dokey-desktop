@@ -27,6 +27,7 @@ import system.context.GeneralContext;
 import system.drag_and_drop.DNDCommandProcessor;
 import system.exceptions.UnsupportedOperatingSystemException;
 import system.image.ImageResolver;
+import system.internal_ipc.IPCServer;
 import system.keyboard.KeyboardManager;
 import system.keyboard.MACKeyboardManager;
 import system.keyboard.MSKeyboardManager;
@@ -148,6 +149,11 @@ public class SystemConfig {
     @Bean
     public BookmarkManager bookmarkManager() {
         return new BookmarkManager();
+    }
+
+    @Bean
+    public IPCServer ipcServer() {
+        return new IPCServer();
     }
 
     @Bean
