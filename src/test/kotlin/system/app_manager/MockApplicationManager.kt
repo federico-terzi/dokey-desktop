@@ -2,15 +2,10 @@ package system.app_manager
 
 import system.applications.Application
 import system.applications.ApplicationManager
-import system.applications.Window
 import system.storage.StorageManager
 import java.io.File
 
 class MockApplicationManager(storageManager: StorageManager) : ApplicationManager(storageManager) {
-    override fun getActiveWindow(): Window {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     override fun getActivePID(): Int {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -20,10 +15,6 @@ class MockApplicationManager(storageManager: StorageManager) : ApplicationManage
     }
 
     override fun getActiveApplications(): MutableList<Application> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getWindowList(): MutableList<Window> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -69,9 +60,4 @@ class MockApplicationManager(storageManager: StorageManager) : ApplicationManage
     override fun focusSearch(): Boolean {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
-
-    override fun isApplicationAlreadyPresent(executablePath: String?): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
 }
