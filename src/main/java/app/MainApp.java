@@ -229,9 +229,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         trayIconManager = context.getBean(TrayIconManager.class);
         trayIconManager.initialize();
         trayIconManager.setOnTrayIconClicked(() -> {Platform.runLater(() -> onTrayIconClicked()); return Unit.INSTANCE;});
-        trayIconManager.setOnExitRequest(() -> {Platform.runLater(() ->
-                onExitRequest()); return Unit.INSTANCE;
-        });
+        trayIconManager.setOnExitRequest(() -> {onExitRequest(); return Unit.INSTANCE;});
 
         // Setup the position resolver
         positionResolver = context.getBean(PositionResolver.class);
@@ -505,7 +503,7 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
             LOG.info("Exit request");
             System.exit(0);
             return Unit.INSTANCE;
-        }, () -> {return Unit.INSTANCE;}, true).showAndWait();
+        }, () -> {return Unit.INSTANCE;}, true).show();
     }
 
     private void showControlPanel() {

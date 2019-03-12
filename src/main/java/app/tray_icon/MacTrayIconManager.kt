@@ -15,6 +15,10 @@ class MacTrayIconManager(resourceBundle: ResourceBundle) : AbstractTrayIconManag
         onTrayIconClicked?.invoke()
     }
 
+    private val exitRequestCallback = JavaMacNativeUI.ContextMenuCallback {
+        onExitRequest?.invoke()
+    }
+
     private val loadingIconPath = ResourceUtils.getResource("/assets/tray/mac/wait.png").absolutePath
     private val defaultIconPath = ResourceUtils.getResource("/assets/tray/mac/icon.png").absolutePath
 
@@ -29,6 +33,7 @@ class MacTrayIconManager(resourceBundle: ResourceBundle) : AbstractTrayIconManag
         JavaMacNativeUI.INSTANCE.initializeStatusItem()
         JavaMacNativeUI.INSTANCE.setStatusItemImage(loadingIconPath)
         JavaMacNativeUI.INSTANCE.setStatusItemAction(callback)
+        JavaMacNativeUI.INSTANCE.setExitRequestAction(exitRequestCallback)
 
         // Register broadcast receivers for control panel events
         BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.CONTROL_PANEL_OPENED_EVENT, controlPanelOpenedEventReceiver)

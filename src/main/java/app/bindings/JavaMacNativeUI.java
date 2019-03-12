@@ -28,8 +28,13 @@ public interface JavaMacNativeUI extends Library
     void setStatusItemTooltip(String tooltip);
     void setStatusItemHighlighted(int highlighted);
     void setStatusItemAction(StatusItemClickCallback callback);
+    void setExitRequestAction(ContextMenuCallback callback);
 
     interface StatusItemClickCallback extends Callback {
         void invoke(int x, int y);
+    }
+
+    interface ContextMenuCallback extends Callback {
+        void invoke();
     }
 }

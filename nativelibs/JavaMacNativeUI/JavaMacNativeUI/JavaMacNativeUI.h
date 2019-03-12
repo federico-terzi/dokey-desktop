@@ -27,6 +27,13 @@ void displayDialog(char* imagePath, char* title, char* description, char *button
  Status ICON methods
  */
 
+@interface StatusBarContextMenuHandlers : NSObject
+@property void (*exitHandler)(void);
+
+- (void) handleExitRequest;
+
+@end
+
 extern NSStatusItem *statusItem;
 extern void (*statusItemClickCallback)(int, int);
 
@@ -35,3 +42,4 @@ void setStatusItemImage(char *imagePath);
 void setStatusItemTooltip(char *tooltip);
 void setStatusItemHighlighted(int highlighted);
 void setStatusItemAction(void (*callback)(int, int));
+void setExitRequestAction(void (*callback)(void));

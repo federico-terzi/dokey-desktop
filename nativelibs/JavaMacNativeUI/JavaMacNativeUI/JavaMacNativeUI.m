@@ -98,12 +98,45 @@ void displayDialog(char* imagePath, char* title, char* description, char *button
  Status item methods
  */
 
+@implementation StatusBarContextMenuHandlers
+
+- (void) handleExitRequest {
+    if (self.exitHandler) {
+        self.exitHandler();
+    }
+}
+
+@end
+
 void (*statusItemClickCallback)(int, int) = NULL;
 NSStatusItem *statusItem = NULL;
+StatusBarContextMenuHandlers *contextMenuHandlers = NULL;
 
 void initializeStatusItem() {
     NSStatusBar *bar = [NSStatusBar systemStatusBar];
     statusItem = [bar statusItemWithLength:22];
+    
+    // Setup context menu
+    
+    contextMenuHandlers = [[StatusBarContextMenuHandlers alloc] init];
+    
+    NSMenu *theMenu = [[NSMenu alloc] initWithTitle:@"Contextual Menu"];
+    
+    NSMenuItem *exitItem = [[NSMenuItem alloc] initWithTitle:@"Exit Dokey" action:@selector(handleExitRequest) keyEquivalent:@""];
+    exitItem.target = contextMenuHandlers;
+    [theMenu insertItem:exitItem atIndex:0];
+    
+    [NSEvent addLocalMonitorForEventsMatchingMask: NSEventMaskFromType(NSEventTypeRightMouseDown) handler:^NSEvent* (NSEvent* event){
+        if (NSPointInRect(event.locationInWindow, statusItem.button.bounds)){
+            [statusItem popUpStatusItemMenu:theMenu];
+            return nil;
+        }
+        return event;
+    }];
+}
+
+void setExitRequestAction(void (*callback)(void)) {
+    contextMenuHandlers.exitHandler = callback;
 }
 
 void setStatusItemImage(char *imagePath) {
