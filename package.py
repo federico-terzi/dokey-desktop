@@ -23,7 +23,7 @@ def cli():
 def build(jre, skip_gradle, name, appclass, id, vendor, maxmemory):
     """Build Dokey distribution"""
     # Check operating system
-    GRADLE_PATH = "gradlew"
+    GRADLE_PATH = "./gradlew"
     PACKAGER_PATH = "javapackager"
     TARGET_OS = "macosx"
     if platform.system() == "Windows":
@@ -109,6 +109,7 @@ def build(jre, skip_gradle, name, appclass, id, vendor, maxmemory):
         if dir_name not in exclude_targets and os.path.isdir(directory):
             print("--> Copying", dir_name, "...")
             shutil.copytree(directory, os.path.join(TMP_DIR, dir_name))
+            print(os.path.join(TMP_DIR, dir_name))
 
     packager_options = ["-deploy", "-outdir", OUTPUT_PATH, "-outfile", name, "-name", name, "-title", name, "-v",
                         "-srcdir", TMP_DIR, "-appclass", appclass, "-BappVersion="+VERSION, "-Bidentifier="+id,
@@ -123,7 +124,14 @@ def build(jre, skip_gradle, name, appclass, id, vendor, maxmemory):
         packager_options.append("exe")
 
     elif TARGET_OS == "macosx":  # TODO: mac os
-        pass
+        packager_options.append("-native")
+        packager_options.append("image")
+        packager_options.append("-Bmac.CFBundleIdentifier="+id)
+        for directory in glob.glob(TMP_DIR+"/*"):
+            _, dir_name = os.path.split(directory)
+            packager_options.append("-srcfiles")
+            packager_options.append(dir_name)
+        packager_options.append("-nosign") # TODO: remove when signing
 
     print("Launching javapackager with parameters:", packager_options)
     _packager_options = ["javapackager"]
