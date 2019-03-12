@@ -5,6 +5,7 @@ import java.util.*
 
 abstract class AbstractTrayIconManager(val resourceBundle: ResourceBundle) : TrayIconManager {
     override var onTrayIconClicked: (() -> Unit)? = null
+    override var onExitRequest: (() -> Unit)? = null
 
     protected var _iconX : Int = 0
     protected var _iconY : Int = 0

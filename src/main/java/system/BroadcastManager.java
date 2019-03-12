@@ -31,6 +31,8 @@ public class BroadcastManager {
     public static final int CONTROL_PANEL_OPENED_EVENT = 200;
     public static final int CONTROL_PANEL_CLOSED_EVENT  = 201;
 
+    public static final int WINDOWS_NOTIFICATION_REQUEST = 300;
+
 
 
     // internal variables

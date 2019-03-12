@@ -7,6 +7,8 @@ import javafx.animation.Transition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.stage.Screen;
+import json.JSONObject;
+import system.BroadcastManager;
 import system.ResourceUtils;
 import utils.OSValidator;
 
@@ -45,41 +47,9 @@ public class NotificationFactory {
     }
 
     private static void showNotificationWindows(String title, String message) {
-        NotificationStage notificationStage = null;
-        try {
-            // Create the stage
-            notificationStage = new NotificationStage(title, message);
-            notificationStage.setOpacity(0);
-            notificationStage.show();
-
-            // Calculate the coordinates
-            javafx.geometry.Rectangle2D screen = Screen.getPrimary().getVisualBounds();
-
-            double targetX = screen.getWidth() - notificationStage.getWidth() - 10;
-            double targetY = screen.getHeight() - notificationStage.getHeight() - 10;
-            double initialX = screen.getWidth() - notificationStage.getWidth() - 10;
-            double initialY = screen.getHeight() + notificationStage.getHeight();
-
-            // Setup the initial position
-            notificationStage.setX(initialX);
-            notificationStage.setY(initialY);
-
-            // Create the transition
-            SequentialTransition transition = new SequentialTransition(new PositionTransition(notificationStage, initialX, initialY, 0, targetX, targetY, TARGET_OPACITY),
-                                            new DelayTransition(2), new PositionTransition(notificationStage, targetX, targetY, TARGET_OPACITY, initialX, initialY, 0));
-
-            NotificationStage finalNotificationStage = notificationStage;
-            transition.setOnFinished(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    finalNotificationStage.close();
-                }
-            });
-
-            transition.play();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        JSONObject body = new JSONObject();
+        body.put("title", title);
+        body.put("text", message);
+        BroadcastManager.getInstance().sendBroadcast(BroadcastManager.WINDOWS_NOTIFICATION_REQUEST, body.toString());
     }
 }

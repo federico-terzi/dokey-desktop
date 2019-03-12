@@ -2,9 +2,9 @@ package app.tray_icon
 
 import app.MainApp
 import javafx.stage.Screen
-import java.awt.Graphics2D
-import java.awt.Image
-import java.awt.TrayIcon
+import json.JSONObject
+import system.BroadcastManager
+import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.awt.image.BufferedImage
@@ -41,6 +41,22 @@ class MSTrayIconManager(resourceBundle: ResourceBundle) : AbstractTrayIconManage
         trayIcon = TrayIcon(loadingIcon)
         trayIconSize = trayIcon!!.size.width
 
+        val popup = PopupMenu()
+        val openItem = MenuItem("Open Control Panel")  // TODO: i18n
+        popup.add(openItem)
+        popup.addSeparator()
+        val exitItem = MenuItem("Exit Dokey")  // TODO: i18n
+        popup.add(exitItem)
+
+        trayIcon?.popupMenu = popup
+
+        openItem.addActionListener {
+            onTrayIconClicked?.invoke()
+        }
+        exitItem.addActionListener {
+            onExitRequest?.invoke()
+        }
+
         systemTray.add(trayIcon)
 
         // Setup the click listener
@@ -54,12 +70,12 @@ class MSTrayIconManager(resourceBundle: ResourceBundle) : AbstractTrayIconManage
 
                         onTrayIconClicked?.invoke()
                     }
-                    3 -> {  // RIGHT CLICK
-
-                    }
                 }
             }
         })
+
+        // Bind to the broadcast manager to manage notifications
+        BroadcastManager.getInstance().registerBroadcastListener(BroadcastManager.WINDOWS_NOTIFICATION_REQUEST, onNotificationRequestListener)
 
         // Start the loading mechanism
         loading = true
@@ -75,6 +91,12 @@ class MSTrayIconManager(resourceBundle: ResourceBundle) : AbstractTrayIconManage
         }else{
             trayIcon?.image = defaultIcon.getScaledInstance(trayIconSize, -1, Image.SCALE_SMOOTH)
         }
+    }
+
+    private val onNotificationRequestListener = BroadcastManager.BroadcastListener {
+        it as String
+        val body = JSONObject(it)
+        trayIcon?.displayMessage(body.getString("title"), body.getString("text"), TrayIcon.MessageType.NONE)
     }
 
     companion object {

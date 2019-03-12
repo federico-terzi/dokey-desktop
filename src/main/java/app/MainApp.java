@@ -229,6 +229,9 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         trayIconManager = context.getBean(TrayIconManager.class);
         trayIconManager.initialize();
         trayIconManager.setOnTrayIconClicked(() -> {Platform.runLater(() -> onTrayIconClicked()); return Unit.INSTANCE;});
+        trayIconManager.setOnExitRequest(() -> {Platform.runLater(() ->
+                onExitRequest()); return Unit.INSTANCE;
+        });
 
         // Setup the position resolver
         positionResolver = context.getBean(PositionResolver.class);
@@ -494,6 +497,15 @@ public class MainApp extends Application implements ADBManager.OnUSBDeviceConnec
         }else{
             showControlPanel();
         }
+    }
+
+    private void onExitRequest() {
+        AlertFactory.Companion.getInstance().confirmation("Exit Dokey", "Are you sure you want to exit Dokey?" +
+                "\nIf you do that, you will need to start it again manually.", () -> {
+            LOG.info("Exit request");
+            System.exit(0);
+            return Unit.INSTANCE;
+        }, () -> {return Unit.INSTANCE;}, true).showAndWait();
     }
 
     private void showControlPanel() {
