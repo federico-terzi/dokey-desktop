@@ -36,7 +36,7 @@ Dokey is written in **Kotlin**, with parts in **Java**, **C++** and
 - **Fast:** Quick-command aliases for your favourite actions to speed-up common tasks
 - **Integrated:** Dokey Search works flawlessly with all your favourite apps
 
-![](art/search.png)
+![](art/search.gif)
 
 
 ## Try it out
