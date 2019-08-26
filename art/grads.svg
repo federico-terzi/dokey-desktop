@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280px" height="840px" viewBox="0 0 1280 840" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51.3 (57544) - http://www.bohemiancoding.com/sketch -->
+    <title>Gradients</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="100%" y1="-5.55111512e-15%" x2="1.11022302e-14%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#43E695" offset="0%"></stop>
+            <stop stop-color="#3BB2B8" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="100%" y1="100%" x2="-1.11022302e-14%" y2="1.72254642e-14%" id="linearGradient-2">
+            <stop stop-color="#FF7676" offset="0%"></stop>
+            <stop stop-color="#F54EA2" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="1.22124533e-13%" y1="100%" x2="100%" y2="-6.10622664e-14%" id="linearGradient-3">
+            <stop stop-color="#6473A0" offset="0%"></stop>
+            <stop stop-color="#343F60" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Landing-Page" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Landing" transform="translate(0.000000, -960.000000)" fill-rule="nonzero">
+            <g id="Gradients" transform="translate(0.000000, 960.000000)">
+                <path d="M962.805436,248.362127 C1021.37643,115.024494 1127.44129,32.3529002 1281,0.34734538 L1281,600 L90,600 C230.441708,482.620717 381.664477,435.23993 543.66831,457.857639 C794.19654,492.834434 885.795125,423.6771 962.805436,248.362127 Z" id="1" fill="url(#linearGradient-1)"></path>
+                <path d="M1281,251.492345 L1281,840 L1.13686838e-13,840 C1.13686838e-13,713.286406 1.13686838e-13,623.438884 1.13686838e-13,570.457432 C59.2243849,566.987608 570.312446,530.926073 666.526859,466.59142 C730.142255,424.054401 934.966635,352.354709 1281,251.492345 Z" id="2" fill="url(#linearGradient-2)"></path>
+                <path d="M1098.16534,486.857784 C1196.31386,459.658365 1256.92542,386.511423 1280,267.416958 L1280,840 L-4.54747351e-13,840 C-4.554875e-13,719.619914 -4.55117425e-13,628.295597 -4.53637128e-13,566.02705 C195.761359,598.650299 620.54249,528.74352 707.442678,511.681657 C811.273271,491.295701 1015.39771,509.79477 1098.16534,486.857784 Z" id="3" fill="url(#linearGradient-3)" transform="translate(640.000000, 553.708479) scale(-1, 1) translate(-640.000000, -553.708479) "></path>
+            </g>
+        </g>
+    </g>
+</svg>
